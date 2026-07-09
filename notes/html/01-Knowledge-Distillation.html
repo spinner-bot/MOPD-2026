@@ -1036,3 +1036,185 @@ $$D_{KL}(p_T \| p_S) \approx \frac{1}{2T^2} \cdot \frac{1}{K} \sum_i (z_i^T - z_
 <a href="#ch1" class="nav-btn secondary">← 上一章：起源</a>
 <a href="#ch3" class="nav-btn">下一章：分类体系 →</a>
 </div>
+
+<!-- ═══════════════ CHAPTER 3 ═══════════════ -->
+<div class="section-divider">◆ ◆ ◆</div>
+<h2 id="ch3">第三章 · 蒸馏技术的分类体系</h2>
+<div class="callout info"><div class="title">🧭 本章目标</div><p>建立完整的 KD 分类框架。理解不同蒸馏范式之间的区别和联系，为进入 RL 蒸馏做好知识储备。</p></div>
+
+<h3>3.1 🏗️ 按"蒸馏什么"分类 —— 知识的三重形态</h3>
+<table>
+<thead><tr><th>类别</th><th>蒸馏目标</th><th>典型方法</th><th>年代</th></tr></thead>
+<tbody>
+<tr><td><strong>Response-based</strong></td><td>教师最终输出（logits / soft labels）</td><td>Hinton 2015</td><td>2015</td></tr>
+<tr><td><strong>Feature-based</strong></td><td>教师中间层特征表示</td><td>FitNets (2015)</td><td>2015</td></tr>
+<tr><td><strong>Relation-based</strong></td><td>样本间/层间的关系结构</td><td>RKD (2017), SP (2019)</td><td>2017</td></tr>
+</tbody>
+</table>
+
+<h4>🅰️ Response-based（响应式蒸馏）</h4>
+<p>这是 Hinton 的经典范式。学生只模仿教师的<strong>最终输出</strong>——最纯粹、最简单的蒸馏形式。关键变体：<strong>DKD</strong>（Decoupled KD, Zhao 2022）将 KL 解耦、"目标类"和"非目标类"分开处理，发现<strong>非目标类的知识才是蒸馏效果的关键</strong>；<strong>CTKD</strong>（Li 2023）温度动态调整；<strong>Logit Standardization</strong>（Sun 2024）对 logit 标准化后再蒸馏。</p>
+
+<h4>🅱️ Feature-based（特征式蒸馏）</h4>
+<p><strong>FitNets (Romero et al., 2015)</strong> —— 开创者。在学生中间层插入<strong>适配层（regressor）</strong>：</p>
+<div class="math-block">$$\mathcal{L}_{\text{feature}} = \| \mathbf{W}_r \cdot \mathbf{F}_S - \mathbf{F}_T \|_2^2$$</div>
+<pre><code>class FeatureDistillationLoss(nn.Module):
+    def __init__(self, student_dim, teacher_dim):
+        super().__init__()
+        self.regressor = nn.Sequential(
+            nn.Linear(student_dim, teacher_dim),
+            nn.ReLU(),
+            nn.Linear(teacher_dim, teacher_dim))
+    def forward(self, s_feat, t_feat):
+        return F.mse_loss(self.regressor(s_feat), t_feat)</code></pre>
+<p>其他里程碑：Attention Transfer (2017) 匹配注意力图；FSP (2017) 匹配 Gram 矩阵；PKT (2018) 概率建模特征空间。</p>
+
+<h3>3.2 ⏱️ 按"何时蒸馏"分类</h3>
+<table>
+<thead><tr><th>模式</th><th>教师状态</th><th>学生状态</th><th>典型场景</th></tr></thead>
+<tbody>
+<tr><td><strong>Offline KD</strong></td><td>预训练完，固定</td><td>从头训练</td><td>模型压缩</td></tr>
+<tr><td><strong>Online KD</strong></td><td>同时训练</td><td>同时训练</td><td>互相学习</td></tr>
+<tr><td><strong>Self-Distillation</strong></td><td>自己（更深层）</td><td>自己（浅层）</td><td>无外部教师</td></tr>
+</tbody>
+</table>
+<div class="callout warning"><div class="title">⚠️ 两个"Online"</div><p>监督学习中的 "Online KD"（师生同时训练）≠ RL 中的 <strong>"Online Policy Distillation"</strong>（学生自生成数据）。OPD 正篇专门讲后者。</p></div>
+
+<h3>3.3 🏆 里程碑速览</h3>
+<table>
+<thead><tr><th>年份</th><th>方法</th><th>类型</th><th>贡献</th></tr></thead>
+<tbody>
+<tr><td>2015</td><td><strong>Hinton KD</strong></td><td>Response</td><td>开山之作</td></tr>
+<tr><td>2015</td><td><strong>FitNets</strong></td><td>Feature</td><td>特征蒸馏</td></tr>
+<tr><td>2019</td><td><strong>DistilBERT</strong></td><td>Response</td><td>BERT→40%更小,97%性能</td></tr>
+<tr><td>2021</td><td><strong>DeiT</strong></td><td>Response</td><td>ViT 硬标签蒸馏</td></tr>
+<tr><td>2022</td><td><strong>DKD</strong></td><td>Response</td><td>解耦KD</td></tr>
+<tr><td>2024</td><td><strong>DeepSeek-R1</strong></td><td>RL蒸馏</td><td>推理蒸馏革命</td></tr>
+</tbody>
+</table>
+
+<div class="nav-row">
+<a href="#ch2" class="nav-btn secondary">← 数学框架</a>
+<a href="#ch4" class="nav-btn">下一章：蒸馏进入 RL →</a>
+</div>
+
+<!-- ═══════════════ CHAPTER 4 ═══════════════ -->
+<div class="section-divider">◆ ◆ ◆</div>
+<h2 id="ch4">第四章 · 蒸馏进入强化学习</h2>
+<div class="callout info"><div class="title">🤖 本章目标</div><p>理解将 KD 迁移到 RL 中的独特挑战，掌握 Policy Distillation 核心设计，以及 OPD 概念的诞生。这是通向 OPD 正篇的<strong>关键桥梁</strong>。</p></div>
+
+<h3>4.1 🎯 为什么 RL 需要蒸馏？</h3>
+<table>
+<thead><tr><th>挑战</th><th>蒸馏的作用</th></tr></thead>
+<tbody>
+<tr><td><strong>模型庞大</strong></td><td>压缩为轻量模型</td></tr>
+<tr><td><strong>多任务困境</strong></td><td>多教师→一个多任务学生</td></tr>
+<tr><td><strong>训练成本</strong></td><td>用已有教师 kickstart 新任务</td></tr>
+<tr><td><strong>连续学习</strong></td><td>用旧教师约束学生，防止遗忘</td></tr>
+</tbody>
+</table>
+
+<h3>4.2 🏛️ Policy Distillation (Rusu et al., 2015)</h3>
+<div class="callout paper"><div class="title">📄 Policy Distillation — Google DeepMind, ICLR 2016</div><p>紧接 DQN 征服 Atari 之后。arXiv: 1511.06295。定义了 RL 策略蒸馏的三种模式，其中<strong>第三种就是 OPD 的雏形</strong>。</p></div>
+
+<h4>核心挑战：Q 值不是概率分布</h4>
+<p>RL 中 DQN 输出的是 Q 值——实数范围的无界标量。<strong>Rusu 的技巧</strong>：用温度 softmax 强行转换：</p>
+<div class="math-block">$$\boxed{p_T(a|s) = \frac{\exp(Q_T(s, a) / \tau)}{\sum_{a'} \exp(Q_T(s, a') / \tau)}}$$</div>
+
+<h4>三种蒸馏模式</h4>
+<table>
+<thead><tr><th>模式</th><th>数据来源</th><th>意义</th></tr></thead>
+<tbody>
+<tr><td>① 单任务蒸馏</td><td>教师轨迹</td><td>~15×压缩，性能不降</td></tr>
+<tr><td>② 多任务蒸馏</td><td>所有教师轨迹</td><td>部分超越专家</td></tr>
+<tr><td>③ <strong>在线蒸馏</strong></td><td><strong>学生自己生成轨迹</strong></td><td>← 🔥 OPD 原型！</td></tr>
+</tbody>
+</table>
+<div class="callout insight"><div class="title">🔥 第三种 = OPD 起源</div><p>学生<strong>用自己的轨迹</strong>训练，面对自己探索产生的状态分布，而非教师的分布。这是 OPD 最核心的特征。</p></div>
+
+<h4>🧪 极简实现：DQN 策略蒸馏</h4>
+<pre><code>def policy_distillation_loss(student_q, teacher_q, T=0.01):
+    """DQN策略蒸馏损失。Q值范围大，用较小温度0.01~0.1"""
+    teacher_probs = F.softmax(teacher_q / T, dim=1)
+    student_log_probs = F.log_softmax(student_q / T, dim=1)
+    return F.kl_div(student_log_probs, teacher_probs,
+                    reduction='batchmean') * (T * T)
+
+def online_distillation_step(student, teacher, env, optimizer):
+    """在线策略蒸馏：学生自己交互→教师给信号→学生更新"""
+    trajectory = []
+    state = env.reset()
+    while not done:  # 学生自己的策略收集轨迹
+        q = student(state); action = q.argmax().item()
+        next_s, reward, done, _ = env.step(action)
+        trajectory.append((state, action, reward, next_s, done))
+        state = next_s
+    states_t = torch.stack([t[0] for t in trajectory])
+    with torch.no_grad(): teacher_q = teacher(states_t)  # 教师评分
+    student_q = student(states_t)
+    loss = policy_distillation_loss(student_q, teacher_q)
+    optimizer.zero_grad(); loss.backward(); optimizer.step()
+    return loss.item()</code></pre>
+
+<h3>4.3 🎭 Actor-Mimic (Parisotto et al., 2016)</h3>
+<div class="callout paper"><div class="title">📄 Actor-Mimic — U. Toronto, ICLR 2016</div></div>
+<p>两个关键扩展：① 学生用 ε-greedy 自生成轨迹；② <strong>Q 值阈值截断</strong>——教师也不确定的状态跳过蒸馏：</p>
+<div class="math-block">$$\mathcal{L}_{\text{distill}}(s) = \begin{cases} D_{KL}(p_T\|p_S) & \text{if } \max_a Q_T(s,a) > \theta \\ 0 & \text{otherwise} \end{cases}$$</div>
+
+<h3>4.4 🧩 监督蒸馏 vs RL 策略蒸馏</h3>
+<table>
+<thead><tr><th>维度</th><th>监督蒸馏</th><th>RL 策略蒸馏</th></tr></thead>
+<tbody>
+<tr><td>教师输出</td><td>类别概率（天然softmax）</td><td>Q值/动作logits（需转换）</td></tr>
+<tr><td>数据来源</td><td>静态i.i.d.</td><td>轨迹（序列，非i.i.d.）</td></tr>
+<tr><td>谁生成数据</td><td>任意</td><td><strong>教师 vs 学生轨迹</strong> ← 关键</td></tr>
+<tr><td>暴露偏差</td><td>可控</td><td><strong>严重</strong></td></tr>
+<tr><td>损失</td><td>Forward KL</td><td>Forward 或 Reverse KL</td></tr>
+</tbody>
+</table>
+<div class="callout insight"><div class="title">🌉 暴露偏差——为什么需要OPD</div><p>离线蒸馏=坐副驾看师傅开→没握过方向盘→上路就懵。<strong>在线蒸馏=自己握方向盘，师傅在旁边纠正→真正学会了。</strong></p></div>
+
+<div class="nav-row">
+<a href="#ch3" class="nav-btn secondary">← 分类体系</a>
+<a href="#ch5" class="nav-btn">下一章：通往 OPD →</a>
+</div>
+
+<!-- ═══════════════ CHAPTER 5 ═══════════════ -->
+<div class="section-divider">◆ ◆ ◆</div>
+<h2 id="ch5">第五章 · 从蒸馏到在线策略蒸馏的桥梁</h2>
+
+<h3>知识检查清单</h3>
+<table>
+<thead><tr><th>✅</th><th>概念</th><th>在 OPD 中的角色</th></tr></thead>
+<tbody>
+<tr><td>☐</td><td>知识蒸馏 (Hinton 2015)</td><td>OPD 的理论祖先</td></tr>
+<tr><td>☐</td><td>温度参数 $T$</td><td>控制教师信号"软硬度"</td></tr>
+<tr><td>☐</td><td>KL 散度 (Forward vs Reverse)</td><td>OPD 使用 <strong>Reverse KL</strong> (学生→教师)</td></tr>
+<tr><td>☐</td><td>Forward KL = 均值追寻</td><td>离线蒸馏特征（覆盖所有模式）</td></tr>
+<tr><td>☐</td><td>Reverse KL = 模式追寻</td><td>在线蒸馏特征（专注主要模式）</td></tr>
+<tr><td>☐</td><td>Policy Distillation (Rusu 2015)</td><td>OPD 的直接前身</td></tr>
+<tr><td>☐</td><td>在线蒸馏模式</td><td>OPD 雏形——学生自生成轨迹</td></tr>
+<tr><td>☐</td><td>Actor-Mimic</td><td>自生成轨迹+教师信号+截断</td></tr>
+<tr><td>☐</td><td>暴露偏差 (Exposure Bias)</td><td>OPD 要解决的核心问题</td></tr>
+</tbody>
+</table>
+
+<h3>OPD 核心思想（一句话预览）</h3>
+<div class="callout insight" style="font-size:1.1em;">
+<div class="title">🔥 定义</div>
+<p><strong>让学生用自己的策略去探索世界，同时让教师实时提供"什么是好动作"的密集信号——这就是 Online Policy Distillation。</strong></p>
+</div>
+
+<div style="text-align:center;margin:32px 0;">
+<a href="./02-OPD-Online-Policy-Distillation.html" style="display:inline-block;padding:16px 36px;background:linear-gradient(135deg,#c0392b,#e67e22);color:#fff;text-decoration:none;border-radius:30px;font-size:1.15em;font-weight:700;box-shadow:0 4px 16px rgba(192,57,43,0.3);transition:all 0.2s;">📖 进入 OPD 正篇 →</a>
+</div>
+
+<div class="section-divider">◆ ◆ ◆</div>
+<p style="text-align:center;color:var(--text3);font-size:0.9em;margin-top:40px;">
+📘 知识蒸馏（Knowledge Distillation）—— 从入门到精通 · 前置篇 · 完<br>
+构建于 2026 年 7 月，基于截至 2026 年 7 月的公开研究文献
+</p>
+
+</main>
+</body>
+</html>
