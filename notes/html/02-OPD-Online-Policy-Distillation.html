@@ -419,3 +419,298 @@ $$\boxed{\mathbb{E}_{\pi_\theta}\left[\sum_t -\nabla_\theta \log\pi_\theta(a_t|s
 <a href="#ch1" class="nav-btn secondary">← 萌芽期</a>
 <a href="#ch3" class="nav-btn">下一章：扩展期 →</a>
 </div>
+
+<!-- ═══════════════ CHAPTER 3 ═══════════════ -->
+<div class="section-divider">◆ ◆ ◆</div>
+<h2 id="ch3">第三章 · 算法成熟与扩展期（2020–2023）</h2>
+
+<h3>3.1 🎯 DPO (Direct Preference Optimization) 与 OPD 的数学联系</h3>
+<div class="callout paper"><div class="title">📄 DPO — Rafailov et al., NeurIPS 2023. arXiv: 2305.18290</div></div>
+<p>DPO 将 RLHF 简化为分类问题：</p>
+<div class="math-block">
+$$\mathcal{L}_{\text{DPO}} = -\mathbb{E}\left[\log \sigma\left(\beta \log\frac{\pi_\theta(y_w|x)}{\pi_{\text{ref}}(y_w|x)} - \beta \log\frac{\pi_\theta(y_l|x)}{\pi_{\text{ref}}(y_l|x)}\right)\right]$$
+</div>
+<p>DPO 与 OPD 共享核心——使用参考模型定义"好行为"的基准，让学生在此基础上优化。<strong>区别</strong>：DPO 用静态偏好对（off-policy），OPD 用学生自生成轨迹（on-policy）+ 逐 token 概率信号。</p>
+<p><strong>2025 年的融合</strong>：Online DPO 和 StepOPSD（见第四章/五章）将偏好对比信号与在线采样结合。</p>
+
+<h3>3.2 🤝 多智能体蒸馏 & 机器人控制</h3>
+<p><strong>多智能体 RL</strong>：集中式教师（全局观测）→ 蒸馏 → 分散式学生（局部观测）。部署时仅学生运行。</p>
+<p><strong>机器人控制</strong>：Sim-to-Real（仿真教师→真实学生）；硬件异构（不同机器人共享任务理解）；Dexterous Manipulation（教师引导探索高维动作空间）。</p>
+
+<h3>3.3 📊 工程最佳实践（2023 年确立）</h3>
+<table>
+<thead><tr><th>任务类型</th><th>推荐温度 T</th><th>原因</th></tr></thead>
+<tbody>
+<tr><td>离散控制（Atari）</td><td>0.01~0.1</td><td>Q 值差异大，低温度保留峰值</td></tr>
+<tr><td>连续控制（MuJoCo）</td><td>1~5</td><td>连续动作需更软的概率分布</td></tr>
+<tr><td>多任务蒸馏</td><td>2~10</td><td>需暴露更多类间结构</td></tr>
+<tr><td>机器人 Sim-to-Real</td><td>0.5~2</td><td>平衡信号强度与鲁棒性</td></tr>
+</tbody>
+</table>
+
+<div class="nav-row">
+<a href="#ch2" class="nav-btn secondary">← 理论深化</a>
+<a href="#ch4" class="nav-btn">下一章：LLM 革命 ★ →</a>
+</div>
+
+<!-- ═══════════════ CHAPTER 4 ═══════════════ -->
+<div class="section-divider">◆ ◆ ◆</div>
+<h2 id="ch4">第四章 · LLM 时代的 OPD 革命（2024–2026）★</h2>
+<div class="callout info"><div class="title">🔥 全文重点章节</div><p>2024–2026 年是 OPD 历史上最重要的时期。LLM 推理能力蒸馏将 OPD 从小众 RL 技术推向 AI 领域中心舞台。</p></div>
+
+<h3>4.1 🐋 DeepSeek-R1 (2025.01) —— 蒸馏革命的引爆点</h3>
+<div class="callout paper"><div class="title">📄 DeepSeek-R1 — Guo et al., Jan 2025. arXiv: 2501.12948</div><p>影响力: 🌟🌟🌟🌟🌟 定义了 LLM 推理蒸馏的新范式。</p></div>
+
+<h4>完整 Pipeline</h4>
+<pre style="font-size:11.5px;">
+Stage 1 ❄️ Cold-Start SFT     → 人工编写长思维链示例 → SFT 基础模型
+Stage 2 🎯 Reasoning RL (GRPO) → 数学正确性+格式奖励 → 涌现自反思行为 → R1-Zero
+Stage 3 🔄 Rejection Sampling   → 只保留正确答案 → 精选SFT → 更强推理模型
+Stage 4 🛡️ Alignment RL        → 安全/有用性/指令遵循 → 最终 R1
+Stage 5 🎓 Distillation         → R1教师+精选推理链 → R1-Distill 1.5B~70B
+</pre>
+
+<h4>GRPO 中的隐式 OPD</h4>
+<div class="math-block">
+$$\mathcal{L}_{\text{GRPO}} = -\frac{1}{G}\sum_i \frac{1}{|o_i|}\sum_t \min(\rho_t \hat{A}_{i,t}, \text{clip}(\rho_t)\hat{A}_{i,t}) - \beta \cdot \underbrace{D_{KL}(\pi_\theta \;\|\; \pi_{\text{ref}})}_{\text{← 这就是隐式OPD！}}$$
+</div>
+<p>$D_{KL}(\pi_\theta \|\pi_{\text{ref}})$ 项确保模型在探索推理策略时不偏离基础语言能力太远。<strong>OPD 不是"额外步骤"，而是 RL 训练本身的内在组成部分。</strong></p>
+
+<h4>决定性对比：RL vs 蒸馏</h4>
+<table>
+<thead><tr><th>模型</th><th>训练方式</th><th>AIME 2024</th><th>MATH-500</th></tr></thead>
+<tbody>
+<tr><td>R1-Zero-Qwen-32B</td><td>纯 RL (GRPO)</td><td>47.0</td><td>91.6</td></tr>
+<tr><td><strong>R1-Distill-Qwen-32B</strong></td><td><strong>蒸馏 from R1</strong></td><td><strong>72.6</strong></td><td><strong>94.3</strong></td></tr>
+<tr style="background:#fdf0ed;"><td>差距</td><td></td><td><strong>+25.6 分！</strong></td><td>+2.7</td></tr>
+</tbody>
+</table>
+
+<div class="callout insight"><div class="title">🔥 改变整个领域的结论</div><p><strong>"RL discovers capabilities; distillation makes them stable and efficient."</strong> 对于小模型（&lt;70B），从强教师蒸馏的知识远远优于用 RL 从零探索。纯 RL 受限于小模型的表示能力——它根本无法通过稀疏奖励自主发现复杂的推理策略。</p></div>
+
+<h3>4.2 🔬 REOPOLD —— 松弛在线策略蒸馏 (Ko et al., 2025)</h3>
+<div class="callout paper"><div class="title">📄 REOPOLD: Relaxed On-Policy Distillation for Efficient Reasoning — 2025</div></div>
+<p>直接面对标准 OPD 在 LLM 推理场景中的<strong>三个核心问题</strong>：</p>
+
+<p><strong>问题一：重尾负奖励</strong>——学生生成教师认为不可能的 token → $R_t = \log \pi_T - \log \pi_\theta \to -\infty$ → 梯度爆炸。解决：<strong>奖励裁剪</strong> $\hat{R}_{i,t}^\lambda = \max(R_{i,t}, \frac{\log \lambda}{1-\lambda})$，其中 $\lambda$ 来自师生混合分布的有原则的阈值。</p>
+
+<p><strong>问题二：近零奖励</strong>——大多数 token 是常识填充词，KL≈0，稀释关键信号。解决：<strong>熵引导动态 Token 采样</strong>——只在高熵 token（学生不确定的决策点）上计算蒸馏损失，跳过 70–90% 的低信息量 token。</p>
+
+<p><strong>问题三：熵崩塌</strong>——Reverse KL 的模式追寻使分布越来越尖锐。解决：<strong>两阶段训练</strong>——Phase 1 (Exploration) 过滤强负奖励，保持多样性；Phase 2 (Refinement) 聚焦高熵 token，锐化关键决策。</p>
+
+<table>
+<thead><tr><th>实验</th><th>改进</th></tr></thead>
+<tbody>
+<tr><td>R1-Distill-Qwen-1.5B → REOPOLD</td><td>AIME24: 28.6 → <strong>41.6</strong> (+13.0)</td></tr>
+<tr><td>采样效率 vs 纯 RL</td><td><strong>6.7–12×</strong> 提升</td></tr>
+<tr><td>7B 学生视觉推理</td><td>匹配 32B 教师 (~3.32× 推理加速)</td></tr>
+</tbody>
+</table>
+
+<h4>🧪 REOPOLD 关键实现</h4>
+<pre><code>def reopold_loss_with_clipping(student_logps, teacher_logps,
+                                 lambda_mix=0.01, top_p=0.3):
+    """REOPOLD 的核心损失计算"""
+    # 1. 计算 token 级 log-ratio 奖励
+    R = teacher_logps - student_logps  # [batch, seq_len]
+
+    # 2. 奖励裁剪 (防止重尾负奖励)
+    clip_threshold = np.log(lambda_mix) / (1 - lambda_mix)
+    R_clipped = torch.clamp(R, min=clip_threshold)
+
+    # 3. 熵引导动态 token 采样
+    entropy = -(student_logps.exp() * student_logps).sum(dim=-1)  # [batch, seq]
+    threshold = torch.quantile(entropy, 1 - top_p)  # top-p% 的熵阈值
+    mask = (entropy > threshold).float()  # 只保留高熵 token
+
+    # 4. 加权 KL 损失
+    kl_per_token = -R_clipped  # Reverse KL 形式
+    loss = (kl_per_token * mask).sum() / mask.sum().clamp(min=1)
+
+    return loss</code></pre>
+
+<h3>4.3 📍 PW-OPSD —— 位置加权在线自蒸馏 (Liu et al., 2025)</h3>
+<div class="callout paper"><div class="title">📄 PW-OPSD — SaFo-Lab, May 2025 | github.com/SaFo-Lab/PW-OPSD</div></div>
+<p><strong>核心发现</strong>：Token 在序列中的<strong>位置</strong>是教师可靠性的最强预测器（AUROC <strong>0.83</strong> vs 熵方法 0.57）。推理链中靠后的 token 远比靠前的 token 更可靠——因为推理是累积的。</p>
+
+<p><strong>方法</strong>：$\mathcal{L}_{\text{PW}} = \sum_{t=1}^T w(t) \cdot D_{KL}(\pi_\theta \|\pi_T)$，其中 $w(t) = \alpha + (1-\alpha) \cdot t/T$。最简单的线性递增，效果已经很好。</p>
+
+<table>
+<thead><tr><th>方法</th><th>MATH-500</th><th>AIME 2024</th><th>AIME 2025</th></tr></thead>
+<tbody>
+<tr><td>OPSD（基准）</td><td>89.02</td><td>40.74</td><td>31.57</td></tr>
+<tr><td><strong>PW-OPSD</strong></td><td>88.72</td><td><strong>41.20</strong></td><td><strong>32.22</strong></td></tr>
+</tbody>
+</table>
+
+<h3>4.4 ⚔️ GAR —— 生成式对抗推理器 (Liu et al., 2025)</h3>
+<p>对抗训练引入推理蒸馏：<strong>Reasoner</strong> 生成推理链 → <strong>Discriminator</strong> 评估推理链切片 → Reasoner 改进。判别器评估<strong>局部切片</strong>（而非完整链），让反馈更密集、更具体。结果：R1-Distill-Qwen-7B AIME24 从 54.0 → <strong>61.3</strong> (+7.3)，R1-Distill-Llama-8B 从 43.7 → <strong>53.7</strong> (+10.0)。</p>
+
+<div class="nav-row">
+<a href="#ch3" class="nav-btn secondary">← 扩展期</a>
+<a href="#ch5" class="nav-btn">下一章：统一框架 →</a>
+</div>
+
+<!-- ═══════════════ CHAPTER 5 ═══════════════ -->
+<div class="section-divider">◆ ◆ ◆</div>
+<h2 id="ch5">第五章 · 统一框架的建立（2026）</h2>
+
+<h3>5.1 🔲 前缀源 × KL 方向 —— OPD 的"周期表"</h3>
+<div class="callout paper"><div class="title">📄 Decoupling KL and Trajectories — arXiv 2605.16826, May 2026</div></div>
+<p>这篇论文的核心贡献是<strong>解耦了两个一直被混为一谈的概念</strong>：</p>
+
+<p><strong>维度一（前缀来源）</strong>：蒸馏数据的前缀由谁生成？教师 or 学生。<br>
+<strong>维度二（KL 方向）</strong>：Forward KL or Reverse KL？</p>
+
+<table>
+<thead><tr><th></th><th>Token-Level Forward KL</th><th>Token-Level Reverse KL</th></tr></thead>
+<tbody>
+<tr><td><strong>教师前缀</strong></td><td>① 离线 SFT / 标准蒸馏</td><td>② 离线 RL 风格蒸馏</td></tr>
+<tr><td><strong>学生前缀</strong></td><td>③ DAgger 风格在线 SFT</td><td>④ <strong>OPD（在线策略蒸馏）</strong></td></tr>
+</tbody>
+</table>
+
+<div class="callout insight"><div class="title">💡 这个矩阵的意义</div><p>它不仅统一了四种看似无关的技术，还揭示了"缺失环节"——模式②和③研究较少，可能是 OPD 和离线蒸馏之间的<strong>最优结合点</strong>。</p></div>
+
+<h3>5.2 🔄 CoPD —— 师生协同进化 (April 2026)</h3>
+<div class="callout paper"><div class="title">📄 Co-Evolving Policy Distillation — arXiv 2604.27083</div></div>
+<p>挑战 OPD 基本假设：<strong>教师不应该固定（frozen）。</strong>教师也从学生反馈中学习：教师→蒸馏→学生→RL微调→学生→蒸馏→新教师→... 打破"教师必须比学生强"的假设。收敛速度比标准 OPD 快 ~2×。</p>
+
+<pre><code># CoPD 协同进化训练循环
+for iteration in range(num_iterations):
+    # 1. 教师 → 学生 (标准OPD)
+    for step in range(opd_steps):
+        student_traj = student.rollout()
+        loss = reverse_kl(student_traj, teacher)
+        student.update(loss)
+
+    # 2. 学生 → RL 微调 (学生自己练)
+    for step in range(rl_steps):
+        student_traj = student.rollout()
+        loss = rl_objective(student_traj)  # 无蒸馏信号
+        student.update(loss)
+
+    # 3. 学生 → 教师 (教师从学生学！)
+    student_traj = student.rollout()
+    loss = kl_divergence(teacher(student_traj), student(student_traj))
+    teacher.update(loss)  # 教师适应学生的新分布</code></pre>
+
+<h3>5.3 🎯 CR-OPD / GAE-OPD / StepOPSD (2026)</h3>
+<table>
+<thead><tr><th>方法</th><th>核心创新</th><th>论文</th></tr></thead>
+<tbody>
+<tr><td><strong>CR-OPD</strong></td><td>反事实路由：限制 KL 支持集在"合理备选 token"上，而非整个词汇表</td><td>2606.22793</td></tr>
+<tr><td><strong>GAE-OPD</strong></td><td>用 GAE 改进时序信用分配：当前 token 信号包含之前所有步骤的累积 KL</td><td>2606.22793</td></tr>
+<tr><td><strong>StepOPSD</strong></td><td>将 OPD 从 token 级提升到步骤级；每步信用预算归一化防止长步骤主导</td><td>2605.27140</td></tr>
+</tbody>
+</table>
+
+<h3>5.4 🩺 OPD 失效模式研究 (UIUC, 2026)</h3>
+<div class="callout paper"><div class="title">📄 The Many Faces of On-Policy Distillation — UIUC, 2026 | ulab-uiuc.github.io/OPD_website</div></div>
+
+<table>
+<thead><tr><th>失效模式</th><th>表现</th><th>修复</th></tr></thead>
+<tbody>
+<tr><td><strong>学生前缀扭曲教师</strong></td><td>学生的不完美前缀"污染"教师输入</td><td>Stop-Gradient Top-K KL</td></tr>
+<tr><td><strong>Top-K +1 偏差</strong></td><td>Top-K 截断后概率和≠1导致偏差</td><td>显式加入"其他"类别</td></tr>
+<tr><td><strong>只学到 PI-free margin</strong></td><td>背下答案但没理解推理过程</td><td>先 RLVR-adapt 教师，再 SFT-warm 学生</td></tr>
+</tbody>
+</table>
+
+<div class="nav-row">
+<a href="#ch4" class="nav-btn secondary">← LLM 革命</a>
+<a href="#ch6" class="nav-btn">下一章：行业落地 →</a>
+</div>
+
+<!-- ═══════════════ CHAPTER 6 ═══════════════ -->
+<div class="section-divider">◆ ◆ ◆</div>
+<h2 id="ch6">第六章 · 行业落地与生产实践</h2>
+
+<h3>6.1 🏢 Qwen 3 Pipeline</h3>
+<pre style="font-size:11.5px;">
+① GRPO + 可验证奖励（渐进难度课程）
+② 在线策略蒸馏（OPD）—— 学生在线生成推理链，强教师提供 token 级 KL 信号
+③ 拒绝采样 + 精选 SFT
+④ 迭代：回到①，用更强的模型作为新教师
+</pre>
+
+<h3>6.2 🐋 DeepSeek-V3.2 交替 Pipeline</h3>
+<pre style="font-size:11.5px;">
+Phase 1: 能力发现 → GRPO+强奖励→大模型发现新推理模式
+Phase 2: 知识固化 → OPD→将发现的能力固化到小模型参数
+Phase 3: 专家蒸馏 → 多专家蒸馏→合并为统一模型
+循环：回到 Phase 1
+</pre>
+
+<h3>6.3 2026 工业界 OPD 共识</h3>
+<table>
+<thead><tr><th>共识</th><th>含义</th></tr></thead>
+<tbody>
+<tr><td><strong>RL 发现，蒸馏传播</strong></td><td>分工明确</td></tr>
+<tr><td><strong>在线 > 离线</strong></td><td>推理任务中 OPD 优于离线蒸馏</td></tr>
+<tr><td><strong>混合模式最优</strong></td><td>RL 奖励 + OPD KL 信号</td></tr>
+<tr><td><strong>温度动态调度</strong></td><td>随训练进程递减温度</td></tr>
+<tr><td><strong>教师也需要更新</strong></td><td>固定教师→距离扩大→效果衰减</td></tr>
+<tr><td><strong>位置感知重要</strong></td><td>不同位置 token 需不同权重</td></tr>
+<tr><td><strong>计算成本可接受</strong></td><td>比纯RL便宜 10–100×</td></tr>
+</tbody>
+</table>
+
+<!-- ═══════════════ CHAPTER 7 ═══════════════ -->
+<div class="section-divider">◆ ◆ ◆</div>
+<h2 id="ch7">第七章 · 开放问题与未来方向</h2>
+
+<h3>7.1 🧪 理论开放问题</h3>
+<ul style="margin:8px 0 8px 24px; line-height:2;">
+<li><strong>收敛性</strong>：修正后 OPD 在神经网络+奖励下仅证到"局部收敛"，缺少全局保证</li>
+<li><strong>最优 KL 方向</strong>：缺乏统一准则决定何时用 Forward KL vs Reverse KL</li>
+<li><strong>子空间锁定</strong>（Subspace Locking, arXiv 2606.07082）：OPD 参数更新进入低维通道——是有益的高效特征还是学习的牢笼？</li>
+</ul>
+
+<h3>7.2 🚀 前沿方向</h3>
+<ul style="margin:8px 0 8px 24px; line-height:2;">
+<li><strong>统一对齐-蒸馏框架</strong>：DPO/RLHF/OPD 是否是一个统一框架的不同实例？</li>
+<li><strong>自蒸馏闭环</strong>：学生→训练→超越教师→成为新教师→蒸馏→新学生→...（类似 AlphaGo self-play）</li>
+<li><strong>多模态 OPD</strong>：视觉推理/视频理解/具身AI中的在线蒸馏</li>
+<li><strong>OPD 作为持续学习机制</strong>：旧策略（教师）通过 OPD 约束新策略（学生），防止灾难性遗忘</li>
+</ul>
+
+<h3>7.3 📋 进入 OPD 前沿研究的推荐路线</h3>
+<div class="callout success">
+<div class="title">✅ 推荐学习路径</div>
+<p><strong>Week 1-2</strong>: Hinton 2015 → Czarnecki 2019（★必读）→ Teh 2017<br>
+<strong>Week 3-4</strong>: DeepSeek-R1（★必读）→ REOPOLD → 前缀×KL 统一框架<br>
+<strong>Week 5-6</strong>: UIUC 失效模式 → CoPD（★当前热门）→ CR-OPD/GAE-OPD → 几何视角（最新）<br>
+<strong>Week 7+</strong>: 用 verl/ROLL 框架实现简单 OPD → 复现 REOPOLD → 自定义任务对比实验</p>
+</div>
+
+<h3>📚 关键论文索引</h3>
+<table>
+<thead><tr><th>年份</th><th>论文</th><th>核心贡献</th><th>arXiv</th></tr></thead>
+<tbody>
+<tr><td>2015</td><td>Policy Distillation</td><td>OPD 概念诞生</td><td>1511.06295</td></tr>
+<tr><td>2017</td><td>Distral</td><td>蒸馏通信机制</td><td>1707.04175</td></tr>
+<tr><td>2019</td><td>Distilling Policy Dist. ★</td><td>梯度场理论</td><td>1902.02186</td></tr>
+<tr><td>2025</td><td>DeepSeek-R1 ★</td><td>RL 蒸馏革命</td><td>2501.12948</td></tr>
+<tr><td>2025</td><td>REOPOLD</td><td>松弛 OPD</td><td>2025</td></tr>
+<tr><td>2026</td><td>前缀×KL 统一框架</td><td>四种蒸馏模式</td><td>2605.16826</td></tr>
+<tr><td>2026</td><td>CoPD</td><td>协同进化</td><td>2604.27083</td></tr>
+<tr><td>2026</td><td>UIUC 失效模式</td><td>诊断修复</td><td>2026</td></tr>
+<tr><td>2026</td><td>OPD 几何</td><td>子空间锁定</td><td>2606.07082</td></tr>
+</tbody>
+</table>
+
+<div class="nav-row">
+<a href="#ch6" class="nav-btn secondary">← 行业落地</a>
+<a href="#top" class="nav-btn secondary">↑ 回到顶部</a>
+</div>
+
+<div class="section-divider">◆ ◆ ◆</div>
+<p style="text-align:center;color:var(--text3);font-size:0.9em;margin-top:36px;">
+🔥 在线策略蒸馏（Online Policy Distillation）—— 发展全历程 · 正篇 · 完<br>
+构建于 2026 年 7 月，基于截至 2026 年 7 月的公开研究文献
+</p>
+
+</main>
+</body>
+</html>
