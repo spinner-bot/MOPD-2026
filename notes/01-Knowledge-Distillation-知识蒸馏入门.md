@@ -592,3 +592,234 @@ $$\mathcal{L}_{\text{feature}} = \| \mathbf{W}_r \cdot \mathbf{F}_S - \mathbf{F}
 
 [➡️ 下一章：蒸馏进入强化学习](#第四章-蒸馏进入强化学习)
 
+---
+
+---
+
+# 🤖 第四章：蒸馏进入强化学习
+
+> *"Policy Distillation is knowledge distillation applied to control — where the 'classes' are actions, and the 'knowledge' is how to act."*
+
+将知识蒸馏的思想迁移到强化学习（RL）中，面临一个根本性的挑战：**RL 要学的是"如何行动"，而不是"如何分类"。** 本章讲述这一迁移的完整过程。
+
+---
+
+### 4.1 🎯 为什么 RL 需要蒸馏？
+
+强化学习面临几个独特的挑战，这些挑战使得蒸馏变得格外重要：
+
+| 挑战 | 描述 | 蒸馏的作用 |
+|------|------|-----------|
+| **模型庞大** | DQN/Policy Network 参数量巨大，难以部署 | 压缩为轻量模型 |
+| **多任务困境** | 每个任务训一个模型 → 存储爆炸 | 多教师蒸馏为一个多任务学生 |
+| **训练成本** | 每个新任务从零训练 → 时间成本高 | 用已有教师 kickstart 新任务 |
+| **连续学习（Continual Learning）** | 学新任务时遗忘旧任务 | 用旧教师策略约束学生 |
+
+---
+
+### 4.2 🏛️ Policy Distillation (Rusu et al., 2015) —— RL 蒸馏的奠基之作
+
+<blockquote style="background:#fff3e0;padding:16px;border-left:6px solid #ff9800">
+
+**📄 论文信息**
+
+**标题**: *"Policy Distillation"*
+**作者**: Andrei A. Rusu, Sergio Gomez Colmenarejo, Caglar Gulcehre, Guillaume Desjardins, James Kirkpatrick, Razvan Pascanu, Volodymyr Mnih, Koray Kavukcuoglu, Raia Hadsell
+**机构**: Google DeepMind
+**发表**: arXiv 1511.06295 (Nov 2015), ICLR 2016
+**背景**: 紧接在 DQN (Mnih et al. 2015) 征服 Atari 游戏之后
+
+</blockquote>
+
+#### 核心问题
+
+DQN 在 Atari 游戏上取得了超人类表现，但：
+- 每个游戏需要一个专用的大网络
+- 多个游戏之间无法共享知识
+- 想玩 50 个游戏就需要 50 个模型
+
+Policy Distillation 的目标：**把多个教师策略"压缩"进一个学生策略中。**
+
+#### 关键挑战：Q 值不是概率分布
+
+在监督学习中，教师的输出天然是一个概率分布（softmax 输出）。但在 RL 中，DQN 输出的是 **Q 值**——实数范围的无界标量。
+
+$$
+Q(s, a) \in \mathbb{R} \quad \text{（可以是任意实数）}
+$$
+
+Rusu 等人的核心技巧：**将 Q 值通过温度 softmax 转换为动作概率分布**：
+
+<center>
+
+$$\boxed{p_T(a|s) = \frac{\exp(Q_T(s, a) / \tau)}{\sum_{a'} \exp(Q_T(s, a') / \tau)}}$$
+
+</center>
+
+然后让学生模仿这个概率分布：
+
+$$\mathcal{L}_{\text{distill}} = D_{KL}\big(p_T(\cdot|s) \;\big\|\; p_S(\cdot|s)\big)$$
+
+---
+
+#### 三种蒸馏模式
+
+Policy Distillation 提出了三种操作模式，直接为后续的 OPD 研究奠定了基础：
+
+<center>
+
+| 模式 | 描述 | 数据来源 | 示意图 |
+|------|------|----------|--------|
+| ① **单任务蒸馏** | 一个教师 → 一个学生（纯压缩） | 教师轨迹 | 🏫 → 🎓（~15× 压缩） |
+| ② **多任务蒸馏** | 多个教师 → 一个学生 | 所有教师轨迹混合 | 🏫₁ + 🏫₂ + ... → 🎓 |
+| ③ **在线蒸馏** | 教师一边训练一边输出信号 | **学生自己生成轨迹** | 🏫 ⇄ 🎓（同时进行） |
+
+</center>
+
+> 💡 **关键洞察**：第三种模式——**在线蒸馏（Online Distillation）**——正是 OPD（在线策略蒸馏）的雏形。学生用自己的轨迹去训练，而非依赖教师预先生成的数据。
+
+---
+
+#### 实验发现
+
+| 实验 | 结果 |
+|------|------|
+| **单任务** | 将 DQN 压缩 ~15 倍（参数减少 93%），**性能几乎不降** |
+| **多任务** | 一个学生同时学会 10 个 Atari 游戏，**部分游戏的性能甚至超过了单任务专家** |
+| **在线蒸馏** | 在训练过程中持续蒸馏比训练完再蒸馏效果更好 |
+
+这些发现暗示了一个深刻的事实：**蒸馏不仅是压缩手段，还能促进知识的泛化和迁移。**
+
+---
+
+### 4.3 🎭 Actor-Mimic (Parisotto et al., 2016) —— 学生用自己的眼睛看世界
+
+<blockquote style="background:#e8f5e9;padding:16px;border-left:6px solid #4caf50">
+
+**📄 论文信息**
+**标题**: *"Actor-Mimic: Deep Multitask and Transfer Reinforcement Learning"*
+**作者**: Emilio Parisotto, Jimmy Lei Ba, Ruslan Salakhutdinov
+**机构**: University of Toronto
+**发表**: ICLR 2016
+
+</blockquote>
+
+Actor-Mimic 对 Policy Distillation 做了关键扩展：
+
+#### 改进一：学生用自己的轨迹
+
+```
+Policy Distillation:   教师生成数据 → 学生学习
+Actor-Mimic:           学生自己行动 → 教师给信号 → 学生学习
+                            ↑
+                    这是 OPD 雏形的关键一步！
+```
+
+学生使用 **ε-greedy 策略**（自己的策略 + 一定随机探索）与环境交互，产生轨迹。对于每个状态-动作对，教师（预训练的 DQN）给出"什么是好动作"的指导。
+
+#### 改进二：添加特征回归
+
+除了模仿教师的动作概率，学生还模仿教师中间层的**特征表示**：
+
+$$\mathcal{L}_{\text{total}} = \underbrace{\mathcal{L}_{\text{policy}}}_{\text{策略蒸馏（动作）}} + \underbrace{\mathcal{L}_{\text{feature}}}_{\text{特征蒸馏（表示）}}$$
+
+这与 FitNets 的思想一致：不仅模仿"做什么"，还要模仿"怎么看"。
+
+#### 改进三：Q 值引导的截断
+
+对于学生策略访问到但教师不擅长的状态（教师的 Q 值很低），Actor-Mimic 使用 **Q 值阈值**截断蒸馏信号——不强迫学生模仿教师也在瞎猜的状态。
+
+---
+
+### 4.4 🧩 监督学习蒸馏 vs. RL 策略蒸馏 —— 核心差异总结
+
+对于即将深入 OPD 领域的读者，这里建立一个关键的对照表：
+
+<center>
+
+| 维度 | 监督学习蒸馏 | RL 策略蒸馏 |
+|------|-------------|------------|
+| **教师的输出** | 类别概率分布（天然 softmax） | Q 值 / 动作 logits（需要转换） |
+| **数据来源** | 静态数据集（i.i.d.） | 轨迹（序列，非 i.i.d.） |
+| **数据由谁生成** | 任意（教师/预存） | 教师轨迹 vs. **学生轨迹** ← 关键区别 |
+| **学生面对的数据** | 和训练时一致 | **训练时和推理时分布可能不同**（暴露偏差） |
+| **损失函数** | Forward KL（教师 → 学生） | Forward KL 或 Reverse KL（学生 → 教师） |
+| **额外挑战** | — | 探索-利用平衡 / 时序依赖性 / 奖励稀疏性 |
+
+</center>
+
+> <span style="color:#c0392b">**最关键的区别是最后一行**：RL 中，学生用谁的数据训练，直接决定了蒸馏的性质。这正是 OPD（Online Policy Distillation）与普通离线蒸馏的根本分野。</span>
+
+---
+
+### 4.5 🌉 通往 OPD 的桥梁 —— 离线蒸馏的极限
+
+离线策略蒸馏（用教师轨迹训练学生）存在一个**根本性的问题**：
+
+#### 暴露偏差（Exposure Bias）
+
+```
+训练时：
+  学生看到  →  教师访问过的状态分布 d_T(s)
+               ↓
+  学生学习  →  "如果我在教师访问过的状态，我应该做什么"
+  
+推理时：
+  学生处于  →  由自己策略产生的状态分布 d_S(s)
+               ↓
+  学生面临  →  从未见过的状态！（因为自己的策略和教师不同）
+               ↓
+  学生犯错  →  小错误累积 → 进入更陌生的状态 → 更大错误 → 💥 崩塌
+```
+
+#### 类比：学车
+
+```
+离线蒸馏 = 坐在副驾看师傅开 → 没真正握过方向盘 → 上路就懵
+在线蒸馏 = 自己握方向盘，师傅在旁边纠正 → 真正学会了
+```
+
+这就是为什么我们需要 **Online Policy Distillation（在线策略蒸馏）**。
+
+---
+
+[➡️ 下一章：前往 OPD 正篇](#第五章-从蒸馏到在线策略蒸馏的桥梁)
+
+---
+
+---
+
+# 🌉 第五章：从蒸馏到在线策略蒸馏的桥梁
+
+> *"You now have all the tools to understand OPD. Let's cross the bridge."*
+
+### 你已掌握的核心概念
+
+在进入正篇之前，确认你已经理解了以下基石：
+
+| ✅ | 概念 | 在 OPD 中对应的角色 |
+|----|------|-------------------|
+| | 知识蒸馏（Hinton 2015） | OPD 的理论祖先 |
+| | 温度参数 T | 控制教师指导信号的"软硬度" |
+| | KL 散度（Forward vs Reverse） | OPD 使用 **Reverse KL**（学生 → 教师） |
+| | Forward KL = 均值追寻 | 离线蒸馏的特征（覆盖所有模式） |
+| | Reverse KL = 模式追寻 | 在线蒸馏的特征（专注主要模式） |
+| | Policy Distillation（Rusu 2015） | OPD 的直接前身 |
+| | 在线蒸馏模式 | OPD 的雏形——学生用自己的轨迹 |
+| | Actor-Mimic | 学生自生成轨迹 + 教师信号 |
+| | 暴露偏差（Exposure Bias） | OPD 要解决的核心问题 |
+
+### OPD 的核心思想（一句话预览）
+
+> <span style="color:#c0392b">**让学生用自己的策略去探索世界，同时让教师实时提供"什么是好动作"的密集信号——这就是 Online Policy Distillation。**</span>
+
+### 🚪 入口
+
+现在，请打开正篇：
+
+> 📖 [**02-OPD-在线策略蒸馏发展全历程.md**](./02-OPD-在线策略蒸馏发展全历程.md)
+
+---
+
+*📘 前置篇 · 完*
+
