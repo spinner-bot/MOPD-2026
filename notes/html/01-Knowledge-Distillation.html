@@ -672,10 +672,367 @@ def train_epoch_with_distillation(student, teacher, dataloader,
 </div>
 
 <div class="nav-row">
-<span></span>
+<a href="#ch1" class="nav-btn secondary">← 上一章</a>
 <a href="#ch2" class="nav-btn">下一章：核心数学框架 →</a>
 </div>
 
-</main>
-</body>
-</html>
+<!-- ════════════════════════════════════════
+     CHAPTER 2
+     ════════════════════════════════════════ -->
+<div class="section-divider">◆ ◆ ◆</div>
+
+<h2 id="ch2">第二章 · 蒸馏的核心数学框架</h2>
+
+<div class="callout info">
+<div class="title">📐 本章目标</div>
+<p>从第一性原理出发，完整推导知识蒸馏涉及的每一个数学组件：softmax → 温度 → 交叉熵 → KL 散度 → Forward/Reverse KL → 完整损失函数。如果你是第一次接触这些概念，<strong>不要跳读</strong>——每个概念都是构建下一个概念的基石。</p>
+</div>
+
+<h3 id="s2.1">2.1 🔤 硬标签 vs 软标签 —— 信息编码的两种方式</h3>
+
+<h4>硬标签（Hard Label / One-hot Encoding）</h4>
+
+<p>对于一个 $K$ 类分类问题，硬标签是一个 $K$ 维向量：</p>
+
+<div class="math-block">
+$$\mathbf{y}_{\text{hard}} = [0, 0, 0, \underbrace{1}_{\text{正确类别}}, 0, ..., 0]$$
+</div>
+
+<p><strong>特点</strong>：</p>
+<ul style="margin:6px 0 6px 20px; line-height:1.8;">
+  <li>✅ 包含"哪个是正确答案"的信息</li>
+  <li>❌ 丢弃了所有"哪些错误答案比另一些错得更离谱"的信息</li>
+  <li>❌ 极端稀疏、信息密度极低（$K$ 维向量中只有 1 bit 非零）</li>
+</ul>
+
+<h4>软标签（Soft Label / Probability Distribution）</h4>
+
+<div class="math-block">
+$$\mathbf{y}_{\text{soft}} = [0.02,\; 0.85,\; 0.08,\; 0.03,\; 0.01,\; 0.01]$$
+</div>
+
+<p><strong>特点</strong>：</p>
+<ul style="margin:6px 0 6px 20px; line-height:1.8;">
+  <li>✅ 包含正确答案（0.85 峰值在类别 2）</li>
+  <li>✅ 包含 <strong>类间关系</strong>（类别 3 的 0.08 比类别 1 的 0.02 更像正确答案）</li>
+  <li>✅ 密度丰富——<strong>每个位置都承载信息</strong></li>
+</ul>
+
+<div class="callout insight">
+<div class="title">💡 信息论视角</div>
+<p>软标签的<strong>熵（entropy）</strong> 高于硬标签。更高的熵 = 更多的信息。硬标签的熵为 0（完全确定），而软标签的熵 > 0，包含了"不确定哪些类别也有关联"的宝贵认知。蒸馏的本质，就是让学生从<strong>高熵的教师输出</strong>中，学到比硬标签<strong>更多的信息</strong>。</p>
+</div>
+
+<h3 id="s2.2">2.2 🌡️ Softmax + Temperature —— 完整的数学推导</h3>
+
+<h4>标准 Softmax</h4>
+
+<p>给定 logits $\mathbf{z} = [z_1, z_2, ..., z_K]$，标准 softmax 为：</p>
+
+<div class="math-block">
+$$\sigma_i(\mathbf{z}) = \frac{e^{z_i}}{\sum_{j=1}^{K} e^{z_j}}$$
+</div>
+
+<p>这个公式保证了输出是一个合法的概率分布（所有值非负且和为 1）。每个 $z_i$ 的指数运算 $e^{z_i}$ 将"任意实数"映射到"正实数"。但这里有一个微妙的问题：<strong>指数函数的陡峭程度是固定的</strong>。两个 logit 值之间的差异被 $e$ 的指数放大得一样多——我们没有办法调节这个"放大倍数"。</p>
+
+<h4>温度推广 —— Hinton 的天才之举</h4>
+
+<div class="math-block">
+
+$$\boxed{p_i(\mathbf{z}, T) = \frac{\exp(z_i / T)}{\sum_{j=1}^{K} \exp(z_j / T)}}$$
+
+</div>
+
+<p>$T$ 出现在分母中，这意味着：</p>
+
+<ul style="margin:6px 0 6px 20px; line-height:2;">
+  <li>$T$ 大 → $z_i/T$ 小 → $\exp(z_i/T) \approx 1 + z_i/T$ → 所有类别概率接近</li>
+  <li>$T$ 小 → $z_i/T$ 大 → $\exp(z_i/T)$ 差异极大 → 概率集中在最大值</li>
+  <li>$T=1$ → 标准 softmax</li>
+</ul>
+
+<h4>关键引理：温度如何影响概率比</h4>
+
+<p>对于任意两个类别 $i$ 和 $j$：</p>
+
+<div class="math-block">
+$$\frac{p_i}{p_j} = \frac{\exp(z_i/T)}{\exp(z_j/T)} = \exp\left(\frac{z_i - z_j}{T}\right)$$
+</div>
+
+<p><strong>推论</strong>：</p>
+
+<table>
+<thead><tr><th>温度范围</th><th>概率比行为</th><th>含义</th></tr></thead>
+<tbody>
+<tr><td>$T \to 0^+$</td><td>$\frac{p_i}{p_j} \to \begin{cases} \infty & z_i > z_j \\ 0 & z_i < z_j \end{cases}$</td><td>退化为 argmax（硬标签）</td></tr>
+<tr><td>$T = 1$</td><td>$\frac{p_i}{p_j} = e^{z_i - z_j}$</td><td>标准 softmax</td></tr>
+<tr><td>$T \to \infty$</td><td>$\frac{p_i}{p_j} \to 1$</td><td>均匀分布——所有信息被"加热蒸发"</td></tr>
+</tbody>
+</table>
+
+<h4>🧪 实验：可视化温度的影响</h4>
+
+<pre><code>import numpy as np
+import matplotlib.pyplot as plt
+
+def softmax_T(logits, T):
+    """计算带温度的 softmax"""
+    z = np.array(logits) / T
+    z_shifted = z - np.max(z)  # 数值稳定技巧
+    exp_z = np.exp(z_shifted)
+    return exp_z / exp_z.sum()
+
+# 二维 logits [2.0, 0.5]
+logits_2d = [2.0, 0.5]
+Ts = [0.1, 0.5, 1.0, 2.0, 5.0, 10.0, 100.0]
+
+print(f"{'T':>6}  {'类别A':>8}  {'类别B':>8}  {'比值 A/B':>10}")
+print("-" * 40)
+for T in Ts:
+    p = softmax_T(logits_2d, T)
+    ratio = p[0] / p[1] if p[1] > 0 else float('inf')
+    bar_A = '█' * int(p[0] * 40)
+    bar_B = '█' * int(p[1] * 40)
+    print(f"{T:6.1f}  {p[0]:8.4f}  {p[1]:8.4f}  {ratio:10.2f}   {bar_A} | {bar_B}")
+
+# ── 输出 ──
+# T=0.1   → A≈1.00, B≈0.00, 比值→∞    硬标签
+# T=1.0   → A≈0.82, B≈1.18, 比值≈4.5  标准softmax
+# T=5.0   → A≈0.57, B≈0.43, 比值≈1.35 适中软度
+# T=100   → A≈0.50, B≈0.50, 比值≈1.01 接近均匀</code></pre>
+
+<h3 id="s2.3">2.3 📊 信息论基础：熵、交叉熵与 KL 散度</h3>
+
+<p>知识蒸馏的损失函数实质上是一组紧密关联的信息论概念的巧妙组合。理解它们的内在关系，是真正理解蒸馏的必经之路。</p>
+
+<h4>熵（Entropy）—— 不确定性的度量</h4>
+
+<div class="math-block">
+$$H(P) = -\sum_{i} P(i) \cdot \log P(i)$$
+</div>
+
+<ul style="margin:6px 0 6px 20px; line-height:1.8;">
+  <li>熵衡量一个概率分布的<strong>不确定性</strong></li>
+  <li>均匀分布熵最大 → 最不确定 → $H = \log K$</li>
+  <li>硬标签熵 = 0 → 完全确定 → 只有一个类别有概率</li>
+  <li><strong>软标签熵 > 0</strong> → 包含了"不确定哪些类别也有关联"的信息</li>
+</ul>
+
+<h4>交叉熵（Cross-Entropy）—— 用 Q 去编码 P 的代价</h4>
+
+<div class="math-block">
+$$H(P, Q) = -\sum_{i} P(i) \cdot \log Q(i)$$
+</div>
+
+<p><strong>直观理解</strong>：</p>
+<ul style="margin:6px 0 6px 20px; line-height:1.8;">
+  <li>真实分布是 $P$（地面真相），但我们的模型输出的是 $Q$</li>
+  <li>交叉熵 = 用 $Q$ 的概率去编码实际从 $P$ 中采样的数据所需要的平均 bit 数</li>
+  <li>$Q$ 越接近 $P$，交叉熵越小</li>
+  <li><strong>关键关系</strong>：$H(P, Q) = H(P) + D_{KL}(P \| Q)$</li>
+</ul>
+
+<h4>KL 散度（Kullback-Leibler Divergence）—— 两个分布的"距离"</h4>
+
+<div class="math-block">
+
+$$\boxed{D_{KL}(P \;\|\; Q) = \sum_{i} P(i) \cdot \log\frac{P(i)}{Q(i)} = \underbrace{H(P, Q)}_{\text{交叉熵}} - \underbrace{H(P)}_{\text{P 的熵}}}$$
+
+</div>
+
+<p><strong>关键性质</strong>：</p>
+<ul style="margin:6px 0 6px 20px; line-height:1.8;">
+  <li>$D_{KL}(P \| Q) \geq 0$，当且仅当 $P = Q$ 时等于 0（Gibbs 不等式）</li>
+  <li><strong>非对称性</strong>：$D_{KL}(P \| Q) \neq D_{KL}(Q \| P)$ —— 这是理解 OPD 的关键！</li>
+  <li>不是真正的"距离"（不满足对称性和三角不等式），但可以作为"差异度量"</li>
+</ul>
+
+<h4>🧪 代码实验：KL 散度的非对称性</h4>
+
+<pre><code>import numpy as np
+
+def kl_divergence(p, q, eps=1e-10):
+    """计算 KL(P || Q)，添加小值防止 log(0)"""
+    p = np.clip(p, eps, 1.0)
+    q = np.clip(q, eps, 1.0)
+    return np.sum(p * np.log(p / q))
+
+# 双峰分布（教师有"A大B小"的偏好）
+P_teacher = np.array([0.8, 0.15, 0.05])  # 高度集中在 A
+Q_student = np.array([0.5, 0.30, 0.20])  # 更均匀
+
+# Forward KL:  D_KL(Teacher || Student)
+forward = kl_divergence(P_teacher, Q_student)
+# Reverse KL:  D_KL(Student || Teacher)
+reverse = kl_divergence(Q_student, P_teacher)
+
+print(f"Forward KL (Teacher→Student): {forward:.4f}")
+print(f"Reverse KL (Student→Teacher): {reverse:.4f}")
+print(f"差异: Forward KL < Reverse KL? {forward < reverse}")
+print()
+print("→ 两者不相等！KL 散度是<strong>非对称</strong>的。")
+print("  Forward KL 惩罚'学生没覆盖教师的模式'")
+print("  Reverse KL 惩罚'学生有但教师不认可的模式'")
+
+# 直观对比
+# Forward KL = 0.8*ln(0.8/0.5) + 0.15*ln(0.15/0.30) + 0.05*ln(0.05/0.20)
+#             = 0.8*0.470 + 0.15*(-0.693) + 0.05*(-1.386)
+#             ≈ 0.376 - 0.104 - 0.069 ≈ 0.203
+#
+# Reverse KL = 0.5*ln(0.5/0.8) + 0.3*ln(0.3/0.15) + 0.2*ln(0.2/0.05)
+#             = 0.5*(-0.470) + 0.3*0.693 + 0.2*1.386
+#             ≈ -0.235 + 0.208 + 0.277 ≈ 0.250</code></pre>
+
+<h3 id="s2.4">2.4 ↔️ Forward KL vs Reverse KL —— 截然不同的行为</h3>
+
+<p>这是整个蒸馏理论中<strong>最重要的一个概念</strong>。它会直接影响你对 OPD 篇的理解。</p>
+
+<h4>Forward KL（前向 KL）—— 均值追寻（Mean-Seeking）</h4>
+
+<div class="math-block">
+$$D_{KL}(P_{\text{teacher}} \;\|\; P_{\text{student}})$$
+</div>
+
+<table>
+<thead><tr><th>特性</th><th>描述</th></tr></thead>
+<tbody>
+<tr><td>学生学到什么</td><td>教师的<strong>所有模式</strong>（包括不重要的）</td></tr>
+<tr><td>对教师分布 low-prob 区域</td><td>用极小的 student prob 去拟合 → <strong>惩罚巨大</strong></td></tr>
+<tr><td>结果</td><td>学生分布比教师更<strong>宽泛</strong>、更"安全"</td></tr>
+<tr><td>类比</td><td>学生试图<strong>覆盖</strong>教师所有的知识</td></tr>
+</tbody>
+</table>
+
+<h4>Reverse KL（反向 KL）—— 模式追寻（Mode-Seeking）</h4>
+
+<div class="math-block">
+$$D_{KL}(P_{\text{student}} \;\|\; P_{\text{teacher}})$$
+</div>
+
+<table>
+<thead><tr><th>特性</th><th>描述</th></tr></thead>
+<tbody>
+<tr><td>学生学到什么</td><td>教师的主要模式（<strong>忽略不重要的模式</strong>）</td></tr>
+<tr><td>对学生分布 low-prob 区域</td><td>学生选择不给该区域分配概率 → <strong>无惩罚</strong></td></tr>
+<tr><td>结果</td><td>学生分布比教师更<strong>尖锐</strong>、更"冒险"</td></tr>
+<tr><td>类比</td><td>学生只学教师<strong>最擅长的部分</strong></td></tr>
+</tbody>
+</table>
+
+<h4>🎨 直观可视化：双峰分布下的 Forward vs Reverse KL</h4>
+
+<pre><code>import numpy as np
+import matplotlib.pyplot as plt
+from scipy.optimize import minimize
+
+# 真实教师分布：双峰（两个主要模式+小噪声）
+x = np.linspace(-3, 3, 200)
+teacher = 0.7 * np.exp(-(x+1)**2/0.3) + 0.3 * np.exp(-(x-1.5)**2/0.5)
+teacher /= teacher.sum()
+
+# 学生分布：单高斯 N(μ, σ²)
+def student(x, mu, sigma):
+    y = np.exp(-(x-mu)**2 / (2*sigma**2))
+    return y / y.sum()
+
+# 分别用 Forward KL 和 Reverse KL 优化学生参数
+def forward_kl(params):
+    s = student(x, params[0], params[1])
+    return np.sum(teacher * np.log(teacher / (s + 1e-10)))
+
+def reverse_kl(params):
+    s = student(x, params[0], params[1])
+    return np.sum(s * np.log(s / (teacher + 1e-10)))
+
+# Forward KL 优化
+res_fwd = minimize(forward_kl, [0.0, 1.0], bounds=[(-3,3), (0.1,2.0)])
+# Reverse KL 优化
+res_rev = minimize(reverse_kl, [0.0, 1.0], bounds=[(-3,3), (0.1,2.0)])
+
+# Forward KL 学生：宽泛，覆盖两个峰
+# → μ≈0, σ≈1.2 —— 试图覆盖整个教师分布
+# Reverse KL 学生：尖锐，只追踪主峰
+# → μ≈-1, σ≈0.3 —— 只追踪最大的那个峰</code></pre>
+
+<div class="callout warning">
+<div class="title">⚠️ 对 OPD 篇的关键预告</div>
+<p>在线策略蒸馏（OPD）使用 <strong>Reverse KL</strong>。这意味着：</p>
+<ul style="margin:6px 0 6px 20px; line-height:1.8;">
+  <li>学生只关注教师认为<strong>最可能的动作</strong></li>
+  <li>学生忽略教师不确定的区域 → 高效但有风险</li>
+  <li>这既是 OPD 高效的原因（专注主要模式），也是它容易<strong>"熵崩塌"</strong>的根源</li>
+</ul>
+</div>
+
+<h3 id="s2.5">2.5 📐 蒸馏损失函数的完整形式</h3>
+
+<p>现在可以写出知识蒸馏的<strong>完整损失函数</strong>：</p>
+
+<div class="math-block">
+
+$$\boxed{\mathcal{L}_{\text{KD}} = (1 - \alpha) \cdot \underbrace{\mathcal{L}_{\text{CE}}(\mathbf{y}_{\text{true}}, \sigma(\mathbf{z}_S; T=1))}_{\text{硬标签损失（地面真相）}} + \alpha \cdot T^2 \cdot \underbrace{D_{KL}\big(\sigma(\mathbf{z}_T; T=\tau) \;\big\|\; \sigma(\mathbf{z}_S; T=\tau)\big)}_{\text{蒸馏损失（教师暗知识）}}}$$
+
+</div>
+
+<p>其中：</p>
+
+<table>
+<thead><tr><th>符号</th><th>含义</th><th>典型值</th></tr></thead>
+<tbody>
+<tr><td>$\mathbf{z}_T$</td><td>教师 logits</td><td>—</td></tr>
+<tr><td>$\mathbf{z}_S$</td><td>学生 logits</td><td>—</td></tr>
+<tr><td>$\tau$</td><td>蒸馏温度</td><td>2 ~ 20</td></tr>
+<tr><td>$\alpha$</td><td>蒸馏权重</td><td>0.5 ~ 0.9</td></tr>
+<tr><td>$T^2$</td><td>梯度尺度补偿</td><td>$\tau^2$</td></tr>
+</tbody>
+</table>
+
+<h4>为什么蒸馏损失要乘 $T^2$？—— 梯度尺度的"隐形杀手"</h4>
+
+<p>当 $T$ 很大时，softmax 输出接近均匀分布，其梯度被显著缩小。我们来定量分析：</p>
+
+<p>对 softmax 求导（使用商法则）：</p>
+
+<div class="math-block">
+$$\frac{\partial p_i}{\partial z_k} = \frac{1}{T} \cdot p_i \cdot (\delta_{ik} - p_k)$$
+</div>
+
+<p>当 $T$ 较大时，$p_i \approx 1/N$（接近均匀），因此梯度约为 $\frac{1}{T \cdot N}(\delta_{ik} - \frac{1}{N})$。<strong>梯度量与 $1/T$ 成正比。</strong></p>
+
+<p>进一步，对于交叉熵损失 $\mathcal{L} = -\sum_i p_i^T \log p_i^S$，当 $p_i^T$ 和 $p_i^S$ 都接近均匀时，损失关于 student logits 的二阶梯度约与 $1/T^2$ 成正比。因此需要在蒸馏损失上乘以 $T^2$ 来补偿。</p>
+
+<div class="callout success">
+<div class="title">✅ 训练技巧速查</div>
+<ul style="margin:6px 0 6px 20px; line-height:1.8;">
+  <li><strong>推理时设置 $T=1$</strong>：蒸馏只在训练时使用高温</li>
+  <li><strong>教师冻结</strong>：<code>torch.no_grad()</code> 或 <code>teacher.eval()</code></li>
+  <li><strong>温度调参</strong>：师生容量差距大 → 更高温度；任务简单 → 较低温度</li>
+  <li><strong>$\alpha$ 调参</strong>：$\alpha \approx 0.9$ 时以蒸馏信号为主；纯蒸馏 ($\alpha=1.0$) 也能工作</li>
+</ul>
+</div>
+
+<h3 id="s2.6">2.6 🔬 数学本质：蒸馏到底在做什么？</h3>
+
+<p>从优化的角度看，蒸馏损失实际上是让学生输出的 logits 去<strong>逼近</strong>教师的 logits。</p>
+
+<p><strong>高温极限下的等价性</strong>（$T \to \infty$）：</p>
+
+<div class="math-block">
+$$p_i = \frac{1 + z_i/T + O(1/T^2)}{K + \sum_j z_j/T + O(1/T^2)} \approx \frac{1}{K}\left(1 + \frac{z_i - \bar{z}}{T}\right)$$
+</div>
+
+<p>此时 KL 散度简化为：</p>
+
+<div class="math-block">
+$$D_{KL}(p_T \| p_S) \approx \frac{1}{2T^2} \cdot \frac{1}{K} \sum_i (z_i^T - z_i^S)^2$$
+</div>
+
+<div class="callout insight">
+<div class="title">💡 核心洞察</div>
+<p><strong>当温度足够高时，蒸馏退化为在 logit 空间的均方误差回归。</strong>学生模型实际上在"模仿"教师的 logit 输出，而非仅仅匹配概率。教师 logit 包含了关于<strong>特征空间的拓扑结构信息</strong>——这种结构信息无法从硬标签中获取。这就是为什么蒸馏比从头训练更好：学生在学习一个更丰富、更结构化的目标。</p>
+</div>
+
+<div class="nav-row">
+<a href="#ch1" class="nav-btn secondary">← 上一章：起源</a>
+<a href="#ch3" class="nav-btn">下一章：分类体系 →</a>
+</div>
