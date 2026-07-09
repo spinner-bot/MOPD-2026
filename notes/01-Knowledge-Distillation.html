@@ -1209,6 +1209,24 @@ def online_distillation_step(student, teacher, env, optimizer):
 <a href="./02-OPD-Online-Policy-Distillation.html" style="display:inline-block;padding:16px 36px;background:linear-gradient(135deg,#c0392b,#e67e22);color:#fff;text-decoration:none;border-radius:30px;font-size:1.15em;font-weight:700;box-shadow:0 4px 16px rgba(192,57,43,0.3);transition:all 0.2s;">📖 进入 OPD 正篇 →</a>
 </div>
 
+<h2 id="ref">📚 关键论文索引</h2>
+<table>
+<thead><tr><th>年份</th><th>论文</th><th>机构</th><th>核心贡献</th><th>链接</th></tr></thead>
+<tbody>
+<tr><td>2006</td><td><strong>Model Compression</strong> (Bucilă et al.)</td><td>Cornell</td><td>知识蒸馏的直接前身——集成模型压缩为单一模型</td><td><a href="https://dl.acm.org/doi/10.1145/1150402.1150464" target="_blank">ACM</a></td></tr>
+<tr><td>2014</td><td><strong>Do Deep Nets Really Need to be Deep?</strong> (Ba & Caruana)</td><td>U. Toronto</td><td>浅层网络模仿深层网络——logit匹配的早期实践</td><td><a href="https://arxiv.org/abs/1312.6184" target="_blank">1312.6184</a></td></tr>
+<tr><td>2015</td><td><strong>Distilling the Knowledge in a Neural Network</strong> (Hinton et al.) ★</td><td>Google</td><td>知识蒸馏奠基——暗知识/温度参数/软目标/联合损失</td><td><a href="https://arxiv.org/abs/1503.02531" target="_blank">1503.02531</a></td></tr>
+<tr><td>2015</td><td><strong>FitNets: Hints for Thin Deep Nets</strong> (Romero et al.)</td><td>U. Montreal</td><td>特征蒸馏开山之作——适配层+学生更深而非更浅</td><td><a href="https://arxiv.org/abs/1412.6550" target="_blank">1412.6550</a></td></tr>
+<tr><td>2015</td><td><strong>Policy Distillation</strong> (Rusu et al.)</td><td>DeepMind</td><td>RL策略蒸馏奠基——三种模式，OPD概念的首次提出</td><td><a href="https://arxiv.org/abs/1511.06295" target="_blank">1511.06295</a></td></tr>
+<tr><td>2016</td><td><strong>Actor-Mimic</strong> (Parisotto et al.)</td><td>U. Toronto</td><td>学生自生成轨迹+特征回归+Q值截断蒸馏</td><td><a href="https://arxiv.org/abs/1511.06342" target="_blank">1511.06342</a></td></tr>
+<tr><td>2017</td><td><strong>Paying More Attention to Attention</strong> (Zagoruyko & Komodakis)</td><td>Oxford</td><td>注意力转移——匹配教师空间注意力图</td><td><a href="https://arxiv.org/abs/1612.03928" target="_blank">1612.03928</a></td></tr>
+<tr><td>2019</td><td><strong>DistilBERT</strong> (Sanh et al.)</td><td>Hugging Face</td><td>NLP蒸馏标杆：BERT→40%更小+97%性能+60%更快</td><td><a href="https://arxiv.org/abs/1910.01108" target="_blank">1910.01108</a></td></tr>
+<tr><td>2021</td><td><strong>DeiT</strong> (Touvron et al.)</td><td>Meta AI</td><td>ViT硬标签蒸馏——不需大规模预训练的数据高效训练</td><td><a href="https://arxiv.org/abs/2012.12877" target="_blank">2012.12877</a></td></tr>
+<tr><td>2022</td><td><strong>DKD (Decoupled Knowledge Distillation)</strong> (Zhao et al.)</td><td>清华</td><td>解耦KD——非目标类知识才是蒸馏效果的关键</td><td><a href="https://arxiv.org/abs/2203.08679" target="_blank">2203.08679</a></td></tr>
+<tr><td>2025</td><td><strong>DeepSeek-R1</strong> (Guo et al.) ★</td><td>DeepSeek</td><td>RL推理蒸馏革命——蒸馏32B>纯RL(+25.6 AIME)</td><td><a href="https://arxiv.org/abs/2501.12948" target="_blank">2501.12948</a></td></tr>
+</tbody>
+</table>
+<div class="nav-row"><a href="#ch5" class="nav-btn secondary">← 桥梁</a><a href="#top" class="nav-btn secondary">↑ 回到顶部</a></div>
 <div class="section-divider">◆ ◆ ◆</div>
 <p style="text-align:center;color:var(--text3);font-size:0.9em;margin-top:40px;">
 📘 知识蒸馏（Knowledge Distillation）—— 从入门到精通 · 前置篇 · 完<br>

@@ -705,6 +705,28 @@ Phase 3: 专家蒸馏 → 多专家蒸馏→合并为统一模型
 <a href="#top" class="nav-btn secondary">↑ 回到顶部</a>
 </div>
 
+<h2 id="ref">📚 关键论文索引</h2>
+<table>
+<thead><tr><th>年份</th><th>论文</th><th>机构</th><th>核心贡献</th><th>链接</th></tr></thead>
+<tbody>
+<tr><td>2015</td><td><strong>Policy Distillation</strong> (Rusu et al.)</td><td>DeepMind</td><td>OPD概念诞生——三种蒸馏模式，"在线蒸馏"首次提出</td><td><a href="https://arxiv.org/abs/1511.06295" target="_blank">1511.06295</a></td></tr>
+<tr><td>2017</td><td><strong>Distral: Robust Multitask RL</strong> (Teh et al.)</td><td>DeepMind</td><td>蒸馏作为多任务通信机制——KL正则化+交替优化</td><td><a href="https://arxiv.org/abs/1707.04175" target="_blank">1707.04175</a></td></tr>
+<tr><td>2018</td><td><strong>Kickstarting Deep RL</strong> (Schmitt et al.)</td><td>DeepMind</td><td>λ_k→0衰减+PBT自动调参——9.58×加速，超越教师42.2%</td><td><a href="https://arxiv.org/abs/1803.03835" target="_blank">1803.03835</a></td></tr>
+<tr><td>2019</td><td><strong>Distilling Policy Distillation</strong> (Czarnecki et al.) ★</td><td>DeepMind</td><td>梯度场理论——Thm 1(非梯度场)+Thm 2(修正奖励恢复)</td><td><a href="https://arxiv.org/abs/1902.02186" target="_blank">1902.02186</a></td></tr>
+<tr><td>2023</td><td><strong>DPO (Direct Preference Optimization)</strong> (Rafailov et al.)</td><td>Stanford</td><td>偏好优化——与OPD数学联系紧密，2025年与OPD融合</td><td><a href="https://arxiv.org/abs/2305.18290" target="_blank">2305.18290</a></td></tr>
+<tr><td>2025</td><td><strong>DeepSeek-R1</strong> (Guo et al.) ★</td><td>DeepSeek</td><td>RL推理蒸馏革命——蒸馏32B(+25.6)远超纯RL训练</td><td><a href="https://arxiv.org/abs/2501.12948" target="_blank">2501.12948</a></td></tr>
+<tr><td>2025</td><td><strong>REOPOLD</strong> (Ko et al.)</td><td>—</td><td>松弛OPD——奖励裁剪+熵引导+两阶段，6.7-12×效率</td><td><a href="https://arxiv.org/abs/2503.11137" target="_blank">2503.11137</a></td></tr>
+<tr><td>2025</td><td><strong>PW-OPSD</strong> (Liu et al.)</td><td>SaFo-Lab</td><td>位置加权——位置是可靠性最强预测器(AUROC 0.83)</td><td><a href="https://github.com/SaFo-Lab/PW-OPSD" target="_blank">GitHub</a></td></tr>
+<tr><td>2025</td><td><strong>GAR (Generative Adversarial Reasoner)</strong> (Liu et al.)</td><td>—</td><td>对抗推理器——Reasoner+Discriminator对抗协同训练</td><td><a href="https://arxiv.org/abs/2512.16917" target="_blank">2512.16917</a></td></tr>
+<tr><td>2026</td><td><strong>Decoupling KL and Trajectories</strong></td><td>—</td><td>前缀源×KL方向解耦——四种蒸馏目标的统一矩阵</td><td><a href="https://arxiv.org/abs/2605.16826" target="_blank">2605.16826</a></td></tr>
+<tr><td>2026</td><td><strong>Co-Evolving Policy Distillation (CoPD)</strong></td><td>—</td><td>师生协同进化——教师从学生反馈中学习，2×收敛</td><td><a href="https://arxiv.org/abs/2604.27083" target="_blank">2604.27083</a></td></tr>
+<tr><td>2026</td><td><strong>Formula-Driven Survey for OPD (CR-OPD/GAE-OPD)</strong></td><td>—</td><td>反事实路由+GAE增强时序信用分配</td><td><a href="https://arxiv.org/abs/2606.22793" target="_blank">2606.22793</a></td></tr>
+<tr><td>2026</td><td><strong>StepOPSD</strong> (Zhang et al.)</td><td>—</td><td>步骤感知——从token级提升到步骤级信用分配</td><td><a href="https://arxiv.org/abs/2605.27140" target="_blank">2605.27140</a></td></tr>
+<tr><td>2026</td><td><strong>The Many Faces of On-Policy Distillation</strong></td><td>UIUC</td><td>三大失效模式诊断+系统性修复方案</td><td><a href="https://ulab-uiuc.github.io/OPD_website/" target="_blank">Website</a></td></tr>
+<tr><td>2026</td><td><strong>On the Geometry of On-Policy Distillation</strong></td><td>—</td><td>子空间锁定——OPD参数更新进入低维通道</td><td><a href="https://arxiv.org/abs/2606.07082" target="_blank">2606.07082</a></td></tr>
+</tbody>
+</table>
+<div class="nav-row"><a href="#ch7" class="nav-btn secondary">← 未来方向</a><a href="#top" class="nav-btn secondary">↑ 回到顶部</a></div>
 <div class="section-divider">◆ ◆ ◆</div>
 <p style="text-align:center;color:var(--text3);font-size:0.9em;margin-top:36px;">
 🔥 在线策略蒸馏（Online Policy Distillation）—— 发展全历程 · 正篇 · 完<br>
