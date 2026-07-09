@@ -274,6 +274,148 @@ class OnlineDistillationAgent:
 <a href="#ch2" class="nav-btn">下一章：理论深化期 →</a>
 </div>
 
-</main>
-</body>
-</html>
+<!-- ═══════════════ CHAPTER 2 ═══════════════ -->
+<div class="section-divider">◆ ◆ ◆</div>
+<h2 id="ch2">第二章 · 理论深化期（2018–2019）</h2>
+<div class="callout info"><div class="title">🔬 本章目标</div><p>理解 OPD 最重要的两个理论贡献：Kickstarting 的<strong>工程最佳实践</strong>和 Czarnecki 的<strong>数学基础理论</strong>。后者是 OPD 领域最重要的理论文献之一。</p></div>
+
+<h3>2.1 🚀 Kickstarting Deep RL (Schmitt et al., 2018)</h3>
+<div class="callout paper"><div class="title">📄 Kickstarting Deep RL — DeepMind, 2018. arXiv: 1803.03835</div><p>实验平台: DeepMind Lab (DMLab-30)，30 个不同的 3D 导航/操作任务。</p></div>
+
+<h4>核心洞察：不要让教师成为天花板</h4>
+<div class="callout insight"><div class="title">💡 反直觉观点</div><p>如果学生只模仿教师，它永远无法超越教师。<strong>蒸馏应该像学骑自行车时父母的手——开始时扶着，然后慢慢松开。</strong></p></div>
+
+<h4>完整的 Kickstarting 损失函数</h4>
+<div class="math-block">
+$$\boxed{\mathcal{L}_{\text{kick}}(\omega, x, t) = \underbrace{\mathcal{L}_{\text{RL}}(\omega, x, t)}_{\text{标准RL目标}} + \underbrace{\lambda_k \cdot H\big(\pi_T(\cdot|x_t) \;\|\; \pi_S(\cdot|x_t, \omega)\big)}_{\text{逐渐衰减的蒸馏信号}}}$$
+</div>
+
+<p><strong>关键创新：$\lambda_k \to 0$</strong>。蒸馏权重随时间衰减——训练初期 $\lambda_k$ 大（教师强引导），中期逐渐减弱，后期 $\lambda_k \to 0$（学生完全自主，可能超越教师）。</p>
+
+<h4>Population Based Training (PBT) 自动调参</h4>
+<pre><code># PBT 的核心逻辑（简化版）
+class PBTScheduler:
+    """用种群训练自动调度 λ_k 衰减曲线"""
+    def __init__(self, population_size=40):
+        self.population = [
+            {'lambda': random.uniform(0.5, 2.0),
+             'decay': random.uniform(0.9, 0.999),
+             'lr': random.uniform(1e-4, 1e-3),
+             'entropy_coef': random.uniform(0.001, 0.01)}
+            for _ in range(population_size)
+        ]
+
+    def step(self, performances):
+        # 表现差的成员：复制表现好的成员的超参数
+        sorted_idx = np.argsort(performances)[::-1]
+        for i in range(len(self.population) // 2):
+            poor = sorted_idx[-(i+1)]
+            good = sorted_idx[i]
+            self.population[poor] = {
+                k: v * random.uniform(0.8, 1.2)  # 加扰动
+                for k, v in self.population[good].items()
+            }</code></pre>
+
+<h4>实验结果</h4>
+<table>
+<thead><tr><th>设置</th><th>结果</th></tr></thead>
+<tbody>
+<tr><td>单教师</td><td>训练速度提升 <strong>1.5×</strong></td></tr>
+<tr><td>多教师（每任务一专家）</td><td><strong>9.58×</strong> 加速！最终性能超越专家 <strong>42.2%</strong></td></tr>
+<tr><td>学生 vs 教师</td><td>在多个任务上，学生<strong>显著超越</strong>教师</td></tr>
+</tbody>
+</table>
+
+<h3>2.2 📐 Distilling Policy Distillation (Czarnecki et al., 2019) —— OPD 理论基石</h3>
+<div class="callout paper"><div class="title">📄 Distilling Policy Distillation — DeepMind, AISTATS 2019. PMLR Vol.89</div><p>arXiv: 1902.02186 | 作者: Wojciech M. Czarnecki 等 6 人</p></div>
+
+<p>这篇论文回答了 <strong>"OPD 到底是什么"</strong>。它包含整个 OPD 领域最重要的两个数学定理。</p>
+
+<h4>Theorem 1（梯度场不存在定理）</h4>
+<div class="callout warning"><div class="title">⚠️ 核心发现</div>
+<p><strong>标准的 on-policy 蒸馏更新规则不对应于任何损失函数的梯度。</strong>这意味着标准 OPD 不是一个保守力场——它可能在参数空间中产生循环、震荡，甚至不收敛。</p>
+</div>
+
+<div class="math-block">
+$$\Delta\theta = \mathbb{E}_{s \sim d_{\pi_\theta}} \left[\nabla_\theta H(\pi_T(\cdot|s) \;\|\; \pi_\theta(\cdot|s))\right]$$
+</div>
+
+<p><strong>为什么不是梯度场？</strong>学生的参数 $\theta$ 变了 → 学生的策略变了 → 学生访问的状态分布 $d_{\pi_\theta}(s)$ 也变了 → 教师在这些"新状态"上的表现未知 → <strong>蒸馏损失的定义域已经漂移了</strong>。你永远在追一个因为你自己移动而移动的目标。</p>
+
+<h4>Theorem 2（梯度场重建定理）—— OPD 的"修复"</h4>
+<p><strong>好消息</strong>：可以通过添加一个奖励修正项来恢复梯度场性质。在每个时间步添加"未来蒸馏损失"作为奖励：</p>
+
+<div class="math-block">
+$$\hat{r}_t = -\ell(\pi_T(\cdot|s_{t+1}) \;\|\; \pi_\theta(\cdot|s_{t+1}))$$
+</div>
+
+<p>修正后的完整更新：</p>
+<div class="math-block">
+$$\boxed{\mathbb{E}_{\pi_\theta}\left[\sum_t -\nabla_\theta \log\pi_\theta(a_t|s_t) \cdot \underbrace{\sum_{i=t}^{\infty} \hat{r}_i}_{\text{累积未来修正奖励}} + \underbrace{\nabla_\theta \ell_t}_{\text{直接蒸馏梯度}}\right]}$$
+</div>
+
+<h4>由此诞生的新方法</h4>
+<table>
+<thead><tr><th>方法</th><th>描述</th><th>何时使用</th></tr></thead>
+<tbody>
+<tr><td><strong>N-distill</strong></td><td>N 步未来损失作为修正奖励</td><td>长 horizon 任务</td></tr>
+<tr><td><strong>Expected Entropy Reg.</strong></td><td>显式加入学生行为熵考量</td><td>最通用（作者推荐）</td></tr>
+<tr><td><strong>Teacher V Reward</strong></td><td>用教师 V 函数构造 $\hat{r}_t^V$</td><td>教师提供 V 函数时</td></tr>
+</tbody>
+</table>
+
+<h4>🧪 N-distill 的极简实现</h4>
+<pre><code>def n_distill_loss(student, teacher, trajectory, N=5, gamma=0.99):
+    """
+    N-distill: 使用未来N步的蒸馏损失作为修正奖励
+
+    trajectory: [(s_0,a_0,r_0), (s_1,a_1,r_1), ..., (s_T,a_T,r_T)]
+    """
+    losses = []
+    T = len(trajectory)
+
+    for t in range(T):
+        s_t = trajectory[t][0]
+
+        # 计算未来 N 步的修正奖励
+        future_correction = 0.0
+        for k in range(N):
+            if t + k + 1 < T:
+                s_next = trajectory[t + k + 1][0]
+                # 在下一步状态上计算蒸馏损失
+                with torch.no_grad():
+                    teacher_prob = F.softmax(teacher(s_next) / T, dim=-1)
+                student_log_prob = F.log_softmax(student(s_next) / T, dim=-1)
+                kl = F.kl_div(student_log_prob, teacher_prob, reduction='sum')
+                future_correction += (gamma ** k) * kl.item()
+
+        # 当前步的蒸馏梯度
+        student_log_prob = F.log_softmax(student(s_t) / T, dim=-1)
+        teacher_prob = F.softmax(teacher(s_t) / T, dim=-1)
+        direct_grad = F.kl_div(student_log_prob, teacher_prob, reduction='sum')
+
+        # 修正奖励 + 直接梯度
+        # (实际实现中需要用 REINFORCE 式梯度)
+        losses.append(direct_grad - future_correction)
+
+    return torch.stack(losses).mean()</code></pre>
+
+<h4>蒸馏方法决策图</h4>
+<pre style="font-size:12px;">
+                 ┌─ 教师提供 V 函数？ ─┐
+                 │ YES                  │ NO
+                 ▼                      ▼
+         教师强？                  任务 horizon 短？
+        ┌─YES──NO─┐              ┌─YES──NO─┐
+        ▼         ▼              ▼         ▼
+   Expected    Teacher      Expected     N-distill
+   Entropy+R   V Reward     Entropy      +R
+   (最佳选择)   (安全选择)    Regularised  (长horizon)
+</pre>
+
+<div class="callout insight"><div class="title">💡 理论深化期核心发现</div><p>OPD 是一个强大的工具，但<strong>不是免费午餐</strong>。标准 OPD 公式存在数学缺陷（非梯度场），需要通过特定修正来恢复理论保证。<strong>理解这些修正，是深入 OPD 的必经之路。</strong></p></div>
+
+<div class="nav-row">
+<a href="#ch1" class="nav-btn secondary">← 萌芽期</a>
+<a href="#ch3" class="nav-btn">下一章：扩展期 →</a>
+</div>
