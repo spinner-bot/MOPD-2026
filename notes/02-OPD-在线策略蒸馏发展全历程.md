@@ -1157,3 +1157,370 @@ GAR 的关键创新是判别器不评估完整的推理链，而是评估**推�
 ---
 
 [➡️ 下一章：统一框架的建立（2026）](#第五章-统一框架的建立2026)
+
+---
+
+---
+
+# 🧩 第五章：统一框架的建立（2026）
+
+> *"After a decade of independent development, the field finally found its periodic table."*
+
+2026 年是 OPD 理论的"收敛之年"。多个独立的研究团队从不同角度出发，最终汇聚到一个统一的数学框架中。同时，OPD 在实践中暴露出的问题也得到了系统性的诊断和修复。
+
+---
+
+### 5.1 🔲 前缀源 × KL 方向 —— OPD 的"周期表"
+
+<blockquote style="background:#e8f5e9;padding:16px;border-left:6px solid #4caf50">
+
+**📄 Decoupling KL and Trajectories: A Unified Perspective for SFT, DAgger, Offline RL, and OPD in LLM Distillation**
+**发表**: arXiv 2605.16826 (May 2026)
+
+</blockquote>
+
+这篇论文的核心贡献是**解耦了两个一直被混为一谈的概念**：
+
+#### 两个正交维度
+
+**维度一：前缀（Prefix）来源** —— 蒸馏数据的前半部分（context/prefix）由谁生成？
+
+- **教师前缀**：前缀来自教师策略的分布
+- **学生前缀**：前缀来自学生自己生成的分布（on-policy）
+
+**维度二：KL 散度方向** —— 在 token 级预测上，用什么 KL 方向？
+
+- **Forward KL**：$D_{KL}(\text{Teacher} \;\|\; \text{Student})$
+- **Reverse KL**：$D_{KL}(\text{Student} \;\|\; \text{Teacher})$
+
+#### 四种蒸馏目标的完整矩阵
+
+<center>
+
+| | **Token-Level Forward KL** | **Token-Level Reverse KL** |
+|---|---|---|
+| **教师前缀** | ① **离线 SFT**<br>标准知识蒸馏<br>数据：教师轨迹 | ② **离线 RL 风格蒸馏**<br>约束优化<br>数据：教师轨迹 |
+| **学生前缀** | ③ **DAgger 风格在线 SFT**<br>学生探索 → 教师标注<br>数据：学生轨迹 | ④ **OPD**<br>在线策略蒸馏<br>数据：学生轨迹 |
+
+</center>
+
+**四种模式的行为特征**：
+
+```
+模式①（教师前缀 + Forward KL）
+  = 标准蒸馏 / 离线 SFT
+  特点：宽泛、安全、保守
+  学生学会：教师会怎么做
+  问题：暴露偏差——学生可能遇到教师没见过的状态
+
+模式②（教师前缀 + Reverse KL）
+  = 约束优化
+  特点：在教师的舒适区内做最优化
+  学生学会：在教师擅长的区域内做到最好
+  问题：探索范围受限
+
+模式③（学生前缀 + Forward KL）
+  = DAgger / 交互式模仿学习
+  特点：学生探索，教师纠正
+  学生学会：面对自己的错误如何纠正
+  问题：教师标注成本高（每个学生状态都要教师评估）
+
+模式④（学生前缀 + Reverse KL）
+  = OPD（在线策略蒸馏）
+  特点：密集信号、模式追寻、高效
+  学生学会：在自己探索的状态上模仿教师的偏好
+  问题：熵崩塌、非梯度场、需要修正
+```
+
+> <span style="color:#c0392b">**这个矩阵的意义**：它不仅统一了四种看似无关的技术，还揭示了它们之间的"缺失环节"——模式②和模式③在历史上研究较少，但它们可能是 OPD 和离线蒸馏之间的"最优结合点"。</span>
+
+#### 四种模式的数学统一
+
+所有四种模式可以写成一个统一的更新形式：
+
+<center>
+
+$$\boxed{\Delta\theta = \mathbb{E}_{s \sim d_{\text{prefix}}} \left[ \nabla_\theta \mathcal{D}(\pi_{\text{target}} \;\|\; \pi_\theta)(s) \right]}$$
+
+</center>
+
+其中：
+- $d_{\text{prefix}}$：前缀分布（教师分布或学生分布）
+- $\mathcal{D}$：散度函数（Forward KL 或 Reverse KL）
+- $\pi_{\text{target}}$：目标策略（教师或教师+奖励）
+
+---
+
+### 5.2 🔄 CoPD —— 师生协同进化蒸馏 (April 2026)
+
+<blockquote style="background:#e3f2fd;padding:16px;border-left:6px solid #2196f3">
+
+**📄 Co-Evolving Policy Distillation**
+**arXiv**: 2604.27083 (April 2026)
+
+</blockquote>
+
+CoPD 挑战了 OPD 中的一个基本假设：**教师应该是固定的（frozen）。**
+
+#### 核心问题：师生行为距离的扩大
+
+```
+
+
+教师策略                            学生策略
+   │                                   │
+   │ ←── 初始蒸馏：距离小 ──→           │
+   │                                   │
+   │                                   │ ← 学生开始探索、偏离
+   │ ←── 中期：距离扩大 ────────→      │
+   │                                   │
+   │                                   │ ← 学生在和教师完全不同的状态上
+   │ ←── 后期：距离太大 ────────→      │  教师的指导不再有效！
+   │                                   │
+   │         ⚠️ OPD 效果衰减            │
+```
+
+CoPD 提出的解决方案：**教师也应该从学生的反馈中学习。**
+
+#### CoPD 的交替训练
+
+```
+迭代 1:
+  👨‍🏫 教师 → 蒸馏 → 🎓 学生（标准 OPD）
+  🎓 学生 → RL 微调 → 🎓' 学生（学生自己练）
+  🎓' 学生 → 蒸馏 → 👨‍🏫' 教师（教师从学生学！）
+  
+迭代 2:
+  👨‍🏫' 教师 → 蒸馏 → 🎓' 学生（继续 OPD）
+  🎓' 学生 → RL 微调 → 🎓'' 学生
+  🎓'' 学生 → 蒸馏 → 👨‍🏫'' 教师
+  ...
+```
+
+**关键洞察**：
+
+> 教师的角色从"传授知识的神谕"变成了"与学生一起成长的教练"。这打破了"教师必须比学生强"的隐含假设——即使教师初始更强，如果它不适应学生的发展阶段，它的指导也会变得无效。
+
+**实验结果**：
+
+- 在师生行为距离超过阈值后，标准 OPD 的效果急剧下降
+- CoPD 能维持有效的知识传输，直到学生收敛到更高性能
+- 收敛速度比标准 OPD 快 ~2×
+
+---
+
+### 5.3 🎯 CR-OPD 与 GAE-OPD —— 信用分配的新范式
+
+<blockquote style="background:#fff3e0;padding:16px;border-left:6px solid #ff9800">
+
+**📄 A Formula-Driven Survey and Research Agenda for On-Policy Distillation**
+**arXiv**: 2606.22793 (June 2026)
+
+</blockquote>
+
+这篇 2026 年 6 月的综述将 OPD 框定为**"反馈到更新（Feedback-to-Update）"问题**，并提出两个新方向：
+
+#### CR-OPD：反事实路由 OPD（Counterfactual Routing OPD）
+
+**核心思想**：在 LLM 的词汇表空间中，不是所有"错误 token"都错得一样。
+
+```
+学生生成了: "The capital of France is London"
+教师认为应该是: "The capital of France is Paris"
+
+标准 OPD：对所有 token 一视同仁地应用 KL 散度
+
+CR-OPD：
+  ┌─ "The" "capital" "of" "France" "is"
+  │  这些 token 没问题，照常处理
+  │
+  └─ "London" ← 问题 token！
+      ├─ 学生选择了地理类词汇中的错误选项
+      ├─ 反事实分析："如果不是 London，概率质量应该流向哪里？"
+      └─ 答案：应该流向其他首都/城市名称，而非随机词汇
+          → 将蒸馏信号集中在"相关备选"上，而非整个词汇表
+```
+
+**技术细节**：CR-OPD 使用 counterfactual reasoning 来**限制 KL 散度的支持集（support）**——不要求学生对所有 token 的概率都匹配教师，只要求学生对"可能合理的备选 token"匹配教师。
+
+#### GAE-OPD：广义优势估计增强的 OPD
+
+**核心思想**：借鉴 RL 中的 GAE（Generalized Advantage Estimation）来改善 OPD 中的**时序信用分配**。
+
+GAE 的核心公式（RL 版本）：
+
+$$\hat{A}_t^{\text{GAE}(\gamma, \lambda)} = \sum_{l=0}^{\infty} (\gamma\lambda)^l \cdot \delta_{t+l}$$
+
+其中 $\delta_t = r_t + \gamma V(s_{t+1}) - V(s_t)$ 是 TD 误差。
+
+GAE-OPD 的对应公式：
+
+$$\hat{\Delta}_t^{\text{GAE-OPD}} = \sum_{l=0}^{\infty} (\gamma\lambda)^l \cdot \left[D_{KL}(\pi_\theta(\cdot|s_{t+l}) \;\|\; \pi_T(\cdot|s_{t+l}))\right]$$
+
+**直观理解**：
+
+```
+标准 OPD：只看当前 token 的 KL 散度
+  
+  "要解这个方程"   →  KL = 0.01  （大家都这么说）
+  "第一步"         →  KL = 0.02  （不太确定是哪一步）
+  "我们把 x 替换"  →  KL = 0.05  （替换什么？不确定）
+  "得到 x = 5"     →  KL = 0.50  （答案可能是错的！）
+  
+  问题：当前 token 的高 KL 可能是因为前几步就走偏了
+        但 OPD 只惩罚"当前 token"，不追溯"前因"
+
+GAE-OPD：当前 token 的信号包含了之前所有步骤的累积 KL
+  
+  "得到 x = 5" → 信号 = 0.50 + γλ·0.05 + (γλ)²·0.02 + ... 
+              = 考虑了"走到这一步的全过程"
+  
+  → 更准确地归因：是第 3 步"把 x 替换"走偏了
+```
+
+---
+
+### 5.4 🪜 StepOPSD —— 步骤感知在线偏好蒸馏 (2026)
+
+<blockquote style="background:#e8f5e9;padding:16px;border-left:6px solid #4caf50">
+
+**📄 StepOPSD: Step-Aware Online Preference Distillation for Agent RL**
+**作者**: Zhang et al. | **arXiv**: 2605.27140 (May 2026)
+
+</blockquote>
+
+StepOPSD 将 OPD 的粒度从 token 级提升到**步骤（step）级**，特别适用于智能体（Agent）强化学习场景。
+
+#### 步骤级信用分配
+
+```
+Token 级 OPD：
+  "首" "先" "," " " "考" "虑" "方" "程" "x" "²" "+" "5" "x" "+" "6" "=" "0"
+  └──── 每个 token 独立计算 KL ────┘
+  → 信号碎片化，忽略了语义结构
+
+Step 级 OPD：
+  ┌──────────────────────────┐
+  │ Step 1: 理解问题          │ → KL_step1
+  │ "首先，考虑方程 x²+5x+6=0" │
+  └──────────────────────────┘
+  ┌──────────────────────────┐
+  │ Step 2: 选择解法          │ → KL_step2
+  │ "我们可以因式分解"        │
+  └──────────────────────────┘
+  ┌──────────────────────────┐
+  │ Step 3: 执行计算          │ → KL_step3
+  │ "(x+2)(x+3)=0"            │
+  └──────────────────────────┘
+  ┌──────────────────────────┐
+  │ Step 4: 得出结论          │ → KL_step4
+  │ "因此 x = -2 或 x = -3"   │
+  └──────────────────────────┘
+```
+
+#### 步骤归一化信用预算
+
+StepOPSD 的关键创新：对每个步骤的信用预算进行归一化，防止长步骤主导优化。
+
+**信用预算**：
+
+$$w_{\text{step}} = \text{clip}\left(\text{sigmoid}\big(\text{sign}(A) \cdot \Delta_{\text{step}}\big), 1-\alpha, 1+\alpha\right)$$
+
+其中：
+- $A$：优势函数（advantage）
+- $\Delta_{\text{step}}$：该步骤内教师和学生对 action token 的 log-probability 差距
+- $\alpha$：调制范围（典型值 0.3）
+
+**归一化**：每步的信用预算除以该步的 token 数，确保短步骤和长步骤对优化的贡献均衡。
+
+---
+
+### 5.5 🩺 OPD 失效模式研究 —— 诊断与修复 (UIUC, 2026)
+
+<blockquote style="background:#fce4ec;padding:16px;border-left:6px solid #e91e63">
+
+**📄 The Many Faces of On-Policy Distillation: Pitfalls, Mechanisms, and Fixes**
+**机构**: UIUC Lab | **网站**: [ulab-uiuc.github.io/OPD_website](https://ulab-uiuc.github.io/OPD_website/)
+**发表**: 2026
+
+</blockquote>
+
+UIUC 研究团队对 OPD 进行了系统性的"尸检"，发现了三大失效模式，并提供了针对性的修复方案。
+
+#### 失效模式一：学生前缀扭曲教师行为
+
+```
+现象：
+  学生生成的上下文（prefix）包含学生自身的不完美
+  → 教师基于这个"污染的"上下文给信号
+  → 教师的行为被学生的前缀"带偏"
+  → 蒸馏信号偏离了正确的教学方向
+
+示例：
+  学生上下文："The best way to solve this is to..." 
+  教师心中："如果最好的方法是 X，那你就应该说 X..."
+  
+  但！学生说的"the best way"本身可能就不对——正确的思路
+  根本不需要"best way"这种思维模式。
+  教师被迫在学生的错误框架内给出"最优"指导
+  → 这最多是次优的指导
+
+修复：Stop-Gradient Top-K KL
+  → 只有教师 top-K 置信的 token 参与 KL 计算
+  → 教师对"被学生带偏"的低置信 token 不参与损失
+```
+
+#### 失效模式二：Top-K Reverse KL 的 +1 偏差
+
+```
+现象：
+  Top-K Reverse KL 的概率估计存在系统性偏差
+  
+原因：
+  数学上，当只考虑 top-K 个 token 时，
+  归一化因子不同导致 KL 估计有偏
+
+  标准 Reverse KL：   D_KL(q || p) = Σ_i q(i) log(q(i)/p(i))
+                                                         ↑
+                                                  对所有 i（完整词汇表）
+  
+  Top-K Reverse KL：  D_KL^K(q || p) = Σ_{i∈top-K} q(i) log(q̃(i)/p̃(i))
+                                                         ↑
+                                                  q̃, p̃ 只在 top-K 上重新归一化
+                                                  → 概率和 ≠ 1 → +1 偏差！
+
+修复：在 top-K 计算中显式加入剩余概率质量作为"其他"类别
+```
+
+#### 失效模式三：OPSD 只学到 PI-free Margin
+
+```
+现象：
+  在线策略自蒸馏（OPSD）只学到了"π-free margin"——
+  即模型学会了"教师在这个问题上会怎么做"，
+  但没学会"为什么这样做"。
+
+  类似于：
+  学生背下了所有习题的答案
+  但没理解解题思路
+  → 换一道新题就不会了
+
+修复：
+  1. 先用 RLVR（RL with Verifiable Rewards）使教师适应学生的分布
+  2. 再用 SFT warm-start 学生（确保学生有一定的基础理解）
+  3. 最后进行 OPD
+```
+
+#### UIUC 研究提供的"OPD 操作手册"
+
+| 如果你观察到... | 可能的原因是... | 尝试... |
+|----------------|----------------|---------|
+| 训练后期性能停滞 | 学生前缀扭曲教师 | Stop-Gradient Top-K KL |
+| KL 损失莫名其妙很大 | Top-K +1 偏差 | 显式加"其他"类别 |
+| 蒸馏后泛化能力差 | 只学到了 PI-free margin | 先 RLVR-adapt 教师，再 SFT-warm 学生 |
+| 学生输出越来越短/单一 | 熵崩塌 | 增加熵正则化 + 降低蒸馏温度 |
+| 学生行为和教师差距越来越大 | 师生距离扩大 | 切换到 CoPD 协同训练 |
+
+---
+
+[➡️ 下一章：行业落地与生产实践](#第六章-行业落地与生产实践)
