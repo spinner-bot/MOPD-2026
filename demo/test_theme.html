@@ -73,11 +73,10 @@ class Ribbon{
   constructor(){this.reset()}
   reset(){
     this.points=[];this.y=H*0.3+Math.random()*H*0.7;this.speed=(Math.random()-0.5)*0.35;
-    // 光带仅出现在屏幕30%以下区域。预设8色：饱和度100% + 亮度25-35%
-    const PRESET=['hsla(0,100%,30%,','hsla(30,100%,30%,','hsla(55,100%,28%,',
-      'hsla(130,100%,25%,','hsla(190,100%,28%,','hsla(230,100%,32%,',
-      'hsla(275,100%,30%,','hsla(320,100%,30%,'];
-    this.color=PRESET[Math.floor(Math.random()*8)];
+    // 色调随机(0-360) + 饱和度100% + 亮度20-35%
+    const h=Math.floor(Math.random()*360);
+    const l=Math.floor(Math.random()*16+20);
+    this.color=`hsla(${h},100%,${l}%,`;
     const a=Math.random()*0.07+0.05;
     this.alpha=a;this.alphaStr=a*30;
     for(let i=0;i<=20;i++){this.points.push({x:i*W/20,y:Math.random()*70-35});}
