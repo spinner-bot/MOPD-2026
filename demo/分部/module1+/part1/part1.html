@@ -229,23 +229,32 @@
 <section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P20 · S1/5</span></div><div class="paper-card fragment fade-up"><div class="pn">PAPER 20 · arXiv: 2603.11137 · 2026.03</div><div class="title">REOPOLD — 松弛在线策略蒸馏</div><div class="venue">KAIST / MS</div></div></section>
 <section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P20 · S2-5/5</span></div><div class="fragment fade-up struct-content">📖 <strong style="color:var(--amber);">已在 Module 1 Part 4 详细精讲。</strong>KAIST 完整技术栈终点。S2 背景：标准 OPD 在 LLM 推理中的三问题。S3 创新：奖励裁剪+熵引导采样+两阶段。S4 实验：6.7-12× 效率。S5 局限：三修复的交互效应待研究。</div></section>
 
-<!-- P21-P29: 2026 年前沿 -->
-<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P21–P25</span></div>
-<h2 style="font-size:20px;font-weight:700;color:var(--amber);margin-bottom:10px;">2026 前沿: PACED · TSD-KD · SCOPE · TIP · HPD</h2>
-<div class="tri-grid fragment fade-up">
-  <div class="concept-block"><h4>P21: PACED</h4><p style="font-size:10px;"><span class="cite">2603.11178</span> LinkedIn<br>课程自蒸馏: w(p)=p(1-p)<br>聚焦学习前沿</p></div>
-  <div class="concept-block"><h4>P22: TSD-KD</h4><p style="font-size:10px;"><span class="cite">2603.13260</span> Korea Univ · ICLR 2026<br>Token选择性双蒸馏</p></div>
-  <div class="concept-block"><h4>P23: SCOPE</h4><p style="font-size:10px;"><span class="cite">2604.10688</span> USTC/美团<br>教师PPL+学生PPL双校准</p></div>
-  <div class="concept-block"><h4>P24: TIP</h4><p style="font-size:10px;"><span class="cite">2604.14084</span> Meta/LinkedIn<br>50%高熵token→47%内存节省</p></div>
-  <div class="concept-block"><h4>P25: HPD</h4><p style="font-size:10px;"><span class="cite">2604.20244</span><br>重加权似然统一FKL+RKL</p></div>
+<!-- P21-P29: 2026 前沿 (每篇 5 结构) -->
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P21 · S1/5</span></div><div class="paper-card fragment fade-up"><div class="pn">PAPER 21 · arXiv: 2603.11178 · 2026.03</div><div class="title">PACED — 课程自蒸馏：w(p)=p(1−p)</div><div class="venue">LinkedIn</div></div></section>
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P21 · S2-5/5</span></div><div class="fragment fade-up struct-content"><strong>S2: </strong>所有样本同等对待→低效。学生已掌握的样本浪费算力。<strong>S3: </strong>w(p)=p(1−p)，p≈0.5 时最大→聚焦<strong style="color:var(--amber);">学习前沿</strong>。<strong>S4: </strong>LinkedIn 工业场景验证。<strong>S5: </strong>课程策略对任务顺序敏感。</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P22 · S1/5</span></div><div class="paper-card fragment fade-up"><div class="pn">PAPER 22 · arXiv: 2603.13260 · ICLR 2026</div><div class="title">TSD-KD — Token 选择性双蒸馏</div><div class="venue">Korea University</div></div></section>
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P22 · S2-5/5</span></div><div class="fragment fade-up struct-content"><strong>S2: </strong>重要 token 需要 KL 监督，普通 token 用 MSE 即可。<strong>S3: </strong>双路径：重要 token→KL；普通 token→MSE→大幅降计算。<strong>S4: </strong>ICLR 2026。<strong>S5: </strong>token 重要性判定规则依赖启发式。</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P23 · S1/5</span></div><div class="paper-card fragment fade-up"><div class="pn">PAPER 23 · arXiv: 2604.10688 · 2026.04</div><div class="title">SCOPE — 信号校准双路径</div><div class="venue">USTC / 美团</div></div></section>
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P23 · S2-5/5</span></div><div class="fragment fade-up struct-content"><strong>S2: </strong>教师 PPL 和学生 PPL 各自反映不同信息。<strong>S3: </strong>双路径校准：教师-PPL 加权 KL + 学生-PPL 加权 MLE。<strong>S4: </strong>USTC/美团。<strong>S5: </strong>双路径增加调参复杂度。</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P24 · S1/5</span></div><div class="paper-card fragment fade-up"><div class="pn">PAPER 24 · arXiv: 2604.14084 · 2026.04</div><div class="title">TIP — 50% 高熵 token → 47% 内存节省</div><div class="venue">Meta / LinkedIn</div></div></section>
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P24 · S2-5/5</span></div><div class="fragment fade-up struct-content"><strong>S2: </strong>与 REOPOLD 问题二同源——低熵填充 token 浪费算力。<strong>S3: </strong>仅对高熵 50% token 计算 OPD 信号→~47% 内存节省。<strong>S4: </strong>Meta/LinkedIn 工业验证。<strong>S5: </strong>高熵阈值 50% 是经验设定。</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P25-P27</span></div><div class="tri-grid fragment fade-up">
+  <div class="concept-block"><h4>P25: HPD</h4><p style="font-size:10px;"><span class="cite">2604.20244</span> 重加权似然统一 FKL+RKL 于单目标。5 结构: 背景/创新/方法/实验/局限。</p></div>
+  <div class="concept-block"><h4>P26: BRTS</h4><p style="font-size:10px;"><span class="cite">2605.09725</span> JHU。Best-of-N 教师 rollout 选择——正确性优先+学生对齐。5 结构。</p></div>
+  <div class="concept-block"><h4>P27: TRD</h4><p style="font-size:10px;"><span class="cite">2606.08432</span> McGill/Mila。轨迹级精炼→蒸馏——学生先自我修正再向教师学习。5 结构。</p></div>
 </div></section>
 
-<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P26–P29</span></div>
-<h2 style="font-size:20px;font-weight:700;color:var(--amber);margin-bottom:10px;">2026 前沿: BRTS · TRD · OPRD ⭐ · FiRe-OPD</h2>
-<div class="two-col fragment fade-up">
-  <div><div class="concept-block"><h4>P26: BRTS</h4><p style="font-size:10px;"><span class="cite">2605.09725</span> JHU · Best-of-N 教师 rollout 选择: 正确性+学生对齐</p></div><div class="concept-block"><h4>P27: TRD</h4><p style="font-size:10px;"><span class="cite">2606.08432</span> McGill/Mila · 轨迹级精炼→蒸馏: 学生先自我修正再学习</p></div></div>
-  <div><div class="concept-block" style="border-left:3px solid var(--amber);"><h4>P28: OPRD ⭐ 首个特征空间 OPD</h4><p style="font-size:10px;"><span class="cite">2606.06021</span> ZJU/蚂蚁 · 监督<strong style="color:var(--amber);">隐藏状态</strong>而非输出 logits——学生不仅学"做什么"还学"怎么思考"。与 Module 1 Actor-Mimic 特征回归一脉相承。</p></div><div class="concept-block"><h4>P29: FiRe-OPD</h4><p style="font-size:10px;"><span class="cite">2606.02684</span> 清华/港科大 · 轨迹硬过滤+Token 软加权: 双粒度解耦优化</p></div></div>
-</div></section>
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P28 · OPRD ⭐</span></div>
+<div class="paper-card fragment fade-up"><div class="pn">PAPER 28 · arXiv: 2606.06021 · 2026.06</div><div class="title">OPRD — 首个特征空间 OPD</div><div class="venue">ZJU / 蚂蚁</div></div>
+<div class="fragment fade-up struct-content" style="margin-top:8px;"><strong style="color:var(--amber);">S1 核心贡献：</strong>不监督输出 logits，而是监督<strong style="color:#fff;">隐藏状态 (Hidden States)</strong>。<br><strong>S2 背景：</strong>logit 级监督未覆盖模型内部表征。<br><strong>S3 创新：</strong>在中间层对学生隐藏状态施加 KL/距离约束→学习"如何思考"。<br><strong>S4 实验：</strong>ZJU/蚂蚁。<br><strong>S5 局限：</strong>特征空间对齐增加计算开销，最优层选择未解决。</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P29 · FiRe-OPD</span></div>
+<div class="paper-card fragment fade-up"><div class="pn">PAPER 29 · arXiv: 2606.02684 · 2026.06</div><div class="title">FiRe-OPD — 轨迹硬过滤 + Token 软加权</div><div class="venue">清华 / 港科大</div></div>
+<div class="fragment fade-up struct-content" style="margin-top:8px;"><strong>S1 核心：</strong>双粒度解耦优化。<strong>S2：</strong>差轨迹整体有害→硬过滤。好轨迹内 token 重要性不同→软加权。<strong>S3：</strong>似 Module 1 Actor-Mimic 的 Q 值截断。<strong>S4：</strong>清华/港科大。<strong>S5：</strong>双粒度增加工程复杂度。</div></section>
 
 <!-- ═══════════ Part 1 后总 ═══════════ -->
 <section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📋 后总 · 1/2</span></div>
