@@ -200,7 +200,27 @@
 <!-- P16: Veto -->
 <section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P16 · S1</span></div>
 <div class="paper-card fragment fade-up"><div class="pn">PAPER 16 · arXiv: 2601.07155 · ACL 2026 Findings</div><div class="title">Veto — 自适应目标重构：稳定 OPD</div><div class="venue">SNU (首尔大学)</div></div>
-<div class="fragment fade-up struct-content" style="margin-top:8px;"><strong style="color:var(--amber);">核心贡献：</strong>当学生生成<strong style="color:#fff;">明显错误</strong> 的 token 时，教师不应被迫"将错就错"——Veto 允许教师<strong style="color:#fff;">否决</strong>学生错误前缀并重构蒸馏目标。与 UIUC 失效诊断 (P7) 的 Stop-Gradient 相比，Veto 的否决机制更激进但也更有效。</div></section>
+<div class="fragment fade-up struct-content" style="margin-top:8px;"><strong style="color:var(--amber);">核心贡献：</strong>教师<strong style="color:#fff;">否决</strong>学生错误前缀并重构蒸馏目标。与 P7 UIUC 的 Stop-Gradient 相比更激进。</div></section>
+
+<!-- P17: G-OPD -->
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P17 · S1</span></div>
+<div class="paper-card fragment fade-up"><div class="pn">PAPER 17 · arXiv: 2602.12125 · 2026.02</div><div class="title">G-OPD — OPD 作为 KL 约束 RL：奖励可外推超越教师</div><div class="venue">RUC / 腾讯</div></div>
+<div class="fragment fade-up struct-content" style="margin-top:8px;"><strong style="color:var(--amber);">核心贡献：</strong>证明 OPD 等价于<strong style="color:#fff;">KL 约束 RL</strong>——max E[R] − β·D_KL(π‖π_T)。关键是学生可通过 RL 奖励<strong style="color:#fff;">突破教师能力上限</strong>——反驳"蒸馏学生 < 教师"的直觉。与 Module 1 Kickstarting 中 λ_k→0 超越教师的机制呼应。</div></section>
+
+<!-- P18: Fast OPD -->
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P18 · S1</span></div>
+<div class="paper-card fragment fade-up"><div class="pn">PAPER 18 · arXiv: 2602.15260 · 2026.02</div><div class="title">Fast OPD — 前缀截断：仅蒸馏推理前缀 · 2–47× 加速</div><div class="venue">工业界</div></div>
+<div class="fragment fade-up struct-content" style="margin-top:8px;"><strong style="color:var(--amber);">核心贡献：</strong>发现推理链中大部分 token 是<strong style="color:#fff;">答案展开部分</strong>，真正有价值的信号集中在<strong style="color:#fff;">推理前缀</strong>。仅对前缀 OPD→2-47× 加速。与 REOPOLD 按熵筛选 token 互补：熵看不确定性，位置看结构性。</div></section>
+
+<!-- P19: Entropy-Aware -->
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P19 · S1</span></div>
+<div class="paper-card fragment fade-up"><div class="pn">PAPER 19 · arXiv: 2603.07079 · 2026.03</div><div class="title">Entropy-Aware OPD — 教师高熵→FKL；教师低熵→RKL</div><div class="venue">KAIST / IBM</div></div>
+<div class="fragment fade-up struct-content" style="margin-top:8px;"><strong style="color:var(--amber);">核心贡献：</strong>根据<strong style="color:#fff;">教师熵</strong>动态选择 KL 方向——高熵(不确定)→FKL 覆盖所有可能；低熵(确定)→RKL 精确模仿。与 DistiLLM 的 Skewed KL 相比，<strong style="color:var(--amber);">Entropy-Aware 是动态的</strong>——λ 随 token 上下文自适应。这是对 Skewed-KL 静态插值的直接改进。</div></section>
+
+<!-- P20: REOPOLD -->
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P20 · S1</span></div>
+<div class="paper-card fragment fade-up"><div class="pn">PAPER 20 · arXiv: 2603.11137 · 2026.03</div><div class="title">REOPOLD — 松弛在线策略蒸馏 (已精讲)</div><div class="venue">KAIST / MS</div></div>
+<div class="fragment fade-up struct-content" style="margin-top:8px;">📖 <strong style="color:var(--amber);">已在 Module 1 Part 4 详细精讲。</strong>在白盒 OPD 中，REOPOLD 代表了 KAIST 团队从 DistiLLM→DistiLLM-2→Entropy-Aware→REOPOLD 的<strong style="color:#fff;">完整技术栈</strong>——从 KL 方向选择到系统性工程问题解决。三核心：奖励裁剪+熵引导采样+两阶段训练。</div></section>
 
 </div></div>
 <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.js"></script><script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
