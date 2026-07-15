@@ -75,8 +75,8 @@ class Ribbon{
     this.points=[];this.y=H*0.3+Math.random()*H*0.7;this.speed=(Math.random()-0.5)*0.35;
     this.hue=Math.floor(Math.random()*360);
     this.light=Math.floor(Math.random()*16+20);
-    this.hueDrift=(Math.random()-0.5)*0.08;
-    this.lightDrift=(Math.random()-0.5)*0.02;
+    this.hueDrift=Math.random()*0.35+0.15; // 0.15-0.5°/帧 ≈ 9-30°/秒
+    this.lightDrift=(Math.random()-0.5)*0.04;
     const a=Math.random()*0.07+0.05;
     this.alpha=a;this.alphaStr=a*30;
     for(let i=0;i<=20;i++){this.points.push({x:i*W/20,y:Math.random()*70-35});}
@@ -87,8 +87,8 @@ class Ribbon{
     // 色调和亮度持续缓慢漂移
     this.hue+=this.hueDrift;if(this.hue<0)this.hue+=360;if(this.hue>=360)this.hue-=360;
     this.light+=this.lightDrift;
-    if(this.light<18)this.lightDrift=0.03;
-    if(this.light>36)this.lightDrift=-0.03;
+    if(this.light<20)this.lightDrift=0.05;
+    if(this.light>35)this.lightDrift=-0.05;
     for(let p of this.points){p.y+=(Math.random()-0.5)*0.6;}
   }
   draw(ctx){
