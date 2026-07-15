@@ -99,10 +99,10 @@
 </section>
 
 <!-- A2: 2×2矩阵 -->
-<section data-transition="slide">
-  <h2 style="font-size:26px;font-weight:700;margin-bottom:4px;color:var(--text);">🔲 2×2 矩阵 — OPD 的"周期表"</h2><div class="glow-bar"></div>
-  <p style="font-size:12px;color:var(--text3);margin:0 0 10px;">解耦两个一直被混为一谈的维度 → 一个2×2矩阵统一四种技术</p>
-  <table class="summary-table fragment fade-up" style="margin-bottom:12px;">
+<section data-transition="slide" style="padding-top:14px !important;">
+  <h2 style="font-size:26px;font-weight:700;margin-bottom:2px;color:var(--text);">🔲 2×2 矩阵 — OPD 的"周期表"</h2><div class="glow-bar" style="margin:10px auto;"></div>
+  <p style="font-size:12px;color:var(--text3);margin:0 0 6px;">解耦两个一直被混为一谈的维度 → 一个2×2矩阵统一四种技术</p>
+  <table class="summary-table fragment fade-up" style="margin-bottom:8px;">
     <thead><tr><th></th><th>Token-Level Forward KL</th><th>Token-Level Reverse KL</th></tr></thead>
     <tbody>
       <tr><td class="pc">教师前缀</td><td style="background:rgba(108,92,231,0.08);"><strong style="color:var(--a1);">① 离线SFT / 标准蒸馏</strong><br><span style="font-size:11px;color:var(--text3);">固定数据集+覆盖教师所有输出</span></td><td style="background:rgba(0,210,255,0.05);"><strong style="color:var(--a2);">② 离线RL风格蒸馏</strong><br><span style="font-size:11px;color:var(--text3);">集中在教师最可能token · 研究最少!</span></td></tr>
