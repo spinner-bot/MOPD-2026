@@ -802,6 +802,64 @@ window.MathJax = {
   </div>
 </section>
 
+<!-- ═══════════════════════════ SLIDE 8.5: 策略/价值网络具体架构 ═══════════════════════════ -->
+<section data-transition="slide">
+  <div style="display:flex;align-items:center;gap:12px;justify-content:center;margin-bottom:4px;">
+    <h2 style="font-size:26px;font-weight:700;color:var(--text);margin:0;">
+      🔧 π 和 Q 具体怎么用神经网络实现？
+    </h2>
+    <span style="background:rgba(254,202,87,0.15);border:1px solid rgba(254,202,87,0.3);border-radius:12px;padding:3px 12px;font-size:11px;color:var(--a4);font-weight:700;">💬 讨论</span>
+  </div>
+  <div class="glow-bar"></div>
+  <div class="two-col">
+    <!-- 策略网络 -->
+    <div class="fragment fade-up">
+      <div style="background:rgba(108,92,231,0.06);border:1px solid rgba(108,92,231,0.2);border-radius:18px;padding:22px 18px;text-align:left;">
+        <h4 style="color:var(--a1);margin:0 0 10px;">🧭 策略网络 π_φ(a|s)</h4>
+        <p style="font-size:13px;color:var(--text2);line-height:1.7;margin:0;">
+          <strong>输入：</strong>状态向量 s（关节角度、速度等拼接）或图像像素<br>
+          <strong>离散动作</strong>（左/右/前进）：</p>
+          <div class="code-window" style="max-width:100%;margin:8px 0;">
+            <div class="code-body" style="font-size:12px;padding:8px 14px;">
+              s → FC → ReLU → FC → <span class="kw">Softmax</span> → [p₁,p₂,p₃]<br>
+              <span class="cm">每个动作一个概率，和为1</span>
+            </div>
+          </div>
+        <p style="font-size:13px;color:var(--text2);line-height:1.7;margin:0;">
+          <strong>连续动作</strong>（马达力矩）：</p>
+          <div class="code-window" style="max-width:100%;margin:8px 0;">
+            <div class="code-body" style="font-size:12px;padding:8px 14px;">
+              s → FC → ReLU → FC → <span class="kw">μ, σ</span> (Gaussian)<br>
+              <span class="cm">从 N(μ,σ) 中采样实际动作值</span>
+            </div>
+          </div>
+        <p style="font-size:12px;color:var(--text3);margin:0;"><strong>训练：</strong>用策略梯度 / PPO 最大化期望累积奖励</p>
+      </div>
+    </div>
+    <!-- 价值网络 -->
+    <div class="fragment fade-up">
+      <div style="background:rgba(0,210,255,0.05);border:1px solid rgba(0,210,255,0.2);border-radius:18px;padding:22px 18px;text-align:left;">
+        <h4 style="color:var(--a2);margin:0 0 10px;">📊 价值网络 Q_θ(s,a)</h4>
+        <p style="font-size:13px;color:var(--text2);line-height:1.7;margin:0;">
+          <strong>输入：</strong>状态 s + 动作 a（拼接为一个向量）<br>
+          <strong>输出：</strong>一个<strong style="color:var(--a2);">标量数字</strong> = 从(s,a)开始的累积折扣奖励预测</p>
+          <div class="code-window" style="max-width:100%;margin:8px 0;">
+            <div class="code-body" style="font-size:12px;padding:8px 14px;">
+              [s; a] → FC → ReLU → FC → <span class="kw">标量 Q(s,a)</span>
+            </div>
+          </div>
+        <p style="font-size:12px;color:var(--text3);margin:0;"><strong>训练：</strong>最小化 TD 误差 — 让 Q(s,a) ≈ r + γ·max_{a'} Q(s',a')</p>
+        <div style="margin-top:12px;background:rgba(255,255,255,0.03);border-radius:10px;padding:10px 12px;">
+          <p style="font-size:12px;color:var(--text2);margin:0;line-height:1.6;">
+            <strong style="color:#fff;">💡 为什么能内插推广？</strong><br>
+            神经网络见到训练中从未出现的 (s,a) 组合时，也能给出<strong style="color:var(--a2);">合理的近似值</strong>——这是查表法永远做不到的。
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- ═══════ SECTION 1: Policy Distillation ═══════ -->
 <!-- ═══════════════════════════ SLIDE 7: 节标题 - Policy Distillation ═══════════════════════════ -->
 <section data-transition="slide">
@@ -905,6 +963,63 @@ window.MathJax = {
   <p style="font-size:12px;color:var(--text3);margin-top:14px;">
     KL惩罚 = 橡皮筋：可以撑开走远，但会越来越费力——迫使在"拿高分"和"别走偏"之间权衡
   </p>
+</section>
+
+<!-- ═══════════════════════════ SLIDE 10.5: Soft Q-learning 视角 ═══════════════════════════ -->
+<section data-transition="slide">
+  <div style="display:flex;align-items:center;gap:12px;justify-content:center;margin-bottom:4px;">
+    <h2 style="font-size:26px;font-weight:700;color:var(--text);margin:0;">
+      🌊 软 Q 学习视角 — "硬选最大" vs "软分布"
+    </h2>
+    <span style="background:rgba(254,202,87,0.15);border:1px solid rgba(254,202,87,0.3);border-radius:12px;padding:3px 12px;font-size:11px;color:var(--a4);font-weight:700;">💬 讨论</span>
+  </div>
+  <div class="glow-bar"></div>
+  <p style="font-size:13px;color:var(--text3);margin:0 0 16px;">
+    核心思想：把探索和偏离惩罚"揉"进奖励，让智能体追求一种<strong style="color:var(--a2);">"软"版本</strong>的最优动作
+  </p>
+  <div class="two-col">
+    <div class="fragment fade-up">
+      <div style="background:rgba(255,107,157,0.06);border:1px solid rgba(255,107,157,0.2);border-radius:18px;padding:22px 18px;text-align:left;">
+        <h4 style="color:var(--a3);margin:0 0 10px;">🔴 传统 Q 学习（硬）</h4>
+        <p style="font-size:13px;color:var(--text2);line-height:1.7;margin:0;">
+          <strong>目标：</strong>只最大化 ΣγᵗR<br>
+          <strong>最优动作：</strong>a* = argmax_a Q(s,a)<br>
+          <strong>策略：</strong><strong style="color:var(--a3);">确定的</strong>——永远选Q值最高的<br>
+          <strong>问题：</strong>没有探索机制，容易陷入局部最优
+        </p>
+        <div class="code-window" style="max-width:100%;margin-top:10px;">
+          <div class="code-body" style="font-size:12px;padding:8px 14px;">
+            <span class="cm">// 硬最大：只选最高的</span><br>
+            a* = <span class="kw">argmax</span>(Q[s,:])
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="fragment fade-up">
+      <div style="background:rgba(0,210,255,0.05);border:1px solid rgba(0,210,255,0.2);border-radius:18px;padding:22px 18px;text-align:left;">
+        <h4 style="color:var(--a2);margin:0 0 10px;">🟢 软 Q 学习（软）</h4>
+        <p style="font-size:13px;color:var(--text2);line-height:1.7;margin:0;">
+          <strong>目标：</strong>最大化 Σγᵗ(R + α·H(π))<br>
+          <strong>最优动作：</strong>按 exp(Q/β) 的<strong style="color:var(--a2);">玻尔兹曼分布</strong>采样<br>
+          <strong>策略：</strong><strong style="color:var(--a2);">概率分布</strong>——高Q值的动作概率高，但低Q值的也有机会<br>
+          <strong>软贝尔曼方程：</strong>V_soft = β·log Σ exp(Q/β)
+        </p>
+        <div class="code-window" style="max-width:100%;margin-top:10px;">
+          <div class="code-body" style="font-size:12px;padding:8px 14px;">
+            <span class="cm">// 软最大(LogSumExp)：概率分布</span><br>
+            p(a) ∝ <span class="kw">exp</span>(Q[s,a] / β)
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="fragment fade-up" style="margin-top:16px;max-width:820px;text-align:left;background:rgba(108,92,231,0.05);border:1px solid rgba(108,92,231,0.15);border-radius:14px;padding:14px 20px;">
+    <p style="font-size:13px;color:var(--text2);margin:0;line-height:1.7;">
+      <strong style="color:var(--a1);">🔗 在 Distral 中的体现：</strong><br>
+      最优策略 πᵢ ∝ π₀^α · exp(Qᵢ/β) 就是<strong style="color:var(--a1);">软 Q 学习的直接推论</strong>——它不仅对 Q 值取 Softmax，还把先验 π₀ 作为额外权重因子。<br>
+      <strong style="color:var(--a1);">好处：</strong>将带有多约束（探索 + 知识迁移 + 保持风格）的复杂策略优化，转化为<strong style="color:#fff;">标准的软 Q 迭代问题</strong>，可直接用 Q 学习工具求解。
+    </p>
+  </div>
 </section>
 
 <!-- ═══════════════════════════ SLIDE 11: KL散度深入 ═══════════════════════════ -->
