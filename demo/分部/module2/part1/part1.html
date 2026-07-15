@@ -328,5 +328,35 @@
   &nbsp;&nbsp;<span style="color:#cba6f7;">return</span> image
 </div>
 <div class="fragment fade-up struct-content" style="margin-top:10px;"><strong style="color:var(--aud);">关键洞察：</strong>每步MSE预测的是<strong style="color:#fff;">噪声(确定性)</strong>,而非最终图像(多峰分布)。将一次生成拆成50步→每步MSE目标都是确定值→完美避开均值回归。</div></section>
+
+<!-- ═══════════ Flamingo + BLIP-2 ═══════════ -->
+<section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--vis);margin-bottom:6px;">桥接模式：视觉 → 语言的理解路径</h2>
+<svg viewBox="0 0 900 180" xmlns="http://www.w3.org/2000/svg" style="max-width:900px;">
+  <rect x="10" y="15" width="150" height="55" rx="12" fill="rgba(96,165,250,0.08)" stroke="rgba(96,165,250,0.25)"/>
+  <text x="85" y="40" text-anchor="middle" fill="#60a5fa" font-size="13" font-weight="700">🖼️ 视觉编码器</text><text x="85" y="56" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="9">ViT (冻结)</text>
+  <text x="175" y="42" fill="rgba(255,255,255,0.3)" font-size="16">→</text>
+  <rect x="200" y="10" width="170" height="65" rx="12" fill="rgba(251,191,36,0.08)" stroke="rgba(251,191,36,0.3)"/>
+  <text x="285" y="32" text-anchor="middle" fill="#facc15" font-size="12" font-weight="700">🔗 桥接模块</text><text x="285" y="50" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="9">Q-Former / Perceiver</text><text x="285" y="65" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="8">压缩 N→64个视觉token</text>
+  <text x="385" y="42" fill="rgba(255,255,255,0.3)" font-size="16">→</text>
+  <rect x="410" y="15" width="150" height="55" rx="12" fill="rgba(183,148,244,0.08)" stroke="rgba(183,148,244,0.25)"/>
+  <text x="485" y="40" text-anchor="middle" fill="#b794f4" font-size="13" font-weight="700">📝 LLM</text><text x="485" y="56" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="9">Chinchilla/OPT (冻结)</text>
+  <text x="575" y="42" fill="rgba(255,255,255,0.3)" font-size="16">→</text>
+  <rect x="600" y="25" width="120" height="40" rx="10" fill="rgba(74,222,128,0.06)" stroke="rgba(74,222,128,0.2)"/>
+  <text x="660" y="50" text-anchor="middle" fill="#4ade80" font-size="12" font-weight="700">文本回答</text>
+  <!-- 核心 -->
+  <rect x="60" y="100" width="780" height="50" rx="10" fill="rgba(96,165,250,0.04)" stroke="rgba(96,165,250,0.12)"/>
+  <text x="450" y="122" text-anchor="middle" fill="var(--vis)" font-size="12" font-weight="700">🔑 核心：不训练ViT，不训练LLM。只训练中间的轻量桥接层 (~100M参数)</text>
+  <text x="450" y="142" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="9">视觉token → 翻译成LLM能理解的"语言" → LLM像往常一样自回归生成</text>
+</svg></section>
+
+<section data-transition="slide"><div class="two-col fragment fade-up">
+<div class="concept-block" style="border-left:3px solid var(--vis);"><h4>Flamingo (2022.04)</h4><p style="font-size:11px;"><strong>Perceiver Resampler：</strong>将变长视觉特征压缩为固定64个token→通过<strong style="color:var(--vis);">交叉注意力</strong>注入LLM每一层。首个大规模VLM，80B参数，强大Few-shot能力。</p></div>
+<div class="concept-block" style="border-left:3px solid var(--vlm);"><h4>BLIP-2 (2023.01)</h4><p style="font-size:11px;"><strong>Q-Former：</strong>轻量Transformer(仅100M参数)。可学习query tokens从ViT特征中提取语言相关信息→输出固定数量视觉token→作为<strong style="color:var(--vlm);">软提示(soft prompt)</strong>输入冻结LLM。</p></div></div></section>
+
+<!-- 后总 -->
+<section data-transition="slide"><div class="ac-card fragment fade-up" style="text-align:center;"><h2 style="font-size:24px;font-weight:700;color:var(--vlm);margin-bottom:10px;">奠基期总结</h2><div class="ac-bar"></div>
+<p style="font-size:13px;color:var(--text2);line-height:2;">ViT打破架构壁垒→CLIP建立图文共享空间→DALL·E开创文本生成图像→Stable Diffusion用潜空间扩散实现大众化→Flamingo/BLIP-2用桥接模式让LLM"看见"世界。<br><strong style="color:var(--vid);">2020–2022三年间，多模态从0到1完成了最关键的奠基。</strong></p></div></section>
+
+<section data-transition="zoom"><div class="ac-card fragment fade-up"><span style="font-size:50px;display:block;">🔭</span><h2 style="font-size:24px;font-weight:700;color:var(--vlm);">→ VLM崛起 (2023)</h2><div class="ac-bar"></div><p style="font-size:14px;color:var(--text2);">GPT-4V · LLaVA · Gemini 1.0——LLM"睁开眼睛"</p></div></section>
 <script>(function(){const c=document.getElementById('bg-canvas'),x=c.getContext('2d');let W,H,ribbons=[],frame=0;function rs(){W=c.width=window.innerWidth;H=c.height=window.innerHeight}window.addEventListener('resize',rs);rs();class Ribbon{constructor(){this.reset()}reset(){this.points=[];this.y=H*0.3+Math.random()*H*0.7;this.speed=(Math.random()-0.5)*0.25;this.hue=Math.floor(Math.random()*360);this.light=Math.floor(Math.random()*16+20);this.hueDrift=Math.random()*0.35+0.15;this.lightDrift=(Math.random()-0.5)*0.04;this.yDrift=(Math.random()-0.5)*0.15;const a=Math.random()*0.07+0.05;this.alpha=a;this.alphaStr=a*30;for(let i=0;i<=20;i++)this.points.push({x:i*W/20,y:Math.random()*70-35})}update(){this.y+=this.speed+this.yDrift;this.speed+=(Math.random()-0.5)*0.003;if(this.y<H*0.2||this.y>H+80)this.reset();this.hue+=this.hueDrift;if(this.hue<0)this.hue+=360;if(this.hue>=360)this.hue-=360;this.light+=this.lightDrift;if(this.light<20)this.lightDrift=0.05;if(this.light>35)this.lightDrift=-0.05;for(let p of this.points)p.y+=(Math.random()-0.5)*0.6}draw(ctx){const col=`hsla(${Math.floor(this.hue)},100%,${Math.floor(this.light)}%,`;ctx.save();ctx.globalAlpha=this.alpha;ctx.shadowColor=col+'0.35)';ctx.shadowBlur=20;ctx.beginPath();ctx.moveTo(0,this.y);for(let i=0;i<this.points.length;i++){const px=this.points[i].x,py=this.y+this.points[i].y;if(i<this.points.length-1){const nx=this.points[i+1].x,ny=this.y+this.points[i+1].y;ctx.quadraticCurveTo(px,py,(px+nx)/2,(py+ny)/2)}}ctx.lineTo(W,H);ctx.lineTo(0,H);ctx.closePath();ctx.fillStyle=col+this.alphaStr+')';ctx.fill();ctx.shadowBlur=0;ctx.restore()}}ribbons=Array.from({length:8},()=>new Ribbon());function lp(){x.clearRect(0,0,W,H);const grad=x.createRadialGradient(W/2,H/2,0,W/2,H/2,Math.max(W,H)*0.8);grad.addColorStop(0,'rgba(20,12,30,0.35)');grad.addColorStop(0.5,'rgba(8,5,12,0.12)');grad.addColorStop(1,'rgba(2,1,4,0)');x.fillStyle=grad;x.fillRect(0,0,W,H);const bloom=x.createRadialGradient(W/2+Math.sin(frame*0.003)*W*0.08,H/2+Math.cos(frame*0.004)*H*0.06,Math.min(W,H)*0.03,W/2,H/2,Math.min(W,H)*0.45);bloom.addColorStop(0,'rgba(140,110,200,0.05)');bloom.addColorStop(0.4,'rgba(100,140,200,0.02)');bloom.addColorStop(1,'rgba(0,0,0,0)');x.fillStyle=bloom;x.fillRect(0,0,W,H);ribbons.forEach(r=>{r.update();r.draw(x)});frame++;requestAnimationFrame(lp)}lp()})();</script>
 <script>Reveal.initialize({hash:true,center:true,transition:'slide',transitionSpeed:'slow',backgroundTransition:'zoom',slideNumber:false,progress:false,controls:true,controlsLayout:'bottom-right',width:1200,height:700,margin:0,minScale:0.2,maxScale:2.0});(function(){const e=document.getElementById('page-indicator');function u(){const t=Reveal.getTotalSlides(),c=Reveal.getSlidePastCount()+1;e.textContent=c+' / '+t}Reveal.on('ready',u);Reveal.on('slidechanged',u)})();</script></body></html>
