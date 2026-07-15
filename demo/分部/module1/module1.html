@@ -2129,33 +2129,32 @@ window.MathJax = {
   </p>
 </section>
 
-<section data-transition="slide">
-  <h2 style="font-size:26px;font-weight:700;margin-bottom:4px;color:var(--text);">✅ Theorem 2: 梯度场重建</h2>
-  <div class="glow-bar"></div>
-  <div class="theorem-card fix fragment fade-up" style="margin-bottom:14px;">
+<section data-transition="slide" style="padding:20px 40px !important;">
+  <h2 style="font-size:24px;font-weight:700;margin-bottom:2px;color:var(--text);">✅ Theorem 2: 梯度场重建</h2>
+  <div class="glow-bar" style="margin:8px auto;"></div>
+  <div class="theorem-card fix fragment fade-up" style="margin-bottom:8px;padding:16px 22px;">
     <span class="theorem-badge">✅ Theorem 2 · 修正</span>
-    <p style="font-size:14px;color:var(--text2);margin:0 0 8px;"><strong style="color:#fff;">核心思路：</strong>打破"状态必须来自学生"的限制。</p>
-    <div class="math-block">
-      $$\boxed{\mathbb{E}_{\pi_\theta}\left[\sum_t -\nabla_\theta \log\pi_\theta(a_t|s_t) \cdot \underbrace{\sum_{i=t}^{\infty} \hat{r}_i}_{\text{累积未来修正奖励}} + \underbrace{\nabla_\theta \ell_t}_{\text{直接蒸馏梯度}}\right]}$$
+    <p style="font-size:12px;color:var(--text2);margin:0 0 6px;"><strong style="color:#fff;">核心思路：</strong>打破"状态必须来自学生"的限制。在每个时间步添加"未来蒸馏损失"作为修正奖励。</p>
+    <div class="math-block" style="font-size:14px;">
+      $$\mathbb{E}_{\pi_\theta}\!\left[\sum_t -\nabla_\theta \log\pi_\theta \cdot \sum_{i=t}^{\infty} \hat{r}_i + \nabla_\theta \ell_t\right]$$
     </div>
-    <p style="font-size:12px;color:var(--text3);margin:4px 0 0;">在每个时间步添加"未来蒸馏损失"作为修正奖励，恢复梯度场性质。</p>
   </div>
   <div class="two-col">
     <div class="fragment fade-up">
-      <div class="concept-card" style="border-left:3px solid var(--a5);">
-        <h4>🔧 修正方法一：N步未来蒸馏损失</h4>
-        <p>不只模仿教师当前状态的动作，而是沿教师轨迹看<strong style="color:var(--a5);">未来N步</strong>，每一步都计入损失：</p>
-        <div class="math-block" style="font-size:13px;">
-          $$\mathcal{L}_{\text{future}} = \mathbb{E}_{(s,a) \sim \mathcal{D}_T}\left[ \sum_{k=0}^{N-1} \gamma^k D_{KL}(\pi_T \| \pi_S) \right]$$
+      <div class="concept-card" style="border-left:3px solid var(--a5);padding:14px 14px;">
+        <h4 style="font-size:13px;">🔧 方法一：N步未来蒸馏损失</h4>
+        <p style="font-size:11px;">沿教师轨迹看未来N步，每一步计入损失：</p>
+        <div class="math-block" style="font-size:12px;">
+          $$\mathcal{L}_{\text{future}} = \mathbb{E}_{\mathcal{D}_T}\!\left[ \sum_{k=0}^{N-1} \gamma^k D_{KL}(\pi_T \| \pi_S) \right]$$
         </div>
       </div>
     </div>
     <div class="fragment fade-up">
-      <div class="concept-card" style="border-left:3px solid var(--a2);">
-        <h4>🔧 修正方法二：教师价值加权</h4>
-        <p>用教师价值函数给状态分配<strong style="color:var(--a2);">重要性权重</strong>。教师认为价值越高的状态，学生必须越认真模仿：</p>
-        <div class="math-block" style="font-size:13px;">
-          $$\mathbb{E}_{s \sim \mathcal{D}}\left[ \exp\!\left(\frac{V_T(s)}{\beta}\right) \cdot D_{KL}(\pi_T \| \pi_S) \right]$$
+      <div class="concept-card" style="border-left:3px solid var(--a2);padding:14px 14px;">
+        <h4 style="font-size:13px;">🔧 方法二：教师价值加权</h4>
+        <p style="font-size:11px;">教师价值越高的状态，学生越认真模仿：</p>
+        <div class="math-block" style="font-size:12px;">
+          $$\mathbb{E}_{\mathcal{D}}\!\left[ \exp\!\left(\frac{V_T(s)}{\beta}\right) \cdot D_{KL}(\pi_T \| \pi_S) \right]$$
         </div>
       </div>
     </div>
