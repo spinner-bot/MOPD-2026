@@ -180,9 +180,27 @@
 
 <section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P13 · S2-3/3</span></div>
 <div class="two-col fragment fade-up">
-  <div class="concept-block" style="border-left:3px solid var(--amber);"><h4>📐 S2: 跨 tokenizer 对齐</h4><p style="font-size:11px;">当师生 tokenizer 不同时，token 级 KL 失去直接意义。DSKDv2 通过<strong>投影矩阵</strong>将学生 token 分布映射到教师 token 空间→在对齐后的空间计算 KL。支持 on-policy 模式。</p></div>
-  <div class="concept-block" style="border-left:3px solid var(--sage);"><h4>⚠️ S3: 局限</h4><p style="font-size:11px;">投影矩阵引入额外参数和计算开销。tokenizer 差异过大时对齐精度下降。与 CASIA Revisiting OPD (P4) 中"tokenizer 不匹配"的失效诊断形成闭环。</p></div>
+  <div class="concept-block" style="border-left:3px solid var(--amber);"><h4>📐 S2: 跨 tokenizer 对齐</h4><p style="font-size:11px;">投影矩阵将学生 token 分布映射到教师空间→在对齐后空间计算 KL。支持 on-policy 模式。</p></div>
+  <div class="concept-block" style="border-left:3px solid var(--sage);"><h4>⚠️ S3: 局限</h4><p style="font-size:11px;">投影矩阵引入额外开销。与 P4 "tokenizer不匹配"失效诊断闭环。</p></div>
 </div></section>
+
+<!-- P14: Constrained OPD -->
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P14 · S1/2</span></div>
+<div class="paper-card fragment fade-up"><div class="pn">PAPER 14 · arXiv: 2509.22921 · 2025.09</div><div class="title">Constrained OPD — CMDP 框架：硬 KL 约束</div><div class="venue">华为诺亚方舟实验室</div></div>
+<div class="fragment fade-up struct-content" style="margin-top:8px;"><strong style="color:var(--amber);">核心贡献：</strong>将 OPD 从<strong style="color:#fff;">软约束 (KL 惩罚项)</strong> 升级为<strong style="color:#fff;">硬约束 (CMDP)</strong>。传统 OPD: max Reward − β·KL；Constrained OPD: max Reward subject to KL ≤ δ——保证不越过红线。</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P14 · S2/2</span></div>
+<div class="fragment fade-up struct-content"><strong style="color:var(--amber);">软约束 vs 硬约束：</strong><br>• <strong>Distral (软)</strong>: max R − β·KL → 允许权衡，但可能偏离过多<br>• <strong>Constrained OPD (硬)</strong>: max R s.t. KL ≤ δ → 保证不越红线<br>🔗 类似 Module 1 中"橡皮筋"(软) vs "围墙"(硬) 的比喻。华为诺亚方舟实验室在 RL safety 方向的积累为此提供了理论支撑。</div></section>
+
+<!-- P15: AdaSwitch -->
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P15 · S1</span></div>
+<div class="paper-card fragment fade-up"><div class="pn">PAPER 15 · arXiv: 2510.07842 · 2025.10</div><div class="title">AdaSwitch — 基于散度阈值的自适应 On/Off-Policy 切换</div><div class="venue">RUC (中国人民大学) / 百度</div></div>
+<div class="fragment fade-up struct-content" style="margin-top:8px;"><strong style="color:var(--amber);">核心贡献：</strong>在训练过程中<strong style="color:#fff;">自动判断</strong>何时用在线 (学生自采样) vs 离线 (教师数据集)。当学生分布与教师差异过大→自动切离线→等学生拉近后再切回在线。为梯度场不存在定理提供<strong style="color:var(--amber);">工程化自适应方案</strong>。</div></section>
+
+<!-- P16: Veto -->
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P16 · S1</span></div>
+<div class="paper-card fragment fade-up"><div class="pn">PAPER 16 · arXiv: 2601.07155 · ACL 2026 Findings</div><div class="title">Veto — 自适应目标重构：稳定 OPD</div><div class="venue">SNU (首尔大学)</div></div>
+<div class="fragment fade-up struct-content" style="margin-top:8px;"><strong style="color:var(--amber);">核心贡献：</strong>当学生生成<strong style="color:#fff;">明显错误</strong> 的 token 时，教师不应被迫"将错就错"——Veto 允许教师<strong style="color:#fff;">否决</strong>学生错误前缀并重构蒸馏目标。与 UIUC 失效诊断 (P7) 的 Stop-Gradient 相比，Veto 的否决机制更激进但也更有效。</div></section>
 
 </div></div>
 <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.js"></script><script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
