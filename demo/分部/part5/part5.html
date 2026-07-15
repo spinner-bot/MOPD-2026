@@ -187,6 +187,61 @@
   </div>
 </section>
 
+<!-- C1a: CR-OPD精讲 -->
+<section data-transition="slide">
+  <h2 style="font-size:24px;font-weight:700;margin-bottom:4px;color:var(--text);">🎯 CR-OPD 精讲 — 反事实路由</h2><div class="glow-bar"></div>
+  <p style="font-size:12px;color:var(--text3);margin:0 0 8px;">arXiv 2606.22793 | 核心: 只在"合理备选token"上计算KL</p>
+  <div class="two-col">
+    <div class="fragment fade-up"><div class="concept-card" style="border-top:3px solid var(--purple);"><h4>📐 问题: 大词表噪声</h4>
+      <p style="font-size:12px;line-height:1.7;">词表50k-200k token。教师和学生对于绝大多数token概率≈0，但log比值放大后贡献<strong style="color:var(--purple);">大量噪声项</strong>。微小数值波动→梯度估计方差巨大→淹没真正关键的决策点。</p>
+      <div class="formula-card" style="padding:12px 16px;margin-top:8px;"><div class="math-block" style="font-size:13px;">$$\mathcal{L}_t = \sum_{v \in \mathcal{V}} \pi_S(v|s_t) \log \frac{\pi_S(v|s_t)}{\pi_T(v|s_t)}$$</div></div></div></div>
+    <div class="fragment fade-up"><div class="concept-card" style="border-top:3px solid var(--a5);"><h4>✅ 创新: 动态支持集+重新归一化</h4>
+      <p style="font-size:12px;line-height:1.7;">取师生各自<strong style="color:var(--a5);">Top-K并集</strong>=动态支持集C_t，在此集合上重新归一化→计算KL:<br>
+      C_t = TopK(π_T, K_T) ∪ TopK(π_S, K_S)</p>
+      <div class="formula-card" style="padding:12px 16px;margin-top:8px;"><div class="math-block" style="font-size:13px;">$$\mathcal{L}_t^{\text{CR}} = \sum_{v \in \mathcal{C}_t} \hat{\pi}_S(v) \log \frac{\hat{\pi}_S(v)}{\hat{\pi}_T(v)}$$</div></div>
+      <p style="font-size:11px;color:var(--text3);">"反事实"= 教师认为可能的token才考虑，否则忽略。有效信号提升~3倍。</p></div></div>
+  </div>
+</section>
+
+<!-- C1b: GAE-OPD精讲 -->
+<section data-transition="slide">
+  <h2 style="font-size:24px;font-weight:700;margin-bottom:4px;color:var(--text);">⏱️ GAE-OPD 精讲 — 时序信用分配</h2><div class="glow-bar"></div>
+  <p style="font-size:12px;color:var(--text3);margin:0 0 8px;">arXiv 2606.22793 | 核心: 将未来KL信号向前传播到早期决策token</p>
+  <div class="two-col">
+    <div class="fragment fade-up"><div class="concept-card" style="border-top:3px solid var(--a2);"><h4>📐 问题: 自回归的时间依赖被忽略</h4>
+      <p style="font-size:12px;line-height:1.7;">生成是自回归的: s_t = (x, y_{&lt;t})。前面token决定后面语境。早期关键决策(分支/解法选择)只在自己那一步受轻微KL惩罚，但<strong style="color:var(--a2);">后果影响后续整条链</strong>。标准OPD无法追溯归因。</p></div></div>
+    <div class="fragment fade-up"><div class="concept-card" style="border-top:3px solid var(--a5);"><h4>✅ 创新: GAE累积未来KL加权和</h4>
+      <p style="font-size:12px;line-height:1.7;">每个token的学习目标不是即时d_t，而是<strong style="color:var(--a5);">未来累积KL的GAE估计</strong>G_t:</p>
+      <div class="formula-card" style="padding:12px 16px;margin-top:6px;"><div class="math-block" style="font-size:13px;">$$G_t = \sum_{l=0}^{\infty} (\gamma \lambda)^l \delta_{t+l}$$</div></div>
+      <p style="font-size:11px;color:var(--text3);">后期高KL(推理失败) → 信号向前传播 → 增强早期决策token权重。与CR-OPD结合后效率提升1.5-2×。</p></div></div>
+  </div>
+</section>
+
+<!-- C1c: StepOPSD精讲 -->
+<section data-transition="slide">
+  <h2 style="font-size:24px;font-weight:700;margin-bottom:4px;color:var(--text);">📶 StepOPSD 精讲 — Token级→步骤级</h2><div class="glow-bar"></div>
+  <p style="font-size:12px;color:var(--text3);margin:0 0 8px;">arXiv 2605.27140 | 核心: 每步信用预算归一化，防止长步骤主导损失</p>
+  <div class="two-col">
+    <div class="fragment fade-up"><div class="concept-card" style="border-top:3px solid var(--a3);"><h4>📐 问题: Token数与重要性不成正比</h4>
+      <p style="font-size:12px;line-height:1.7;">人类推理分层级: 题目→理解→列式→计算→验证→答案。一个"答案"步骤可能只有几个token，而"计算"步骤可能占几十个token。<strong style="color:var(--a3);">按token平均加权→长步骤获得不成比例的损失占比→模型过度优化冗长部分</strong>，忽略核心逻辑跳跃。</p></div></div>
+    <div class="fragment fade-up"><div class="concept-card" style="border-top:3px solid var(--a5);"><h4>✅ 创新: 步骤切分+信用预算归一化</h4>
+      <p style="font-size:12px;line-height:1.7;">切分推理链为M个有意义的步骤(规则/分段器)→每步token数L_k:</p>
+      <div class="formula-card" style="padding:10px 16px;margin-top:6px;"><div class="math-block" style="font-size:13px;">$$\mathcal{L} = \sum_{k=1}^{M} w_k \cdot \frac{1}{L_k} \sum_{t \in \text{step}_k} D_{KL}(\pi_S \|\pi_T)$$</div></div>
+      <p style="font-size:11px;color:var(--text3);">w_k可均等或按步骤类型加权(答案步骤给更高权重)。确保每个逻辑步骤对总损失贡献不受token数量影响。</p></div></div>
+  </div>
+</section>
+
+<!-- C-summary: 三层协同 -->
+<section data-transition="slide">
+  <h2 style="font-size:24px;font-weight:700;margin-bottom:4px;color:var(--text);">🔗 三项技术协同 — OPD的三层升级</h2><div class="glow-bar"></div>
+  <div class="tri-grid">
+    <div class="fragment fade-up" style="background:rgba(168,85,247,0.06);border:1px solid rgba(168,85,247,0.2);border-radius:16px;padding:22px 16px;text-align:left;"><h4 style="color:var(--purple);margin:0 0 8px;">🎯 CR-OPD</h4><p style="font-size:12px;color:var(--text2);margin:0;line-height:1.7;">解决: <strong style="color:#fff;">在哪计算损失？</strong><br>信号聚焦维度<br>从全词表→Top-K并集<br>过滤尾部分布噪声</p></div>
+    <div class="fragment fade-up" style="background:rgba(0,210,255,0.05);border:1px solid rgba(0,210,255,0.18);border-radius:16px;padding:22px 16px;text-align:left;"><h4 style="color:var(--a2);margin:0 0 8px;">⏱️ GAE-OPD</h4><p style="font-size:12px;color:var(--text2);margin:0;line-height:1.7;">解决: <strong style="color:#fff;">如何分配信用？</strong><br>时序感知维度<br>未来信号→早期决策<br>追溯归因关键token</p></div>
+    <div class="fragment fade-up" style="background:rgba(0,230,118,0.05);border:1px solid rgba(0,230,118,0.18);border-radius:16px;padding:22px 16px;text-align:left;"><h4 style="color:var(--a5);margin:0 0 8px;">📶 StepOPSD</h4><p style="font-size:12px;color:var(--text2);margin:0;line-height:1.7;">解决: <strong style="color:#fff;">在什么层级聚合？</strong><br>层级粒度维度<br>从token→步骤<br>防止长步骤主导</p></div>
+  </div>
+  <p style="font-size:13px;color:var(--text2);margin-top:12px;max-width:750px;">它们共同将OPD从<strong style="color:var(--purple);">逐token独立KL惩罚</strong>升级为<strong style="color:#fff;">稀疏聚焦·时序感知·步骤等权</strong>的精细蒸馏框架。</p>
+</section>
+
 <!-- ═══════ Section D: 失效诊断 ═══════ -->
 <section data-transition="slide"><div style="text-align:center;"><span style="background:rgba(255,107,157,0.1);color:var(--a3);border:1px solid rgba(255,107,157,0.2);padding:4px 14px;border-radius:12px;font-size:11px;font-weight:700">📍 当前位置</span></div><h2 style="font-size:24px;font-weight:700;margin:10px 0 4px;color:var(--text);">🗺️ Section D — 失效模式诊断</h2><div class="glow-bar"></div>
   <svg viewBox="0 0 1000 160" xmlns="http://www.w3.org/2000/svg" style="max-width:900px;">
@@ -210,6 +265,48 @@
     </tbody>
   </table>
   <div class="fragment fade-up info-tile" style="max-width:750px;margin-top:10px;"><h4>💡 工程价值</h4><p>UIUC 2026实证分析——这些不是理论上的"可能发生"，而是<strong style="color:var(--a3);">实践中反复出现的真实问题</strong>。每个修复方案都经过了Ablation验证。</p></div>
+</section>
+
+<!-- D1a: 失效模式一 精讲 -->
+<section data-transition="slide">
+  <h2 style="font-size:24px;font-weight:700;margin-bottom:4px;color:var(--text);">🩺 失效一精讲：学生前缀扭曲教师</h2><div class="glow-bar"></div>
+  <div class="two-col">
+    <div class="fragment fade-up"><div class="concept-card" style="border-top:3px solid var(--a3);"><h4>⚠️ 恶性循环</h4><p style="font-size:12px;line-height:1.8;">学生弱 → 生成混乱/低质前缀 → 教师被迫"将错就错"输出 → 学生从污染信号中学习 → <strong style="color:var(--a3);">生成更差的前缀</strong> → 循环加剧。教师被拉入其从未训练过的低质量区域。</p></div></div>
+    <div class="fragment fade-up"><div class="concept-card" style="border-top:3px solid var(--a5);"><h4>✅ 修复两步走</h4><p style="font-size:12px;line-height:1.8;"><strong style="color:var(--a5);">① Stop-Gradient:</strong> 确保梯度不会从学生流向教师——显式切断路径，保证教师输出完全冻结，不受学生污染。<br><strong style="color:var(--a5);">② Top-K KL:</strong> 教师只对学生前缀中自己有把握的Top-K token蒸馏。教师="你这个前缀我只在少数确信的token上给你指导，其余你自己看着办"。</p></div></div>
+  </div>
+</section>
+
+<!-- D1b: 失效模式二 精讲 -->
+<section data-transition="slide">
+  <h2 style="font-size:24px;font-weight:700;margin-bottom:4px;color:var(--text);">🩺 失效二精讲：Top-K +1 偏差 — "截断"破坏了什么？</h2><div class="glow-bar"></div>
+  <div class="two-col">
+    <div class="fragment fade-up"><div class="concept-card" style="border-top:3px solid var(--a3);"><h4>📐 什么是截断？</h4><p style="font-size:12px;line-height:1.8;">词表50k-200k token。全词表KL计算开销巨大 → 工程上取Top-K(如256)近似。直接扔掉剩余概率质量 → <strong style="color:var(--a3);">ΣP≠1</strong>。<br><br><strong>缺失质量偏差:</strong> P_rest被忽略，尾部信息丢失。<br><strong>归一化偏差:</strong> 学生分布在K上重新归一化不一致 → KL估计既不无偏也不一致。长期累积→策略偏离预期。</p></div></div>
+    <div class="fragment fade-up"><div class="concept-card" style="border-top:3px solid var(--a5);"><h4>✅ 修复: 显式"其他"类别</h4><p style="font-size:12px;line-height:1.8;">创建虚拟&lt;other&gt; token，吸收剩余概率质量P_rest。得到<strong style="color:var(--a5);">严格有效的(K+1)分布</strong>:</p><div class="formula-card" style="padding:10px 16px;margin:6px 0;"><div class="math-block" style="font-size:13px;">$$\hat{P}(v) = \begin{cases} P(v) & v \in \mathcal{K} \\ P_{\text{rest}} & v = \text{<other>} \end{cases}$$</div></div><p style="font-size:11px;color:var(--text3);">学生分布同样处理→在(K+1)类上计算KL→数学严格，从根本上消除截断偏差。</p></div></div>
+  </div>
+</section>
+
+<!-- D1c: 失效模式三 精讲 -->
+<section data-transition="slide">
+  <h2 style="font-size:24px;font-weight:700;margin-bottom:4px;color:var(--text);">🩺 失效三精讲：PI-free margin — 背答案≠学推理</h2><div class="glow-bar"></div>
+  <div class="two-col">
+    <div class="fragment fade-up"><div class="concept-card" style="border-top:3px solid var(--a3);"><h4>⚠️ 表象与根因</h4><p style="font-size:12px;line-height:1.8;"><strong>表象:</strong> 训练分布内逼近教师性能，分布偏移后断崖式下跌。<br><br><strong>根因:</strong> 学生找到了<strong style="color:var(--a3);">PI-free margin</strong>(策略不变安全区)。在训练分布内KL≈0，但依赖的是<strong style="color:var(--a3);">表面统计关联</strong>(如"看到'总共'就猜答案在最后"),非因果推理。测试分布改变→关联失效→策略崩溃。</p></div></div>
+    <div class="fragment fade-up"><div class="concept-card" style="border-top:3px solid var(--a5);"><h4>✅ 修复: RLVR-adapt教师+SFT-warm学生</h4><p style="font-size:12px;line-height:1.7;"><strong style="color:var(--a5);">Step 1 RLVR-adapt:</strong> 用可自动验证的奖励(答案对错)对教师RL微调。教师暴露在多样化交互中→输出经环境验证的鲁棒推理链。<br><br><strong style="color:var(--a5);">Step 2 SFT-warm:</strong> 用压力测试后的教师数据对学生SFT热身。学生继承的是"为何如此推理"而非"如此措辞"。</p></div></div>
+  </div>
+  <p style="font-size:11px;color:var(--text3);margin-top:8px;">类比: 原教师=只解标准题的学霸→RLVR=参加模拟考被自动判卷纠正→SFT-warm学生=用修正笔记学习→原学生=抄作业,换题就废。</p>
+</section>
+
+<!-- D1d: 三大失效对比总结 -->
+<section data-transition="slide">
+  <h2 style="font-size:24px;font-weight:700;margin-bottom:4px;color:var(--text);">🩺 三大失效 — 覆盖OPD三层脆弱点</h2><div class="glow-bar"></div>
+  <table class="summary-table fragment fade-up">
+    <thead><tr><th>失效模式</th><th>核心问题</th><th>修复思路</th><th>覆盖层面</th></tr></thead>
+    <tbody>
+      <tr><td class="pc" style="color:var(--a3);">学生前缀扭曲教师</td><td>学生劣质输入污染教师输出</td><td class="hl">Stop-Gradient Top-K KL</td><td>数据质量</td></tr>
+      <tr><td class="pc" style="color:var(--a3);">Top-K +1 偏差</td><td>截断破坏概率归一化</td><td class="hl">显式"其他"类别</td><td>数学严谨性</td></tr>
+      <tr><td class="pc" style="color:var(--a3);">PI-free margin</td><td>学生背答案而非学推理</td><td class="hl">RLVR-adapt师→SFT-warm生</td><td>知识深度</td></tr>
+    </tbody>
+  </table>
+  <p style="font-size:12px;color:var(--text2);margin-top:10px;">从<strong style="color:var(--a3);">数据质量、数学严谨性到知识深度</strong>——三个层面覆盖OPD在LLM推理中的脆弱点，2026年工程落地的重要指南。</p>
 </section>
 
 <!-- Summary + Transition -->
