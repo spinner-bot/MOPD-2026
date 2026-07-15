@@ -1234,6 +1234,56 @@ window.MathJax = {
   </div>
 </section>
 
+<!-- ═══════════════════════════ SLIDE 20.4: 支线的支线 — 参数增长优化方法 ═══════════════════════════ -->
+<section data-transition="slide">
+  <div style="display:flex;align-items:center;gap:12px;justify-content:center;margin-bottom:4px;">
+    <h2 style="font-size:24px;font-weight:700;color:var(--text);margin:0;">
+      🌿 支线的支线 — Progressive Nets 参数增长问题的替代方案
+    </h2>
+    <span style="background:rgba(254,202,87,0.12);border:1px solid rgba(254,202,87,0.25);border-radius:12px;padding:3px 10px;font-size:10px;color:var(--a4);font-weight:700;">仅了解</span>
+  </div>
+  <div class="glow-bar"></div>
+  <p style="font-size:13px;color:var(--text3);margin:0 0 16px;">
+    以下三种方法各自解决了"参数随任务数线性增长"的问题，但走的是不同的路。
+    此处<strong style="color:var(--a4);">仅作概念了解</strong>，不做深入展开。
+  </p>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:18px;max-width:960px;">
+    <!-- PackNet -->
+    <div class="fragment fade-up" style="background:rgba(108,92,231,0.06);border:1px solid rgba(108,92,231,0.2);border-radius:16px;padding:20px 16px;text-align:left;">
+      <div style="font-size:13px;font-weight:700;letter-spacing:1px;color:var(--a1);margin-bottom:8px;">✂️ PackNet</div>
+      <p style="font-size:12px;color:var(--text2);line-height:1.6;margin:0;">
+        <strong style="color:#fff;">策略：</strong>训练完一个任务后<strong style="color:var(--a1);">剪枝</strong>（去掉不重要的权重），冻结剩余。下一个任务只用空出来的权重。<br>
+        <strong style="color:#fff;">优势：</strong>参数总量<strong style="color:var(--a5);">恒定不变</strong>。<br>
+        <strong style="color:#fff;">代价：</strong>任务间不共享特征表达，每个任务占用独立子空间。
+      </p>
+    </div>
+    <!-- EWC -->
+    <div class="fragment fade-up" style="background:rgba(0,210,255,0.04);border:1px solid rgba(0,210,255,0.18);border-radius:16px;padding:20px 16px;text-align:left;">
+      <div style="font-size:13px;font-weight:700;letter-spacing:1px;color:var(--a2);margin-bottom:8px;">🧲 EWC</div>
+      <p style="font-size:12px;color:var(--text2);line-height:1.6;margin:0;">
+        <strong style="color:#fff;">策略：</strong>用<strong style="color:var(--a2);">Fisher信息矩阵</strong>识别对旧任务重要的权重，给这些权重的变化施加惩罚——重要参数锁定，不重要参数自由调整。<br>
+        <strong style="color:#fff;">优势：</strong>所有任务<strong style="color:var(--a5);">共用一个网络</strong>，参数不增长。<br>
+        <strong style="color:#fff;">代价：</strong>难以完美平衡新旧任务的性能。
+      </p>
+    </div>
+    <!-- PathNet -->
+    <div class="fragment fade-up" style="background:rgba(255,107,157,0.04);border:1px solid rgba(255,107,157,0.15);border-radius:16px;padding:20px 16px;text-align:left;">
+      <div style="font-size:13px;font-weight:700;letter-spacing:1px;color:var(--a3);margin-bottom:8px;">🧩 PathNet</div>
+      <p style="font-size:12px;color:var(--text2);line-height:1.6;margin:0;">
+        <strong style="color:#fff;">策略：</strong>预定义一堆<strong style="color:var(--a3);">小型模块</strong>（模块库大小固定），每个任务通过进化算法或梯度学习<strong style="color:var(--a3);">选择哪些模块组合</strong>最适合自己。<br>
+        <strong style="color:#fff;">优势：</strong>模块库<strong style="color:var(--a5);">不随任务增长</strong>，自然支持模块复用。<br>
+        <strong style="color:#fff;">代价：</strong>模块路由的学习本身有开销。
+      </p>
+    </div>
+  </div>
+  <div class="fragment fade-up" style="margin-top:16px;max-width:800px;text-align:center;background:rgba(254,202,87,0.05);border:1px solid rgba(254,202,87,0.12);border-radius:12px;padding:10px 20px;">
+    <p style="font-size:12px;color:var(--text2);margin:0;">
+      <strong style="color:var(--a4);">🔀 趋势：</strong>从 Progressive Nets 的"全量硬增长" → PackNet的"剪枝复用" → EWC的"受控遗忘" → PathNet的"模块化组合"。
+      核心方向：<strong style="color:#fff;">灵活复用 > 线性扩展</strong>
+    </p>
+  </div>
+</section>
+
 <!-- ═══════ SECTION 4.5: 缺口与桥梁 — 机器人/无监督 ═══════ -->
 <!-- ═══════════════════════════ SLIDE 20.5: 节标题 - 缺口 ═══════════════════════════ -->
 <section data-transition="slide">
