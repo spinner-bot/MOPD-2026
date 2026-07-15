@@ -186,7 +186,58 @@
   <div class="fragment fade-up concept-block" style="max-width:780px;border-left:3px solid var(--amber);"><h4>🔑 否决机制</h4><p style="font-size:11px;">与Module 1 Part 5失效诊断中的"学生前缀扭曲教师"形成对比：<br>UIUC的修复是Stop-Gradient Top-K KL(被动过滤)→Veto的修复是<strong style="color:var(--amber);">主动否决+重构目标</strong>，更激进但也更有效。</p></div>
 </section>
 
-<!-- 继续 P17-29 --></div></div>
+<!-- P17: G-OPD -->
+<section data-transition="slide">
+  <div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 Paper 17</span></div>
+  <div class="paper-card fragment fade-up" style="max-width:780px;">
+    <div class="pn">PAPER 17 · arXiv: 2602.12125 · 2026.02</div>
+    <div class="title">G-OPD — OPD 作为 KL 约束 RL：奖励可外推超过教师上限</div>
+    <div class="venue">RUC (中国人民大学) / 腾讯</div>
+    <div class="desc" style="margin-top:8px;"><strong style="color:var(--amber);">核心贡献：</strong>证明OPD本质上等价于<strong style="color:#fff;">KL约束RL问题</strong>，且在这一框架下<strong style="color:#fff;">学生奖励可以超越教师上限</strong>。</div>
+  </div>
+  <div class="two-col fragment fade-up">
+    <div class="concept-block" style="border-left:3px solid var(--amber);"><h4>🔑 OPD = KL约束RL</h4><p style="font-size:11px;">$$\max_\pi \mathbb{E}_{y\sim\pi}[R(y)] - \beta D_{KL}(\pi \|\pi_T)$$<br>教师π_T提供先验分布，但学生可以通过RL奖励<strong style="color:var(--amber);">突破</strong>教师的能力边界。这反驳了"蒸馏学生永远不如教师"的直觉。</p></div>
+    <div class="concept-block" style="border-left:3px solid var(--sage);"><h4>📊 奖励外推</h4><p style="font-size:11px;">当环境奖励足够强时，学生可以在KL约束允许的范围内<strong style="color:var(--sage);">偏离教师</strong>→发现教师没有的新策略→奖励超越教师。类似Kickstarting中λ_k→0的机制。</p></div>
+  </div>
+</section>
+
+<!-- P18: Fast OPD -->
+<section data-transition="slide">
+  <div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 Paper 18</span></div>
+  <div class="paper-card fragment fade-up" style="max-width:780px;">
+    <div class="pn">PAPER 18 · arXiv: 2602.15260 · 2026.02</div>
+    <div class="title">Fast OPD — 前缀截断：仅蒸馏推理前缀 · 2–47× 加速</div>
+    <div class="venue">工业界</div>
+    <div class="desc" style="margin-top:8px;"><strong style="color:var(--amber);">核心贡献：</strong>发现推理链中大部分token是<strong style="color:#fff;">答案展开部分</strong>(计算过程、格式化文本)，真正有价值的蒸馏信号集中在<strong style="color:#fff;">推理前缀</strong>(逻辑框架)。仅对前缀进行OPD→2-47倍加速。</div>
+  </div>
+  <div class="fragment fade-up concept-block" style="max-width:780px;border-left:3px solid var(--amber);"><h4>🔗 与REOPOLD问题二的对比</h4><p style="font-size:11px;">REOPOLD通过熵筛选token→Fast OPD通过<strong style="color:var(--amber);">位置</strong>筛选token(仅保留推理前缀)。两者互补：熵捕捉不确定性，位置捕捉结构性重要性。</p></div>
+</section>
+
+<!-- P19: Entropy-Aware OPD -->
+<section data-transition="slide">
+  <div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 Paper 19</span></div>
+  <div class="paper-card fragment fade-up" style="max-width:780px;">
+    <div class="pn">PAPER 19 · arXiv: 2603.07079 · 2026.03</div>
+    <div class="title">Entropy-Aware OPD — 教师高熵→FKL；教师低熵→RKL</div>
+    <div class="venue">KAIST / IBM</div>
+    <div class="desc" style="margin-top:8px;"><strong style="color:var(--amber);">核心贡献：</strong>根据<strong style="color:#fff;">教师的熵</strong>动态选择KL方向：教师不确定时(高熵)→FKL覆盖所有可能；教师确定时(低熵)→RKL精确模仿。</div>
+  </div>
+  <div class="fragment fade-up concept-block" style="max-width:780px;border-left:3px solid var(--sage);"><h4>📐 自适应KL方向</h4><p style="font-size:11px;">$$\mathcal{L}_t = \begin{cases} D_{KL}(\pi_T \|\pi_S) & \text{if } H(\pi_T) > \tau \\ D_{KL}(\pi_S \|\pi_T) & \text{otherwise} \end{cases}$$<br>教师的熵反映了该token的<strong style="color:var(--sage);">不确定性</strong>：高熵=多种合理选择(FKL保留多样性)，低熵=唯一正确答案(RKL精确复制)。</p></div>
+</section>
+
+<!-- P20: REOPOLD (引用Module 1) -->
+<section data-transition="slide">
+  <div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 Paper 20</span></div>
+  <div class="paper-card fragment fade-up" style="max-width:780px;">
+    <div class="pn">PAPER 20 · arXiv: 2603.11137 · 2026.03</div>
+    <div class="title">REOPOLD — 松弛在线策略蒸馏</div>
+    <div class="venue">KAIST / MS</div>
+    <div class="desc" style="margin-top:8px;"><strong style="color:var(--amber);">已在 Module 1 Part 4 详细精讲。</strong>奖励裁剪+熵引导采样+两阶段训练。6.7-12×效率提升。此处从白盒OPD视角补充其定位。</div>
+  </div>
+  <div class="fragment fade-up concept-block" style="max-width:780px;border-left:3px solid var(--amber);"><h4>在白盒OPD中的位置</h4><p style="font-size:11px;">REOPOLD是DistiLLM团队在发现问题后提出的<strong style="color:var(--amber);">系统性解决方案</strong>。DistiLLM提出Skewed-KL，DistiLLM-2解耦数据源/KL方向，REOPOLD进一步解决三个核心工程问题→<strong style="color:var(--amber);">形成KAIST完整的白盒OPD技术栈</strong>。</p></div>
+</section>
+
+<!-- 继续 P21-29 --></div></div>
 <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.js"></script>
 <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 <script>(function(){const c=document.getElementById('bg-canvas'),x=c.getContext('2d');let W,H,shapes=[],frame=0;function rs(){W=c.width=window.innerWidth;H=c.height=window.innerHeight}window.addEventListener('resize',rs);rs();class Shape{constructor(){this.reset()}reset(){this.x=Math.random()*W;this.y=Math.random()*H;this.size=Math.random()*50+25;this.type=Math.floor(Math.random()*3);this.vx=(Math.random()-0.5)*0.4;this.vy=(Math.random()-0.5)*0.4;this.alpha=Math.random()*0.06+0.04;this.rot=Math.random()*Math.PI*2;this.rv=(Math.random()-0.5)*0.003}update(){this.x+=this.vx;this.y+=this.vy;this.rot+=this.rv;if(this.x<-80||this.x>W+80)this.vx*=-1;if(this.y<-80||this.y>H+80)this.vy*=-1}draw(c){var cx=this.x,cy=this.y;c.save();c.translate(cx,cy);c.rotate(this.rot);c.globalAlpha=this.alpha;c.shadowColor='rgba(220,180,120,0.6)';c.shadowBlur=18;c.strokeStyle='rgba(220,170,110,0.9)';c.lineWidth=1;if(this.type===0){c.beginPath();for(let i=0;i<6;i++){const a=i*Math.PI/3-Math.PI/2,r=this.size*0.6;const px=r*Math.cos(a),py=r*Math.sin(a);i===0?c.moveTo(px,py):c.lineTo(px,py)}c.closePath();c.stroke()}else if(this.type===1){c.beginPath();const s=this.size*0.45;c.moveTo(0,-s);c.lineTo(s,0);c.lineTo(0,s);c.lineTo(-s,0);c.closePath();c.stroke()}else{c.beginPath();c.arc(0,0,this.size*0.35,0,Math.PI*2);c.stroke()}c.shadowBlur=6;c.shadowColor='rgba(240,200,140,0.4)';c.globalAlpha=this.alpha*1.3;c.strokeStyle='rgba(240,200,140,0.6)';c.lineWidth=0.6;if(this.type===0){c.beginPath();for(let i=0;i<6;i++){const a=i*Math.PI/3-Math.PI/2,r2=this.size*0.35;const px=r2*Math.cos(a),py=r2*Math.sin(a);i===0?c.moveTo(px,py):c.lineTo(px,py)}c.closePath();c.stroke()}c.restore()}}shapes=Array.from({length:20},()=>new Shape());function drawGrid(){var gs=55;x.strokeStyle='rgba(170,130,70,0.06)';x.lineWidth=1;for(let i=gs;i<W;i+=gs){x.beginPath();x.moveTo(i,0);x.lineTo(i,H);x.stroke()}for(let j=gs;j<H;j+=gs){x.beginPath();x.moveTo(0,j);x.lineTo(W,j);x.stroke()}for(let i=gs;i<W;i+=gs){for(let j=gs;j<H;j+=gs){var dx=i-W/2,dy=j-H/2,dist=Math.sqrt(dx*dx+dy*dy);var edgeFade=Math.max(0.15,1-dist/(Math.max(W,H)*0.7));x.fillStyle=`rgba(210,160,100,${0.12*edgeFade})`;x.beginPath();x.arc(i,j,1.5,0,Math.PI*2);x.fill()}}}function drawGlow(){for(var i=0;i<2;i++){var gx=W*(0.3+i*0.4)+Math.sin(frame*0.002+i)*W*0.15;var gy=H*(0.4+i*0.2)+Math.cos(frame*0.003+i)*H*0.1;var grad=x.createRadialGradient(gx,gy,0,gx,gy,Math.min(W,H)*0.4);grad.addColorStop(0,'rgba(220,180,120,0.07)');grad.addColorStop(0.5,'rgba(180,140,80,0.03)');grad.addColorStop(1,'rgba(0,0,0,0)');x.fillStyle=grad;x.fillRect(0,0,W,H)}}function lp(){x.clearRect(0,0,W,H);drawGrid();drawGlow();shapes.forEach(s=>{s.update();s.draw(x)});frame++;requestAnimationFrame(lp)}lp()})();</script>
