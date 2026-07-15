@@ -49,7 +49,19 @@
 <!-- ═══════════ P36: OPSD ⭐ (8S) ═══════════ -->
 <section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P36 · OPSD ⭐ S1/8</span></div>
 <div class="paper-card fragment fade-up"><div class="pn">PAPER 36 · arXiv: 2601.18734 · OPSD 正典</div><div class="title">Self-Distilled Reasoner — OPSD 奠基论文</div><div class="venue">逐 token RKL + 裁剪 · TRL GOLD trainer</div></div>
-<div class="fragment fade-up struct-content" style="margin-top:8px;"><strong style="color:var(--amber);">S1 论文信息+核心贡献：</strong>确立 OPSD (Online Policy Self-Distillation) 的<strong style="color:#fff;">正典范式</strong>——同一模型在"已验证推理轨迹"作为特权上下文的条件下扮演教师，在无条件时扮演学生。通过逐 token Reverse KL + 裁剪实现自蒸馏。</div></section>
+<div class="fragment fade-up struct-content" style="margin-top:8px;"><strong style="color:var(--amber);">S1 论文信息+核心贡献：</strong>确立 OPSD (Online Policy Self-Distillation) 的<strong style="color:#fff;">正典范式</strong>。同一模型：教师=知道答案的自己 (特权上下文)，学生=不知道答案的自己。逐 token RKL+裁剪。</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P36 · OPSD ⭐ S2-3/8</span></div><h2 style="font-size:20px;font-weight:700;color:var(--amber);margin-bottom:10px;">背景动机 · 问题定义</h2>
+<div class="fragment fade-up struct-content"><strong>S2 背景：</strong>标准 OPD 需要<strong style="color:#fff;">外部教师模型</strong>→额外训练和存储开销。能否让模型<strong style="color:var(--amber);">自己教自己</strong>？<br><strong>S3 问题定义：</strong>同一模型在两种条件下产生输出差距——条件一：知道正确答案 (已验证推理轨迹)；条件二：不知道。差距源于<strong style="color:var(--amber);">条件化的不同</strong>而非权重。OPSD 用这种差距驱动自蒸馏。</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P36 · OPSD ⭐ S4-5/8</span></div><h2 style="font-size:20px;font-weight:700;color:var(--amber);margin-bottom:10px;">核心创新 · 方法细节</h2>
+<div class="fragment fade-up struct-content"><strong>S4 创新：</strong>① 特权上下文 = 已验证推理轨迹 ② 逐 token RKL (Reverse KL) ③ KL 裁剪防止梯度爆炸。<br><strong>S5 方法：</strong>对每个 prompt，模型生成无特权响应 (学生) 和有特权响应 (教师)→在教师序列的每个 token 位置计算 RKL (π_S‖π_T)→裁剪极端 KL 值→反向传播。TRL 库的 GOLD trainer 实现了此流程。</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P36 · OPSD ⭐ S6-7/8</span></div><h2 style="font-size:20px;font-weight:700;color:var(--amber);margin-bottom:10px;">实验 · 关键结果</h2>
+<div class="fragment fade-up struct-content"><strong>S6 实验：</strong>数学推理 (GSM8K/MATH) + 代码生成。基线: 标准 SFT/离线 KD/标准 OPD (外部教师)。<br><strong>S7 结果：</strong>OPSD 在无外部教师的情况下<strong style="color:#fff;">显著超越</strong>标准 SFT，接近有外部教师的 OPD 水平→证明自蒸馏是可行的知识内化路径。</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P36 · OPSD ⭐ S8/8</span></div><h2 style="font-size:20px;font-weight:700;color:var(--amber);margin-bottom:10px;">局限性与影响</h2>
+<div class="fragment fade-up struct-content"><strong>S8 局限：</strong>① 特权上下文质量决定上限——差验证轨迹→差教师 ② RKL 的模式坍缩风险 ③ 仅在有明确验证标准的任务上有效。<br><strong style="color:var(--amber);">影响：</strong>OPSD 开启了自蒸馏范式——后续 18 篇 OPSD 论文 (P37-P54) 都在其框架下探索不同特权上下文设计。</div></section>
 <section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P30 · S1/5</span></div><div class="paper-card fragment fade-up"><div class="pn">PAPER 30 · arXiv: 2509.25100</div><div class="title">ORPO-Distill — 学生负样本 + 教师正样本对比</div></div><div class="fragment fade-up struct-content" style="margin-top:8px;"><strong style="color:var(--amber);">S1 核心贡献：</strong>不访问教师 logits→用教师生成的文本作为正例，学生生成作为负例→对比学习。SGO+ORPO 双信号驱动。</div></section>
 <section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P30 · S2-5/5</span></div><div class="fragment fade-up struct-content"><strong>S2 背景：</strong>黑盒场景下无法获取逐 token KL。<strong>S3 创新：</strong>对比学习替代 logit 匹配——拉近学生到教师正例，推远学生负例。<strong>S4 实验：</strong>ORPO+SGO 联合优化。<strong>S5 局限：</strong>对比信号稀疏，负样本质量影响大。</div></section>
 
