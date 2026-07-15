@@ -170,6 +170,84 @@
   <text x="450" y="225" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="10" font-family="sans-serif">训练数据: 4亿 (图像, 文本描述) 对 · 从互联网收集</text>
 </svg></section>
 
-<section data-transition="slide"><div class="two-col fragment fade-up"><div class="concept-block" style="border-left:3px solid var(--vlm);"><h4>🔑 为什么CLIP是"桥"的起点</h4><p style="font-size:11px;">CLIP训练后，文本和图像<strong style="color:var(--vlm);">共享同一个嵌入空间</strong>。"a cat on a table"的文本向量和猫在桌上的照片向量几乎重合。这意味着——可以将<strong style="color:var(--vlm);">文本作为检索查询</strong>找到语义匹配的图像，或反过来。更重要的是：文本向量可以直接作为<strong style="color:var(--vlm);">条件信号</strong>指导图像生成。</p></div><div class="concept-block" style="border-left:3px solid var(--aud);"><h4>📊 零样本能力</h4><p style="font-size:11px;">ImageNet 零样本准确率 <strong style="color:var(--aud);">76.2%</strong>（与监督 ResNet-50 持平）。只需将类别名转为文本描述（如"a photo of a dog"），无需任何微调即可分类。这证明<strong style="color:var(--aud);">视觉和语言可以在统一的语义空间中被理解和处理</strong>。</p></div></div></section><script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<section data-transition="slide"><!-- ═══════════ DALL·E 1 ═══════════ -->
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">DALL·E 1 · 2021.01</span></div>
+<div class="paper-card fragment fade-up"><div class="cite" style="font-size:10px;">OpenAI · 2021.01 · Zero-Shot Text-to-Image Generation</div>
+<div class="title" style="font-size:16px;font-weight:700;color:#fff;margin:4px 0;">DALL·E — 首个大规模文本→图像生成</div>
+<div class="desc" style="font-size:12px;color:var(--text2);line-height:1.7;margin-top:6px;"><strong style="color:var(--vid);">核心创新：</strong>分两步——① 用dVAE将图像压缩为<strong style="color:#fff;">离散token序列</strong>；② 用<strong style="color:#fff;">自回归Transformer</strong>像GPT一样逐token生成这些图像token。首次证明语言和视觉可在同一token流中统一建模。</div></div></section>
+
+<section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--vid);margin-bottom:6px;">核心问题：如何让 Transformer 生成图像？</h2>
+<div class="def-box fragment fade-up"><div class="label">🎯 根本矛盾</div><div class="content">Transformer 是为一维<strong style="color:var(--vid);">离散序列</strong>（文本token）设计的——每个位置是词表中一个整数索引。但图像是<strong style="color:var(--vid);">二维连续像素值</strong>（256×256×3个数字）。<br><br><strong style="color:#fff;">解决思路：</strong>能不能把图像也变成一串整数索引？就像把中文翻译成数字token一样，把一张图也"翻译"成一串数字。这样Transformer就能用<strong style="color:var(--vid);">完全相同的方式</strong>处理文本和图像。</div></div></section>
+
+<section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--vid);margin-bottom:6px;">dVAE：图像的"翻译器"</h2>
+<svg viewBox="0 0 920 280" xmlns="http://www.w3.org/2000/svg" style="max-width:920px;">
+  <!-- 输入图像 -->
+  <rect x="10" y="40" width="130" height="130" rx="10" fill="rgba(251,191,36,0.08)" stroke="rgba(251,191,36,0.25)"/>
+  <text x="75" y="100" text-anchor="middle" fill="#facc15" font-size="13" font-weight="700">🖼️ 256×256</text>
+  <text x="75" y="120" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="10">RGB图像</text>
+  <text x="75" y="150" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="9">~200k个值</text>
+  <!-- → -->
+  <text x="155" y="110" fill="rgba(255,255,255,0.3)" font-size="18">→</text>
+  <!-- dVAE Encoder -->
+  <rect x="180" y="40" width="150" height="130" rx="12" fill="rgba(183,148,244,0.08)" stroke="rgba(183,148,244,0.25)"/>
+  <text x="255" y="68" text-anchor="middle" fill="#b794f4" font-size="13" font-weight="700">dVAE 编码器</text>
+  <line x1="200" y1="78" x2="310" y2="78" stroke="rgba(255,255,255,0.1)"/>
+  <text x="255" y="98" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="11">压缩成 32×32 网格</text>
+  <text x="255" y="118" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="11">每个位置→连续向量</text>
+  <text x="255" y="140" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="11">最近邻→Codebook索引</text>
+  <text x="255" y="158" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="9">输出: 1024个整数</text>
+  <!-- → -->
+  <text x="345" y="110" fill="rgba(255,255,255,0.3)" font-size="18">→</text>
+  <!-- Codebook -->
+  <rect x="360" y="55" width="160" height="100" rx="12" fill="rgba(96,165,250,0.06)" stroke="rgba(96,165,250,0.2)"/>
+  <text x="440" y="78" text-anchor="middle" fill="#60a5fa" font-size="12" font-weight="700">📖 Codebook</text>
+  <text x="440" y="98" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="10">8192个条目</text>
+  <text x="440" y="115" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="10">每条目=256维向量</text>
+  <text x="440" y="135" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="9">量化: 选最近条目</text>
+  <!-- → -->
+  <text x="535" y="110" fill="rgba(255,255,255,0.3)" font-size="18">→</text>
+  <!-- dVAE Decoder -->
+  <rect x="560" y="40" width="150" height="130" rx="12" fill="rgba(74,222,128,0.06)" stroke="rgba(74,222,128,0.2)"/>
+  <text x="635" y="68" text-anchor="middle" fill="#4ade80" font-size="13" font-weight="700">dVAE 解码器</text>
+  <line x1="580" y1="78" x2="690" y2="78" stroke="rgba(255,255,255,0.1)"/>
+  <text x="635" y="105" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="11">Codebook条目→特征图</text>
+  <text x="635" y="125" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="11">上采样·重建图像</text>
+  <text x="635" y="150" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="9">输出: 256×256 RGB</text>
+  <!-- → -->
+  <text x="725" y="110" fill="rgba(255,255,255,0.3)" font-size="18">→</text>
+  <!-- 输出 -->
+  <rect x="750" y="55" width="100" height="100" rx="10" fill="rgba(74,222,128,0.06)" stroke="rgba(74,222,128,0.15)"/>
+  <text x="800" y="95" text-anchor="middle" fill="#4ade80" font-size="11" font-weight="700">重建图像</text>
+  <text x="800" y="115" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="9">有损压缩</text>
+  <!-- 核心标注 -->
+  <text x="460" y="200" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="12">一张图 → 1024个离散token · 每token ∈ {0,1,…,8191} · 序列长度从~200k缩至1024</text>
+  <text x="460" y="225" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="10">离散token = 图像可以像文本一样用交叉熵训练自回归模型</text>
+</svg></section>
+
+<section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--vid);margin-bottom:6px;">两步流程：dVAE + 自回归 Transformer</h2>
+<svg viewBox="0 0 920 200" xmlns="http://www.w3.org/2000/svg" style="max-width:920px;">
+  <!-- Step 1 -->
+  <rect x="15" y="10" width="430" height="90" rx="14" fill="rgba(183,148,244,0.05)" stroke="rgba(183,148,244,0.2)"/>
+  <text x="40" y="35" fill="#b794f4" font-size="13" font-weight="700">Step 1 训练 dVAE (一次性, 冻结)</text>
+  <text x="40" y="58" fill="rgba(255,255,255,0.5)" font-size="11">图像 → 编码器 → 32×32网格 → Codebook量化 → 解码器重建 → 最小化重建误差</text>
+  <text x="40" y="78" fill="rgba(255,255,255,0.35)" font-size="10">训练完dVAE后，任何图像都可以被编码为1024个整数，也可以从1024个整数解码回图像</text>
+  <!-- Step 2 -->
+  <rect x="15" y="108" width="430" height="85" rx="14" fill="rgba(251,191,36,0.05)" stroke="rgba(251,191,36,0.25)"/>
+  <text x="40" y="132" fill="#facc15" font-size="13" font-weight="700">Step 2 训练自回归 Transformer</text>
+  <text x="40" y="155" fill="rgba(255,255,255,0.5)" font-size="11">输入: [文本token (BPE)] + [图像token (dVAE编码)] → 逐token预测下一个</text>
+  <text x="40" y="175" fill="rgba(255,255,255,0.35)" font-size="10">文本作为条件，自回归生成图像token序列，损失=交叉熵(预测索引 vs 真实索引)</text>
+  <!-- 推理 -->
+  <rect x="470" y="10" width="430" height="183" rx="14" fill="rgba(74,222,128,0.04)" stroke="rgba(74,222,128,0.15)"/>
+  <text x="495" y="35" fill="#4ade80" font-size="13" font-weight="700">🔮 推理 (文本 → 图像)</text>
+  <text x="495" y="60" fill="rgba(255,255,255,0.5)" font-size="11">① 输入文本 "an armchair in the shape of an avocado"</text>
+  <text x="495" y="80" fill="rgba(255,255,255,0.5)" font-size="11">② Transformer自回归生成 1024 个图像token</text>
+  <text x="495" y="100" fill="rgba(255,255,255,0.5)" font-size="11">③ dVAE解码器将1024个token → 256×256图像</text>
+  <text x="495" y="125" fill="rgba(255,255,255,0.4)" font-size="10">④ 输出：<strong style="color:#4ade80;">从未见过的组合</strong> (鳄梨形状的扶手椅)</text>
+  <text x="495" y="155" fill="rgba(255,255,255,0.3)" font-size="9">整个过程没用CLIP、没用扩散模型——纯粹的自回归序列生成</text>
+</svg></section>
+
+<section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--vid);margin-bottom:6px;">Codebook 训练细节 &amp; 为什么必须离散化</h2>
+<div class="two-col fragment fade-up"><div class="concept-block" style="border-left:3px solid var(--vid);"><h4>📖 Codebook 如何训练</h4><p style="font-size:11px;line-height:1.8;">① 编码器输出连续向量 z_e → ② 与8192个条目计算距离 → ③ 选择最近的条目e_k → ④ <strong style="color:var(--vid);">argmin不可导</strong>→用<strong style="color:#fff;">直通估计器(STE)</strong>：前向用量化e_k，反向传梯度给编码器 → ⑤ codebook通过<strong style="color:#fff;">指数移动平均(EMA)</strong>更新。条目逐渐变成常见纹理/边缘/色彩模板。</p></div>
+<div class="concept-block" style="border-left:3px solid var(--gen);"><h4>🔑 为什么必须离散化</h4><p style="font-size:11px;line-height:1.8;">如果直接预测连续像素值→MSE损失→输出成为所有可能图像的<strong style="color:var(--gen);">平均值</strong>(模糊)。<br>离散token将生成从<strong style="color:#fff;">"连续回归"</strong>变成<strong style="color:#fff;">"分类问题"</strong>→可用标准交叉熵训练Transformer。<br>代价：量化误差(有损压缩)，但保留语义、剔除噪声。</p></div></div></section><p style="font-size:11px;">CLIP训练后，文本和图像<strong style="color:var(--vlm);">共享同一个嵌入空间</strong>。"a cat on a table"的文本向量和猫在桌上的照片向量几乎重合。这意味着——可以将<strong style="color:var(--vlm);">文本作为检索查询</strong>找到语义匹配的图像，或反过来。更重要的是：文本向量可以直接作为<strong style="color:var(--vlm);">条件信号</strong>指导图像生成。</p></div><div class="concept-block" style="border-left:3px solid var(--aud);"><h4>📊 零样本能力</h4><p style="font-size:11px;">ImageNet 零样本准确率 <strong style="color:var(--aud);">76.2%</strong>（与监督 ResNet-50 持平）。只需将类别名转为文本描述（如"a photo of a dog"），无需任何微调即可分类。这证明<strong style="color:var(--aud);">视觉和语言可以在统一的语义空间中被理解和处理</strong>。</p></div></div></section><script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 <script>(function(){const c=document.getElementById('bg-canvas'),x=c.getContext('2d');let W,H,ribbons=[],frame=0;function rs(){W=c.width=window.innerWidth;H=c.height=window.innerHeight}window.addEventListener('resize',rs);rs();class Ribbon{constructor(){this.reset()}reset(){this.points=[];this.y=H*0.3+Math.random()*H*0.7;this.speed=(Math.random()-0.5)*0.25;this.hue=Math.floor(Math.random()*360);this.light=Math.floor(Math.random()*16+20);this.hueDrift=Math.random()*0.35+0.15;this.lightDrift=(Math.random()-0.5)*0.04;this.yDrift=(Math.random()-0.5)*0.15;const a=Math.random()*0.07+0.05;this.alpha=a;this.alphaStr=a*30;for(let i=0;i<=20;i++)this.points.push({x:i*W/20,y:Math.random()*70-35})}update(){this.y+=this.speed+this.yDrift;this.speed+=(Math.random()-0.5)*0.003;if(this.y<H*0.2||this.y>H+80)this.reset();this.hue+=this.hueDrift;if(this.hue<0)this.hue+=360;if(this.hue>=360)this.hue-=360;this.light+=this.lightDrift;if(this.light<20)this.lightDrift=0.05;if(this.light>35)this.lightDrift=-0.05;for(let p of this.points)p.y+=(Math.random()-0.5)*0.6}draw(ctx){const col=`hsla(${Math.floor(this.hue)},100%,${Math.floor(this.light)}%,`;ctx.save();ctx.globalAlpha=this.alpha;ctx.shadowColor=col+'0.35)';ctx.shadowBlur=20;ctx.beginPath();ctx.moveTo(0,this.y);for(let i=0;i<this.points.length;i++){const px=this.points[i].x,py=this.y+this.points[i].y;if(i<this.points.length-1){const nx=this.points[i+1].x,ny=this.y+this.points[i+1].y;ctx.quadraticCurveTo(px,py,(px+nx)/2,(py+ny)/2)}}ctx.lineTo(W,H);ctx.lineTo(0,H);ctx.closePath();ctx.fillStyle=col+this.alphaStr+')';ctx.fill();ctx.shadowBlur=0;ctx.restore()}}ribbons=Array.from({length:8},()=>new Ribbon());function lp(){x.clearRect(0,0,W,H);const grad=x.createRadialGradient(W/2,H/2,0,W/2,H/2,Math.max(W,H)*0.8);grad.addColorStop(0,'rgba(20,12,30,0.35)');grad.addColorStop(0.5,'rgba(8,5,12,0.12)');grad.addColorStop(1,'rgba(2,1,4,0)');x.fillStyle=grad;x.fillRect(0,0,W,H);const bloom=x.createRadialGradient(W/2+Math.sin(frame*0.003)*W*0.08,H/2+Math.cos(frame*0.004)*H*0.06,Math.min(W,H)*0.03,W/2,H/2,Math.min(W,H)*0.45);bloom.addColorStop(0,'rgba(140,110,200,0.05)');bloom.addColorStop(0.4,'rgba(100,140,200,0.02)');bloom.addColorStop(1,'rgba(0,0,0,0)');x.fillStyle=bloom;x.fillRect(0,0,W,H);ribbons.forEach(r=>{r.update();r.draw(x)});frame++;requestAnimationFrame(lp)}lp()})();</script>
 <script>Reveal.initialize({hash:true,center:true,transition:'slide',transitionSpeed:'slow',backgroundTransition:'zoom',slideNumber:false,progress:false,controls:true,controlsLayout:'bottom-right',width:1200,height:700,margin:0,minScale:0.2,maxScale:2.0});(function(){const e=document.getElementById('page-indicator');function u(){const t=Reveal.getTotalSlides(),c=Reveal.getSlidePastCount()+1;e.textContent=c+' / '+t}Reveal.on('ready',u);Reveal.on('slidechanged',u)})();</script></body></html>
