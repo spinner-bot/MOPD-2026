@@ -217,7 +217,43 @@
   </div>
 </section>
 
-<!-- 继续7页（Paper 3-8的精讲页面）将在后续commit中添加 -->
+<!-- ═══════════ Paper 3: Thinking Machines Blog ═══════════ -->
+<section data-transition="slide">
+  <div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 Paper 3 / 8</span></div>
+  <div class="paper-card fragment fade-up" style="max-width:780px;">
+    <div class="arxiv">Thinking Machines Lab · 2025.10</div>
+    <div class="title">On-Policy Distillation Blog — 最清晰的 OPD 单页解释</div>
+    <div class="venue">"swap KL ref for stronger teacher"</div>
+    <div class="desc" style="margin-top:8px;">
+      <strong style="color:var(--amber);">历史地位：</strong>被 AwesomeOPD 评为<strong style="color:#fff;">"最清晰的OPD单页解释"</strong>。用一句话概括OPD本质："把KL正则化中的参考策略换成一个更强的教师"。
+    </div>
+  </div>
+  <div class="two-col fragment fade-up">
+    <div class="concept-block" style="border-left:3px solid var(--amber);"><h4>🔑 核心洞察</h4><p>传统RL中的KL正则项：−β·D_KL(π_θ‖π_ref)用于防止策略偏离太远。OPD的巧妙之处：<strong style="color:var(--amber);">把π_ref换成更强的教师策略π_T</strong>。原本用于"约束"的KL项变成了"学习"的驱动力。<br><br>$$\max_\pi \mathbb{E}[R] - \beta D_{KL}(\pi \|\pi_T)$$<br>这就是OPD藏在RL训练中的核心机制。</p></div>
+    <div class="concept-block" style="border-left:3px solid var(--sage);"><h4>🔗 为什么OPD同时击败SFT和RL？</h4><p><strong>SFT：</strong>只在教师固定数据集上训练→学生只看教师见过的状态→分布不匹配<br><strong>纯RL：</strong>学生自己探索但奖励稀疏→效率极低<br><strong>OPD：</strong>学生<strong style="color:var(--sage);">自己探索</strong>(在线)+教师提供<strong style="color:var(--sage);">密集逐token信号</strong>(蒸馏)→两全其美</p></div>
+  </div>
+</section>
+
+<!-- ═══════════ Paper 4: Revisiting OPD ═══════════ -->
+<section data-transition="slide">
+  <div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 Paper 4 / 8</span></div>
+  <div class="paper-card fragment fade-up" style="max-width:780px;">
+    <div class="arxiv">arXiv: 2603.25562 · 2026.03</div>
+    <div class="title">Revisiting OPD — 诊断 3 种失效模式</div>
+    <div class="venue">CASIA (中科院自动化所)</div>
+    <div class="desc" style="margin-top:8px;">
+      <strong style="color:var(--amber);">核心贡献：</strong>系统诊断OPD在实践中失败的三种具体原因，并提供应对策略。
+    </div>
+  </div>
+  <div class="tri-grid fragment fade-up" style="margin-top:10px;">
+    <div class="concept-block" style="border-top:2px solid var(--rust);"><h4>⚠️ 失效1</h4><p style="font-size:11px;"><strong>单token信号不平衡</strong><br>关键决策token和填充token被同等对待→关键信号被稀释。与REOPOLD问题二相同。</p></div>
+    <div class="concept-block" style="border-top:2px solid var(--amber);"><h4>⚠️ 失效2</h4><p style="font-size:11px;"><strong>前缀不可靠</strong><br>学生生成的劣质前缀污染教师输入→恶性循环。与UIUC"前缀扭曲教师"一致。</p></div>
+    <div class="concept-block" style="border-top:2px solid var(--sage);"><h4>⚠️ 失效3</h4><p style="font-size:11px;"><strong>tokenizer不匹配</strong><br>师生使用不同tokenizer时，token级KL散度失去意义——这是之前被忽视的新发现。</p></div>
+  </div>
+  <p style="font-size:11px;color:var(--text3);margin-top:8px;">🔗 与Module 1 Part 4/5的REOPOLD和UIUC失效分析高度互补——CASIA的视角更偏向tokenization层面的系统性问题。</p>
+</section>
+
+<!-- 继续（Paper 5-8将在后续commit中添加） -->
 </div></div>
 <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.js"></script>
 <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
