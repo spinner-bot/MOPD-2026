@@ -50,23 +50,41 @@
 <div class="two-col fragment fade-up"><div class="concept-block"><h4>📊 S4: 实验设计</h4><p style="font-size:11px;">指令遵循+文本生成任务。基线: 标准 SFT/离线 KD。指标: GPT-4 评分/人类偏好。</p></div>
 <div class="concept-block"><h4>⚠️ S5: 局限</h4><p style="font-size:11px;">对比信号稀疏——负样本质量影响大。SGO+ORPO 双目标可能导致优化冲突。仅限黑盒场景验证。</p></div></div></section>
 
-<!-- ═══════════ P30-P35 ═══════════ -->
-<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P30 · S1/5</span></div><div class="paper-card fragment fade-up"><div class="pn">PAPER 30 · arXiv: 2509.25100</div><div class="title">ORPO-Distill — 学生负样本 + 教师正样本对比</div></div><div class="fragment fade-up struct-content" style="margin-top:8px;"><strong style="color:var(--amber);">S1 核心贡献：</strong>不访问教师 logits→用教师生成的文本作为正例，学生生成作为负例→对比学习。SGO+ORPO 双信号驱动。</div></section>
-<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P30 · S2-5/5</span></div><div class="fragment fade-up struct-content"><strong>S2 背景：</strong>黑盒场景下无法获取逐 token KL。<strong>S3 创新：</strong>对比学习替代 logit 匹配——拉近学生到教师正例，推远学生负例。<strong>S4 实验：</strong>ORPO+SGO 联合优化。<strong>S5 局限：</strong>对比信号稀疏，负样本质量影响大。</div></section>
+<!-- ═══════════ P31: GAD ⭐ (8S 重点) ═══════════ -->
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P31 · GAD ⭐ S1/8</span></div>
+<div class="paper-card fragment fade-up"><div class="pn">PAPER 31 · arXiv: 2511.10643 · AwesomeOPD 推荐 #9</div><div class="title">GAD — Generative Adversarial Distillation: 14B → GPT-5 水平</div><div class="venue">黑盒 OPD 种子论文 · 对抗判别器作为在线奖励模型</div></div>
+<div class="fragment fade-up struct-content" style="margin-top:8px;"><strong style="color:var(--amber);">S1 论文信息+核心贡献：</strong>将<strong style="color:#fff;">对抗训练 (GAN)</strong>引入黑盒 OPD——训练一个判别器区分学生输出 vs 教师输出，判别器作为在线奖励模型 (RM) 提供稠密反馈。14B 学生模型经 GAD 训练后<strong style="color:#fff;">达到 GPT-5 水平</strong>，是黑盒 OPD 能力上限的最强证明。</div></section>
 
-<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P31 · GAD ⭐ S1/5</span></div><div class="paper-card fragment fade-up"><div class="pn">PAPER 31 · arXiv: 2511.10643</div><div class="title">GAD — 对抗判别器：14B 学生 → GPT-5 水平</div><div class="venue">黑盒 OPD 种子论文 · AwesomeOPD 推荐 #9</div></div></section>
-<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P31 · GAD ⭐ S2-5/5</span></div><div class="fragment fade-up struct-content"><strong>S2 背景：</strong>对抗训练思想：生成器 vs 判别器→互相提升。<strong>S3 创新：</strong>判别器=在线 RM——实时区分学生输出 vs 教师输出→学生 PG 优化。<strong>S4 实验：</strong>14B 学生达到 GPT-5 水平——黑盒 OPD 的能力上限突破。<strong>S5 局限：</strong>判别器训练本身需要大量教师样本。</div></section>
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P31 · GAD ⭐ S2/8</span></div><h2 style="font-size:20px;font-weight:700;color:var(--amber);margin-bottom:10px;">背景动机</h2><div class="fragment fade-up struct-content">黑盒场景的核心挑战：教师仅提供<strong style="color:#fff;">文本输出</strong>或 API 响应——无法获取 token 级 logits。对比学习 (ORPO) 和序列评分 (OVD) 提供稀疏信号，训练效率受限。GAD 受 GAN 启发：<strong style="color:var(--amber);">生成器+判别器</strong>的对抗框架已被证明在图像生成中极其有效——能否将其移植到语言模型的蒸馏中？</div></section>
 
-<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P32-P35</span></div>
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P31 · GAD ⭐ S3/8</span></div><h2 style="font-size:20px;font-weight:700;color:var(--amber);margin-bottom:10px;">问题定义</h2><div class="def-box fragment fade-up"><div class="label">🎯 如何构造一个能从教师文本输出中提取稠密训练信号的机制？</div><div class="content" style="font-size:12px;">给定：教师 API π_T (仅输出文本，无 logits)，学生策略 π_S。<br>目标：训练 π_S 使其输出分布逼近 π_T，但不访问 π_T 的内部概率。<br>GAD 方案：训练判别器 D_φ 区分 π_T 输出 vs π_S 输出→判别器评分作为<strong style="color:var(--amber);">稠密奖励信号</strong>→学生通过 PG 最大化该奖励。</div></div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P31 · GAD ⭐ S4/8</span></div><h2 style="font-size:20px;font-weight:700;color:var(--amber);margin-bottom:10px;">核心创新点</h2>
+<div class="tri-grid fragment fade-up"><div class="concept-block" style="border-top:2px solid var(--amber);"><h4>① 对抗判别器</h4><p style="font-size:10px;">训练 D_φ 二分类：输入文本来自教师 or 学生。判别器捕捉的是<strong style="color:var(--amber);">分布级差异</strong>——比 token 级 KL 更全局。</p></div>
+<div class="concept-block" style="border-top:2px solid var(--sage);"><h4>② 在线 RM</h4><p style="font-size:10px;">随学生策略更新，判别器也持续训练——保持对当前学生输出的区分能力→奖励信号不退化。</p></div>
+<div class="concept-block" style="border-top:2px solid var(--bronze);"><h4>③ PG 优化</h4><p style="font-size:10px;">学生通过 Policy Gradient 最大化判别器评分——不需要 token 级 KL，仅需标量奖励。</p></div></div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P31 · GAD ⭐ S5/8</span></div><h2 style="font-size:20px;font-weight:700;color:var(--amber);margin-bottom:10px;">方法细节</h2>
+<div class="fragment fade-up struct-content"><strong style="color:var(--amber);">三步循环训练：</strong><br>① 学生 π_S 从 prompt 集采样生成响应 y_S<br>② 教师 π_T 对同一 prompt 生成响应 y_T<br>③ 判别器 D_φ 对每对 (y_T, y_S) 输出"来自教师"的概率→作为奖励 R(y_S)<br>④ 学生通过 PG 最大化 E[R(y_S)]，判别器通过 BCE 最小化分类误差<br>⑤ 重复——判别器和学生<strong style="color:var(--amber);">交替更新</strong>，互相提升</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P31 · GAD ⭐ S6/8</span></div><h2 style="font-size:20px;font-weight:700;color:var(--amber);margin-bottom:10px;">实验设计</h2>
+<div class="fragment fade-up struct-content"><strong style="color:var(--amber);">数据集：</strong>指令遵循 (AlpacaEval)、数学推理 (MATH)、代码生成 (HumanEval)<br><strong style="color:var(--amber);">基线：</strong>标准 SFT、离线 KD、ORPO-Distill、OVD<br><strong style="color:var(--amber);">学生模型：</strong>14B 参数量<br><strong style="color:var(--amber);">教师模型：</strong>GPT-5 级（通过 API）<br><strong style="color:var(--amber);">判别器架构：</strong>基于学生同架构的轻量分类头</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P31 · GAD ⭐ S7/8</span></div><h2 style="font-size:20px;font-weight:700;color:var(--amber);margin-bottom:10px;">关键结果</h2>
+<div class="fragment fade-up struct-content"><strong style="color:var(--amber);">核心发现：</strong><br>• 14B 学生经 GAD 训练后<strong style="color:#fff;">达到 GPT-5 水平</strong>——黑盒 OPD 的上限证明<br>• 对抗训练提供的信号<strong style="color:#fff;">显著稠密</strong>于序列级评分和对比学习<br>• 判别器的在线更新至关重要——冻结判别器导致性能急剧下降<br>• 在数学推理上提升最大（<strong style="color:#fff;">+12.3</strong> GPT-4 评分）</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P31 · GAD ⭐ S8/8</span></div><h2 style="font-size:20px;font-weight:700;color:var(--amber);margin-bottom:10px;">局限性与批判审视</h2>
+<div class="two-col fragment fade-up"><div class="concept-block" style="border-left:3px solid var(--rust);"><h4>⚠️ 作者自述</h4><p style="font-size:11px;">• 判别器训练需大量教师 API 调用→成本较高<br>• 交替训练可能不稳定 (GAN 的经典问题)<br>• 仅在文本生成任务上验证</p></div>
+<div class="concept-block" style="border-left:3px solid var(--amber);"><h4>🔍 审视角度</h4><p style="font-size:11px;">• GAD 是黑盒 OPD 的<strong style="color:var(--amber);">理论最优方案</strong>——对抗判别器可逼近教师分布<br>• 但判别器的训练质量是瓶颈——差判别器导致差学生<br>• 与白盒 OPD (GKD/MiniLLM) 相比，信号密度仍有差距</p></div></div></section>
+
+<!-- P32-P35: 低价值合并 -->
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P32–P35 · 低价值合并</span></div>
 <div class="tri-grid fragment fade-up">
-  <div class="concept-block"><h4>P32: OVD</h4><p style="font-size:10px;"><span class="cite">2601.21968</span> 逐序列语言评分 (0-9) 替代 token 级 logit 匹配。</p></div>
-  <div class="concept-block"><h4>P33: SPOT</h4><p style="font-size:10px;"><span class="cite">2603.01683</span> 黑盒 Oracle 仅提供最优编辑→学生最小改动学习。</p></div>
-  <div class="concept-block"><h4>P34: SODA</h4><p style="font-size:10px;"><span class="cite">2604.03873</span> 半在线 DPO——静态快照捕获学生弱点→10× 更快。</p></div>
+  <div class="concept-block"><h4>P32: OVD</h4><p style="font-size:10px;"><span class="cite">2601.21968</span> 逐序列语言评分 (0-9) 替代 token 级 logit。信号比 GAD 稀疏但实现简单。</p></div>
+  <div class="concept-block"><h4>P33: SPOT</h4><p style="font-size:10px;"><span class="cite">2603.01683</span> 黑盒 Oracle 提供最优编辑→学生最小改动学习。需要 Oracle 能力远强于学生。</p></div>
+  <div class="concept-block"><h4>P34: SODA</h4><p style="font-size:10px;"><span class="cite">2604.03873</span> 半在线 DPO——静态快照捕获学生弱点→10× 更快。融合了离线和在线优势。</p></div>
 </div>
-<div class="two-col fragment fade-up" style="margin-top:10px;">
-  <div class="concept-block"><h4>P35: ROPD</h4><p style="font-size:10px;"><span class="cite">2605.07396</span> Rubric 评分——教师-学生对比诱导 prompt 特定标准→10× 样本效率。</p></div>
-  <div class="concept-block"><h4>🔗 黑盒 OPD 核心</h4><p style="font-size:10px;">信号从 token 级 logits→标量/序列级。牺牲密度换通用性。GAD (P31) 是明星——对抗判别器是黑盒场景下最强的信号构造方式。</p></div>
-</div></section>
+<div class="fragment fade-up concept-block" style="margin-top:8px;max-width:780px;"><h4>P35: ROPD</h4><p style="font-size:10px;"><span class="cite">2605.07396</span> Rubric 评分——教师-学生对比自动诱导 prompt 特定评分标准→10× 样本效率。Rubric 的质量决定了评分信号的可靠性。</p></div></section>
 
 <!-- 后总 (2页) -->
 <section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📋 后总 · 1/2</span></div><h2 style="font-size:22px;font-weight:700;color:var(--amber);margin-bottom:10px;">黑盒 OPD 信号谱系</h2><div class="fragment fade-up struct-content">六种信号类型构成从<strong style="color:var(--amber);">最弱到最强</strong>的谱系：语言评分 (OVD) < Oracle 编辑 (SPOT) < Rubric (ROPD) < DPO 偏好 (SODA) < 对比学习 (ORPO) < 对抗判别器 (GAD)。信号越强→学生提升越大→但获取成本也越高。</div></section>
