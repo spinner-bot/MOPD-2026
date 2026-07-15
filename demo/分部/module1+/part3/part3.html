@@ -62,7 +62,27 @@
 
 <section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P36 · OPSD ⭐ S8/8</span></div><h2 style="font-size:20px;font-weight:700;color:var(--amber);margin-bottom:10px;">局限性与影响</h2>
 <div class="fragment fade-up struct-content"><strong>S8 局限：</strong>① 特权上下文质量决定上限——差验证轨迹→差教师 ② RKL 的模式坍缩风险 ③ 仅在有明确验证标准的任务上有效。<br><strong style="color:var(--amber);">影响：</strong>OPSD 开启了自蒸馏范式——后续 18 篇 OPSD 论文 (P37-P54) 都在其框架下探索不同特权上下文设计。</div></section>
-<!-- P43-P46: 标准5S -->
+<!-- P47-P52: 标准5S + d-OPSD⭐8S -->
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P47 · S1/5</span></div><div class="paper-card fragment fade-up"><div class="pn">PAPER 47 · arXiv: 2604.17535</div><div class="title">OPSDL — 长上下文 LM 自蒸馏</div></div><div class="fragment fade-up struct-content" style="margin-top:8px;"><strong>S1：</strong>特权=短上下文→OPSD 训练<strong style="color:#fff;">长上下文能力</strong>从短上下文模型中蒸馏。</div></section>
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P47 · S2-5/5</span></div><div class="fragment fade-up struct-content"><strong>S2-3：</strong>长上下文标注昂贵→用短上下文模型作教师→OPSD 蒸馏长上下文能力。<strong>S4-5：</strong>降低长上下文训练成本。教师短上下文能力上限约束学生。</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P48-P51 · 合并</span></div>
+<div class="tri-grid fragment fade-up">
+  <div class="concept-block"><h4>P48-49: MSD/COPSD</h4><p style="font-size:10px;">多语言安全 OPSD (2605.02971) + 17种非洲语言数学 OPSD (2605.09548)</p></div>
+  <div class="concept-block"><h4>P50: SSOPD</h4><p style="font-size:10px;"><span class="cite">2605.17497</span> 自身最短正确完成→无外部轨迹→规则驱动</p></div>
+  <div class="concept-block"><h4>P51: RLCSD</h4><p style="font-size:10px;"><span class="cite">2606.11709</span> 正确vs错误提示对比→取消特权诱导风格漂移</p></div>
+</div></section>
+
+<!-- P52: d-OPSD ⭐ (8S) -->
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P52 · d-OPSD ⭐ S1/8</span></div>
+<div class="paper-card fragment fade-up"><div class="pn">PAPER 52 · arXiv: 2606.18195 · 2026.06</div><div class="title">d-OPSD — 首个扩散 LLM 的 OPSD：步级散度</div></div>
+<div class="fragment fade-up struct-content" style="margin-top:8px;"><strong style="color:var(--amber);">S1 论文信息+核心贡献：</strong>将 OPSD 首次引入<strong style="color:#fff;">扩散语言模型 (Diffusion LLM)</strong>——扩散模型生成是<strong style="color:#fff;">步级</strong>的(非 token 级自回归)，传统 token 级 KL 不适用。d-OPSD 提出<strong style="color:#fff;">步级散度</strong>匹配。</div></section>
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P52 · d-OPSD ⭐ S2-4/8</span></div><h2 style="font-size:20px;font-weight:700;color:var(--amber);">背景 · 问题 · 创新</h2><div class="fragment fade-up struct-content"><strong>S2：</strong>扩散 LLM 通过逐步去噪生成文本→每一步是一个连续状态而非离散 token。<strong>S3：</strong>传统 token 级 KL 定义失效——需要在<strong style="color:var(--amber);">连续状态空间</strong>上定义散度。<strong>S4：</strong>① 步级散度匹配 ② 自生成答案作后缀特权 ③ 在扩散步而非 token 上施加 KL 约束。</div></section>
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P52 · d-OPSD ⭐ S5-8/8</span></div><div class="fragment fade-up struct-content"><strong>S5 方法：</strong>特权=自生成答案→扩散步级 RKL。<strong>S6 实验：</strong>扩散 LLM 基准验证。<strong>S7 结果：</strong>首个 OPSD 在扩散模型上的成功实践。<strong>S8 局限：</strong>扩散 LLM 生态尚不成熟→应用范围受限。</div></section>
+
+<!-- 后总 -->
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📋 后总 · 1/2</span></div><h2 style="font-size:22px;font-weight:700;color:var(--amber);margin-bottom:10px;">Part 3 总结：特权上下文谱系</h2><div class="fragment fade-up struct-content">19 篇 OPSD 论文构成了从<strong style="color:var(--amber);">显式到隐式</strong>的特权上下文谱系：验证轨迹 (P36) → Demo/未来 token (P37-38) → 外部知识 (P39) → 记忆 tips (P40) → 简洁前缀 (P41) → 采样多样性 (P43) → 自我博弈 (P46) → 步级散度 (P52)。</div></section>
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📋 后总 · 2/2</span></div><h2 style="font-size:22px;font-weight:700;color:var(--amber);margin-bottom:10px;">核心趋势与警示</h2><div class="fragment fade-up struct-content">核心趋势：<strong style="color:var(--amber);">特权上下文设计越来越精巧</strong>——从简单验证信号到自我博弈数据生成。<br>重要警示 (P42)：<strong style="color:var(--rust);">更多特权≠更好效果</strong>——过多特权可能导致模型依赖特权模式而泛化下降达 40%。OPSD 的设计需要在"信号强度"和"模型自主性"之间取得平衡。</div></section>
 <section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P43 · S1/5</span></div><div class="paper-card fragment fade-up"><div class="pn">PAPER 43 · arXiv: 2604.01193</div><div class="title">Apple SSD — "退化 OPSD"：采样后直接 SFT</div></div><div class="fragment fade-up struct-content" style="margin-top:8px;"><strong>S1：</strong>极简 OPSD——温度/截断采样生成特权响应→直接 SFT。证明<strong style="color:#fff;">简单采样策略</strong>已能提供有效自蒸馏信号。</div></section>
 <section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P43 · S2-5/5</span></div><div class="fragment fade-up struct-content"><strong>S2-3：</strong>复杂 OPSD 方案工程开销大→Apple 发现仅靠采样多样性就有效。<strong>S4-5：</strong>Apple 内部验证。简单方案的上限有限。</div></section>
 
