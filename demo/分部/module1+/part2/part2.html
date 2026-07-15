@@ -29,13 +29,26 @@
 
 <section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📐 前总 · 3/3</span></div>
 <h2 style="font-size:22px;font-weight:700;color:var(--amber);margin-bottom:10px;">6 篇论文总览 (P30–35)</h2>
-<table class="summary-table fragment fade-up"><thead><tr><th>#</th><th>论文</th><th>信号类型</th><th>核心方法</th></tr></thead>
-<tbody><tr><td class="pc">30</td><td>ORPO-Distill</td><td>SGO+ORPO 对比</td><td>学生负样本+教师正样本</td></tr>
-<tr><td class="pc">31</td><td><strong>GAD ⭐</strong></td><td>对抗判别器</td><td>14B→GPT-5 水平</td></tr>
-<tr><td class="pc">32</td><td>OVD</td><td>语言评分 (0-9)</td><td>序列级替代 token 级</td></tr>
-<tr><td class="pc">33</td><td>SPOT</td><td>黑盒 Oracle 编辑</td><td>最小编辑保持近端</td></tr>
-<tr><td class="pc">34</td><td>SODA</td><td>DPO 偏好对比</td><td>半在线 · 10× 更快</td></tr>
-<tr><td class="pc">35</td><td>ROPD</td><td>Rubric 评分</td><td>10× 样本效率</td></tr></tbody></table></section>
+<table class="summary-table fragment fade-up"><thead><tr><th>#</th><th>论文</th><th>信号类型</th><th>核心方法</th><th>等级</th></tr></thead>
+<tbody><tr><td class="pc">30</td><td>ORPO-Distill</td><td>SGO+ORPO 对比</td><td>学生负样本+教师正样本</td><td>标准</td></tr>
+<tr style="background:rgba(212,160,64,0.08);"><td class="pc">31</td><td><strong>GAD ⭐</strong></td><td>对抗判别器</td><td>14B→GPT-5 水平 · AwesomeOPD推荐#9</td><td class="hl">重点(8S)</td></tr>
+<tr><td class="pc">32</td><td>OVD</td><td>语言评分 (0-9)</td><td>序列级替代 token 级</td><td>标准</td></tr>
+<tr><td class="pc">33</td><td>SPOT</td><td>黑盒 Oracle 编辑</td><td>最小编辑保持近端</td><td>标准</td></tr>
+<tr><td class="pc">34</td><td>SODA</td><td>DPO 偏好对比</td><td>半在线 · 10× 更快</td><td>标准</td></tr>
+<tr><td class="pc">35</td><td>ROPD</td><td>Rubric 评分</td><td>10× 样本效率</td><td>标准</td></tr></tbody></table></section>
+
+<!-- ═══════════ P30: ORPO-Distill (5S) ═══════════ -->
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P30 · S1/5</span></div>
+<div class="paper-card fragment fade-up"><div class="pn">PAPER 30 · arXiv: 2509.25100</div><div class="title">ORPO-Distill — 学生负样本 + 教师正样本对比学习</div><div class="venue">黑盒 OPD 序列级信号</div></div>
+<div class="fragment fade-up struct-content" style="margin-top:8px;"><strong style="color:var(--amber);">S1 论文信息+核心贡献：</strong>在不访问教师 logits 的黑盒场景下，用<strong style="color:#fff;">对比学习</strong>替代 token 级 KL——教师生成文本作正例，学生生成作负例，通过 SGO + ORPO 双信号驱动学生向教师靠拢。</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P30 · S2-3/5</span></div>
+<h2 style="font-size:20px;font-weight:700;color:var(--amber);margin-bottom:10px;">背景动机 · 核心创新</h2>
+<div class="fragment fade-up struct-content"><strong>S2 背景：</strong>黑盒场景下无法获取逐 token logits→token 级 KL 不可行→需要<strong style="color:var(--amber);">序列级替代信号</strong>。<br><strong>S3 创新：</strong>对比学习框架——拉近学生到教师正例分布，推远学生负例。SGO (序列生成优化) + ORPO (在线相对偏好优化) 联合驱动。不需要教师 logits，仅需教师生成的文本作为正例。</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P30 · S4-5/5</span></div>
+<div class="two-col fragment fade-up"><div class="concept-block"><h4>📊 S4: 实验设计</h4><p style="font-size:11px;">指令遵循+文本生成任务。基线: 标准 SFT/离线 KD。指标: GPT-4 评分/人类偏好。</p></div>
+<div class="concept-block"><h4>⚠️ S5: 局限</h4><p style="font-size:11px;">对比信号稀疏——负样本质量影响大。SGO+ORPO 双目标可能导致优化冲突。仅限黑盒场景验证。</p></div></div></section>
 
 <!-- ═══════════ P30-P35 ═══════════ -->
 <section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P30 · S1/5</span></div><div class="paper-card fragment fade-up"><div class="pn">PAPER 30 · arXiv: 2509.25100</div><div class="title">ORPO-Distill — 学生负样本 + 教师正样本对比</div></div><div class="fragment fade-up struct-content" style="margin-top:8px;"><strong style="color:var(--amber);">S1 核心贡献：</strong>不访问教师 logits→用教师生成的文本作为正例，学生生成作为负例→对比学习。SGO+ORPO 双信号驱动。</div></section>
