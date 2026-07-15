@@ -413,14 +413,14 @@ window.MathJax = {
 <section data-transition="slide">
   <h2 style="font-size:26px;font-weight:700;margin-bottom:4px;color:var(--text);">🔍 根因：学生状态分布差</h2>
   <div class="glow-bar"></div>
-  <div class="flow-row fragment fade-up" style="margin-bottom:18px;">
-    <div class="flow-node bad">🤖 学生策略差</div>
-    <span class="flow-arrow">→</span>
-    <div class="flow-node bad">🕳️ 只访问差状态</div>
-    <span class="flow-arrow">→</span>
-    <div class="flow-node bad">👀 在差状态看教师</div>
-    <span class="flow-arrow">→</span>
-    <div class="flow-node bad" style="color:var(--a-warn);font-size:18px;">💀 学不到精华</div>
+  <div class="flow-row fragment fade-up" style="margin-bottom:14px;font-size:13px;">
+    <div class="flow-node bad" style="padding:10px 16px;">🤖 学生策略差</div>
+    <span class="flow-arrow" style="font-size:18px;">→</span>
+    <div class="flow-node bad" style="padding:10px 16px;">🕳️ 只访问差状态</div>
+    <span class="flow-arrow" style="font-size:18px;">→</span>
+    <div class="flow-node bad" style="padding:10px 16px;">👀 看不到教师妙手</div>
+    <span class="flow-arrow" style="font-size:18px;">→</span>
+    <div class="flow-node bad" style="padding:10px 16px;color:var(--a-warn);">💀 梯度消失</div>
   </div>
   <div class="two-col">
     <div class="fragment fade-up">
@@ -437,6 +437,84 @@ window.MathJax = {
       </div>
     </div>
   </div>
+</section>
+
+<!-- ═══════════ SLIDE 7.5: 定义域漂移直观解释 ═══════════ -->
+<section data-transition="slide">
+  <h2 style="font-size:26px;font-weight:700;margin-bottom:4px;color:var(--text);">🎬 "定义域漂移"到底是什么意思？</h2>
+  <div class="glow-bar"></div>
+  <div class="two-col">
+    <div class="fragment fade-up">
+      <div style="text-align:center;margin:0 auto;">
+        <canvas id="drift-canvas" width="400" height="300" style="max-width:100%;border-radius:12px;"></canvas>
+        <p style="font-size:11px;color:var(--text3);margin-top:4px;">▲ 学生每走一步，山峰就变形一次——目标永远在移动</p>
+      </div>
+    </div>
+    <div class="fragment fade-up" style="text-align:left;">
+      <div class="concept-card" style="border-top:3px solid var(--a-warn);">
+        <h4>🏔️ 类比：在山峰上找最低点</h4>
+        <p style="font-size:13px;line-height:1.8;">
+          想象你站在一座山上，想走到<strong style="color:var(--a-warn);">最低的谷底</strong>。<br><br>
+          正常梯度下降：看脚下坡度 → 往最陡的下坡走。<br><br>
+          <strong style="color:var(--a-warn);">定义域漂移：</strong>你每走一步，<strong style="color:var(--a-warn);">整座山就变形一次</strong>——因为学生策略变了，访问的状态分布也变了，损失函数的"地形"随之改变。<br><br>
+          你永远在追一个<strong style="color:var(--a-warn);">因自己移动而移动的目标</strong>。
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ SLIDE 7.6: 3D损失景观 ═══════════ -->
+<section data-transition="slide">
+  <h2 style="font-size:26px;font-weight:700;margin-bottom:4px;color:var(--text);">🏔️ 3D 损失景观 — "平坦高原"如何困住学生</h2>
+  <div class="glow-bar"></div>
+  <p style="font-size:12px;color:var(--text3);margin:0 0 8px;">参数空间 (θ₁, θ₂) → 损失 L(θ₁, θ₂) 构成三维曲面。红色球 = 学生当前位置。</p>
+  <div style="display:flex;gap:20px;flex-wrap:wrap;justify-content:center;align-items:center;">
+    <div style="position:relative;">
+      <canvas id="surface3d" width="520" height="380" style="max-width:100%;border-radius:16px;background:rgba(10,10,20,0.5);"></canvas>
+    </div>
+    <div style="text-align:left;max-width:280px;font-size:12px;color:var(--text2);line-height:1.8;">
+      <p><span style="color:var(--a-warn);font-weight:700;">🔴 红色球</span> = 学生被困在高原</p>
+      <p><span style="color:var(--a5);font-weight:700;">🟢 绿色十字</span> = 教师的真正最优解</p>
+      <p><span style="color:var(--a-gold);">🟡 箭头</span> = 梯度方向（在高原上 → 0）</p>
+      <hr style="border-color:rgba(255,255,255,0.1);margin:10px 0;">
+      <p style="color:var(--text3);"><strong style="color:#fff;">平坦高原</strong> = 梯度为零的区域 = "梯度场不存在"。学生滑入这个区域后，<strong style="color:var(--a-warn);">再也收不到任何方向信号</strong>。</p>
+      <p style="color:var(--text3);">而定义域漂移让这座山不断变形——高原区域可以出现在任何地方，困住任何位置的学生。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ SLIDE 7.7: Before/After 对比 ═══════════ -->
+<section data-transition="slide">
+  <h2 style="font-size:26px;font-weight:700;margin-bottom:4px;color:var(--text);">🔧 对比：教师轨迹如何打破困境</h2>
+  <div class="glow-bar"></div>
+  <div class="two-col">
+    <div class="fragment fade-up">
+      <div style="background:rgba(255,107,74,0.05);border:1px solid rgba(255,107,74,0.18);border-radius:16px;padding:20px;text-align:center;">
+        <h4 style="color:var(--a-warn);margin:0 0 8px;">❌ 同策略蒸馏（Before）</h4>
+        <canvas id="before-canvas" width="260" height="200" style="max-width:100%;border-radius:8px;"></canvas>
+        <p style="font-size:12px;color:var(--text2);margin-top:8px;line-height:1.6;">
+          学生只看<strong style="color:var(--a-warn);">自己跑出来的状态</strong><br>
+          → 永远在低价值区打转<br>
+          → 梯度消失，训练停止
+        </p>
+      </div>
+    </div>
+    <div class="fragment fade-up">
+      <div style="background:rgba(0,230,118,0.04);border:1px solid rgba(0,230,118,0.18);border-radius:16px;padding:20px;text-align:center;">
+        <h4 style="color:var(--a5);margin:0 0 8px;">✅ N-step 未来蒸馏（After）</h4>
+        <canvas id="after-canvas" width="260" height="200" style="max-width:100%;border-radius:8px;"></canvas>
+        <p style="font-size:12px;color:var(--text2);margin-top:8px;line-height:1.6;">
+          注入<strong style="color:var(--a5);">教师的高价值轨迹</strong><br>
+          → 即使学生没去过也能学习<br>
+          → 梯度信号源源不断
+        </p>
+      </div>
+    </div>
+  </div>
+  <p style="font-size:13px;color:var(--text3);margin-top:12px;">
+    关键：打破"状态必须来自学生自己"这个限制——用教师数据给梯度场"续命"
+  </p>
 </section>
 
 <!-- ═══════════ SLIDE 8: Theorem 2 ═══════════ -->
@@ -655,5 +733,228 @@ Reveal.initialize({
 });
 (function(){const e=document.getElementById('page-indicator');function u(){const t=Reveal.getTotalSlides(),c=Reveal.getSlidePastCount()+1;e.textContent=c+' / '+t}Reveal.on('ready',u);Reveal.on('slidechanged',u)})();
 </script>
+<!-- ============ Canvas: 定义域漂移动画 ============ -->
+<script>
+(function(){
+  const c=document.getElementById('drift-canvas'),x=c.getContext('2d');
+  let frame=0,timer=null,active=false;
+  function drawMountain(shift){
+    const w=c.width,h=c.height;
+    x.clearRect(0,0,w,h);
+    x.fillStyle='rgba(10,10,20,1)';x.fillRect(0,0,w,h);
+    // 山形曲线 — 最低点在shift处
+    x.beginPath();x.moveTo(0,h);
+    for(let i=0;i<=w;i+=2){
+      const t=i/w, peak=Math.exp(-Math.pow(t-shift,2)/0.02)*150+Math.exp(-Math.pow(t-0.7,2)/0.1)*60;
+      x.lineTo(i,h-peak-30);
+    }
+    x.lineTo(w,h);x.closePath();
+    const grad=x.createLinearGradient(0,0,0,h);
+    grad.addColorStop(0,'rgba(240,165,0,0.3)');grad.addColorStop(0.5,'rgba(108,92,231,0.15)');grad.addColorStop(1,'rgba(10,10,20,0.8)');
+    x.fillStyle=grad;x.fill();
+    x.strokeStyle='rgba(255,255,255,0.3)';x.lineWidth=1.5;x.stroke();
+    // 学生位置 (追逐最低点但永远追不上)
+    const studentX=shift*w-30+Math.sin(frame*0.1)*15;
+    const sy=h-Math.exp(-Math.pow(studentX/w-shift,2)/0.02)*150-30;
+    x.beginPath();x.arc(studentX,sy-15,8,0,Math.PI*2);x.fillStyle='#ff6b4a';x.fill();
+    x.strokeStyle='#fff';x.lineWidth=2;x.stroke();
+    // 标签
+    x.fillStyle='rgba(255,255,255,0.6)';x.font='11px sans-serif';
+    x.fillText('🔴 学生',studentX-20,sy-30);
+    // 真正最低点
+    const optX=shift*w;
+    x.fillStyle='#00e676';x.font='11px sans-serif';
+    x.fillText('🟢 真正最优',optX-25,25);
+    x.beginPath();x.moveTo(optX,0);x.lineTo(optX,h);x.strokeStyle='rgba(0,230,118,0.4)';x.setLineDash([4,4]);x.stroke();x.setLineDash([]);
+    x.fillStyle='rgba(255,255,255,0.5)';x.font='12px sans-serif';
+    x.fillText('定义域漂移：学生每走一步，山就变形',w/2-90,15);
+  }
+  function animate(){
+    if(!active)return;
+    frame++;
+    const shift=0.4+Math.sin(frame*0.03)*0.3; // 最低点在漂移！
+    drawMountain(shift);
+    timer=requestAnimationFrame(animate);
+  }
+  Reveal.on('slidechanged',function(ev){
+    if(ev.currentSlide.querySelector('#drift-canvas')){active=true;animate();}
+    else{active=false;if(timer)cancelAnimationFrame(timer);}
+  });
+  drawMountain(0.5);
+})();
+</script>
+
+<!-- ============ Canvas: 3D损失景观 ============ -->
+<script>
+(function(){
+  const c=document.getElementById('surface3d'),x=c.getContext('2d');
+  const W=c.width,H=c.height;
+  let frame=0,timer=null,active=false;
+
+  function f3d(px,py){
+    // 损失函数：有平坦高原 + 一个深谷
+    const dx=px-0.75,dy=py-0.7;
+    const valley=3*Math.exp(-(dx*dx+dy*dy)/0.06); // 深谷(教师最优)
+    const dx2=px-0.25,dy2=py-0.35;
+    const plateau=1.5*Math.exp(-(dx2*dx2+dy2*dy2)/0.15); // 平坦高原(学生被困)
+    const ripple=0.2*Math.sin(px*12)*Math.cos(py*10);
+    return plateau+valley+ripple+0.3*(px+py);
+  }
+
+  function project(px,py,pz){
+    // 等距投影
+    const sx=(px-py)*Math.cos(0.5);
+    const sy=(px+py)*Math.sin(0.5)-pz;
+    return [W*0.5+sx*W*0.6, H*0.65+sy*H*0.5];
+  }
+
+  function draw(){
+    x.clearRect(0,0,W,H);
+    x.fillStyle='rgba(5,5,15,1)';x.fillRect(0,0,W,H);
+
+    // 线框曲面
+    const grid=35;
+    // 填充色块
+    for(let i=0;i<grid;i++){
+      for(let j=0;j<grid;j++){
+        const px=i/grid,py=j/grid;
+        const pz=f3d(px,py);
+        const [sx,sy]=project(px,py,pz);
+        if(j<grid-1&&i<grid-1){
+          const pz2=f3d((i+1)/grid,py),pz3=f3d(px,(j+1)/grid);
+          const v=(pz+pz2+pz3)/6;
+          const r=Math.floor(40+v*30),g=Math.floor(30+v*50),b=Math.floor(60+v*40);
+          x.fillStyle=`rgb(${Math.min(r,200)},${Math.min(g,160)},${Math.min(b,200)})`;
+          x.fillRect(sx-1,sy-1,2,2);
+        }
+      }
+    }
+    // 线框
+    x.strokeStyle='rgba(255,255,255,0.08)';x.lineWidth=0.5;
+    for(let i=0;i<=grid;i+=2){
+      x.beginPath();
+      for(let j=0;j<=grid;j++){
+        const px=i/grid,py=j/grid;
+        const [sx,sy]=project(px,py,f3d(px,py));
+        j===0?x.moveTo(sx,sy):x.lineTo(sx,sy);
+      }
+      x.stroke();
+    }
+    for(let j=0;j<=grid;j+=2){
+      x.beginPath();
+      for(let i=0;i<=grid;i++){
+        const px=i/grid,py=j/grid;
+        const [sx,sy]=project(px,py,f3d(px,py));
+        i===0?x.moveTo(sx,sy):x.lineTo(sx,sy);
+      }
+      x.stroke();
+    }
+
+    // 红色球 — 学生被困在高原
+    const spz=f3d(0.25,0.35);
+    const [sx,sy]=project(0.25,0.35,spz);
+    x.beginPath();x.arc(sx,sy,7,0,Math.PI*2);
+    x.fillStyle='#ff6b4a';x.fill();x.strokeStyle='#fff';x.lineWidth=2;x.stroke();
+    x.fillStyle='#fff';x.font='11px sans-serif';x.fillText('学生(高原)',sx+12,sy-5);
+
+    // 绿色十字 — 教师最优解
+    const optZ=f3d(0.75,0.7);
+    const [ox,oy]=project(0.75,0.7,optZ);
+    x.strokeStyle='#00e676';x.lineWidth=2;
+    x.beginPath();x.moveTo(ox-8,oy);x.lineTo(ox+8,oy);x.stroke();
+    x.beginPath();x.moveTo(ox,oy-8);x.lineTo(ox,oy+8);x.stroke();
+    x.fillStyle='#00e676';x.font='11px sans-serif';x.fillText('教师最优',ox+10,oy-8);
+
+    // 高原标注
+    const [plx,ply]=project(0.25,0.35,spz-0.3);
+    x.fillStyle='rgba(255,107,74,0.15)';x.beginPath();x.ellipse(plx,ply,55,35,0,0,Math.PI*2);x.fill();
+    x.fillStyle='rgba(255,107,74,0.6)';x.font='10px sans-serif';
+    x.fillText('平坦高原 ∇L=0',plx-30,ply-20);
+
+    // 轴标签
+    x.fillStyle='rgba(255,255,255,0.3)';x.font='10px sans-serif';
+    x.fillText('θ₁',W-20,H-10);x.fillText('θ₂',10,H-10);
+    x.fillText('L(θ)',10,20);
+  }
+
+  function animate(){
+    if(!active)return;
+    frame++;draw();
+    timer=requestAnimationFrame(animate);
+  }
+  Reveal.on('slidechanged',function(ev){
+    if(ev.currentSlide.querySelector('#surface3d')){active=true;animate();}
+    else{active=false;if(timer)cancelAnimationFrame(timer);}
+  });
+  draw();
+})();
+</script>
+
+<!-- ============ Canvas: Before/After 对比图 ============ -->
+<script>
+(function(){
+  function drawTraj(canvasId,label,color,teacherAssist){
+    const c=document.getElementById(canvasId),x=c.getContext('2d');
+    const w=c.width,h=c.height;
+    x.clearRect(0,0,w,h);
+    x.fillStyle='rgba(5,5,15,1)';x.fillRect(0,0,w,h);
+    // 2D等高线风格的损失景观
+    for(let i=0;i<w;i+=3){
+      for(let j=0;j<h;j+=3){
+        const px=i/w,py=j/h;
+        const z=f3d(px,py);
+        const v=Math.floor(z*40);
+        x.fillStyle=`rgb(${Math.min(v+20,180)},${Math.min(v+10,120)},${Math.min(v+40,200)})`;
+        x.fillRect(i,j,3,3);
+      }
+    }
+    // 等高线
+    for(let level=0.5;level<3;level+=0.5){
+      x.strokeStyle='rgba(255,255,255,0.06)';x.lineWidth=0.5;x.beginPath();
+      let started=false;
+      for(let i=0;i<w;i+=2){
+        const px=i/w,py=0.5;
+        if(Math.abs(f3d(px,py)-level)<0.08){const y=py*h;started?x.lineTo(i,y):x.moveTo(i,y);started=true;}
+        else started=false;
+      }
+      x.stroke();
+    }
+    // 轨迹
+    x.strokeStyle=color;x.lineWidth=2;
+    x.beginPath();
+    for(let t=0;t<=30;t++){
+      let px=0.1+0.02*t,py=0.3+0.015*t;
+      if(teacherAssist&&t>15){px+=0.025*(t-15);py+=0.02*(t-15);}
+      x.lineTo(px*w,py*h);
+    }
+    x.stroke();
+    // 箭头
+    const endX=teacherAssist?0.7*w:0.4*w;
+    const endY=teacherAssist?0.5*h:0.45*h;
+    x.fillStyle=color;x.font='12px sans-serif';x.fillText(label,endX+5,endY);
+    x.fillText(teacherAssist?'✅ 到达':'❌ 卡住',endX+5,endY+16);
+
+    // 起点和终点
+    x.beginPath();x.arc(0.1*w,0.3*h,4,0,Math.PI*2);x.fillStyle='#fff';x.fill();
+    x.beginPath();x.arc(endX,endY,5,0,Math.PI*2);x.fillStyle=color;x.fill();
+  }
+
+  function f3d(px,py){const dx=px-0.75,dy=py-0.7;return 2.5*Math.exp(-(dx*dx+dy*dy)/0.08)+1.8*Math.exp(-((px-0.25)*(px-0.25)+(py-0.35)*(py-0.35))/0.2)+0.3*(px+py);}
+
+  Reveal.on('slidechanged',function(ev){
+    if(ev.currentSlide.querySelector('#before-canvas')){
+      drawTraj('before-canvas','学生轨迹','#ff6b4a',false);
+      drawTraj('after-canvas','学生+教师轨迹','#00e676',true);
+    }
+  });
+  setTimeout(()=>{
+    if(document.querySelector('#before-canvas')){
+      drawTraj('before-canvas','学生轨迹','#ff6b4a',false);
+      drawTraj('after-canvas','学生+教师轨迹','#00e676',true);
+    }
+  },1000);
+})();
+</script>
+
 </body>
 </html>
