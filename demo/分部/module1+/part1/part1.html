@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module1+ · Part 1: 白盒 OPD — Token级Logit监督</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/black.min.css">
+<script>window.MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']],displayMath:[['$$','$$'],['\\[','\\]']]},options:{skipHtmlTags:['script','noscript','style','textarea','pre']}};</script>
+<style>
+:root{--bg:#0d0b09;--surface:rgba(30,25,18,0.65);--border:rgba(180,140,80,0.15);--text:#e8dcc8;--text2:rgba(220,200,160,0.75);--text3:rgba(180,155,120,0.5);--amber:#d4a040;--gold:#c89630;--bronze:#b87333;--wheat:#dcc090;--rust:#c05530;--sage:#809060;--ink:#3a3028;--shadow-card:0 8px 32px rgba(0,0,0,0.6)}
+#bg-canvas{position:fixed;inset:0;z-index:0;pointer-events:none}
+.reveal{background:transparent}.reveal .slides{text-align:center;width:100%!important;left:50%!important;margin:0!important}
+.reveal .slides section{padding:32px 52px;height:100%;display:flex!important;flex-direction:column;align-items:center;justify-content:center}
+.reveal .controls{right:12px!important;left:auto!important;bottom:12px!important}
+.reveal .progress,.reveal .slide-number{display:none!important}
+#page-indicator{position:fixed;left:24px;bottom:20px;z-index:100;font-size:13px;color:rgba(200,170,120,0.4);font-family:'JetBrains Mono',monospace;letter-spacing:1px;pointer-events:none}
+.ac-card{position:relative;z-index:2;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:36px 46px;max-width:860px;box-shadow:var(--shadow-card)}
+.ac-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--amber),var(--bronze),transparent)}
+.hero-title{font-size:48px;font-weight:800;letter-spacing:-1px;background:linear-gradient(135deg,var(--amber),var(--wheat),var(--gold));background-size:300%300%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:gS 5s ease infinite;margin:0 0 12px;line-height:1.15}
+@keyframes gS{0%,100%{background-position:0%50%}50%{background-position:100%50%}}
+.ac-bar{width:100px;height:2px;background:linear-gradient(90deg,transparent,var(--amber),var(--bronze),transparent);border-radius:1px;margin:14px auto}
+.paper-card{background:linear-gradient(135deg,rgba(40,30,20,0.6),rgba(30,22,14,0.8));border:1px solid var(--border);border-radius:10px;padding:20px 18px;text-align:left;margin-bottom:10px;box-shadow:0 4px 16px rgba(0,0,0,0.4)}
+.paper-card .pn{font-size:10px;color:var(--amber);font-weight:700;letter-spacing:1px;margin-bottom:4px}
+.paper-card .title{font-size:15px;font-weight:700;color:var(--wheat);margin-bottom:3px}
+.paper-card .venue{font-size:11px;color:var(--text3);margin-bottom:6px}
+.paper-card .desc{font-size:12px;color:var(--text2);line-height:1.7}
+.two-col{display:flex;gap:18px;flex-wrap:wrap;justify-content:center;max-width:940px}.two-col>div{flex:1;min-width:260px}
+.tri-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;max-width:940px}
+.concept-block{background:rgba(30,25,18,0.5);border:1px solid var(--border);border-radius:10px;padding:16px 14px;text-align:left;margin-bottom:8px}
+.concept-block h4{margin:0 0 5px;font-size:13px;color:var(--amber)}.concept-block p{margin:0;font-size:11px;color:var(--text2);line-height:1.7}
+.formula-box{background:rgba(10,8,5,0.8);border:1px solid rgba(180,140,80,0.2);border-radius:10px;padding:18px 24px;max-width:780px;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,0.5);margin:6px 0}
+.formula-box .math-block{font-size:15px;color:#d4c8b0;overflow-x:auto;padding:2px 0}
+.reveal .slides section .fragment.fade-up{opacity:0;transform:translateY(30px);transition:all 0.7s cubic-bezier(0.25,0.46,0.45,0.94)}
+.reveal .slides section .fragment.fade-up.visible{opacity:1;transform:translateY(0)}
+.summary-table{width:100%;max-width:820px;border-collapse:collapse;font-size:12px;border-radius:10px;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,0.5)}
+.summary-table thead{background:linear-gradient(135deg,rgba(180,140,80,0.25),rgba(150,110,50,0.12))}
+.summary-table th{padding:9px 12px;text-align:left;font-weight:700;color:var(--wheat);font-size:11px}
+.summary-table td{padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text2)}
+.summary-table tbody tr{background:rgba(20,15,10,0.4)}.summary-table .pc{font-weight:700;color:var(--wheat)}.summary-table .hl{color:var(--amber);font-weight:600}
+.page-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 14px;border-radius:14px;font-size:11px;font-weight:700;letter-spacing:2px;background:rgba(212,160,64,0.08);color:var(--amber);border:1px solid rgba(212,160,64,0.2)}
+.cite{font-size:10px;color:var(--amber);font-family:monospace}
+.def-box{background:rgba(180,140,80,0.06);border:1px solid rgba(180,140,80,0.2);border-left:3px solid var(--amber);border-radius:0 10px 10px 0;padding:16px 22px;text-align:left;max-width:750px;margin:8px 0}
+.def-box .label{font-size:11px;color:var(--amber);font-weight:700;letter-spacing:2px;margin-bottom:4px}
+.def-box .content{font-size:13px;color:var(--text);line-height:1.8}
+@media(max-width:768px){.hero-title{font-size:30px}.ac-card{padding:20px 14px;max-width:100%}.two-col{flex-direction:column}.tri-grid{grid-template-columns:1fr}}
+</style></head><body>
+<canvas id="bg-canvas"></canvas><div id="page-indicator"></div>
+<div class="reveal"><div class="slides">
+
+<!-- ═══════════ PART 1 TITLE ═══════════ -->
+<section data-transition="zoom"><div class="ac-card fragment fade-up">
+  <p class="cite" style="text-align:center;margin:0;">MODULE 1+ · PART 1</p>
+  <h1 class="hero-title">白盒 OPD</h1>
+  <p style="font-size:20px;color:var(--text2);margin:0 0 4px;">教师 Logits 可访问 · Token 级监督 · 21 篇</p>
+  <div class="ac-bar"></div>
+  <p style="font-size:12px;color:var(--text3);margin:0;">Papers 9–29 / 全序列</p>
+</div></section>
+
+<!-- ═══════════ OVERVIEW ═══════════ -->
+<section data-transition="slide">
+  <h2 style="font-size:24px;font-weight:700;color:var(--amber);margin-bottom:10px;">📚 白盒 OPD: 21 篇论文总览 (Papers 9–29)</h2>
+  <div class="ac-bar"></div>
+  <table class="summary-table fragment fade-up">
+    <thead><tr><th>Paper</th><th>论文</th><th>时间</th><th>机构</th><th>核心方法</th></tr></thead>
+    <tbody>
+      <tr><td class="pc">09</td><td>MiniLLM</td><td>2023.06</td><td>MS/清华</td><td>Reverse KL via PG — 已在Part 0精讲</td></tr>
+      <tr><td class="pc">10</td><td><strong>DistiLLM</strong></td><td>2024.02</td><td>KAIST/MS</td><td>Skewed-KL (FKL+RKL自适应混合) · ICML 2024</td></tr>
+      <tr><td class="pc">11</td><td>Speculative KD</td><td>2024.10</td><td>UCSB/Google</td><td>交错提议-纠正的门控KL · ICLR 2025</td></tr>
+      <tr><td class="pc">12</td><td>DistiLLM-2</td><td>2025.03</td><td>KAIST/MS</td><td>对比式: Skew-FKL(教师数据)+Skew-RKL(学生数据) · ICML 2025 Oral</td></tr>
+      <tr><td class="pc">13</td><td>DSKDv2</td><td>2025.04</td><td>BJTU</td><td>跨tokenizer蒸馏 · 支持on-policy模式</td></tr>
+      <tr><td class="pc">14</td><td>Constrained OPD</td><td>2025.09</td><td>华为诺亚</td><td>CMDP框架——硬KL约束替代软惩罚</td></tr>
+      <tr><td class="pc">15</td><td>AdaSwitch</td><td>2025.10</td><td>RUC/百度</td><td>基于散度阈值的自适应on/off-policy切换</td></tr>
+      <tr><td class="pc">16</td><td>Veto</td><td>2026.01</td><td>SNU</td><td>自适应目标重构 · ACL 2026</td></tr>
+      <tr><td class="pc">17</td><td>G-OPD</td><td>2026.02</td><td>RUC/腾讯</td><td>OPD作为KL约束RL——奖励可外推超教师上限</td></tr>
+      <tr><td class="pc">18</td><td>Fast OPD</td><td>2026.02</td><td>工业</td><td>前缀截断——仅蒸馏推理前缀 · 2–47×加速</td></tr>
+      <tr><td class="pc">19</td><td>Entropy-Aware OPD</td><td>2026.03</td><td>KAIST/IBM</td><td>教师高熵→FKL; 教师低熵→RKL</td></tr>
+      <tr><td class="pc">20</td><td>REOPOLD</td><td>2026.03</td><td>KAIST/MS</td><td>已在Module 1 Part 4精讲</td></tr>
+      <tr><td class="pc">21</td><td>PACED</td><td>2026.03</td><td>LinkedIn</td><td>前沿课程自蒸馏——难度权重w(p)=p(1-p)</td></tr>
+      <tr><td class="pc">22</td><td>TSD-KD</td><td>2026.03</td><td>Korea Univ</td><td>Token选择性双蒸馏 · ICLR 2026</td></tr>
+      <tr><td class="pc">23</td><td>SCOPE</td><td>2026.04</td><td>USTC/美团</td><td>信号校准双路径——教师PPL+学生PPL</td></tr>
+      <tr><td class="pc">24</td><td>TIP</td><td>2026.04</td><td>Meta/LinkedIn</td><td>仅高熵50% token承载OPD信号 · ~47%内存节省</td></tr>
+      <tr><td class="pc">25</td><td>HPD</td><td>2026.04</td><td>—</td><td>重加权对数似然统一FKL+RKL</td></tr>
+      <tr><td class="pc">26</td><td>BRTS</td><td>2026.05</td><td>JHU</td><td>Best-of-N教师rollout选择</td></tr>
+      <tr><td class="pc">27</td><td>TRD</td><td>2026.06</td><td>McGill/Mila</td><td>轨迹级精炼→蒸馏——解决前缀失败</td></tr>
+      <tr><td class="pc">28</td><td>OPRD</td><td>2026.06</td><td>ZJU/蚂蚁</td><td>首个特征空间OPD——监督隐藏状态</td></tr>
+      <tr><td class="pc">29</td><td>FiRe-OPD</td><td>2026.06</td><td>清华/港科大</td><td>轨迹硬过滤+Token软加权</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ═══════════ Paper 10: DistiLLM ═══════════ -->
+<section data-transition="slide">
+  <div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 Paper 10</span></div>
+  <div class="paper-card fragment fade-up" style="max-width:780px;">
+    <div class="pn">PAPER 10 · arXiv: 2402.03898 · ICML 2024</div>
+    <div class="title">DistiLLM — Skewed-KL: FKL 与 RKL 的自适应混合</div>
+    <div class="venue">J. Ko, S. Kim et al. · KAIST / Microsoft</div>
+    <div class="desc" style="margin-top:8px;">
+      <strong style="color:var(--amber);">核心贡献：</strong>首次系统研究OPD中<strong style="color:#fff;">Forward KL vs Reverse KL的选择问题</strong>，提出Skewed-KL在两者间自适应插值。
+    </div>
+  </div>
+  <div class="two-col fragment fade-up">
+    <div class="concept-block" style="border-left:3px solid var(--amber);"><h4>🔑 问题：FKL vs RKL 各有利弊</h4><p style="font-size:11px;"><strong>Forward KL D_KL(π_T‖π_S):</strong> 覆盖教师所有模式→多样性好,但可能过度分散<br><strong>Reverse KL D_KL(π_S‖π_T):</strong> 集中在教师高概率区域→锐度高,但模式坍缩风险<br><br>DistiLLM发现：<strong style="color:var(--amber);">两者在训练不同阶段各有优势</strong>——早期需要FKL的覆盖，后期需要RKL的锐化。</p></div>
+    <div class="concept-block" style="border-left:3px solid var(--sage);"><h4>✅ 创新: Skewed-KL 插值</h4><p style="font-size:11px;">$$\mathcal{L} = \alpha \cdot D_{KL}(\pi_T \|\pi_S) + (1-\alpha) \cdot D_{KL}(\pi_S \|\pi_T)$$α从训练初期的高值(偏向FKL→覆盖)逐渐衰减(偏向RKL→锐化)。<br><br>类似Module 1 Part 2 Kickstarting中λ_k衰减的思路——早期引导,后期放手。</p></div>
+  </div>
+</section>
+
+<!-- 继续 Papers 11-29 将在后续commit中添加 --></div></div>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.js"></script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<script>(function(){const c=document.getElementById('bg-canvas'),x=c.getContext('2d');let W,H,shapes=[],frame=0;function rs(){W=c.width=window.innerWidth;H=c.height=window.innerHeight}window.addEventListener('resize',rs);rs();class Shape{constructor(){this.reset()}reset(){this.x=Math.random()*W;this.y=Math.random()*H;this.size=Math.random()*50+25;this.type=Math.floor(Math.random()*3);this.vx=(Math.random()-0.5)*0.4;this.vy=(Math.random()-0.5)*0.4;this.alpha=Math.random()*0.06+0.04;this.rot=Math.random()*Math.PI*2;this.rv=(Math.random()-0.5)*0.003}update(){this.x+=this.vx;this.y+=this.vy;this.rot+=this.rv;if(this.x<-80||this.x>W+80)this.vx*=-1;if(this.y<-80||this.y>H+80)this.vy*=-1}draw(c){var cx=this.x,cy=this.y;c.save();c.translate(cx,cy);c.rotate(this.rot);c.globalAlpha=this.alpha;c.shadowColor='rgba(220,180,120,0.6)';c.shadowBlur=18;c.strokeStyle='rgba(220,170,110,0.9)';c.lineWidth=1;if(this.type===0){c.beginPath();for(let i=0;i<6;i++){const a=i*Math.PI/3-Math.PI/2,r=this.size*0.6;const px=r*Math.cos(a),py=r*Math.sin(a);i===0?c.moveTo(px,py):c.lineTo(px,py)}c.closePath();c.stroke()}else if(this.type===1){c.beginPath();const s=this.size*0.45;c.moveTo(0,-s);c.lineTo(s,0);c.lineTo(0,s);c.lineTo(-s,0);c.closePath();c.stroke()}else{c.beginPath();c.arc(0,0,this.size*0.35,0,Math.PI*2);c.stroke()}c.shadowBlur=6;c.shadowColor='rgba(240,200,140,0.4)';c.globalAlpha=this.alpha*1.3;c.strokeStyle='rgba(240,200,140,0.6)';c.lineWidth=0.6;if(this.type===0){c.beginPath();for(let i=0;i<6;i++){const a=i*Math.PI/3-Math.PI/2,r2=this.size*0.35;const px=r2*Math.cos(a),py=r2*Math.sin(a);i===0?c.moveTo(px,py):c.lineTo(px,py)}c.closePath();c.stroke()}c.restore()}}shapes=Array.from({length:20},()=>new Shape());function drawGrid(){var gs=55;x.strokeStyle='rgba(170,130,70,0.06)';x.lineWidth=1;for(let i=gs;i<W;i+=gs){x.beginPath();x.moveTo(i,0);x.lineTo(i,H);x.stroke()}for(let j=gs;j<H;j+=gs){x.beginPath();x.moveTo(0,j);x.lineTo(W,j);x.stroke()}for(let i=gs;i<W;i+=gs){for(let j=gs;j<H;j+=gs){var dx=i-W/2,dy=j-H/2,dist=Math.sqrt(dx*dx+dy*dy);var edgeFade=Math.max(0.15,1-dist/(Math.max(W,H)*0.7));x.fillStyle=`rgba(210,160,100,${0.12*edgeFade})`;x.beginPath();x.arc(i,j,1.5,0,Math.PI*2);x.fill()}}}function drawGlow(){for(var i=0;i<2;i++){var gx=W*(0.3+i*0.4)+Math.sin(frame*0.002+i)*W*0.15;var gy=H*(0.4+i*0.2)+Math.cos(frame*0.003+i)*H*0.1;var grad=x.createRadialGradient(gx,gy,0,gx,gy,Math.min(W,H)*0.4);grad.addColorStop(0,'rgba(220,180,120,0.07)');grad.addColorStop(0.5,'rgba(180,140,80,0.03)');grad.addColorStop(1,'rgba(0,0,0,0)');x.fillStyle=grad;x.fillRect(0,0,W,H)}}function lp(){x.clearRect(0,0,W,H);drawGrid();drawGlow();shapes.forEach(s=>{s.update();s.draw(x)});frame++;requestAnimationFrame(lp)}lp()})();</script>
+<script>Reveal.initialize({hash:true,center:true,transition:'slide',transitionSpeed:'slow',backgroundTransition:'zoom',slideNumber:false,progress:false,controls:true,controlsLayout:'bottom-right',controlsBackArrows:'faded',width:1200,height:700,margin:0,minScale:0.2,maxScale:2.0});(function(){const e=document.getElementById('page-indicator');function u(){const t=Reveal.getTotalSlides(),c=Reveal.getSlidePastCount()+1;e.textContent=c+' / '+t}Reveal.on('ready',u);Reveal.on('slidechanged',u)})();</script>
+</body></html>
