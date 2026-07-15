@@ -85,6 +85,53 @@
 <text x="380" y="55" text-anchor="middle" fill="#fff" font-size="15" font-weight="700">Part 1: 奠基与探索期</text>
 </svg></section>
 
-</div></div><script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.js"></script><script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<!-- ═══════════ ViT ═══════════ -->
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">ViT · 2020.10</span></div>
+<div class="paper-card fragment fade-up"><div class="cite" style="font-size:10px;">arXiv: 2010.11929 · ICLR 2021 · Google · 引用 50,000+</div>
+<div class="title" style="font-size:16px;font-weight:700;color:#fff;margin:4px 0;">ViT — An Image is Worth 16×16 Words</div>
+<div class="desc" style="font-size:12px;color:var(--text2);line-height:1.7;margin-top:6px;"><strong style="color:var(--vis);">核心贡献：</strong>首次将标准 Transformer 直接应用于图像——把图像切成固定大小的 Patch，当作"视觉单词"序列处理，打破 CV 和 NLP 的架构壁垒。</div></div></section>
+
+<section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--vis);margin-bottom:8px;">ViT 架构：图像 → Patch → Transformer</h2>
+<svg viewBox="0 0 900 240" xmlns="http://www.w3.org/2000/svg" style="max-width:900px;">
+  <!-- 输入图像 -->
+  <rect x="10" y="20" width="120" height="120" rx="8" fill="rgba(96,165,250,0.1)" stroke="rgba(96,165,250,0.3)"/>
+  <text x="70" y="85" text-anchor="middle" fill="#60a5fa" font-size="14" font-weight="700" font-family="sans-serif">🖼️ 224×224</text>
+  <!-- Patch分割箭头 -->
+  <text x="145" y="85" fill="rgba(255,255,255,0.4)" font-size="20">→</text>
+  <!-- 3×3 Patch网格示意 -->
+  <g transform="translate(170,20)">
+    <rect x="0" y="0" width="36" height="36" rx="4" fill="rgba(96,165,250,0.15)" stroke="rgba(96,165,250,0.3)"/><text x="18" y="24" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="9">P1</text>
+    <rect x="40" y="0" width="36" height="36" rx="4" fill="rgba(96,165,250,0.1)" stroke="rgba(96,165,250,0.2)"/><text x="58" y="24" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="9">P2</text>
+    <rect x="80" y="0" width="36" height="36" rx="4" fill="rgba(96,165,250,0.1)" stroke="rgba(96,165,250,0.2)"/><text x="98" y="24" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="9">···</text>
+    <rect x="0" y="40" width="36" height="36" rx="4" fill="rgba(96,165,250,0.1)" stroke="rgba(96,165,250,0.2)"/><text x="18" y="64" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="9">P5</text>
+    <rect x="40" y="40" width="36" height="36" rx="4" fill="rgba(96,165,250,0.08)" stroke="rgba(96,165,250,0.15)"/><text x="58" y="64" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="9">···</text>
+    <rect x="80" y="40" width="36" height="36" rx="4" fill="rgba(96,165,250,0.08)" stroke="rgba(96,165,250,0.15)"/><text x="98" y="64" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="9">···</text>
+    <rect x="0" y="80" width="36" height="36" rx="4" fill="rgba(96,165,250,0.08)" stroke="rgba(96,165,250,0.15)"/><text x="18" y="104" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="9">···</text>
+    <rect x="40" y="80" width="36" height="36" rx="4" fill="rgba(96,165,250,0.08)" stroke="rgba(96,165,250,0.15)"/><text x="58" y="104" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="9">···</text>
+    <rect x="80" y="80" width="36" height="36" rx="4" fill="rgba(96,165,250,0.08)" stroke="rgba(96,165,250,0.15)"/><text x="98" y="104" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="9">Pn</text>
+  </g>
+  <!-- 线性投影+位置编码 -->
+  <text x="310" y="85" fill="rgba(255,255,255,0.4)" font-size="20">→</text>
+  <rect x="330" y="35" width="140" height="30" rx="6" fill="rgba(183,148,244,0.1)" stroke="rgba(183,148,244,0.2)"/>
+  <text x="400" y="55" text-anchor="middle" fill="#b794f4" font-size="11" font-family="sans-serif">线性投影 + 位置编码</text>
+  <text x="400" y="110" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="11" font-family="sans-serif">每个 Patch → 768维向量</text>
+  <!-- Transformer -->
+  <text x="490" y="85" fill="rgba(255,255,255,0.4)" font-size="20">→</text>
+  <rect x="510" y="30" width="160" height="100" rx="10" fill="rgba(183,148,244,0.06)" stroke="rgba(183,148,244,0.2)"/>
+  <text x="590" y="52" text-anchor="middle" fill="#b794f4" font-size="13" font-weight="700" font-family="sans-serif">Transformer Encoder</text>
+  <text x="590" y="75" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="10" font-family="sans-serif">多头自注意力</text>
+  <text x="590" y="95" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="10" font-family="sans-serif">MLP · LayerNorm</text>
+  <text x="590" y="118" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="9" font-family="sans-serif">[CLS] token → 分类</text>
+  <!-- 输出 -->
+  <text x="695" y="85" fill="rgba(255,255,255,0.4)" font-size="20">→</text>
+  <rect x="720" y="60" width="100" height="40" rx="8" fill="rgba(74,222,128,0.1)" stroke="rgba(74,222,128,0.2)"/>
+  <text x="770" y="85" text-anchor="middle" fill="#4ade80" font-size="12" font-weight="700" font-family="sans-serif">分类结果</text>
+  <!-- 底部注释 -->
+  <text x="450" y="165" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="11" font-family="sans-serif">Patch尺寸=16×16 → 14×14=196个视觉token + 1个[CLS] → 送入标准Transformer</text>
+  <!-- 关键数字 -->
+  <text x="450" y="195" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="10" font-family="sans-serif">ViT-L/16: 307M参数 · ImageNet 88.5% · 比CNN更少的归纳偏置</text>
+</svg></section>
+
+<section data-transition="slide"><div class="two-col fragment fade-up"><div class="concept-block" style="border-left:3px solid var(--vis);"><h4>🔑 关键创新</h4><p style="font-size:11px;">图像<strong style="color:var(--vis);">不需要</strong>专门的卷积操作。把图像切成 Patch 后线性投影，变成和文本 token 一样的向量序列——Transformer 自然地就能处理。这打破了 CV 和 NLP 的架构壁垒。</p></div><div class="concept-block" style="border-left:3px solid var(--gen);"><h4>⚠️ 局限</h4><p style="font-size:11px;">ViT 需要<strong style="color:var(--gen);">大量数据</strong>预训练（JFT-300M）才能超越 CNN。缺少卷积的归纳偏置——平移等变性、局部性——在小数据集上不如 ResNet。</p></div></div></section><script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 <script>(function(){const c=document.getElementById('bg-canvas'),x=c.getContext('2d');let W,H,ribbons=[],frame=0;function rs(){W=c.width=window.innerWidth;H=c.height=window.innerHeight}window.addEventListener('resize',rs);rs();class Ribbon{constructor(){this.reset()}reset(){this.points=[];this.y=H*0.3+Math.random()*H*0.7;this.speed=(Math.random()-0.5)*0.25;this.hue=Math.floor(Math.random()*360);this.light=Math.floor(Math.random()*16+20);this.hueDrift=Math.random()*0.35+0.15;this.lightDrift=(Math.random()-0.5)*0.04;this.yDrift=(Math.random()-0.5)*0.15;const a=Math.random()*0.07+0.05;this.alpha=a;this.alphaStr=a*30;for(let i=0;i<=20;i++)this.points.push({x:i*W/20,y:Math.random()*70-35})}update(){this.y+=this.speed+this.yDrift;this.speed+=(Math.random()-0.5)*0.003;if(this.y<H*0.2||this.y>H+80)this.reset();this.hue+=this.hueDrift;if(this.hue<0)this.hue+=360;if(this.hue>=360)this.hue-=360;this.light+=this.lightDrift;if(this.light<20)this.lightDrift=0.05;if(this.light>35)this.lightDrift=-0.05;for(let p of this.points)p.y+=(Math.random()-0.5)*0.6}draw(ctx){const col=`hsla(${Math.floor(this.hue)},100%,${Math.floor(this.light)}%,`;ctx.save();ctx.globalAlpha=this.alpha;ctx.shadowColor=col+'0.35)';ctx.shadowBlur=20;ctx.beginPath();ctx.moveTo(0,this.y);for(let i=0;i<this.points.length;i++){const px=this.points[i].x,py=this.y+this.points[i].y;if(i<this.points.length-1){const nx=this.points[i+1].x,ny=this.y+this.points[i+1].y;ctx.quadraticCurveTo(px,py,(px+nx)/2,(py+ny)/2)}}ctx.lineTo(W,H);ctx.lineTo(0,H);ctx.closePath();ctx.fillStyle=col+this.alphaStr+')';ctx.fill();ctx.shadowBlur=0;ctx.restore()}}ribbons=Array.from({length:8},()=>new Ribbon());function lp(){x.clearRect(0,0,W,H);const grad=x.createRadialGradient(W/2,H/2,0,W/2,H/2,Math.max(W,H)*0.8);grad.addColorStop(0,'rgba(20,12,30,0.35)');grad.addColorStop(0.5,'rgba(8,5,12,0.12)');grad.addColorStop(1,'rgba(2,1,4,0)');x.fillStyle=grad;x.fillRect(0,0,W,H);const bloom=x.createRadialGradient(W/2+Math.sin(frame*0.003)*W*0.08,H/2+Math.cos(frame*0.004)*H*0.06,Math.min(W,H)*0.03,W/2,H/2,Math.min(W,H)*0.45);bloom.addColorStop(0,'rgba(140,110,200,0.05)');bloom.addColorStop(0.4,'rgba(100,140,200,0.02)');bloom.addColorStop(1,'rgba(0,0,0,0)');x.fillStyle=bloom;x.fillRect(0,0,W,H);ribbons.forEach(r=>{r.update();r.draw(x)});frame++;requestAnimationFrame(lp)}lp()})();</script>
 <script>Reveal.initialize({hash:true,center:true,transition:'slide',transitionSpeed:'slow',backgroundTransition:'zoom',slideNumber:false,progress:false,controls:true,controlsLayout:'bottom-right',width:1200,height:700,margin:0,minScale:0.2,maxScale:2.0});(function(){const e=document.getElementById('page-indicator');function u(){const t=Reveal.getTotalSlides(),c=Reveal.getSlidePastCount()+1;e.textContent=c+' / '+t}Reveal.on('ready',u);Reveal.on('slidechanged',u)})();</script></body></html>
