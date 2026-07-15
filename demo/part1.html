@@ -1225,6 +1225,101 @@ window.MathJax = {
   </div>
 </section>
 
+<!-- ═══════ SECTION 4.5: 缺口与桥梁 — 机器人/无监督 ═══════ -->
+<!-- ═══════════════════════════ SLIDE 20.5: 节标题 - 缺口 ═══════════════════════════ -->
+<section data-transition="slide">
+  <div style="text-align:center;">
+    <span class="section-badge arch" style="background:rgba(255,107,157,0.1);color:var(--a3);border-color:rgba(255,107,157,0.2);">🤖 支线·桥梁 · SECTION 4.5</span>
+  </div>
+  <h2 style="font-size:30px;font-weight:700;margin:16px 0 4px;color:var(--a3);">缺口：当奖励信号缺失时</h2>
+  <p style="font-size:15px;color:var(--text3);margin:0;">萌芽期框架的致命前提——必须有Rᵢ才能启动</p>
+  <div class="glow-bar"></div>
+  <div style="margin-top:12px; padding:10px 18px; background:rgba(255,107,157,0.04); border:1px solid rgba(255,107,157,0.15); border-radius:14px; font-size:11px; color:var(--text3); max-width:580px;">
+    DAG位置：桥梁节点 — 连接Part 1的"有奖励蒸馏"到Part 2的"无奖励技能发现"
+  </div>
+</section>
+
+<!-- ═══════════════════════════ SLIDE 20.6: 机器人运动困境 ═══════════════════════════ -->
+<section data-transition="slide">
+  <div style="display:flex;align-items:center;gap:12px;justify-content:center;margin-bottom:4px;">
+    <h2 style="font-size:26px;font-weight:700;color:var(--text);margin:0;">
+      🤖 机器人的困境 — 有些技能，R函数根本写不出来
+    </h2>
+    <span style="background:rgba(254,202,87,0.15);border:1px solid rgba(254,202,87,0.3);border-radius:12px;padding:3px 12px;font-size:11px;color:var(--a4);font-weight:700;">💬 讨论</span>
+  </div>
+  <div class="glow-bar"></div>
+  <div class="two-col">
+    <div class="fragment fade-up">
+      <div class="concept-card" style="border-top:3px solid var(--a5);">
+        <h4>✅ 容易写 R 的技能</h4>
+        <p>• <strong>走路：</strong>前进速度 → R = 速度×Δt − 能耗×c<br>
+        • <strong>导航：</strong>距离目标 → R = −distance(target, pos)<br>
+        • <strong>抓取：</strong>物体是否被拿起 → R = +1 if grasped else 0<br>
+        <strong style="color:var(--a5);">这些都有明确的数学定义。</strong></p>
+      </div>
+    </div>
+    <div class="fragment fade-up">
+      <div class="concept-card" style="border-top:3px solid var(--a3);">
+        <h4>❌ 极难写 R 的技能</h4>
+        <p>• <strong>跑：</strong>怎么用数学定义"跑"vs"走"？速度阈值？太粗暴<br>
+        • <strong>跳：</strong>四足离地？那摔倒也算"跳"吗<br>
+        • <strong>翻身：</strong>角度变化？用哪个轴？<br>
+        • <strong>跳舞：</strong>基本无法用公式描述<br>
+        <strong style="color:var(--a3);">这些需要无监督方法。</strong></p>
+      </div>
+    </div>
+  </div>
+  <div class="fragment fade-up" style="margin-top:16px;max-width:780px;text-align:left;background:rgba(255,107,157,0.05);border:1px solid rgba(255,107,157,0.15);border-radius:14px;padding:14px 20px;">
+    <p style="font-size:13px;color:var(--text2);margin:0;line-height:1.7;">
+      <strong style="color:var(--a3);">🔥 这就是萌芽期框架的致命缺口：</strong>Distral 要求每个任务都有明确的奖励函数 Rᵢ。但现实中，大量有价值的技能根本没有清晰的奖励定义。<br>
+      <strong style="color:#fff;">如果不能解决这个问题，OPD 的技能库就被限制在"人能写清楚奖励"的狭窄范围内。</strong>
+    </p>
+  </div>
+</section>
+
+<!-- ═══════════════════════════ SLIDE 20.7: DIAYN 预览 ═══════════════════════════ -->
+<section data-transition="slide">
+  <div style="display:flex;align-items:center;gap:12px;justify-content:center;margin-bottom:4px;">
+    <h2 style="font-size:26px;font-weight:700;color:var(--text);margin:0;">
+      🔮 预览：无监督技能发现 — 不靠R也能"玩"出技能
+    </h2>
+    <span style="background:rgba(254,202,87,0.15);border:1px solid rgba(254,202,87,0.3);border-radius:12px;padding:3px 12px;font-size:11px;color:var(--a4);font-weight:700;">💬 讨论</span>
+  </div>
+  <div class="glow-bar"></div>
+  <div class="two-col">
+    <div class="fragment fade-up">
+      <div style="background:rgba(0,210,255,0.04);border:1px solid rgba(0,210,255,0.15);border-radius:18px;padding:22px 20px;text-align:left;">
+        <h4 style="color:var(--a2);margin:0 0 10px;">🔑 核心思路 (DIAYN, 2018)</h4>
+        <p style="font-size:13px;color:var(--text2);line-height:1.7;margin:0;">
+          <strong>① 随机分配技能编号 z</strong>（z=0,1,...,K−1）<br>
+          <strong>② 训练判别器 D(z|s)</strong>：根据机器人状态猜它正在执行哪个技能<br>
+          <strong>③ 伪奖励 = log D(z|s)</strong>：如果判别器能轻松识别出技能z，就给高分<br>
+          <strong>④ 同时最大化策略熵</strong>：防止技能坍缩为同一个动作<br>
+          <br>
+          <strong style="color:var(--a2);">结果：</strong>不同z自动演化出不同运动模式——跑、跳、翻身，<strong style="color:var(--a2);">完全不需要人定义"什么是跑"</strong>。
+        </p>
+      </div>
+    </div>
+    <div class="fragment fade-up">
+      <div style="background:rgba(108,92,231,0.04);border:1px solid rgba(108,92,231,0.15);border-radius:18px;padding:22px 20px;text-align:left;">
+        <h4 style="color:var(--a1);margin:0 0 10px;">🔗 如何与OPD衔接？</h4>
+        <p style="font-size:13px;color:var(--text2);line-height:1.7;margin:0;">
+          这些无监督发现的技能，就可以作为Distral里的<strong style="color:var(--a1);">"教师策略"πᵢ</strong>——即便它们根本没有任务奖励Rᵢ。<br><br>
+          中心策略π₀从这些"自己玩出来的技能"中蒸馏出通用运动基座，以后微调到具体任务（如追赶目标）时速度极快。<br><br>
+          <strong style="color:var(--a1);">这填补了"没有奖励信号怎么办"的缺口。</strong>
+        </p>
+      </div>
+      <div class="fragment fade-up info-tile" style="max-width:100%;margin-top:12px;">
+        <h4>🛠 工程实践</h4>
+        <p>K个技能通常设得比目标动作多（如设50个），自由分化后人工筛选（看视频选出"最像跑"的z*）。选出后用真实奖励R微调，或用KL约束保持原始技能风格——最终把它打磨成真正可用的技能。</p>
+      </div>
+    </div>
+  </div>
+  <p style="font-size:12px;color:var(--text3);margin-top:14px;">
+    📖 完整展开 → Part 2: DIAYN · 互信息最大化 · 无监督预训练 · 技能微调
+  </p>
+</section>
+
 <!-- ═══════ SECTION 5: 总结与过渡 ═══════ -->
 <!-- ═══════════════════════════ SLIDE 21: 萌芽期总结 ═══════════════════════════ -->
 <section data-transition="slide">
