@@ -32,27 +32,18 @@ window.MathJax = {
 #particle-canvas { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
 
 /* ============ Reveal 覆写 ============ */
-.reveal {
-  background: transparent;
-  position: relative !important;
-  width: 100vw !important;
-  height: 100vh !important;
-  left: 0 !important;
-  top: 0 !important;
-}
+.reveal { background: transparent; }
+/* 只修复水平居中，保留 Reveal 自带的垂直 transform */
 .reveal .slides {
   text-align: center;
   width: 100% !important;
-  left: 0 !important;
-  transform: none !important;
+  left: 50% !important;
   margin: 0 !important;
 }
 .reveal .slides section {
   padding: 36px 56px; height: 100%;
   display: flex !important; flex-direction: column;
   align-items: center; justify-content: center;
-  left: 0 !important;
-  right: 0 !important;
 }
 /* 修复控件偏移 */
 .reveal .controls {
