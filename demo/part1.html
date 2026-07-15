@@ -32,26 +32,35 @@ window.MathJax = {
 #particle-canvas { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
 
 /* ============ Reveal 覆写 ============ */
-.reveal { background: transparent; }
+.reveal {
+  background: transparent;
+  position: relative !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  left: 0 !important;
+  top: 0 !important;
+}
 .reveal .slides {
   text-align: center;
   width: 100% !important;
-  margin-left: auto !important;
-  margin-right: auto !important;
+  left: 0 !important;
+  transform: none !important;
+  margin: 0 !important;
 }
 .reveal .slides section {
   padding: 36px 56px; height: 100%;
   display: flex !important; flex-direction: column;
   align-items: center; justify-content: center;
   left: 0 !important;
-  margin: 0 auto !important;
+  right: 0 !important;
 }
-/* 修复 Reveal 控件导致的偏移 */
+/* 修复控件偏移 */
 .reveal .controls {
   right: 12px !important;
   left: auto !important;
   bottom: 12px !important;
 }
+.reveal .progress, .reveal .slide-number { display: none !important; }
 
 /* ============ 玻璃卡片 ============ */
 .glass-card {
@@ -1434,7 +1443,7 @@ Reveal.initialize({
   transition: 'slide', transitionSpeed: 'slow', backgroundTransition: 'zoom',
   slideNumber: false, progress: false,
   controls: true, controlsLayout: 'bottom-right', controlsBackArrows: 'faded',
-  width: 1200, height: 700, margin: 0.02, minScale: 0.2, maxScale: 2.0,
+  width: 1200, height: 700, margin: 0, minScale: 0.2, maxScale: 2.0,
 });
 </script>
 
