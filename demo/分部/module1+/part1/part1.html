@@ -184,15 +184,21 @@
 </section>
 
 <!-- ═══════════ P13: DSKDv2 ═══════════ -->
-<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P13 · S1/3</span></div>
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P13 · S1/5</span></div>
 <div class="paper-card fragment fade-up"><div class="pn">PAPER 13 · arXiv: 2504.11426 · 2025.04</div><div class="title">DSKDv2 — Cross-Tokenizer Distillation with On-Policy Support</div><div class="venue">BJTU (北京交通大学)</div></div>
-<div class="fragment fade-up struct-content" style="margin-top:8px;"><strong style="color:var(--amber);">核心贡献：</strong>首次解决师生使用<strong style="color:#fff;">不同 tokenizer</strong> 时的 OPD 问题——通过跨 tokenizer 对齐机制，使得即使词汇表不对齐也能进行 token 级 KL 监督。</div></section>
+<div class="fragment fade-up struct-content" style="margin-top:8px;"><strong style="color:var(--amber);">核心贡献：</strong>首次解决师生使用<strong style="color:#fff;">不同 tokenizer</strong>时的 OPD 问题——通过跨 tokenizer 投影对齐机制，使得即使词汇表不对齐 (如教师用 Llama tokenizer, 学生用 Qwen tokenizer) 也能进行 token 级 KL 监督。支持 on-policy 模式。</div></section>
 
-<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P13 · S2-3/3</span></div>
-<div class="two-col fragment fade-up">
-  <div class="concept-block" style="border-left:3px solid var(--amber);"><h4>📐 S2: 跨 tokenizer 对齐</h4><p style="font-size:11px;">投影矩阵将学生 token 分布映射到教师空间→在对齐后空间计算 KL。支持 on-policy 模式。</p></div>
-  <div class="concept-block" style="border-left:3px solid var(--sage);"><h4>⚠️ S3: 局限</h4><p style="font-size:11px;">投影矩阵引入额外开销。与 P4 "tokenizer不匹配"失效诊断闭环。</p></div>
-</div></section>
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P13 · S2/5</span></div><h2 style="font-size:20px;font-weight:700;color:var(--amber);margin-bottom:10px;">背景动机</h2>
+<div class="fragment fade-up struct-content">标准 OPD 假设师生使用<strong style="color:#fff;">相同 tokenizer</strong>——token 级 KL 散度直接定义在共享词汇表上。但实际场景中，教师和学生常使用不同 tokenizer (如 Mistral vs Llama tokenizer)。此时 KL 散度失去直接意义——两个分布定义在<strong style="color:var(--rust);">不同的概率空间</strong>上。这与 CASIA Revisiting OPD (P4) 的失效模式③完全相同。</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P13 · S3/5</span></div><h2 style="font-size:20px;font-weight:700;color:var(--amber);margin-bottom:10px;">核心方法：跨 Tokenizer 投影</h2>
+<div class="fragment fade-up struct-content">DSKDv2 通过<strong style="color:var(--amber);">投影矩阵 W</strong>将学生 token 分布 π_S 线性映射到教师 token 空间：π_S→T = W · π_S。然后在教师空间中计算 KL(π_T ‖ π_S→T)。投影矩阵 W 通过<strong style="color:#fff;">共享文本</strong>上师生 token 的共现统计来学习——哪些学生 token 对应哪些教师 token。</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P13 · S4/5</span></div><h2 style="font-size:20px;font-weight:700;color:var(--amber);margin-bottom:10px;">实验 · 意义</h2>
+<div class="fragment fade-up struct-content">支持 on-policy 模式——学生可以在自生成 rollout 上进行跨 tokenizer 蒸馏。这为<strong style="color:var(--amber);">异构模型间的 OPD</strong>打开了可能性：教师和学生可以来自完全不同的模型家族。与 P4 的 tokenizer 不匹配诊断形成<strong style="color:#fff;">问题-解决方案闭环</strong>。</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P13 · S5/5</span></div><h2 style="font-size:20px;font-weight:700;color:var(--amber);margin-bottom:10px;">局限与审视</h2>
+<div class="fragment fade-up struct-content">投影矩阵 W 引入额外参数和计算开销——每对 tokenizer 需要单独训练。tokenizer 差异过大 (如 BPE vs SentencePiece) 时对齐精度下降。是否值得为跨 tokenizer 支持引入额外复杂度，取决于具体部署场景。</div></section>
 
 <!-- P14: Constrained OPD -->
 <section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P14 · S1/2</span></div>
