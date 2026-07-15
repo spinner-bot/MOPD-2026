@@ -710,6 +710,89 @@ window.MathJax = {
   </p>
 </section>
 
+<!-- ═══════════════════════════ SLIDE 6.5: RL核心循环 ═══════════════════════════ -->
+<section data-transition="slide">
+  <div style="display:flex;align-items:center;gap:12px;justify-content:center;margin-bottom:4px;">
+    <h2 style="font-size:28px;font-weight:700;color:var(--text);margin:0;">
+      🔄 RL 核心循环 — 智能体与环境的对话
+    </h2>
+    <span style="background:rgba(254,202,87,0.15);border:1px solid rgba(254,202,87,0.3);border-radius:12px;padding:3px 12px;font-size:11px;color:var(--a4);font-weight:700;">💬 讨论</span>
+  </div>
+  <div class="glow-bar"></div>
+  <!-- Agent-Environment 循环图 -->
+  <div style="display:flex;align-items:center;justify-content:center;gap:32px;flex-wrap:wrap;max-width:900px;">
+    <div class="fragment fade-up" style="text-align:center;">
+      <div style="width:160px;height:160px;border-radius:50%;background:rgba(108,92,231,0.12);border:2px solid rgba(108,92,231,0.3);display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:var(--glow-1);">
+        <span style="font-size:40px;">🧠</span>
+        <span style="font-size:16px;font-weight:700;color:var(--a1);">智能体 Agent</span>
+        <span style="font-size:11px;color:var(--text3);">策略 π + 价值 Q</span>
+      </div>
+      <p style="font-size:12px;color:var(--text3);margin-top:6px;">观察状态 → 做出决策</p>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+      <div style="font-size:13px;font-weight:700;color:var(--a2);animation:arrowPulse 1.5s ease-in-out infinite;">动作 a →</div>
+      <div style="width:2px;height:40px;background:rgba(255,255,255,0.15);"></div>
+      <div style="font-size:13px;font-weight:700;color:var(--a3);animation:arrowPulse 1.5s ease-in-out infinite 0.75s;">← 状态 s, 奖励 R</div>
+    </div>
+    <div class="fragment fade-up" style="text-align:center;">
+      <div style="width:160px;height:160px;border-radius:50%;background:rgba(0,210,255,0.08);border:2px solid rgba(0,210,255,0.25);display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:var(--glow-2);">
+        <span style="font-size:40px;">🌍</span>
+        <span style="font-size:16px;font-weight:700;color:var(--a2);">环境 Environment</span>
+        <span style="font-size:11px;color:var(--text3);">MDP / 物理世界</span>
+      </div>
+      <p style="font-size:12px;color:var(--text3);margin-top:6px;">接收动作 → 返回状态+奖励</p>
+    </div>
+  </div>
+  <div class="fragment fade-up" style="margin-top:20px;max-width:750px;text-align:left;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:14px;padding:16px 20px;">
+    <p style="font-size:13px;color:var(--text2);line-height:1.8;margin:0;">
+      <strong style="color:#fff;">每个时间步 t：</strong><br>
+      ① 智能体观察状态 sₜ → ② 根据策略 π 选择动作 aₜ → ③ 环境执行 aₜ →<br>
+      ④ 环境返回新状态 sₜ₊₁ 和即时奖励 Rₜ → ⑤ 智能体用 (sₜ, aₜ, Rₜ, sₜ₊₁) 更新策略<br>
+      <strong style="color:var(--a2);">目标：</strong>找到最优策略 π*，使累积折扣奖励 ΣγᵗRₜ 最大化
+    </p>
+  </div>
+</section>
+
+<!-- ═══════════════════════════ SLIDE 6.8: RL中的机器人例子 ═══════════════════════════ -->
+<section data-transition="slide">
+  <div style="display:flex;align-items:center;gap:12px;justify-content:center;margin-bottom:4px;">
+    <h2 style="font-size:28px;font-weight:700;color:var(--text);margin:0;">
+      🤖 具体例子：训练机器人走路
+    </h2>
+    <span style="background:rgba(254,202,87,0.15);border:1px solid rgba(254,202,87,0.3);border-radius:12px;padding:3px 12px;font-size:11px;color:var(--a4);font-weight:700;">💬 讨论</span>
+  </div>
+  <div class="glow-bar"></div>
+  <div class="two-col">
+    <div class="fragment fade-up">
+      <div class="concept-card" style="border-top:3px solid var(--a5);">
+        <h4>🎯 任务 1：学会走路</h4>
+        <p><strong>状态 s：</strong>关节角度、速度、触地传感器<br>
+        <strong>动作 a：</strong>每个马达的力矩（连续值）<br>
+        <strong>奖励 R：</strong>前进速度越快→R越高，能耗低→加分<br>
+        <strong>策略 π：</strong>"看到这个身体姿态，该用什么力度蹬腿"<br>
+        <strong>Q值：</strong>"在这个姿态下蹬这一腿，长远来看能走多远"</p>
+      </div>
+    </div>
+    <div class="fragment fade-up">
+      <div class="concept-card" style="border-top:3px solid var(--a2);">
+        <h4>🎯 任务 2：学会导航</h4>
+        <p><strong>状态 s：</strong>位置坐标、障碍物距离、目标方向<br>
+        <strong>动作 a：</strong>转向角 + 移动速度<br>
+        <strong>奖励 R：</strong>离目标越近→R越高，撞障碍→R=−10<br>
+        <strong>策略 π：</strong>"看到障碍物在左前方，该往右绕"<br>
+        <strong>Q值：</strong>"在这个位置选择向右绕，长远能避开多少麻烦"</p>
+      </div>
+    </div>
+  </div>
+  <div class="fragment fade-up" style="margin-top:16px;max-width:780px;text-align:left;background:rgba(254,202,87,0.05);border:1px solid rgba(254,202,87,0.15);border-radius:14px;padding:14px 20px;">
+    <p style="font-size:13px;color:var(--text2);margin:0;line-height:1.7;">
+      <strong style="color:var(--a4);">💡 关键观察：</strong>同一个机器人，任务1和任务2的<strong style="color:var(--a4);">奖励函数R不同</strong>，行为就完全不同。
+      在OPD中，每个任务i有自己专属的Rᵢ和策略πᵢ——这就是Distral公式里下标i的含义。
+      <strong style="color:var(--a4);">但问题来了：</strong>如果我们需要机器人学会跑、跳、翻滚，而这些动作的奖励函数很难人工编写（你很难用数学公式描述"什么是跑"），怎么办？这将是Part 2要解决的核心问题。
+    </p>
+  </div>
+</section>
+
 <!-- ═══════ SECTION 1: Policy Distillation ═══════ -->
 <!-- ═══════════════════════════ SLIDE 7: 节标题 - Policy Distillation ═══════════════════════════ -->
 <section data-transition="slide">
