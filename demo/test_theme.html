@@ -62,15 +62,15 @@ h1{font-size:48px;font-weight:800;margin-bottom:16px;
 </div>
 
 <script>
-// ═══════════ 流形光带背景引擎 ═══════════
+// ═══════════ 流形光带背景引擎 v2 (炫酷增强) ═══════════
 (function(){
-const c=document.getElementById('bg-canvas'),x=c.getContext('2d');
-let W,H,ribbons=[],frame=0;
+const c=document.getElementById("bg-canvas"),x=c.getContext("2d");
+let W,H,ribbons=[],sparks=[],frame=0;
 
 function rs(){W=c.width=window.innerWidth;H=c.height=window.innerHeight}
-window.addEventListener('resize',rs);rs();
+window.addEventListener("resize",rs);rs();
 
-// 光带类：缓慢流动的彩色半透明带
+// 光带类 v2：更宽、更亮、色彩更丰富
 class Ribbon{
   constructor(){
     this.reset();
@@ -78,91 +78,106 @@ class Ribbon{
   reset(){
     this.points=[];
     this.y=Math.random()*H;
-    this.speed=(Math.random()-0.5)*0.3;
-    this.width=Math.random()*80+40;
-    this.alpha=Math.random()*0.04+0.02;
-    // 多模态色相之一
-    const colors=['rgba(167,139,250,','rgba(56,189,248,','rgba(52,211,153,','rgba(251,191,36,','rgba(244,114,182,'];
-    this.color=colors[Math.floor(Math.random()*5)];
-    // 生成控制点
-    for(let i=0;i<=20;i++){
-      this.points.push({x:i*W/20,y:Math.random()*60-30});
+    this.speed=(Math.random()-0.5)*0.4;
+    this.width=Math.random()*120+60;
+    this.alpha=Math.random()*0.07+0.04;
+    const colors=[
+      'rgba(167,139,250,','rgba(56,189,248,','rgba(52,211,153,',
+      'rgba(251,191,36,','rgba(244,114,182,','rgba(129,140,248,',
+      'rgba(94,234,212,','rgba(253,164,175,'
+    ];
+    this.color=colors[Math.floor(Math.random()*8)];
+    for(let i=0;i<=24;i++){
+      this.points.push({x:i*W/24,y:Math.random()*80-40});
     }
   }
   update(){
     this.y+=this.speed;
-    if(this.y<-100||this.y>H+100)this.reset();
-    // 扰动控制点
+    if(this.y<-150||this.y>H+150)this.reset();
     for(let p of this.points){
-      p.y+=(Math.random()-0.5)*0.5;
+      p.y+=(Math.random()-0.5)*0.7;
     }
-    frame++;
   }
   draw(ctx){
     ctx.save();
     ctx.globalAlpha=this.alpha;
+    // 外层辉光
+    ctx.shadowColor=this.color+'0.4)';
+    ctx.shadowBlur=30;
     ctx.beginPath();
     ctx.moveTo(0,this.y);
     for(let i=0;i<this.points.length;i++){
-      const px=this.points[i].x;
-      const py=this.y+this.points[i].y;
-      // 贝塞尔曲线平滑
+      const px=this.points[i].x,py=this.y+this.points[i].y;
       if(i<this.points.length-1){
-        const nx=this.points[i+1].x;
-        const ny=this.y+this.points[i+1].y;
-        const cpx=(px+nx)/2;
-        ctx.quadraticCurveTo(px,py,cpx,(py+ny)/2);
+        const nx=this.points[i+1].x,ny=this.y+this.points[i+1].y;
+        ctx.quadraticCurveTo(px,py,(px+nx)/2,(py+ny)/2);
       }
     }
     ctx.lineTo(W,H);ctx.lineTo(0,H);ctx.closePath();
-    ctx.fillStyle=this.color+this.alpha*30+')';
+    ctx.fillStyle=this.color+(this.alpha*40)+')';
     ctx.fill();
+    ctx.shadowBlur=0;
+    // 内层亮线
+    ctx.globalAlpha=this.alpha*1.8;
+    ctx.strokeStyle=this.color+'0.7)';
+    ctx.lineWidth=2;
+    ctx.stroke();
     ctx.restore();
   }
 }
 
-// 模态微点
-class Dot{
-  constructor(){
-    this.reset();
-  }
+// 火花粒子
+class Spark{
+  constructor(){this.reset()}
   reset(){
-    this.x=Math.random()*W;
-    this.y=Math.random()*H;
-    this.r=Math.random()*2+0.5;
-    this.alpha=Math.random()*0.15+0.05;
+    this.x=Math.random()*W;this.y=Math.random()*H;
+    this.r=Math.random()*1.5+0.3;
+    this.alpha=Math.random()*0.3+0.1;
     this.pulse=Math.random()*Math.PI*2;
-    const colors=['#a78bfa','#38bdf8','#34d399','#fbbf24','#f472b6'];
-    this.color=colors[Math.floor(Math.random()*5)];
+    this.vx=(Math.random()-0.5)*0.2;this.vy=(Math.random()-0.5)*0.2-0.3;
+    const cols=['#a78bfa','#38bdf8','#34d399','#fbbf24','#f472b6','#818cf8','#5eead4'];
+    this.color=cols[Math.floor(Math.random()*7)];
+    this.life=Math.random()*200+100;
+    this.age=0;
+  }
+  update(){
+    this.x+=this.vx;this.y+=this.vy;this.age++;
+    if(this.age>this.life||this.x<-20||this.x>W+20||this.y<-20||this.y>H+20)this.reset();
   }
   draw(ctx){
-    const a=this.alpha*(0.7+0.3*Math.sin(frame*0.02+this.pulse));
-    ctx.beginPath();
-    ctx.arc(this.x,this.y,this.r,0,Math.PI*2);
+    const t=this.age/this.life;
+    const a=this.alpha*(1-t)*(0.8+0.2*Math.sin(frame*0.05+this.pulse));
+    ctx.save();ctx.globalAlpha=a;
+    ctx.shadowColor=this.color;ctx.shadowBlur=8;
     ctx.fillStyle=this.color;
-    ctx.globalAlpha=a;
-    ctx.fill();
-    ctx.globalAlpha=1;
+    ctx.beginPath();ctx.arc(this.x,this.y,this.r,0,Math.PI*2);ctx.fill();
+    ctx.restore();
   }
 }
 
-ribbons=Array.from({length:6},()=>new Ribbon());
-const dots=Array.from({length:40},()=>new Dot());
+ribbons=Array.from({length:8},()=>new Ribbon());
+sparks=Array.from({length:60},()=>new Spark());
 
 function lp(){
   x.clearRect(0,0,W,H);
-  // 深空渐变基底
-  const grad=x.createRadialGradient(W/2,H/2,0,W/2,H/2,Math.max(W,H)*0.7);
-  grad.addColorStop(0,'rgba(30,20,50,0.3)');
+  // 深空渐变基底 (增强)
+  const grad=x.createRadialGradient(W/2,H/2,0,W/2,H/2,Math.max(W,H)*0.8);
+  grad.addColorStop(0,'rgba(40,25,60,0.4)');
+  grad.addColorStop(0.5,'rgba(15,10,25,0.15)');
   grad.addColorStop(1,'rgba(6,5,10,0)');
   x.fillStyle=grad;x.fillRect(0,0,W,H);
+  // 中心光晕
+  const bloom=x.createRadialGradient(W/2+Math.sin(frame*0.003)*W*0.1,H/2+Math.cos(frame*0.004)*H*0.08,Math.min(W,H)*0.05,W/2,H/2,Math.min(W,H)*0.5);
+  bloom.addColorStop(0,'rgba(120,100,180,0.06)');
+  bloom.addColorStop(0.3,'rgba(80,140,200,0.03)');
+  bloom.addColorStop(1,'rgba(0,0,0,0)');
+  x.fillStyle=bloom;x.fillRect(0,0,W,H);
 
   ribbons.forEach(r=>{r.update();r.draw(x)});
-  dots.forEach(d=>d.draw(x));
+  sparks.forEach(s=>{s.update();s.draw(x)});
   frame++;
   requestAnimationFrame(lp);
 }
 lp();
-})();
-</script>
+})();</script>
 </body></html>
