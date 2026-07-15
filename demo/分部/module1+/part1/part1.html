@@ -127,6 +127,27 @@
   </div>
 </section>
 
+<!-- ═══════════ PAPER 11: Speculative KD ═══════════ -->
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P11 · Structure 1/4</span></div>
+<div class="paper-card fragment fade-up"><div class="pn">PAPER 11 · arXiv: 2410.11325 · ICLR 2025</div><div class="title">Speculative Knowledge Distillation</div><div class="venue">W. Jeon et al. · UCSB / Google Research</div></div>
+<div class="fragment fade-up struct-content" style="margin-top:8px;"><strong style="color:var(--amber);">一句话核心贡献：</strong>将推测解码机制引入 OPD，提出<strong style="color:#fff;">门控 KL</strong>——仅在师生输出<strong style="color:#fff;">不一致</strong>的 token 位置计算蒸馏损失，跳过 60-80% 的低信息量 token，在保持蒸馏质量的同时降低 2-3× 计算开销。</div>
+</section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P11 · Structure 2/4</span></div>
+<h2 style="font-size:20px;font-weight:700;color:var(--amber);margin-bottom:10px;">背景动机 · 门控 KL 方法</h2>
+<div class="two-col fragment fade-up">
+  <div class="concept-block" style="border-left:3px solid var(--rust);"><h4>🔴 全序列 OPD 的浪费</h4><p style="font-size:11px;">标准 OPD 对每个 token 计算 KL——但大量功能词上师生分布几乎一致，KL≈0→浪费算力。与 REOPOLD 问题二（近零奖励）根源相同。</p></div>
+  <div class="concept-block" style="border-left:3px solid var(--amber);"><h4>🟡 推测解码启发</h4><p style="font-size:11px;">推测解码：draft 模型快速生成→目标模型验证→仅在拒绝位置纠正。SpecKD 移植：学生提议→教师评估→仅在不一致处蒸馏。</p></div>
+</div>
+<div class="formula-box fragment fade-up" style="margin-top:8px;"><div class="math-block">$$\mathcal{L} = \sum_{t} \mathbf{1}[\text{disagree}_t] \cdot D_{KL}(\pi_T \|\pi_S)$$</div><p style="font-size:11px;color:var(--text3);margin:4px 0 0;">disagree_t: 学生 top-1 ≠ 教师 top-1，或教师对学生 token 概率低于阈值 τ</p></div>
+</section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P11 · Structures 3-4/4</span></div>
+<div class="two-col fragment fade-up">
+  <div class="concept-block" style="border-left:3px solid var(--amber);"><h4>📊 S3: 实验与结果</h4><p style="font-size:11px;">• ICLR 2025 接收<br>• 计算开销降低 <strong>2-3×</strong><br>• 蒸馏质量基本持平全序列 OPD<br>• 数学推理任务效果最显著（分歧点集中）<br>• 门控阈值 τ=0.1 最佳平衡</p></div>
+  <div class="concept-block" style="border-left:3px solid var(--sage);"><h4>⚠️ S4: 局限与审视</h4><p style="font-size:11px;">• 门控本身增加推理开销（需教师前向）<br>• 阈值需任务特化调参<br>• 师生差距大时跳过率下降→加速减弱<br>• 与 Fast OPD (P18) 思路相近但粒度不同（token vs 前缀）</p></div>
+</div></section>
+
 </div></div>
 <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.js"></script><script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 <script>(function(){const c=document.getElementById('bg-canvas'),x=c.getContext('2d');let W,H,shapes=[],frame=0;function rs(){W=c.width=window.innerWidth;H=c.height=window.innerHeight}window.addEventListener('resize',rs);rs();class Shape{constructor(){this.reset()}reset(){this.x=Math.random()*W;this.y=Math.random()*H;this.size=Math.random()*45+22;this.type=Math.floor(Math.random()*3);this.vx=(Math.random()-0.5)*0.35;this.vy=(Math.random()-0.5)*0.35;this.alpha=Math.random()*0.05+0.03;this.rot=Math.random()*Math.PI*2;this.rv=(Math.random()-0.5)*0.002}update(){this.x+=this.vx;this.y+=this.vy;this.rot+=this.rv;if(this.x<-80||this.x>W+80)this.vx*=-1;if(this.y<-80||this.y>H+80)this.vy*=-1}draw(c){c.save();c.translate(this.x,this.y);c.rotate(this.rot);c.globalAlpha=this.alpha;c.shadowColor='rgba(220,180,120,0.5)';c.shadowBlur=16;c.strokeStyle='rgba(220,170,110,0.85)';c.lineWidth=1;if(this.type===0){c.beginPath();for(let i=0;i<6;i++){const a=i*Math.PI/3,r=this.size*0.55;const px=r*Math.cos(a),py=r*Math.sin(a);i===0?c.moveTo(px,py):c.lineTo(px,py)}c.closePath();c.stroke()}else if(this.type===1){c.beginPath();const s=this.size*0.4;c.moveTo(0,-s);c.lineTo(s,0);c.lineTo(0,s);c.lineTo(-s,0);c.closePath();c.stroke()}else{c.beginPath();c.arc(0,0,this.size*0.3,0,Math.PI*2);c.stroke()}c.restore()}}shapes=Array.from({length:18},()=>new Shape());function drawGrid(){var gs=55;x.strokeStyle='rgba(170,130,70,0.06)';x.lineWidth=1;for(let i=gs;i<W;i+=gs){x.beginPath();x.moveTo(i,0);x.lineTo(i,H);x.stroke()}for(let j=gs;j<H;j+=gs){x.beginPath();x.moveTo(0,j);x.lineTo(W,j);x.stroke()}for(let i=gs;i<W;i+=gs)for(let j=gs;j<H;j+=gs){var dx=i-W/2,dy=j-H/2,dist=Math.sqrt(dx*dx+dy*dy);var f=Math.max(0.15,1-dist/(Math.max(W,H)*0.7));x.fillStyle=`rgba(210,160,100,${0.12*f})`;x.beginPath();x.arc(i,j,1.5,0,Math.PI*2);x.fill()}}function drawGlow(){for(var i=0;i<2;i++){var gx=W*(0.3+i*0.4)+Math.sin(frame*0.002+i)*W*0.15;var gy=H*(0.4+i*0.2)+Math.cos(frame*0.003+i)*H*0.1;var grad=x.createRadialGradient(gx,gy,0,gx,gy,Math.min(W,H)*0.4);grad.addColorStop(0,'rgba(220,180,120,0.07)');grad.addColorStop(0.5,'rgba(180,140,80,0.03)');grad.addColorStop(1,'rgba(0,0,0,0)');x.fillStyle=grad;x.fillRect(0,0,W,H)}}function lp(){x.clearRect(0,0,W,H);drawGrid();drawGlow();shapes.forEach(s=>{s.update();s.draw(x)});frame++;requestAnimationFrame(lp)}lp()})();</script>
