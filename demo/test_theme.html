@@ -73,10 +73,10 @@ class Ribbon{
   constructor(){this.reset()}
   reset(){
     this.points=[];this.y=H*0.3+Math.random()*H*0.7;this.speed=(Math.random()-0.5)*0.35;
-    // 色调随机(0-360) + 饱和度100% + 亮度20-35%
-    const h=Math.floor(Math.random()*360);
-    const l=Math.floor(Math.random()*16+20);
-    this.color=`hsla(${h},100%,${l}%,`;
+    this.hue=Math.floor(Math.random()*360);
+    this.light=Math.floor(Math.random()*16+20);
+    this.hueDrift=(Math.random()-0.5)*0.08;
+    this.lightDrift=(Math.random()-0.5)*0.02;
     const a=Math.random()*0.07+0.05;
     this.alpha=a;this.alphaStr=a*30;
     for(let i=0;i<=20;i++){this.points.push({x:i*W/20,y:Math.random()*70-35});}
@@ -84,11 +84,17 @@ class Ribbon{
   update(){
     this.y+=this.speed;
     if(this.y<-120||this.y>H+120)this.reset();
+    // 色调和亮度持续缓慢漂移
+    this.hue+=this.hueDrift;if(this.hue<0)this.hue+=360;if(this.hue>=360)this.hue-=360;
+    this.light+=this.lightDrift;
+    if(this.light<18)this.lightDrift=0.03;
+    if(this.light>36)this.lightDrift=-0.03;
     for(let p of this.points){p.y+=(Math.random()-0.5)*0.6;}
   }
   draw(ctx){
+    const col=`hsla(${Math.floor(this.hue)},100%,${Math.floor(this.light)}%,`;
     ctx.save();ctx.globalAlpha=this.alpha;
-    ctx.shadowColor=this.color+'0.35)';ctx.shadowBlur=20;
+    ctx.shadowColor=col+'0.35)';ctx.shadowBlur=20;
     ctx.beginPath();ctx.moveTo(0,this.y);
     for(let i=0;i<this.points.length;i++){
       const px=this.points[i].x,py=this.y+this.points[i].y;
@@ -98,7 +104,7 @@ class Ribbon{
       }
     }
     ctx.lineTo(W,H);ctx.lineTo(0,H);ctx.closePath();
-    ctx.fillStyle=this.color+this.alphaStr+')';ctx.fill();
+    ctx.fillStyle=col+this.alphaStr+')';ctx.fill();
     ctx.shadowBlur=0;ctx.restore();
   }
 }
