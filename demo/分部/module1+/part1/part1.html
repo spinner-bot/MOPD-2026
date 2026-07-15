@@ -200,23 +200,21 @@
 <section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P13 · S5/5</span></div><h2 style="font-size:20px;font-weight:700;color:var(--amber);margin-bottom:10px;">局限与审视</h2>
 <div class="fragment fade-up struct-content">投影矩阵 W 引入额外参数和计算开销——每对 tokenizer 需要单独训练。tokenizer 差异过大 (如 BPE vs SentencePiece) 时对齐精度下降。是否值得为跨 tokenizer 支持引入额外复杂度，取决于具体部署场景。</div></section>
 
-<!-- P14: Constrained OPD -->
-<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P14 · S1/2</span></div>
-<div class="paper-card fragment fade-up"><div class="pn">PAPER 14 · arXiv: 2509.22921 · 2025.09</div><div class="title">Constrained OPD — CMDP 框架：硬 KL 约束</div><div class="venue">华为诺亚方舟实验室</div></div>
-<div class="fragment fade-up struct-content" style="margin-top:8px;"><strong style="color:var(--amber);">核心贡献：</strong>将 OPD 从<strong style="color:#fff;">软约束 (KL 惩罚项)</strong> 升级为<strong style="color:#fff;">硬约束 (CMDP)</strong>。传统 OPD: max Reward − β·KL；Constrained OPD: max Reward subject to KL ≤ δ——保证不越过红线。</div></section>
+<!-- P14-P16: Constrained OPD / AdaSwitch / Veto -->
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P14 · S1/5</span></div>
+<div class="paper-card fragment fade-up"><div class="pn">PAPER 14 · arXiv: 2509.22921 · 2025.09</div><div class="title">Constrained OPD — CMDP 框架：硬 KL 约束</div><div class="venue">华为诺亚方舟实验室</div></div></section>
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P14 · S2-3/5</span></div><h2 style="font-size:20px;font-weight:700;color:var(--amber);">背景 · 创新</h2><div class="fragment fade-up struct-content">传统 OPD (Distral) 使用软惩罚 −β·KL——允许权衡但可能偏离过多。Constrained OPD 将问题重新建模为 CMDP：max Reward s.t. KL ≤ δ——<strong style="color:var(--amber);">硬约束</strong>保证不越过红线。类似"橡皮筋"vs"围墙"。</div></section>
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P14 · S4-5/5</span></div><div class="two-col fragment fade-up"><div class="concept-block"><h4>📊 S4: 理论保证</h4><p style="font-size:11px;">CMDP 框架提供收敛性保证——硬约束下的策略优化有理论最优解。华为诺亚方舟在 RL safety 的积累提供支撑。</p></div><div class="concept-block"><h4>⚠️ S5: 局限</h4><p style="font-size:11px;">硬约束阈值 δ 的设定影响显著——过紧限制学习，过松退化为软约束。δ 的最优选择是开放问题。</p></div></div></section>
 
-<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P14 · S2/2</span></div>
-<div class="fragment fade-up struct-content"><strong style="color:var(--amber);">软约束 vs 硬约束：</strong><br>• <strong>Distral (软)</strong>: max R − β·KL → 允许权衡，但可能偏离过多<br>• <strong>Constrained OPD (硬)</strong>: max R s.t. KL ≤ δ → 保证不越红线<br>🔗 类似 Module 1 中"橡皮筋"(软) vs "围墙"(硬) 的比喻。华为诺亚方舟实验室在 RL safety 方向的积累为此提供了理论支撑。</div></section>
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P15 · S1/5</span></div>
+<div class="paper-card fragment fade-up"><div class="pn">PAPER 15 · arXiv: 2510.07842 · 2025.10</div><div class="title">AdaSwitch — 自适应 On/Off-Policy 切换</div><div class="venue">RUC / 百度</div></div></section>
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P15 · S2-3/5</span></div><h2 style="font-size:20px;font-weight:700;color:var(--amber);">背景动机 · 创新</h2><div class="fragment fade-up struct-content">纯在线 OPD：学生分布远离教师时梯度消失 (梯度场不存在定理)。纯离线：分布不匹配。AdaSwitch 通过<strong style="color:var(--amber);">散度阈值 D(π_S‖π_T)</strong>自动判断：差异大→切离线数据保信号；差异小→切在线数据匹配分布。</div></section>
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P15 · S4-5/5</span></div><div class="two-col fragment fade-up"><div class="concept-block"><h4>📊 S4: 实现</h4><p style="font-size:11px;">阈值 τ 基于师生分布差异的移动平均。切换平滑——不产生训练震荡。</p></div><div class="concept-block"><h4>⚠️ S5: 局限</h4><p style="font-size:11px;">τ 需任务特化。切换过于频繁可能引入额外方差。</p></div></div></section>
 
-<!-- P15: AdaSwitch -->
-<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P15 · S1</span></div>
-<div class="paper-card fragment fade-up"><div class="pn">PAPER 15 · arXiv: 2510.07842 · 2025.10</div><div class="title">AdaSwitch — 基于散度阈值的自适应 On/Off-Policy 切换</div><div class="venue">RUC (中国人民大学) / 百度</div></div>
-<div class="fragment fade-up struct-content" style="margin-top:8px;"><strong style="color:var(--amber);">核心贡献：</strong>在训练过程中<strong style="color:#fff;">自动判断</strong>何时用在线 (学生自采样) vs 离线 (教师数据集)。当学生分布与教师差异过大→自动切离线→等学生拉近后再切回在线。为梯度场不存在定理提供<strong style="color:var(--amber);">工程化自适应方案</strong>。</div></section>
-
-<!-- P16: Veto -->
-<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P16 · S1</span></div>
-<div class="paper-card fragment fade-up"><div class="pn">PAPER 16 · arXiv: 2601.07155 · ACL 2026 Findings</div><div class="title">Veto — 自适应目标重构：稳定 OPD</div><div class="venue">SNU (首尔大学)</div></div>
-<div class="fragment fade-up struct-content" style="margin-top:8px;"><strong style="color:var(--amber);">核心贡献：</strong>教师<strong style="color:#fff;">否决</strong>学生错误前缀并重构蒸馏目标。与 P7 UIUC 的 Stop-Gradient 相比更激进。</div></section>
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P16 · S1/5</span></div>
+<div class="paper-card fragment fade-up"><div class="pn">PAPER 16 · arXiv: 2601.07155 · ACL 2026 Findings</div><div class="title">Veto — 自适应目标重构</div><div class="venue">SNU</div></div></section>
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P16 · S2-5/5</span></div>
+<div class="fragment fade-up struct-content"><strong style="color:var(--amber);">S2 背景：</strong>学生生成错误前缀→教师被迫"将错就错"→恶性循环。<br><strong style="color:var(--amber);">S3 创新：</strong>Veto 允许教师<strong style="color:#fff;">否决</strong>学生错误前缀并重构蒸馏目标——比 UIUC 的被动 Stop-Gradient 更主动。<br><strong style="color:var(--amber);">S4 实验：</strong>ACL 2026 Findings。<br><strong style="color:var(--amber);">S5 局限：</strong>否决机制增加计算开销，且否决判定的准确性依赖教师质量。</div></section>
 
 <!-- P17: G-OPD -->
 <section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P17 · S1</span></div>
