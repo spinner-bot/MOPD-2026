@@ -94,6 +94,13 @@
 .struct-tree .dim{color:var(--text3)}
 .struct-tree .cur{background:rgba(255,68,68,0.08);border-left:2px solid var(--red);padding-left:8px;display:inline-block;width:100%}
 
+.struct-tree-box{font-family:'JetBrains Mono','Fira Code','PingFang SC',monospace;font-size:15px;line-height:2.2;color:var(--text3);background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:28px 36px;max-width:650px;text-align:left}
+.struct-tree-box .cur{color:#fff;font-weight:700;padding-left:12px;margin-left:-15px;display:inline-block;width:calc(100% + 3px)}
+.struct-tree-box .cur.sa{border-left:3px solid var(--red);background:rgba(255,68,68,0.1)}
+.struct-tree-box .cur.sb{border-left:3px solid var(--orange);background:rgba(255,140,66,0.1)}
+.struct-tree-box .cur.sc{border-left:3px solid var(--a4);background:rgba(254,202,87,0.1)}
+.struct-tree-box .cur.sd{border-left:3px solid var(--a5);background:rgba(0,230,118,0.1)}
+.struct-tree-box .cur.se{border-left:3px solid var(--a2);background:rgba(0,210,255,0.1)}
 @media(max-width:768px){.hero-title{font-size:32px}.glass-card{padding:22px 16px;max-width:100%}.tri-grid{grid-template-columns:1fr}}
 </style>
 </head>
@@ -165,6 +172,24 @@
     <text x="450" y="252" text-anchor="middle" class="dag-label title" fill="#fff">📋 总结: 问题-方案矩阵 → Part 5</text>
   </svg></div>
   <p style="font-size:11px;color:var(--text3);margin-top:8px;">核心转变：过去蒸馏"如何做动作" → 现在蒸馏"如何思考"</p>
+</section>
+
+<!-- ═══════════ DAG高亮: Section A ═══════════ -->
+<section data-transition="slide">
+  <div style="text-align:center;margin-bottom:12px;"><span style="background:rgba(255,68,68,0.1);color:var(--red);border:1px solid rgba(255,68,68,0.2);padding:4px 14px;border-radius:12px;font-size:11px;font-weight:700;letter-spacing:2px;">📍 当前位置</span></div>
+  <div class="struct-tree-box">
+    <div style="color:var(--text3);margin-bottom:4px;">Part 4: LLM时代的OPD革命 (2024-2026)</div>
+    <div class="cur sa">🔴 Section A: 范式转变 ← <strong>当前</strong></div>
+    <div style="color:var(--text3);">&nbsp;&nbsp;├── 推理链详解 ★核心</div>
+    <div style="color:var(--text3);">&nbsp;&nbsp;├── LLM打破OPD假设</div>
+    <div style="color:var(--text3);">&nbsp;&nbsp;├── DeepSeek-R1 五阶段</div>
+    <div style="color:var(--text3);">&nbsp;&nbsp;└── 强策略→弱策略</div>
+    <div style="color:var(--text3);">🟠 Section B: GRPO与隐式OPD</div>
+    <div style="color:var(--text3);">🟡 Section C: REOPOLD三问题</div>
+    <div style="color:var(--text3);">🟢 Section D: PW-OPSD</div>
+    <div style="color:var(--text3);">🔵 Section E: GAR</div>
+    <div style="color:var(--text3);">📋 Section F: 总结 → Part 5</div>
+  </div>
 </section>
 
 <!-- ═══════════ SECTION A: 范式转变 ═══════════ -->
@@ -280,6 +305,23 @@
   </div>
 </section>
 
+<!-- ═══════════ DAG高亮: Section B ═══════════ -->
+<section data-transition="slide">
+  <div style="text-align:center;margin-bottom:12px;"><span style="background:rgba(255,140,66,0.1);color:var(--orange);border:1px solid rgba(255,140,66,0.2);padding:4px 14px;border-radius:12px;font-size:11px;font-weight:700;letter-spacing:2px;">📍 当前位置</span></div>
+  <div class="struct-tree-box">
+    <div style="color:var(--text3);margin-bottom:4px;">Part 4: LLM时代的OPD革命</div>
+    <div style="color:var(--text3);">🔴 A: 范式转变 ✓</div>
+    <div class="cur sb">🟠 Section B: GRPO与隐式OPD ← <strong>当前</strong></div>
+    <div style="color:var(--text3);">&nbsp;&nbsp;├── GRPO公式逐项拆解</div>
+    <div style="color:var(--text3);">&nbsp;&nbsp;├── 隐式OPD数学本质</div>
+    <div style="color:var(--text3);">&nbsp;&nbsp;├── RL vs 蒸馏数据对比</div>
+    <div style="color:var(--text3);">&nbsp;&nbsp;├── 传统OPD vs LLM蒸馏</div>
+    <div style="color:var(--text3);">&nbsp;&nbsp;└── 强模型如何诞生?</div>
+    <div style="color:var(--text3);">🟡 C: REOPOLD 🟢 D: PW-OPSD 🔵 E: GAR</div>
+    <div style="color:var(--text3);">📋 F: 总结</div>
+  </div>
+</section>
+
 <!-- ═══════════ SECTION B: GRPO ═══════════ -->
 <section data-transition="slide">
   <div style="text-align:center;"><span class="section-badge sb-b">🟠 SECTION B</span></div>
@@ -386,6 +428,21 @@
   </div>
 </section>
 
+<!-- ═══════════ DAG高亮: Section C ═══════════ -->
+<section data-transition="slide">
+  <div style="text-align:center;margin-bottom:12px;"><span style="background:rgba(254,202,87,0.1);color:var(--a4);border:1px solid rgba(254,202,87,0.2);padding:4px 14px;border-radius:12px;font-size:11px;font-weight:700;letter-spacing:2px;">📍 当前位置</span></div>
+  <div class="struct-tree-box">
+    <div style="color:var(--text3);margin-bottom:4px;">Part 4: LLM时代的OPD革命</div>
+    <div style="color:var(--text3);">🔴 A ✓ 🟠 B ✓</div>
+    <div class="cur sc">🟡 Section C: REOPOLD — 三个核心问题 ← <strong>当前</strong></div>
+    <div style="color:var(--text3);">&nbsp;&nbsp;├── "松弛"+在线/离线数据</div>
+    <div style="color:var(--text3);">&nbsp;&nbsp;├── 问题一: 重尾负奖励→钳位</div>
+    <div style="color:var(--text3);">&nbsp;&nbsp;├── 问题二: 近零奖励→熵采样</div>
+    <div style="color:var(--text3);">&nbsp;&nbsp;└── 问题三: 熵崩塌→两阶段</div>
+    <div style="color:var(--text3);">🟢 D: PW-OPSD 🔵 E: GAR 📋 F: 总结</div>
+  </div>
+</section>
+
 <!-- ═══════════ SECTION C: REOPOLD ═══════════ -->
 <section data-transition="slide">
   <div style="text-align:center;"><span class="section-badge sb-c">🟡 SECTION C</span></div>
@@ -458,6 +515,20 @@
   </div>
 </section>
 
+<!-- ═══════════ DAG高亮: Section D ═══════════ -->
+<section data-transition="slide">
+  <div style="text-align:center;margin-bottom:12px;"><span style="background:rgba(0,230,118,0.1);color:var(--a5);border:1px solid rgba(0,230,118,0.2);padding:4px 14px;border-radius:12px;font-size:11px;font-weight:700;letter-spacing:2px;">📍 当前位置</span></div>
+  <div class="struct-tree-box">
+    <div style="color:var(--text3);margin-bottom:4px;">Part 4: LLM时代的OPD革命</div>
+    <div style="color:var(--text3);">🔴 A ✓ 🟠 B ✓ 🟡 C ✓</div>
+    <div class="cur sd">🟢 Section D: PW-OPSD — 位置加权 ← <strong>当前</strong></div>
+    <div style="color:var(--text3);">&nbsp;&nbsp;├── w(t)递增权重</div>
+    <div style="color:var(--text3);">&nbsp;&nbsp;├── AUROC 0.83</div>
+    <div style="color:var(--text3);">&nbsp;&nbsp;└── 后期token更可靠</div>
+    <div style="color:var(--text3);">🔵 E: GAR 📋 F: 总结</div>
+  </div>
+</section>
+
 <!-- ═══════════ SECTION D: PW-OPSD ═══════════ -->
 <section data-transition="slide">
   <div style="text-align:center;"><span class="section-badge sb-d">🟢 SECTION D</span></div>
@@ -484,6 +555,20 @@
     <div class="fragment fade-up"><div class="concept-card" style="border-left:3px solid var(--a2);"><h4>📐 AUROC 是什么？</h4><p><strong style="color:var(--a2);">Area Under ROC Curve</strong>——衡量二分类器排序能力的指标，最大=1。这里用它评价"位置"能否区分教师输出是否正确。<br>0.83 = 仅靠位置就能相当准地预测教师是否犯错，远超其他指标。</p></div></div>
   </div>
   <div class="fragment fade-up" style="margin-top:8px;max-width:750px;text-align:center;background:rgba(0,230,118,0.04);border:1px solid rgba(0,230,118,0.12);border-radius:12px;padding:10px;"><p style="font-size:12px;color:var(--text2);margin:0;">给后期token更高权重 → 模型更重视模仿教师推理<strong style="color:var(--a5);">后期的关键步骤</strong>，忽略早期可能带噪声的引导。</p></div>
+</section>
+
+<!-- ═══════════ DAG高亮: Section E ═══════════ -->
+<section data-transition="slide">
+  <div style="text-align:center;margin-bottom:12px;"><span style="background:rgba(0,210,255,0.1);color:var(--a2);border:1px solid rgba(0,210,255,0.2);padding:4px 14px;border-radius:12px;font-size:11px;font-weight:700;letter-spacing:2px;">📍 当前位置</span></div>
+  <div class="struct-tree-box">
+    <div style="color:var(--text3);margin-bottom:4px;">Part 4: LLM时代的OPD革命</div>
+    <div style="color:var(--text3);">🔴 A ✓ 🟠 B ✓ 🟡 C ✓ 🟢 D ✓</div>
+    <div class="cur se">🔵 Section E: GAR — 对抗推理 ← <strong>当前</strong></div>
+    <div style="color:var(--text3);">&nbsp;&nbsp;├── Reasoner↔Discriminator</div>
+    <div style="color:var(--text3);">&nbsp;&nbsp;├── 局部切片评估</div>
+    <div style="color:var(--text3);">&nbsp;&nbsp;└── 密集细粒度反馈</div>
+    <div style="color:var(--text3);">📋 F: 总结</div>
+  </div>
 </section>
 
 <!-- ═══════════ SECTION E: GAR ═══════════ -->

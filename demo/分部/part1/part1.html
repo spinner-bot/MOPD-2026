@@ -412,6 +412,22 @@ window.MathJax = {
 }
 @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 
+/* ============ 结构树高亮页 ============ */
+.struct-tree-slide { text-align:left; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+.struct-tree-box {
+  font-family: 'JetBrains Mono','Fira Code','PingFang SC',monospace;
+  font-size: 15px; line-height: 2.2; color: var(--text3);
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 18px; padding: 28px 36px; max-width: 600px;
+}
+.struct-tree-box .cur { color: #fff; font-weight: 700; background: rgba(108,92,231,0.12); border-left: 3px solid var(--a1); padding-left: 12px; margin-left: -15px; display: inline-block; width: calc(100% + 3px); }
+.struct-tree-box .cur.s0 { border-left-color: var(--a4); background: rgba(254,202,87,0.1); }
+.struct-tree-box .cur.s1 { border-left-color: var(--a2); background: rgba(0,210,255,0.1); }
+.struct-tree-box .cur.s2 { border-left-color: var(--a1); background: rgba(108,92,231,0.1); }
+.struct-tree-box .cur.s3 { border-left-color: var(--a3); background: rgba(255,107,157,0.1); }
+.struct-tree-box .cur.s4 { border-left-color: var(--a5); background: rgba(0,230,118,0.1); }
+.struct-tree-box .cur.s5 { border-left-color: #fff; background: rgba(255,255,255,0.08); }
+
 /* ============ 响应式 ============ */
 @media (max-width: 768px) {
   .hero-title { font-size: 34px; }
@@ -671,6 +687,24 @@ window.MathJax = {
   </div>
 </section>
 
+<!-- ═══════════ DAG高亮: Section 0 ═══════════ -->
+<section data-transition="slide">
+  <div style="text-align:center;margin-bottom:12px;"><span style="background:rgba(254,202,87,0.12);color:var(--a4);border:1px solid rgba(254,202,87,0.2);padding:4px 14px;border-radius:12px;font-size:11px;font-weight:700;letter-spacing:2px;">📍 当前位置</span></div>
+  <div class="struct-tree-box">
+    <div style="color:var(--text3);margin-bottom:4px;">Part 1: OPD 萌芽期 (2015-2017)</div>
+    <div class="cur s0">📚 Section 0: RL基础概念 ← <strong>当前</strong></div>
+    <div style="color:var(--text3);">&nbsp;&nbsp;├── RL核心概念 (R/任务/π/Q循环)</div>
+    <div style="color:var(--text3);">&nbsp;&nbsp;├── Agent-Environment交互</div>
+    <div style="color:var(--text3);">&nbsp;&nbsp;├── 机器人训练实例</div>
+    <div style="color:var(--text3);">&nbsp;&nbsp;└── 网络架构 (Softmax/Gaussian/TD)</div>
+    <div style="color:var(--text3);">🏛️ Section 1: Policy Distillation</div>
+    <div style="color:var(--text3);">🧠 Section 2: Distral ← 汇聚点</div>
+    <div style="color:var(--text3);">🔬 Section 3: Actor-Mimic</div>
+    <div style="color:var(--text3);">🏗️ Section 4: 架构概念</div>
+    <div style="color:var(--text3);">📋 Section 5: 总结与过渡 → Part 2</div>
+  </div>
+</section>
+
 <!-- ═══════ SECTION 0: RL基础概念 ═══════ -->
 <!-- ═══════════════════════════ SLIDE 4: 节标题 - RL基础 ═══════════════════════════ -->
 <section data-transition="slide">
@@ -912,6 +946,21 @@ window.MathJax = {
   </div>
 </section>
 
+<!-- ═══════════ DAG高亮: Section 1 ═══════════ -->
+<section data-transition="slide">
+  <div style="text-align:center;margin-bottom:12px;"><span style="background:rgba(0,210,255,0.1);color:var(--a2);border:1px solid rgba(0,210,255,0.2);padding:4px 14px;border-radius:12px;font-size:11px;font-weight:700;letter-spacing:2px;">📍 当前位置</span></div>
+  <div class="struct-tree-box">
+    <div style="color:var(--text3);margin-bottom:4px;">Part 1: OPD 萌芽期 (2015-2017)</div>
+    <div style="color:var(--text3);">📚 Section 0: RL基础概念 ✓</div>
+    <div class="cur s1">🏛️ Section 1: Policy Distillation (2015) ← <strong>当前</strong></div>
+    <div style="color:var(--text3);">&nbsp;&nbsp;└── OPD概念诞生 · 在线vs离线蒸馏</div>
+    <div style="color:var(--text3);">🧠 Section 2: Distral ← 汇聚点</div>
+    <div style="color:var(--text3);">🔬 Section 3: Actor-Mimic</div>
+    <div style="color:var(--text3);">🏗️ Section 4: 架构概念</div>
+    <div style="color:var(--text3);">📋 Section 5: 总结与过渡 → Part 2</div>
+  </div>
+</section>
+
 <!-- ═══════ SECTION 1: Policy Distillation ═══════ -->
 <!-- ═══════════════════════════ SLIDE 7: 节标题 - Policy Distillation ═══════════════════════════ -->
 <section data-transition="slide">
@@ -966,6 +1015,25 @@ window.MathJax = {
         &nbsp;&nbsp;<span class="cm">↑ 教师知识是"活的"</span><br>
       </div>
     </div>
+  </div>
+</section>
+
+<!-- ═══════════ DAG高亮: Section 2 ═══════════ -->
+<section data-transition="slide">
+  <div style="text-align:center;margin-bottom:12px;"><span style="background:rgba(108,92,231,0.1);color:var(--a1);border:1px solid rgba(108,92,231,0.2);padding:4px 14px;border-radius:12px;font-size:11px;font-weight:700;letter-spacing:2px;">📍 当前位置</span></div>
+  <div class="struct-tree-box">
+    <div style="color:var(--text3);margin-bottom:4px;">Part 1: OPD 萌芽期 (2015-2017)</div>
+    <div style="color:var(--text3);">📚 Section 0: RL基础 ✓</div>
+    <div style="color:var(--text3);">🏛️ Section 1: Policy Distillation ✓</div>
+    <div class="cur s2">🧠 Section 2: Distral (2017) ← 汇聚点 ← <strong>当前</strong></div>
+    <div style="color:var(--text3);">&nbsp;&nbsp;├── 联合目标函数 J(π₀,{πᵢ})</div>
+    <div style="color:var(--text3);">&nbsp;&nbsp;├── KL散度深入</div>
+    <div style="color:var(--text3);">&nbsp;&nbsp;├── Soft Q-learning视角</div>
+    <div style="color:var(--text3);">&nbsp;&nbsp;├── 最优策略 & 贝叶斯</div>
+    <div style="color:var(--text3);">&nbsp;&nbsp;└── 蒸馏作为双向通信</div>
+    <div style="color:var(--text3);">🔬 Section 3: Actor-Mimic</div>
+    <div style="color:var(--text3);">🏗️ Section 4: 架构概念</div>
+    <div style="color:var(--text3);">📋 Section 5: 总结 → Part 2</div>
   </div>
 </section>
 
@@ -1190,6 +1258,21 @@ window.MathJax = {
   </p>
 </section>
 
+<!-- ═══════════ DAG高亮: Section 3 ═══════════ -->
+<section data-transition="slide">
+  <div style="text-align:center;margin-bottom:12px;"><span style="background:rgba(255,107,157,0.1);color:var(--a3);border:1px solid rgba(255,107,157,0.2);padding:4px 14px;border-radius:12px;font-size:11px;font-weight:700;letter-spacing:2px;">📍 当前位置</span></div>
+  <div class="struct-tree-box">
+    <div style="color:var(--text3);margin-bottom:4px;">Part 1: OPD 萌芽期 (2015-2017)</div>
+    <div style="color:var(--text3);">📚 S0 ✓ 🏛️ S1 ✓ 🧠 S2 ✓</div>
+    <div class="cur s3">🔬 Section 3: Actor-Mimic (2016) ← <strong>当前</strong></div>
+    <div style="color:var(--text3);">&nbsp;&nbsp;├── 条件蒸馏 & Q值截断</div>
+    <div style="color:var(--text3);">&nbsp;&nbsp;├── 专家策略 & 行为克隆</div>
+    <div style="color:var(--text3);">&nbsp;&nbsp;└── 软约束 vs 硬约束</div>
+    <div style="color:var(--text3);">🏗️ Section 4: 架构概念</div>
+    <div style="color:var(--text3);">📋 Section 5: 总结 → Part 2</div>
+  </div>
+</section>
+
 <!-- ═══════ SECTION 3: Actor-Mimic ═══════ -->
 <!-- ═══════════════════════════ SLIDE 14: 节标题 - Actor-Mimic ═══════════════════════════ -->
 <section data-transition="slide">
@@ -1313,6 +1396,21 @@ window.MathJax = {
   <p style="font-size:13px;color:var(--text2);margin-top:16px;max-width:800px;">
     <strong style="color:#fff;">在DAG中的位置：</strong>KL软约束来自Distral，硬压缩来自Actor-Mimic——两条线最终都汇入OPD的技术工具箱，各有适用场景。
   </p>
+</section>
+
+<!-- ═══════════ DAG高亮: Section 4 ═══════════ -->
+<section data-transition="slide">
+  <div style="text-align:center;margin-bottom:12px;"><span style="background:rgba(0,230,118,0.1);color:var(--a5);border:1px solid rgba(0,230,118,0.2);padding:4px 14px;border-radius:12px;font-size:11px;font-weight:700;letter-spacing:2px;">📍 当前位置</span></div>
+  <div class="struct-tree-box">
+    <div style="color:var(--text3);margin-bottom:4px;">Part 1: OPD 萌芽期 (2015-2017)</div>
+    <div style="color:var(--text3);">📚 S0 ✓ 🏛️ S1 ✓ 🧠 S2 ✓ 🔬 S3 ✓</div>
+    <div class="cur s4">🏗️ Section 4: 架构概念 ← <strong>当前</strong></div>
+    <div style="color:var(--text3);">&nbsp;&nbsp;├── 基座网络 & 共享特征</div>
+    <div style="color:var(--text3);">&nbsp;&nbsp;├── Progressive Nets</div>
+    <div style="color:var(--text3);">&nbsp;&nbsp;├── UNREAL & 辅助预测头</div>
+    <div style="color:var(--text3);">&nbsp;&nbsp;└── 支线的支线 (PackNet/EWC/PathNet)</div>
+    <div style="color:var(--text3);">📋 Section 5: 总结 → Part 2</div>
+  </div>
 </section>
 
 <!-- ═══════ SECTION 4: 架构概念 ═══════ -->
@@ -1701,6 +1799,21 @@ window.MathJax = {
   <p style="font-size:12px;color:var(--text3);margin-top:14px;">
     📖 完整展开 → Part 2: DIAYN · 互信息最大化 · 无监督预训练 · 技能微调
   </p>
+</section>
+
+<!-- ═══════════ DAG高亮: Section 5 ═══════════ -->
+<section data-transition="slide">
+  <div style="text-align:center;margin-bottom:12px;"><span style="background:rgba(255,255,255,0.06);color:#fff;border:1px solid rgba(255,255,255,0.15);padding:4px 14px;border-radius:12px;font-size:11px;font-weight:700;letter-spacing:2px;">📍 当前位置</span></div>
+  <div class="struct-tree-box">
+    <div style="color:var(--text3);margin-bottom:4px;">Part 1: OPD 萌芽期 (2015-2017)</div>
+    <div style="color:var(--text3);">📚 S0 ✓ 🏛️ S1 ✓ 🧠 S2 ✓ 🔬 S3 ✓ 🏗️ S4 ✓</div>
+    <div class="cur s5">📋 Section 5: 总结与过渡 ← <strong>当前</strong></div>
+    <div style="color:var(--text3);">&nbsp;&nbsp;├── K-means类比</div>
+    <div style="color:var(--text3);">&nbsp;&nbsp;├── 互信息 I(S;Z)</div>
+    <div style="color:var(--text3);">&nbsp;&nbsp;├── 精细微调三法</div>
+    <div style="color:var(--text3);">&nbsp;&nbsp;├── 萌芽期总结表</div>
+    <div style="color:var(--text3);">&nbsp;&nbsp;└── → Part 2 过渡</div>
+  </div>
 </section>
 
 <!-- ═══════ SECTION 5: 总结与过渡 ═══════ -->
