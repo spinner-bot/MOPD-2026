@@ -62,22 +62,12 @@
 
 <section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P36 · OPSD ⭐ S8/8</span></div><h2 style="font-size:20px;font-weight:700;color:var(--amber);margin-bottom:10px;">局限性与影响</h2>
 <div class="fragment fade-up struct-content"><strong>S8 局限：</strong>① 特权上下文质量决定上限——差验证轨迹→差教师 ② RKL 的模式坍缩风险 ③ 仅在有明确验证标准的任务上有效。<br><strong style="color:var(--amber);">影响：</strong>OPSD 开启了自蒸馏范式——后续 18 篇 OPSD 论文 (P37-P54) 都在其框架下探索不同特权上下文设计。</div></section>
-<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P30 · S1/5</span></div><div class="paper-card fragment fade-up"><div class="pn">PAPER 30 · arXiv: 2509.25100</div><div class="title">ORPO-Distill — 学生负样本 + 教师正样本对比</div></div><div class="fragment fade-up struct-content" style="margin-top:8px;"><strong style="color:var(--amber);">S1 核心贡献：</strong>不访问教师 logits→用教师生成的文本作为正例，学生生成作为负例→对比学习。SGO+ORPO 双信号驱动。</div></section>
-<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P30 · S2-5/5</span></div><div class="fragment fade-up struct-content"><strong>S2 背景：</strong>黑盒场景下无法获取逐 token KL。<strong>S3 创新：</strong>对比学习替代 logit 匹配——拉近学生到教师正例，推远学生负例。<strong>S4 实验：</strong>ORPO+SGO 联合优化。<strong>S5 局限：</strong>对比信号稀疏，负样本质量影响大。</div></section>
+<!-- P37-P38: 标准5S -->
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P37 · S1/5</span></div><div class="paper-card fragment fade-up"><div class="pn">PAPER 37 · arXiv: 2601.19897</div><div class="title">SDFT-Continual — Demo 条件化自蒸馏</div></div><div class="fragment fade-up struct-content" style="margin-top:8px;"><strong>S1：</strong>特权=历史 Demo→新任务训练时自蒸馏旧知识→防灾难性遗忘。</div></section>
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P37 · S2-5/5</span></div><div class="fragment fade-up struct-content"><strong>S2-3：</strong>持续学习→旧任务遗忘。用旧 Demo 作特权上下文→OPSD 自蒸馏保持旧知识。<strong>S4-5：</strong>验证知识保持 vs 新学习平衡。Demo 质量影响大。</div></section>
 
-<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P31 · GAD ⭐ S1/5</span></div><div class="paper-card fragment fade-up"><div class="pn">PAPER 31 · arXiv: 2511.10643</div><div class="title">GAD — 对抗判别器：14B 学生 → GPT-5 水平</div><div class="venue">OPSD 自蒸馏 种子论文 · AwesomeOPD 推荐 #9</div></div></section>
-<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P31 · GAD ⭐ S2-5/5</span></div><div class="fragment fade-up struct-content"><strong>S2 背景：</strong>对抗训练思想：生成器 vs 判别器→互相提升。<strong>S3 创新：</strong>判别器=在线 RM——实时区分学生输出 vs 教师输出→学生 PG 优化。<strong>S4 实验：</strong>14B 学生达到 GPT-5 水平——OPSD 自蒸馏 的能力上限突破。<strong>S5 局限：</strong>判别器训练本身需要大量教师样本。</div></section>
-
-<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P32-P35</span></div>
-<div class="tri-grid fragment fade-up">
-  <div class="concept-block"><h4>P32: OVD</h4><p style="font-size:10px;"><span class="cite">2601.21968</span> 逐序列语言评分 (0-9) 替代 token 级 logit 匹配。</p></div>
-  <div class="concept-block"><h4>P33: SPOT</h4><p style="font-size:10px;"><span class="cite">2603.01683</span> 黑盒 Oracle 仅提供最优编辑→学生最小改动学习。</p></div>
-  <div class="concept-block"><h4>P34: SODA</h4><p style="font-size:10px;"><span class="cite">2604.03873</span> 半在线 DPO——静态快照捕获学生弱点→10× 更快。</p></div>
-</div>
-<div class="two-col fragment fade-up" style="margin-top:10px;">
-  <div class="concept-block"><h4>P35: ROPD</h4><p style="font-size:10px;"><span class="cite">2605.07396</span> Rubric 评分——教师-学生对比诱导 prompt 特定标准→10× 样本效率。</p></div>
-  <div class="concept-block"><h4>🔗 OPSD 自蒸馏 核心</h4><p style="font-size:10px;">信号从 token 级 logits→标量/序列级。牺牲密度换通用性。GAD (P31) 是明星——对抗判别器是黑盒场景下最强的信号构造方式。</p></div>
-</div></section>
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P38 · S1/5</span></div><div class="paper-card fragment fade-up"><div class="pn">PAPER 38 · arXiv: 2602.06019</div><div class="title">MTP Self-Distill — 多 Token 预测自蒸馏</div></div><div class="fragment fade-up struct-content" style="margin-top:8px;"><strong>S1：</strong>特权=未来多个 token→自蒸馏实现 Multi-Token Prediction。</div></section>
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P38 · S2-5/5</span></div><div class="fragment fade-up struct-content"><strong>S2-3：</strong>标准 AR 只预测下一步→缺全局规划。用未来 token 作特权→OPSD 多步预测。<strong>S4-5：</strong>提升推理效率。额外预测头增参数。</div></section>
 
 <!-- 后总 (2页) -->
 <section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📋 后总 · 1/2</span></div><h2 style="font-size:22px;font-weight:700;color:var(--amber);margin-bottom:10px;">OPSD 自蒸馏 信号谱系</h2><div class="fragment fade-up struct-content">六种信号类型构成从<strong style="color:var(--amber);">最弱到最强</strong>的谱系：语言评分 (OVD) < Oracle 编辑 (SPOT) < Rubric (ROPD) < DPO 偏好 (SODA) < 对比学习 (ORPO) < 对抗判别器 (GAD)。信号越强→学生提升越大→但获取成本也越高。</div></section>
