@@ -20,12 +20,21 @@
 <section data-transition="zoom"><div class="ac-card fragment fade-up"><p class="cite">MODULE 1+ · PART 3</p><h1 class="hero-title">OPSD 自蒸馏</h1><p style="font-size:20px;color:var(--text2);">同模型=教师=学生 · 特权上下文 · 19篇</p><div class="ac-bar"></div></div></section>
 
 <section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📐 前总 · 1/3</span></div>
-<h2 style="font-size:22px;font-weight:700;color:var(--amber);margin-bottom:10px;">什么是OPSD 自蒸馏？</h2>
-<div class="def-box fragment fade-up"><div class="label">🎯 OPSD 自蒸馏 = C1 + C2，但教师仅提供 API</div><div class="content">与白盒 OPD 的核心区别：<strong style="color:var(--amber);">教师 logits 不可访问</strong>——教师仅输出文本或标量评分。无法进行 token 级 KL 散度匹配。需要用标量信号（评分/偏好/判别器）替代 logit 级监督。<br><br><strong style="color:var(--amber);">信号类型：</strong>对抗判别器 · 语言评分 (0-9) · DPO 偏好对比 · Rubric 评分 · Oracle 编辑</div></div></section>
+<h2 style="font-size:22px;font-weight:700;color:var(--amber);margin-bottom:10px;">什么是 OPSD 自蒸馏？</h2>
+<div class="def-box fragment fade-up"><div class="label">🎯 OPSD = C1 + C2，但教师 = 同一模型 (特权上下文)</div><div class="content"><strong style="color:var(--amber);">OPSD 与 OPD 的关键区别：</strong><br>• <strong>OPD：</strong>教师是<strong style="color:#fff;">外部更强的模型</strong>→知识从强模型流向弱模型<br>• <strong>OPSD：</strong>教师是<strong style="color:#fff;">同一模型在特权条件下</strong>→知识从"知道答案的自己"流向"不知道答案的自己"<br><br><strong style="color:var(--amber);">特权上下文类型：</strong>验证轨迹 · 正确答案 · "简洁"指令前缀 · 更长上下文 · 文档 · 自生成记忆 tips · 自身最短正确完成</div></div></section>
 
 <section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📐 前总 · 2/3</span></div>
-<h2 style="font-size:22px;font-weight:700;color:var(--amber);margin-bottom:10px;">黑盒 vs 白盒：信号密度 vs 通用性</h2>
-<div class="fragment fade-up struct-content"><strong style="color:var(--amber);">白盒 OPD：</strong>逐 token KL 散度 → 信号密集、精细 → 但需要教师 logits 可访问 → 仅限开源模型<br><strong style="color:var(--rust);">OPSD 自蒸馏：</strong>标量/序列级信号 → 信号稀疏、粗糙 → 但任何 API 可用 (GPT-4/Claude/Gemini) →<strong style="color:#fff;">模型无关的通用性</strong><br><br>核心权衡：<strong style="color:var(--amber);">信号密度 ↔ 通用性</strong>。白盒更高效但受限，黑盒更灵活但信号更弱。</div></section>
+<h2 style="font-size:22px;font-weight:700;color:var(--amber);margin-bottom:10px;">OPSD vs OPD：特权上下文 vs 外部教师</h2>
+<div class="fragment fade-up struct-content"><strong style="color:var(--amber);">OPD：</strong>外部教师→知识跨模型迁移→师生可能是不同模型家族、不同规模<br><strong style="color:var(--sage);">OPSD：</strong>内部自蒸馏→同一模型的不同"视图"→知道答案的自己 (有特权上下文) 教不知道答案的自己 (无特权上下文)<br><br>核心差异：<strong style="color:var(--amber);">知识的来源</strong>——外部更强者 vs 内部更优条件。OPSD 不需要外部模型，训练成本更低，但教师始终受限于同一参数空间。</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📐 前总 · 3/3</span></div>
+<h2 style="font-size:20px;font-weight:700;color:var(--amber);margin-bottom:8px;">19 篇论文总览 (P36–54)</h2>
+<table class="summary-table fragment fade-up"><thead><tr><th>#</th><th>论文</th><th>特权上下文</th><th>核心洞察</th><th>等级</th></tr></thead>
+<tbody>
+<tr style="background:rgba(212,160,64,0.08);"><td class="pc">36</td><td><strong>OPSD ⭐</strong></td><td>验证推理轨迹</td><td>OPSD 正典——逐 token RKL+裁剪</td><td class="hl">重点(8S)</td></tr>
+<tr><td class="pc">37-41</td><td>SDFT/MTP/OPCD/EMPO²/OPSDC</td><td>多种特权</td><td>标准论文 (各5S)</td><td>标准</td></tr>
+<tr style="background:rgba(212,160,64,0.08);"><td class="pc">52</td><td><strong>d-OPSD ⭐</strong></td><td>自生成答案作后缀</td><td>首个扩散LLM的OPSD</td><td class="hl">重点(8S)</td></tr>
+<tr><td class="pc">42-51,53-54</td><td>其他</td><td>—</td><td>标准/合并(低价值)</td><td>标准</td></tr></tbody></table></section>
 
 <section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📐 前总 · 3/3</span></div>
 <h2 style="font-size:22px;font-weight:700;color:var(--amber);margin-bottom:10px;">6 篇论文总览 (P36–54)</h2>
