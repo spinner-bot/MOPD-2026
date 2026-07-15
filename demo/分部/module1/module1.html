@@ -2852,16 +2852,16 @@ window.MathJax = {
   </div>
 </section>
 
-<section data-transition="slide">
-  <h2 style="font-size:26px;font-weight:700;margin-bottom:4px;color:var(--text);">🐋 DeepSeek-R1 — 蒸馏革命的引爆点</h2>
-  <div class="glow-bar"></div>
-  <p style="font-size:12px;color:var(--text3);margin:0 0 10px;">R1证明了：大模型通过RL发现推理能力 → 蒸馏 → 小模型继承。两者解耦，各司其职。</p>
-  <div class="pipeline-box fragment fade-up" style="margin-bottom:12px;">
-    <div class="pipeline-step ps-a">Stage 1<br>❄️ Cold-Start SFT<br><span style="font-size:9px;font-weight:400;">人工写长思维链→SFT</span></div><span class="pipe-arrow">→</span>
-    <div class="pipeline-step ps-b">Stage 2<br>🎯 Reasoning RL<br><span style="font-size:9px;font-weight:400;">GRPO·正确性+格式奖励</span></div><span class="pipe-arrow">→</span>
-    <div class="pipeline-step ps-c">Stage 3<br>🔄 Rejection<br><span style="font-size:9px;font-weight:400;">只保留正确答案→精选SFT</span></div><span class="pipe-arrow">→</span>
-    <div class="pipeline-step ps-d">Stage 4<br>🛡️ Alignment<br><span style="font-size:9px;font-weight:400;">安全/有用性/指令遵循</span></div><span class="pipe-arrow">→</span>
-    <div class="pipeline-step ps-e">Stage 5<br>🎓 Distillation<br><span style="font-size:9px;font-weight:400;">R1教师+推理链→小模型</span></div>
+<section data-transition="slide" style="padding:18px 30px !important;">
+  <h2 style="font-size:24px;font-weight:700;margin-bottom:2px;color:var(--text);">🐋 DeepSeek-R1 — 蒸馏革命的引爆点</h2>
+  <div class="glow-bar" style="margin:8px auto;"></div>
+  <p style="font-size:11px;color:var(--text3);margin:0 0 6px;">R1证明了：大模型通过RL发现推理能力 → 蒸馏 → 小模型继承。两者解耦，各司其职。</p>
+  <div class="pipeline-box fragment fade-up" style="margin-bottom:8px;padding:8px;gap:4px;">
+    <div class="pipeline-step ps-a" style="padding:6px 10px;min-width:70px;">Stage 1<br>❄️ Cold-Start SFT</div><span class="pipe-arrow" style="font-size:14px;">→</span>
+    <div class="pipeline-step ps-b" style="padding:6px 10px;min-width:70px;">Stage 2<br>🎯 Reasoning RL</div><span class="pipe-arrow" style="font-size:14px;">→</span>
+    <div class="pipeline-step ps-c" style="padding:6px 10px;min-width:70px;">Stage 3<br>🔄 Rejection</div><span class="pipe-arrow" style="font-size:14px;">→</span>
+    <div class="pipeline-step ps-d" style="padding:6px 10px;min-width:70px;">Stage 4<br>🛡️ Alignment</div><span class="pipe-arrow" style="font-size:14px;">→</span>
+    <div class="pipeline-step ps-e" style="padding:6px 10px;min-width:70px;">Stage 5<br>🎓 Distillation</div>
   </div>
   <div class="two-col">
     <div class="fragment fade-up"><div class="concept-card" style="border-left:3px solid var(--red);"><h4>🔥 R1之前 vs R1之后</h4><p><strong style="color:var(--red);">之前：</strong>SFT蒸馏 = 行为克隆，不涉及RL。<br><strong style="color:var(--red);">R1之后：</strong>先RL探索推理能力 → 再把推理链蒸馏给小模型。定义了新范式。</p></div></div>
