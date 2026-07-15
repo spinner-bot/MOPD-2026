@@ -104,7 +104,41 @@
   </div>
 </section>
 
-<!-- 继续 Papers 11-29 将在后续commit中添加 --></div></div>
+<!-- ═══════════ Paper 11: Speculative KD ═══════════ -->
+<section data-transition="slide">
+  <div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 Paper 11</span></div>
+  <div class="paper-card fragment fade-up" style="max-width:780px;">
+    <div class="pn">PAPER 11 · arXiv: 2410.11325 · ICLR 2025</div>
+    <div class="title">Speculative KD — 交错提议-纠正的门控 KL</div>
+    <div class="venue">UCSB / Google</div>
+    <div class="desc" style="margin-top:8px;">
+      将<strong style="color:var(--amber);">推测解码</strong>思想引入OPD：学生提议→教师纠正→仅在纠正处施加KL，大幅降低计算开销。
+    </div>
+  </div>
+  <div class="two-col fragment fade-up">
+    <div class="concept-block" style="border-left:3px solid var(--amber);"><h4>🔑 交错提议-纠正机制</h4><p style="font-size:11px;">学生首先生成"提议"token→教师评估→仅当教师<strong style="color:var(--amber);">不同意</strong>学生提议时才计算KL监督。<br><br>这类似于Module 1中Actor-Mimic的Q值截断——"只在教师有把握纠正的地方蒸馏"。</p></div>
+    <div class="concept-block" style="border-left:3px solid var(--sage);"><h4>📊 门控KL</h4><p style="font-size:11px;">$$\mathcal{L} = \mathbb{1}[\text{teacher disagrees}] \cdot D_{KL}(\pi_T \|\pi_S)$$<br><br>跳过师生一致的token(大部分)，聚焦分歧点。计算开销大幅降低，同时保持信号密度。</p></div>
+  </div>
+</section>
+
+<!-- ═══════════ Paper 12: DistiLLM-2 ═══════════ -->
+<section data-transition="slide">
+  <div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 Paper 12</span></div>
+  <div class="paper-card fragment fade-up" style="max-width:780px;">
+    <div class="pn">PAPER 12 · arXiv: 2503.07067 · ICML 2025 Oral</div>
+    <div class="title">DistiLLM-2 — 对比式：Skew-FKL(教师数据) + Skew-RKL(学生数据)</div>
+    <div class="venue">KAIST / Microsoft</div>
+    <div class="desc" style="margin-top:8px;">
+      DistiLLM的续作——<strong style="color:var(--amber);">首次解耦数据源与KL方向</strong>：教师侧用Forward KL，学生侧用Reverse KL。
+    </div>
+  </div>
+  <div class="two-col fragment fade-up">
+    <div class="concept-block" style="border-left:3px solid var(--amber);"><h4>🔑 对比式设计</h4><p style="font-size:11px;">$$\mathcal{L} = \underbrace{D_{KL}(\pi_T \|\pi_S)}_{\text{教师数据上: Forward KL}} + \lambda \cdot \underbrace{D_{KL}(\pi_S \|\pi_T)}_{\text{学生数据上: Reverse KL}}$$<br><br>教师数据上FKL→覆盖教师所有合理选择<br>学生数据上RKL→在自己犯错区锐化</p></div>
+    <div class="concept-block" style="border-left:3px solid var(--sage);"><h4>🔗 与Module 1 Part 5的2×2矩阵呼应</h4><p style="font-size:11px;">DistiLLM-2正是<strong style="color:var(--sage);">跨象限</strong>的应用：<br>教师前缀+Forward KL (象限①)<br>+ 学生前缀+Reverse KL (象限④)<br><br>证明了两种模式<strong style="color:var(--sage);">可以同时使用</strong>。</p></div>
+  </div>
+</section>
+
+<!-- 继续 Papers 13-29 --></div></div>
 <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.js"></script>
 <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 <script>(function(){const c=document.getElementById('bg-canvas'),x=c.getContext('2d');let W,H,shapes=[],frame=0;function rs(){W=c.width=window.innerWidth;H=c.height=window.innerHeight}window.addEventListener('resize',rs);rs();class Shape{constructor(){this.reset()}reset(){this.x=Math.random()*W;this.y=Math.random()*H;this.size=Math.random()*50+25;this.type=Math.floor(Math.random()*3);this.vx=(Math.random()-0.5)*0.4;this.vy=(Math.random()-0.5)*0.4;this.alpha=Math.random()*0.06+0.04;this.rot=Math.random()*Math.PI*2;this.rv=(Math.random()-0.5)*0.003}update(){this.x+=this.vx;this.y+=this.vy;this.rot+=this.rv;if(this.x<-80||this.x>W+80)this.vx*=-1;if(this.y<-80||this.y>H+80)this.vy*=-1}draw(c){var cx=this.x,cy=this.y;c.save();c.translate(cx,cy);c.rotate(this.rot);c.globalAlpha=this.alpha;c.shadowColor='rgba(220,180,120,0.6)';c.shadowBlur=18;c.strokeStyle='rgba(220,170,110,0.9)';c.lineWidth=1;if(this.type===0){c.beginPath();for(let i=0;i<6;i++){const a=i*Math.PI/3-Math.PI/2,r=this.size*0.6;const px=r*Math.cos(a),py=r*Math.sin(a);i===0?c.moveTo(px,py):c.lineTo(px,py)}c.closePath();c.stroke()}else if(this.type===1){c.beginPath();const s=this.size*0.45;c.moveTo(0,-s);c.lineTo(s,0);c.lineTo(0,s);c.lineTo(-s,0);c.closePath();c.stroke()}else{c.beginPath();c.arc(0,0,this.size*0.35,0,Math.PI*2);c.stroke()}c.shadowBlur=6;c.shadowColor='rgba(240,200,140,0.4)';c.globalAlpha=this.alpha*1.3;c.strokeStyle='rgba(240,200,140,0.6)';c.lineWidth=0.6;if(this.type===0){c.beginPath();for(let i=0;i<6;i++){const a=i*Math.PI/3-Math.PI/2,r2=this.size*0.35;const px=r2*Math.cos(a),py=r2*Math.sin(a);i===0?c.moveTo(px,py):c.lineTo(px,py)}c.closePath();c.stroke()}c.restore()}}shapes=Array.from({length:20},()=>new Shape());function drawGrid(){var gs=55;x.strokeStyle='rgba(170,130,70,0.06)';x.lineWidth=1;for(let i=gs;i<W;i+=gs){x.beginPath();x.moveTo(i,0);x.lineTo(i,H);x.stroke()}for(let j=gs;j<H;j+=gs){x.beginPath();x.moveTo(0,j);x.lineTo(W,j);x.stroke()}for(let i=gs;i<W;i+=gs){for(let j=gs;j<H;j+=gs){var dx=i-W/2,dy=j-H/2,dist=Math.sqrt(dx*dx+dy*dy);var edgeFade=Math.max(0.15,1-dist/(Math.max(W,H)*0.7));x.fillStyle=`rgba(210,160,100,${0.12*edgeFade})`;x.beginPath();x.arc(i,j,1.5,0,Math.PI*2);x.fill()}}}function drawGlow(){for(var i=0;i<2;i++){var gx=W*(0.3+i*0.4)+Math.sin(frame*0.002+i)*W*0.15;var gy=H*(0.4+i*0.2)+Math.cos(frame*0.003+i)*H*0.1;var grad=x.createRadialGradient(gx,gy,0,gx,gy,Math.min(W,H)*0.4);grad.addColorStop(0,'rgba(220,180,120,0.07)');grad.addColorStop(0.5,'rgba(180,140,80,0.03)');grad.addColorStop(1,'rgba(0,0,0,0)');x.fillStyle=grad;x.fillRect(0,0,W,H)}}function lp(){x.clearRect(0,0,W,H);drawGrid();drawGlow();shapes.forEach(s=>{s.update();s.draw(x)});frame++;requestAnimationFrame(lp)}lp()})();</script>
