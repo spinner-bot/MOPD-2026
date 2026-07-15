@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Part 2 · OPD 理论深化期 2018–2019</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/black.min.css">
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['$','$'], ['\\(','\\)']], displayMath: [['$$','$$'], ['\\[','\\]']] },
+  options: { skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre'] }
+};
+</script>
+
+<style>
+/* ============ 全局变量 ============ */
+:root {
+  --bg: #0a0a0f;
+  --surface: rgba(255,255,255,0.04);
+  --border: rgba(255,255,255,0.08);
+  --text: #e8e8f0;
+  --text2: rgba(255,255,255,0.65);
+  --text3: rgba(255,255,255,0.4);
+  --a1: #6c5ce7; --a2: #00d2ff; --a3: #ff6b9d; --a4: #feca57; --a5: #00e676;
+  --a-gold: #f0a500; --a-warn: #ff6b4a;
+  --glow-gold: 0 0 40px rgba(240,165,0,0.25);
+}
+
+/* ============ Canvas 背景 ============ */
+#particle-canvas { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+
+/* ============ Reveal 覆写 ============ */
+.reveal { background: transparent; }
+.reveal .slides {
+  text-align: center; width: 100% !important; left: 50% !important; margin: 0 !important;
+}
+.reveal .slides section {
+  padding: 36px 56px; height: 100%;
+  display: flex !important; flex-direction: column;
+  align-items: center; justify-content: center;
+}
+.reveal .controls { right: 12px !important; left: auto !important; bottom: 12px !important; }
+.reveal .progress, .reveal .slide-number { display: none !important; }
+#page-indicator {
+  position: fixed; left: 24px; bottom: 20px; z-index: 100;
+  font-size: 13px; color: rgba(255,255,255,0.35);
+  font-family: 'JetBrains Mono','Fira Code','Consolas',monospace; letter-spacing: 1px; pointer-events: none;
+}
+
+/* ============ 玻璃卡片 ============ */
+.glass-card {
+  position: relative; z-index: 2;
+  background: var(--surface); backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid var(--border); border-radius: 24px; padding: 44px 56px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5); max-width: 880px;
+}
+
+/* ============ 标题动效 ============ */
+.hero-title {
+  font-size: 56px; font-weight: 900; letter-spacing: -2px;
+  background: linear-gradient(135deg, var(--a-gold), var(--a4), var(--a3));
+  background-size: 300% 300%;
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradientShift 4s ease infinite;
+  margin: 0 0 14px; line-height: 1.15;
+}
+@keyframes gradientShift { 0%,100%{background-position:0% 50%} 50%{background-position:100% 50%} }
+
+.glow-bar {
+  width: 120px; height: 3px;
+  background: linear-gradient(90deg, transparent, var(--a-gold), var(--a4), transparent);
+  border-radius: 2px; margin: 20px auto;
+  animation: glowPulse 2s ease-in-out infinite;
+}
+@keyframes glowPulse { 0%,100%{opacity:0.4;width:120px} 50%{opacity:1;width:200px} }
+
+/* ============ fragment ============ */
+.reveal .slides section .fragment.fade-up {
+  opacity: 0; transform: translateY(40px);
+  transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+.reveal .slides section .fragment.fade-up.visible { opacity: 1; transform: translateY(0); }
+
+/* ============ 标签 ============ */
+.tag-row { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin-top: 18px; }
+.tag { padding: 7px 20px; border-radius: 20px; font-size: 13px; font-weight: 600; border: 1px solid; letter-spacing: 1px; opacity: 0; animation: tagPop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+.tag:nth-child(1) { animation-delay: 0.3s; border-color: var(--a-gold); color: var(--a-gold); }
+.tag:nth-child(2) { animation-delay: 0.5s; border-color: var(--a4); color: var(--a4); }
+.tag:nth-child(3) { animation-delay: 0.7s; border-color: var(--a3); color: var(--a3); }
+@keyframes tagPop { from{opacity:0;transform:scale(.7)translateY(10px)} to{opacity:1;transform:scale(1)translateY(0)} }
+
+/* ============ 双栏 ============ */
+.two-col { display: flex; gap: 24px; flex-wrap: wrap; justify-content: center; max-width: 960px; }
+.two-col > div { flex: 1; min-width: 280px; }
+
+/* ============ 概念卡片 ============ */
+.concept-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 16px; padding: 22px 20px; text-align: left; margin-bottom: 14px;
+}
+.concept-card h4 { margin: 0 0 8px; font-size: 15px; color: #fff; }
+.concept-card p { margin: 0; font-size: 13px; color: var(--text2); line-height: 1.7; }
+
+/* ============ 定理卡片 (Part 2 专属) ============ */
+.theorem-card {
+  background: rgba(240,165,0,0.04); border: 1px solid rgba(240,165,0,0.2);
+  border-radius: 18px; padding: 24px 28px; max-width: 820px;
+  text-align: left; box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+  position: relative;
+}
+.theorem-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, var(--a-gold), var(--a-warn));
+}
+.theorem-card.warn { border-color: rgba(255,107,74,0.25); background: rgba(255,107,74,0.04); }
+.theorem-card.warn::before { background: linear-gradient(90deg, var(--a-warn), var(--a3)); }
+.theorem-card.fix { border-color: rgba(0,230,118,0.25); background: rgba(0,230,118,0.04); }
+.theorem-card.fix::before { background: linear-gradient(90deg, var(--a5), var(--a2)); }
+.theorem-badge {
+  display: inline-block; padding: 3px 12px; border-radius: 10px;
+  font-size: 11px; font-weight: 700; letter-spacing: 1px; margin-bottom: 10px;
+}
+.theorem-card .theorem-badge { background: rgba(240,165,0,0.15); color: var(--a-gold); }
+.theorem-card.warn .theorem-badge { background: rgba(255,107,74,0.15); color: var(--a-warn); }
+.theorem-card.fix .theorem-badge { background: rgba(0,230,118,0.12); color: var(--a5); }
+.theorem-card .math-block { font-size: 16px; color: #cdd6f4; overflow-x: auto; padding: 4px 0; }
+
+/* ============ 公式卡片 ============ */
+.formula-card {
+  background: rgba(10,10,20,0.92);
+  border: 1px solid rgba(108,92,231,0.25); border-radius: 18px;
+  padding: 24px 32px; max-width: 820px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.5); position: relative;
+}
+.formula-card::after {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, var(--a1), var(--a2), var(--a3));
+}
+.formula-card .math-block { font-size: 17px; color: #cdd6f4; overflow-x: auto; padding: 4px 0; }
+
+/* ============ 代码窗口 ============ */
+.code-window {
+  background: rgba(10,10,20,0.92); border: 1px solid var(--border);
+  border-radius: 16px; overflow: hidden; text-align: left;
+  font-family: 'JetBrains Mono','Fira Code','Consolas',monospace;
+  max-width: 680px; box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+}
+.code-header {
+  background: rgba(255,255,255,0.05); padding: 9px 14px;
+  display: flex; gap: 8px; align-items: center; border-bottom: 1px solid var(--border);
+}
+.code-dot { width: 11px; height: 11px; border-radius: 50%; }
+.code-dot.r{background:#ff5f56}.code-dot.y{background:#ffbd2e}.code-dot.g{background:#27c93f}
+.code-body { padding: 18px 22px; font-size: 14px; line-height: 1.8; color: #cdd6f4; }
+.code-body .kw{color:#cba6f7}.code-body .s{color:#a6e3a1}.code-body .fn{color:#89b4fa}.code-body .cm{color:#6c7086;font-style:italic}.code-body .em{color:var(--a4);font-weight:700}
+
+/* ============ 信息卡片 ============ */
+.info-tile {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 14px; padding: 18px 20px; max-width: 360px; text-align: left;
+}
+.info-tile h4 { margin: 0 0 6px; font-size: 14px; color: #fff; }
+.info-tile p { margin: 0; font-size: 13px; color: var(--text2); line-height: 1.6; }
+
+/* ============ 三列网格 ============ */
+.tri-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; max-width: 960px; }
+
+/* ============ 总结表 ============ */
+.summary-table {
+  width: 100%; max-width: 820px; border-collapse: collapse;
+  font-size: 14px; border-radius: 16px; overflow: hidden;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+}
+.summary-table thead { background: linear-gradient(135deg, rgba(240,165,0,0.3), rgba(254,202,87,0.15)); }
+.summary-table th { padding: 13px 16px; text-align: left; font-weight: 700; color: #fff; font-size: 13px; }
+.summary-table td { padding: 12px 16px; border-bottom: 1px solid var(--border); color: var(--text2); }
+.summary-table tbody tr { background: var(--surface); transition: all 0.3s; }
+.summary-table tbody tr:hover { background: rgba(255,255,255,0.06); }
+.summary-table .pc { font-weight: 700; color: #fff; }
+.summary-table .hl { color: var(--a-gold); font-weight: 600; }
+
+/* ============ 流程图 ============ */
+.flow-row { display: flex; align-items: center; gap: 18px; justify-content: center; flex-wrap: wrap; }
+.flow-node { padding: 16px 22px; border-radius: 16px; text-align: center; font-weight: 700; }
+.flow-node.bad { background: rgba(255,107,74,0.08); border: 1px solid rgba(255,107,74,0.2); color: var(--a-warn); }
+.flow-node.good { background: rgba(0,230,118,0.07); border: 1px solid rgba(0,230,118,0.2); color: var(--a5); }
+.flow-arrow { font-size: 24px; color: rgba(255,255,255,0.3); animation: arrowPulse 1.5s ease-in-out infinite; }
+@keyframes arrowPulse { 0%,100%{opacity:0.3;transform:translateX(0)} 50%{opacity:1;transform:translateX(6px)} }
+
+/* ============ 过渡预告 ============ */
+.next-badge {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 12px 26px; border-radius: 24px;
+  background: rgba(240,165,0,0.08); border: 1px solid rgba(240,165,0,0.2);
+  font-size: 15px; font-weight: 700; color: var(--a-gold); margin-top: 18px;
+  animation: float 3s ease-in-out infinite;
+}
+@keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+
+/* ============ 对比 ============ */
+.compare-wrap { display: flex; gap: 0; max-width: 900px; align-items: stretch; }
+.compare-side { flex: 1; padding: 28px 24px; border-radius: 20px; }
+.compare-side.bad { background: rgba(255,107,74,0.06); border: 1px solid rgba(255,107,74,0.15); }
+.compare-side.good { background: rgba(0,230,118,0.05); border: 1px solid rgba(0,230,118,0.18); }
+.compare-label { font-size: 13px; font-weight: 700; letter-spacing: 2px; margin-bottom: 14px; }
+.compare-side.bad .compare-label { color: var(--a-warn); }
+.compare-side.good .compare-label { color: var(--a5); }
+.compare-vs { display: flex; align-items: center; justify-content: center; width: 56px; flex-shrink: 0; }
+.vs-badge { width: 42px; height: 42px; border-radius: 50%; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 13px; color: rgba(255,255,255,0.4); animation: vsPulse 2s ease-in-out infinite; }
+@keyframes vsPulse { 0%,100%{box-shadow:0 0 8px rgba(255,255,255,.1)} 50%{box-shadow:0 0 24px rgba(255,255,255,.2)} }
+
+/* 响应式 */
+@media (max-width: 768px) {
+  .hero-title { font-size: 34px; }
+  .glass-card { padding: 24px 18px; max-width: 100%; }
+  .tri-grid { grid-template-columns: 1fr; }
+  .compare-wrap { flex-direction: column; }
+}
+</style>
+</head>
+<body>
+
+<canvas id="particle-canvas"></canvas>
+<div id="page-indicator"></div>
+
+<div class="reveal">
+<div class="slides">
+
+<!-- ═══════════ SLIDE 1: 标题 ═══════════ -->
+<section data-transition="zoom">
+  <div class="glass-card fragment fade-up">
+    <p style="font-size:15px;color:var(--a-gold);letter-spacing:4px;font-weight:700;margin:0;">CHAPTER 2</p>
+    <h1 class="hero-title">OPD 理论深化期</h1>
+    <p style="font-size:22px;color:rgba(255,255,255,0.7);margin:0 0 4px;">Kickstarting · 梯度场定理 · 2018–2019</p>
+    <div class="glow-bar"></div>
+    <p style="font-size:14px;color:var(--text3);margin:0;">从"反直觉定理"到"工程最佳实践"</p>
+    <div class="tag-row">
+      <span class="tag">#λ衰减</span>
+      <span class="tag">#梯度场不存在</span>
+      <span class="tag">#N步未来蒸馏</span>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ SLIDE 2: 知识图谱 ═══════════ -->
+<section data-transition="slide">
+  <h2 style="font-size:28px;font-weight:700;margin-bottom:4px;color:var(--text);">🗺️ Part 2 知识图谱</h2>
+  <p style="font-size:13px;color:var(--text3);margin:0 0 8px;">本章逻辑链：发现问题 → 分析根因 → 数学定理 → 工程修正</p>
+  <div style="max-width:1000px;">
+    <svg viewBox="0 0 1000 470" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="a" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="rgba(255,255,255,0.25)"/></marker>
+      </defs>
+      <!-- 边 -->
+      <path d="M250,70 L250,100 L160,100 L160,120" marker-end="url(#a)" class="dag-edge"/>
+      <path d="M750,70 L750,100 L840,100 L840,120" marker-end="url(#a)" class="dag-edge"/>
+      <path d="M160,230 L160,260 L500,260 L500,280" marker-end="url(#a)" class="dag-edge"/>
+      <path d="M840,230 L840,260 L500,260" marker-end="url(#a)" class="dag-edge"/>
+      <path d="M500,350 L500,380" marker-end="url(#a)" class="dag-edge"/>
+
+      <!-- Title -->
+      <rect x="320" y="10" width="360" height="32" rx="16" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.12)"/>
+      <text x="500" y="31" text-anchor="middle" class="dag-label title" font-size="14">Part 2: 理论深化期 (2018–2019)</text>
+
+      <!-- Kickstarting -->
+      <g><rect x="50" y="70" width="220" height="42" rx="8" fill="rgba(240,165,0,0.08)" stroke="rgba(240,165,0,0.25)"/>
+        <text x="160" y="90" text-anchor="middle" class="dag-label title" fill="#f0a500">🚀 Kickstarting (2018)</text>
+        <text x="160" y="106" text-anchor="middle" class="dag-label sub">λ_k衰减 · PBT · 学生超越教师</text></g>
+      <g><rect x="50" y="125" width="220" height="105" rx="8" fill="rgba(240,165,0,0.04)" stroke="rgba(240,165,0,0.12)"/>
+        <text x="160" y="145" text-anchor="middle" class="dag-label">交叉熵 H(π_T‖π_S)</text>
+        <text x="160" y="163" text-anchor="middle" class="dag-label">RL目标 L_RL</text>
+        <text x="160" y="181" text-anchor="middle" class="dag-label">λ_k → 0 衰减策略</text>
+        <text x="160" y="199" text-anchor="middle" class="dag-label">PBT自动调参 · 9.58×加速</text>
+        <text x="160" y="217" text-anchor="middle" class="dag-label sub">核心：不要让教师成为天花板</text></g>
+
+      <!-- Distilling PD -->
+      <g><rect x="730" y="70" width="230" height="42" rx="8" fill="rgba(108,92,231,0.08)" stroke="rgba(108,92,231,0.25)"/>
+        <text x="845" y="90" text-anchor="middle" class="dag-label title" fill="#a0a0ff">📐 Distilling PD (2019)</text>
+        <text x="845" y="106" text-anchor="middle" class="dag-label sub">OPD理论基石</text></g>
+      <g><rect x="730" y="125" width="230" height="105" rx="8" fill="rgba(108,92,231,0.03)" stroke="rgba(108,92,231,0.1)"/>
+        <text x="845" y="145" text-anchor="middle" class="dag-label">Theorem 1: 梯度场不存在</text>
+        <text x="845" y="163" text-anchor="middle" class="dag-label">同策略蒸馏为何失败？</text>
+        <text x="845" y="181" text-anchor="middle" class="dag-label">学生状态分布差</text>
+        <text x="845" y="199" text-anchor="middle" class="dag-label">Theorem 2: 梯度场重建</text>
+        <text x="845" y="217" text-anchor="middle" class="dag-label">N步未来蒸馏修正</text></g>
+
+      <!-- 汇聚到三种方法 -->
+      <g><rect x="310" y="285" width="380" height="65" rx="10" fill="rgba(0,230,118,0.07)" stroke="rgba(0,230,118,0.3)" stroke-width="2"/>
+        <text x="500" y="307" text-anchor="middle" class="dag-label title" fill="#00e676">🔧 修正方法 ← 两篇论文的智慧汇聚</text>
+        <text x="500" y="327" text-anchor="middle" class="dag-label">N-distill (N步未来) | Expected Entropy Reg. (熵正则) | Teacher V Reward (教师奖励)</text>
+        <text x="500" y="343" text-anchor="middle" class="dag-label sub">轨迹 · 长horizon · 价值加权 · 教师作为奖励函数</text></g>
+
+      <!-- 总结 -->
+      <g><rect x="340" y="385" width="320" height="34" rx="17" fill="rgba(240,165,0,0.08)" stroke="rgba(240,165,0,0.2)"/>
+        <text x="500" y="407" text-anchor="middle" class="dag-label title" fill="#fff">📋 理论深化期总结 → Part 3</text></g>
+    </svg>
+  </div>
+</section>
+
+<!-- ═══════════ SECTION 1: Kickstarting ═══════════ -->
+<!-- ═══════════ SLIDE 3: Kickstarting 公式 ═══════════ -->
+<section data-transition="slide">
+  <h2 style="font-size:28px;font-weight:700;margin-bottom:4px;color:var(--text);">🚀 Kickstarting Deep RL (2018)</h2>
+  <div class="glow-bar"></div>
+  <div style="margin-bottom:12px;background:rgba(240,165,0,0.06);border:1px solid rgba(240,165,0,0.15);border-radius:12px;padding:8px 16px;display:inline-block;">
+    <span style="font-size:12px;color:var(--text3);">📄 Schmitt et al., DeepMind · arXiv: 1803.03835 · DMLab-30 平台</span>
+  </div>
+  <div class="formula-card fragment fade-up" style="margin-bottom:18px;">
+    <p style="font-size:12px;color:var(--text3);margin:0 0 6px;">核心思想：教师先推一把，然后放手让学生自己跑</p>
+    <div class="math-block">
+      $$\boxed{\mathcal{L}_{\text{kick}}(\omega, x, t) = \underbrace{\mathcal{L}_{\text{RL}}(\omega, x, t)}_{\text{标准RL目标}} + \underbrace{\lambda_k \cdot H\big(\pi_T(\cdot|x_t) \;\|\; \pi_S(\cdot|x_t, \omega)\big)}_{\text{逐渐衰减的蒸馏信号}}}$$
+    </div>
+  </div>
+  <div class="two-col">
+    <div class="fragment fade-up">
+      <div class="concept-card" style="border-left:3px solid var(--a-gold);">
+        <h4>🔑 关键创新：λ_k → 0</h4>
+        <p>ω = 学生网络权重；x_t = 当前状态<br>
+        H(π_T‖π_S) = <strong style="color:var(--a-gold);">交叉熵</strong>，等价于最小化 D_KL(π_T‖π_S)<br>
+        λ_k 训练初期大（强引导）→ 中期减弱 → 后期为 0（完全自主）</p>
+      </div>
+    </div>
+    <div class="fragment fade-up">
+      <div class="concept-card" style="border-left:3px solid var(--a2);">
+        <h4>💡 为什么不用 KL 散度？</h4>
+        <p>交叉熵 H(π_T‖π_S) = −Σ π_T log π_S<br>
+        与 D_KL(π_T‖π_S) 相差一个常数（教师熵不依赖学生参数），优化等价但计算更简单。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ SLIDE 4: Kickstarting 深入 ═══════════ -->
+<section data-transition="slide">
+  <h2 style="font-size:26px;font-weight:700;margin-bottom:4px;color:var(--text);">🎯 为什么 Kickstarting 能超越教师？</h2>
+  <div class="glow-bar"></div>
+  <div class="two-col">
+    <div class="fragment fade-up">
+      <div class="concept-card" style="border-top:3px solid var(--a-warn);">
+        <h4>❌ 问题：如果学生只模仿</h4>
+        <p>如果学生在整个训练过程中始终强依赖教师信号（λ_k 不衰减），学生的性能<strong style="color:var(--a-warn);">上限就是教师水平</strong>——永远无法超越。</p>
+      </div>
+      <div class="concept-card" style="border-top:3px solid var(--a5);">
+        <h4>✅ 解决方案：逐渐放手</h4>
+        <p>蒸馏应该像<strong style="color:var(--a5);">教孩子骑自行车</strong>——开始时父母扶着（大λ_k），然后慢慢松开（λ_k衰减），最后孩子完全自己骑（λ_k=0），<strong style="color:var(--a5);">可能比父母骑得更好</strong>。</p>
+      </div>
+    </div>
+    <div class="fragment fade-up">
+      <div class="concept-card" style="border-top:3px solid var(--a-gold);">
+        <h4>🧬 PBT：自动调参</h4>
+        <p><strong style="color:var(--a-gold);">Population Based Training</strong>：40个智能体并行训练。表现差的复制表现好的超参数（λ_k、衰减率、学习率、熵系数）并加扰动。自动找到最优衰减曲线。</p>
+      </div>
+      <table class="summary-table" style="margin-top:10px;">
+        <thead><tr><th>设置</th><th>结果</th></tr></thead>
+        <tbody>
+          <tr><td class="pc">单教师</td><td>训练速度 <span class="hl">1.5×</span></td></tr>
+          <tr><td class="pc">多教师（每任务一专家）</td><td><span class="hl">9.58×</span> 加速！性能超越 <span class="hl">42.2%</span></td></tr>
+          <tr><td class="pc">学生 vs 教师</td><td>多任务上学生<strong style="color:var(--a5);">显著超越</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ SECTION 2: Distilling Policy Distillation ═══════════ -->
+<!-- ═══════════ SLIDE 5: 梯度场概念 ═══════════ -->
+<section data-transition="slide">
+  <h2 style="font-size:26px;font-weight:700;margin-bottom:4px;color:var(--text);">📐 先理解：什么是"梯度场"？</h2>
+  <div class="glow-bar"></div>
+  <div class="two-col">
+    <div class="fragment fade-up">
+      <div class="concept-card" style="border-top:3px solid var(--a1);">
+        <h4>📊 梯度 = 方向指示器</h4>
+        <p>训练神经网络时，对损失函数求参数 ω 的导数，得到<strong style="color:var(--a1);">梯度向量</strong>——它指向"损失下降最快的方向"。梯度下降 = 沿着反方向走。</p>
+        <div class="code-window" style="max-width:100%;margin-top:8px;">
+          <div class="code-body" style="font-size:12px;padding:8px 14px;">
+            ω_{new} = ω_{old} − η · <span class="kw">∇_ω</span> L(ω)
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="fragment fade-up">
+      <div class="concept-card" style="border-top:3px solid var(--a-gold);">
+        <h4>🗺️ 梯度场 = 所有位置的梯度集合</h4>
+        <p>参数空间里每个点都对应一个梯度向量。这就像一片<strong style="color:var(--a-gold);">"场"</strong>——每个位置都有箭头告诉你该往哪走。</p>
+        <p style="margin-top:8px;"><strong style="color:var(--a-warn);">梯度场不存在</strong> = 某些区域的箭头<strong style="color:var(--a-warn);">全部消失</strong>（为零向量），梯度下降卡住，无法继续优化。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ SLIDE 6: Theorem 1 ═══════════ -->
+<section data-transition="slide">
+  <h2 style="font-size:26px;font-weight:700;margin-bottom:4px;color:var(--text);">⚠️ Theorem 1: 梯度场不存在定理</h2>
+  <div class="glow-bar"></div>
+  <div class="theorem-card warn fragment fade-up" style="margin-bottom:16px;">
+    <span class="theorem-badge">⚠ Theorem 1</span>
+    <p style="font-size:14px;color:var(--text2);margin:0 0 8px;"><strong style="color:#fff;">核心发现：</strong>标准的 on-policy 蒸馏更新规则<strong style="color:var(--a-warn);">不对应于任何损失函数的梯度</strong>。</p>
+    <div class="math-block">
+      $$\Delta\theta = \mathbb{E}_{s \sim d_{\pi_\theta}} \left[\nabla_\theta H(\pi_T(\cdot|s) \;\|\; \pi_\theta(\cdot|s))\right]$$
+    </div>
+    <p style="font-size:12px;color:var(--text3);margin:4px 0 0;">学生参数 θ 变了 → 策略变了 → 访问的状态分布 d_{π_θ}(s) 变了 → 蒸馏损失的定义域<strong style="color:var(--a-warn);">已经漂移</strong>。永远在追一个因自己移动而移动的目标。</p>
+  </div>
+  <div class="fragment fade-up info-tile" style="max-width:700px;">
+    <h4>🔑 一句总结</h4>
+    <p>如果学生策略是随机的（softmax输出），在学生已收敛到某个局部最优时，<strong style="color:var(--a-warn);">梯度完全消失</strong>——即使学生还很差。训练停止，无法逃离。</p>
+  </div>
+</section>
+
+<!-- ═══════════ SLIDE 7: 为什么梯度场不存在 ═══════════ -->
+<section data-transition="slide">
+  <h2 style="font-size:26px;font-weight:700;margin-bottom:4px;color:var(--text);">🔍 根因：学生状态分布差</h2>
+  <div class="glow-bar"></div>
+  <div class="flow-row fragment fade-up" style="margin-bottom:18px;">
+    <div class="flow-node bad">🤖 学生策略差</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node bad">🕳️ 只访问差状态</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node bad">👀 在差状态看教师</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node bad" style="color:var(--a-warn);font-size:18px;">💀 学不到精华</div>
+  </div>
+  <div class="two-col">
+    <div class="fragment fade-up">
+      <div class="concept-card" style="border-left:3px solid var(--a-warn);">
+        <h4>🎯 核心矛盾</h4>
+        <p>学生只能从<strong style="color:var(--a-warn);">自己实际跑出来的状态</strong>里学习教师。但学生策略不成熟 → 永远访问低奖励状态 → 在这些状态下，教师也只会给出平庸动作 → <strong style="color:var(--a-warn);">学生永远看不到教师真正的"神之一手"</strong>。</p>
+      </div>
+    </div>
+    <div class="fragment fade-up">
+      <div class="concept-card" style="border-left:3px solid var(--a-gold);">
+        <h4>♟️ 围棋类比</h4>
+        <p>一步错棋 → 100步后局面崩溃 → 学生整盘都在劣势区挣扎 → 根本看不到教师妙手所在的"优势区"。<br>
+        <strong style="color:var(--a-gold);">长horizon下，状态分化更严重。</strong></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ SLIDE 8: Theorem 2 ═══════════ -->
+<section data-transition="slide">
+  <h2 style="font-size:26px;font-weight:700;margin-bottom:4px;color:var(--text);">✅ Theorem 2: 梯度场重建</h2>
+  <div class="glow-bar"></div>
+  <div class="theorem-card fix fragment fade-up" style="margin-bottom:14px;">
+    <span class="theorem-badge">✅ Theorem 2 · 修正</span>
+    <p style="font-size:14px;color:var(--text2);margin:0 0 8px;"><strong style="color:#fff;">核心思路：</strong>打破"状态必须来自学生"的限制。</p>
+    <div class="math-block">
+      $$\boxed{\mathbb{E}_{\pi_\theta}\left[\sum_t -\nabla_\theta \log\pi_\theta(a_t|s_t) \cdot \underbrace{\sum_{i=t}^{\infty} \hat{r}_i}_{\text{累积未来修正奖励}} + \underbrace{\nabla_\theta \ell_t}_{\text{直接蒸馏梯度}}\right]}$$
+    </div>
+    <p style="font-size:12px;color:var(--text3);margin:4px 0 0;">在每个时间步添加"未来蒸馏损失"作为修正奖励，恢复梯度场性质。</p>
+  </div>
+  <div class="two-col">
+    <div class="fragment fade-up">
+      <div class="concept-card" style="border-left:3px solid var(--a5);">
+        <h4>🔧 修正方法一：N步未来蒸馏损失</h4>
+        <p>不只模仿教师当前状态的动作，而是沿教师轨迹看<strong style="color:var(--a5);">未来N步</strong>，每一步都计入损失：</p>
+        <div class="math-block" style="font-size:13px;">
+          $$\mathcal{L}_{\text{future}} = \mathbb{E}_{(s,a) \sim \mathcal{D}_T}\left[ \sum_{k=0}^{N-1} \gamma^k D_{KL}(\pi_T \| \pi_S) \right]$$
+        </div>
+      </div>
+    </div>
+    <div class="fragment fade-up">
+      <div class="concept-card" style="border-left:3px solid var(--a2);">
+        <h4>🔧 修正方法二：教师价值加权</h4>
+        <p>用教师价值函数给状态分配<strong style="color:var(--a2);">重要性权重</strong>。教师认为价值越高的状态，学生必须越认真模仿：</p>
+        <div class="math-block" style="font-size:13px;">
+          $$\mathbb{E}_{s \sim \mathcal{D}}\left[ \exp\!\left(\frac{V_T(s)}{\beta}\right) \cdot D_{KL}(\pi_T \| \pi_S) \right]$$
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ SLIDE 9: 长horizon任务 ═══════════ -->
+<section data-transition="slide">
+  <h2 style="font-size:26px;font-weight:700;margin-bottom:4px;color:var(--text);">🕰️ 长 Horizon 任务 — N-distill 的最佳舞台</h2>
+  <div class="glow-bar"></div>
+  <div class="two-col">
+    <div class="fragment fade-up">
+      <div class="concept-card" style="border-top:3px solid var(--a-gold);">
+        <h4>📏 Horizon 是什么？</h4>
+        <p>Horizon = 一个 episode 的<strong style="color:var(--a-gold);">时间步数量</strong>。走迷宫200步到达出口（horizon=200）；围棋一局200手（horizon=200）；<strong style="color:var(--a-gold);">长horizon = 步骤极多、奖励极其稀疏</strong>（甚至只在终点给一个奖励）。</p>
+      </div>
+      <div class="compare-wrap" style="margin-top:10px;">
+        <div class="compare-side bad" style="padding:14px 12px;">
+          <p style="font-size:12px;color:var(--text2);margin:0;"><strong style="color:var(--a-warn);">短Horizon</strong><br>学生容易碰运气到达终点<br>梯度场问题影响较小</p>
+        </div>
+        <div class="compare-side good" style="padding:14px 12px;">
+          <p style="font-size:12px;color:var(--text2);margin:0;"><strong style="color:var(--a5);">长Horizon</strong><br>学生靠自己几乎摸不到终点<br>N-distill 是救命稻草</p>
+        </div>
+      </div>
+    </div>
+    <div class="fragment fade-up">
+      <div class="concept-card" style="border-top:3px solid var(--a5);">
+        <h4>💡 为什么 N-distill 适用长 Horizon？</h4>
+        <p>教师轨迹 D_T 包含了<strong style="color:var(--a5);">完整的成功路径</strong>。训练时，学生被强制在教师的高价值状态上模仿：<br>
+        • <strong style="color:var(--a5);">看到好状态</strong>——虽然自己还去不了，但网络已学会"如果到了这个状态该怎么做"<br>
+        • <strong style="color:var(--a5);">引导探索</strong>——一旦偶发接近好状态，模仿过的经验让它做出合理动作 → 正反馈</p>
+        <p style="font-size:12px;color:var(--text3);margin-top:6px;">就像给你一张藏宝图——即使你一开始在沙漠，也知道该往宝藏方向走。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ SLIDE 10: Expected Entropy Reg ═══════════ -->
+<section data-transition="slide">
+  <h2 style="font-size:26px;font-weight:700;margin-bottom:4px;color:var(--text);">🎲 Expected Entropy Regularization</h2>
+  <div class="glow-bar"></div>
+  <div class="two-col">
+    <div class="fragment fade-up">
+      <div class="concept-card" style="border-top:3px solid var(--a1);">
+        <h4>📐 策略熵 H(π) = 随机性度量</h4>
+        <p>$H(\pi(\cdot|s)) = -\sum_a \pi(a|s) \log \pi(a|s)$<br>
+        熵大 → 动作均匀（探索性强）<br>
+        熵=0 → 完全确定选一个动作（无探索）<br>
+        <strong style="color:var(--a1);">期望熵</strong> = 对状态分布取期望：E_{s∼d^π}[H(π(·|s))]</p>
+      </div>
+    </div>
+    <div class="fragment fade-up">
+      <div class="concept-card" style="border-top:3px solid var(--a5);">
+        <h4>🔧 熵正则化</h4>
+        <p>在损失函数中<strong style="color:var(--a5);">显式加入学生策略熵</strong>：</p>
+        <div class="formula-card" style="padding:14px 20px;margin:8px 0;">
+          <div class="math-block" style="font-size:15px;">
+            $$\mathcal{L} = \mathcal{L}_{\text{imitation}} - \lambda_{\text{ent}} \cdot \mathbb{E}_{s}[ H(\pi_S(\cdot|s)) ]$$
+          </div>
+        </div>
+        <p><strong style="color:var(--a5);">作用：</strong>防止学生模仿时变成完全确定的拷贝，保持探索能力。笔记标注为<strong style="color:var(--a5);">"最通用（作者推荐）"</strong>。</p>
+      </div>
+    </div>
+  </div>
+  <div class="fragment fade-up info-tile" style="max-width:700px;margin-top:10px;">
+    <h4>💡 与 Part 1 的联系</h4>
+    <p>这和 Distral 里的<strong style="color:var(--a1);">熵奖励项</strong> −c_Ent·log πᵢ 是一脉相承的——都在防止策略过早坍缩到确定性策略。</p>
+  </div>
+</section>
+
+<!-- ═══════════ SLIDE 11: Teacher V Reward ═══════════ -->
+<section data-transition="slide">
+  <div style="display:flex;align-items:center;gap:12px;justify-content:center;margin-bottom:4px;">
+    <h2 style="font-size:26px;font-weight:700;color:var(--text);margin:0;">🏆 Teacher V Reward — 教师变成奖励函数</h2>
+    <span style="background:rgba(254,202,87,0.15);border:1px solid rgba(254,202,87,0.3);border-radius:12px;padding:3px 12px;font-size:11px;color:var(--a4);font-weight:700;">💬 讨论</span>
+  </div>
+  <div class="glow-bar"></div>
+  <div class="two-col">
+    <div class="fragment fade-up">
+      <div class="concept-card" style="border-top:3px solid var(--a-gold);">
+        <h4>🔀 完全不同的思路</h4>
+        <p><strong style="color:var(--a-gold);">不需要模仿动作分布</strong>。教师直接用自己的价值函数 V_T(s) 或 Q_T(s,a) 构造奖励信号：</p>
+        <div class="formula-card" style="padding:14px 20px;margin:8px 0;">
+          <div class="math-block" style="font-size:14px;">
+            $$r_t^{\text{teacher}} = V_T(s_{t+1}) - V_T(s_t)$$
+          </div>
+        </div>
+        <p style="font-size:12px;color:var(--text3);">或直接用 $r_t = Q_T(s_t, a_t)$</p>
+        <p style="margin-top:8px;">学生<strong style="color:var(--a-gold);">不模仿动作</strong>，而是用自己的策略去最大化这个"教师奖励"——完全从头跑RL。</p>
+      </div>
+    </div>
+    <div class="fragment fade-up">
+      <div class="concept-card" style="border-top:3px solid var(--a2);">
+        <h4>🎯 使用场景</h4>
+        <p>• 教师能提供精确的 V_T 或 Q_T<br>
+        • 环境奖励太稀疏（教师有全局知识）<br>
+        • <strong style="color:var(--a2);">动作空间不对齐</strong>：教师和学生的动作维度不同时，无法直接模仿动作分布——但 V_T(s) 只评估"状态好坏"，不关心具体动作</p>
+      </div>
+      <div class="info-tile" style="max-width:100%;margin-top:10px;">
+        <h4>💡 本质</h4>
+        <p>教师的价值函数 = <strong style="color:var(--a-gold);">奖励函数生成器</strong>。差分奖励 V_T(s_{t+1})−V_T(s_t) 表示"教师认为这一步让状态变好了多少"。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ SLIDE 12: 三种方法对比 ═══════════ -->
+<section data-transition="slide">
+  <h2 style="font-size:26px;font-weight:700;margin-bottom:4px;color:var(--text);">📊 三种修正方法一览</h2>
+  <div class="glow-bar"></div>
+  <table class="summary-table fragment fade-up">
+    <thead><tr><th>方法</th><th>描述</th><th>何时使用</th><th>核心机制</th></tr></thead>
+    <tbody>
+      <tr><td class="pc">🔮 N-distill</td><td>N步未来损失作为修正奖励</td><td><span class="hl">长horizon任务</span></td><td>沿教师轨迹强制模仿连贯行为</td></tr>
+      <tr><td class="pc">🎲 Expected Entropy Reg.</td><td>显式加入学生行为熵考量</td><td><span class="hl">最通用（作者推荐）</span></td><td>保持探索，防止早熟收敛</td></tr>
+      <tr><td class="pc" style="color:var(--a-gold);">🏆 Teacher V Reward</td><td>用教师V函数构造奖励</td><td>教师提供V/Q时<br>动作空间不对齐时</td><td>教师=奖励函数，不模仿动作</td></tr>
+    </tbody>
+  </table>
+  <div class="fragment fade-up" style="margin-top:16px;max-width:750px;text-align:left;background:rgba(240,165,0,0.05);border:1px solid rgba(240,165,0,0.15);border-radius:14px;padding:14px 20px;">
+    <p style="font-size:13px;color:var(--text2);margin:0;line-height:1.7;">
+      <strong style="color:var(--a-gold);">🔗 逻辑链：</strong><br>
+      同策略蒸馏 → 梯度场消失 → <strong style="color:var(--a5);">用教师数据打破状态依赖</strong>（N-distill）→ <strong style="color:var(--a2);">加教师价值加权</strong>（Teacher V Reward）→ <strong style="color:var(--a1);">保持学生探索</strong>（Expected Entropy Reg.）<br>
+      每一环都在解决前一环的致命缺陷。
+    </p>
+  </div>
+</section>
+
+<!-- ═══════════ SLIDE 13: 总结与过渡 ═══════════ -->
+<section data-transition="slide">
+  <h2 style="font-size:26px;font-weight:700;margin-bottom:4px;color:var(--text);">📋 理论深化期总结 (2018–2019)</h2>
+  <div class="glow-bar"></div>
+  <table class="summary-table fragment fade-up">
+    <thead><tr><th>工作</th><th>年份</th><th>角色</th><th>核心贡献</th></tr></thead>
+    <tbody>
+      <tr><td class="pc">🚀 Kickstarting</td><td>2018</td><td>工程实践</td><td>λ_k衰减 + PBT = 学生超越教师</td></tr>
+      <tr><td class="pc">📐 Distilling PD</td><td>2019</td><td>理论基石</td><td>梯度场定理 + N-distill修正</td></tr>
+      <tr><td class="pc">🔧 三种方法</td><td>2019</td><td>工具箱</td><td>N-distill / Entropy Reg. / Teacher V Reward</td></tr>
+    </tbody>
+  </table>
+  <div style="margin-top:20px;max-width:750px;text-align:center;background:rgba(240,165,0,0.05);border:1px solid rgba(240,165,0,0.15);border-radius:14px;padding:16px 24px;" class="fragment fade-up">
+    <p style="font-size:15px;color:#fff;margin:0;">
+      <strong style="color:var(--a-gold);">"</strong>
+      蒸馏在 RL 里不能照搬监督学习 —— 状态分布会因学生自己而漂移。
+      <br>打破这个循环，是 OPD 从直觉走向科学的关键一步。
+      <strong style="color:var(--a-gold);">"</strong>
+    </p>
+  </div>
+</section>
+
+<!-- ═══════════ SLIDE 14: 过渡 → Part 3 ═══════════ -->
+<section data-transition="zoom">
+  <div class="glass-card fragment fade-up">
+    <span style="font-size:56px;display:block;animation:float 3s ease-in-out infinite;">🔭</span>
+    <h2 style="font-size:26px;font-weight:700;color:var(--text);margin-bottom:18px;">
+      理论基石已就位 —<br>现在 OPD 从<strong style="color:var(--a-gold);">"单智能体训练技巧"</strong><br>走向<strong style="color:var(--a2);">"多智能体/离线/大规模应用"</strong>
+    </h2>
+    <div class="glow-bar"></div>
+    <p style="font-size:14px;color:var(--text3);">扩展期 (2020–2023)：DPO兴起 · 离线RL蒸馏 · 多智能体 · 机器人</p>
+    <div class="next-badge">
+      📖 Part 3 预告
+      <span style="font-size:12px;color:var(--text3);font-weight:400;">DPO · 离线蒸馏 · 多智能体 · 机器人应用</span>
+    </div>
+  </div>
+</section>
+
+</div><!-- /slides -->
+</div><!-- /reveal -->
+
+<!-- 依赖 -->
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.js"></script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+<!-- 粒子 -->
+<script>
+(function(){const c=document.getElementById('particle-canvas'),x=c.getContext('2d');let W,H,P;function rs(){W=c.width=window.innerWidth;H=c.height=window.innerHeight}window.addEventListener('resize',rs);rs();class Pt{constructor(){this.reset()}reset(){this.x=Math.random()*W;this.y=Math.random()*H;this.vx=(Math.random()-0.5)*0.6;this.vy=(Math.random()-0.5)*0.6;this.r=Math.random()*2+0.5;this.alpha=Math.random()*0.5+0.1}update(){this.x+=this.vx;this.y+=this.vy;if(this.x<-20||this.x>W+20||this.y<-20||this.y>H+20)this.reset()}draw(c){c.beginPath();c.arc(this.x,this.y,this.r,0,Math.PI*2);c.fillStyle=`rgba(108,92,231,${this.alpha})`;c.fill()}}P=Array.from({length:120},()=>new Pt());function dl(){for(let i=0;i<P.length;i++){for(let j=i+1;j<P.length;j++){const dx=P[i].x-P[j].x,dy=P[i].y-P[j].y,d=Math.sqrt(dx*dx+dy*dy);if(d<120){x.beginPath();x.moveTo(P[i].x,P[i].y);x.lineTo(P[j].x,P[j].y);x.strokeStyle=`rgba(0,210,255,${0.08*(1-d/120)})`;x.lineWidth=0.5;x.stroke()}}}}function lp(){x.clearRect(0,0,W,H);P.forEach(p=>{p.update();p.draw(x)});dl();requestAnimationFrame(lp)}lp()})();
+</script>
+
+<!-- Reveal -->
+<script>
+Reveal.initialize({
+  hash: true, center: true,
+  transition: 'slide', transitionSpeed: 'slow', backgroundTransition: 'zoom',
+  slideNumber: false, progress: false,
+  controls: true, controlsLayout: 'bottom-right', controlsBackArrows: 'faded',
+  width: 1200, height: 700, margin: 0, minScale: 0.2, maxScale: 2.0,
+});
+(function(){const e=document.getElementById('page-indicator');function u(){const t=Reveal.getTotalSlides(),c=Reveal.getSlidePastCount()+1;e.textContent=c+' / '+t}Reveal.on('ready',u);Reveal.on('slidechanged',u)})();
+</script>
+</body>
+</html>
