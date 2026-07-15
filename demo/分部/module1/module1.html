@@ -3603,16 +3603,33 @@ window.MathJax = {
 
 
 
-<section data-transition="slide"><div class="glass-card fragment fade-up">
-<h2 style="font-size:28px;font-weight:700;color:var(--text);margin-bottom:16px;">Module 1 总结</h2><div class="glow-bar"></div>
-<p style="font-size:15px;color:var(--text2);line-height:2.2;"><strong style="color:var(--a2);">2015</strong> Policy Distillation<br><strong style="color:var(--gold);">2017-2019</strong> Distral · Kickstarting · 梯度场定理<br><strong style="color:var(--teal);">2020-2023</strong> DPO · 多智能体 · 机器人<br><strong style="color:var(--red);">2024-2025</strong> DeepSeek-R1 · REOPOLD · GAR<br><strong style="color:var(--purple);">2026</strong> 统一框架 · CoPD · 失效诊断</p>
-<p style="font-size:14px;color:#fff;margin-top:12px;"><strong>"RL discovers capabilities; distillation makes them stable and efficient."</strong></p>
+<section data-transition="slide"><div class="glass-card fragment fade-up" style="max-width:820px;">
+<h2 style="font-size:28px;font-weight:700;color:var(--text);margin-bottom:12px;">Module 1 总结与展望</h2><div class="glow-bar"></div>
+<p style="font-size:14px;color:var(--text2);line-height:2;text-align:left;margin:0;">
+  OPD 的发展历程是一部<strong style="color:var(--a2);">"从工具到范式"</strong>的演进史。2015年，Rusu等人首次提出"在线蒸馏"概念时，蒸馏还只是训练后的模型压缩手段。短短三年内，Actor-Mimic为在线信号精炼提供了技术组件，Distral则用KL正则化和交替优化搭建了理论框架——<strong style="color:var(--a1);">蒸馏从此成为一种在训练中持续发生的知识传递过程</strong>。
+</p>
+<p style="font-size:14px;color:var(--text2);line-height:2;text-align:left;margin:0;">
+  2018-2019年的理论深化期给出了OPD最重要的数学基石。Kickstarting证明了学生可以超越教师——只要放手够早。Czarnecki的梯度场定理则揭示了一个反直觉的事实：<strong style="color:var(--gold);">标准的在线蒸馏在数学上并不对应任何梯度场</strong>。这一发现催生了N步未来蒸馏、教师价值加权等修正方法，将OPD从经验直觉推向了科学体系。
+</p>
+<p style="font-size:14px;color:var(--text2);line-height:2;text-align:left;margin:0;">
+  2020-2023年，OPD从RL的小众技术走向更广阔的舞台。DPO证明了KL约束+偏好优化的范式可以简化为优雅的分类问题，将RLHF从三模型流水线解放出来。多智能体集中训练-分散执行、机器人Sim-to-Real迁移——<strong style="color:var(--teal);">同一个数学结构在不同领域反复奏效</strong>。
+</p>
+<p style="font-size:14px;color:var(--text2);line-height:2;text-align:left;margin:0;">
+  2024-2026年，LLM革命将OPD推向了AI领域的中心。DeepSeek-R1用一个震撼的数据（蒸馏32B +25.6分超越纯RL）确立了新范式：<strong style="color:var(--red);">RL发现能力，蒸馏传播能力</strong>。REOPOLD的松弛设计、PW-OPSD的位置加权、GAR的对抗推理——每一项都在解决从"蒸馏动作"到"蒸馏思维"这一根本转变中的具体瓶颈。
+</p>
+<p style="font-size:14px;color:var(--text2);line-height:2;text-align:left;margin:0;">
+  2026年见证了OPD从经验试错走向系统理论。2×2前缀-KL矩阵统一了四种蒸馏范式，CoPD打破了"教师必须更强"的假设开启闭环进化，UIUC的失效诊断则提供了工程落地的安全网。<strong style="color:var(--purple);">OPD不再是某个算法的附属品——它已成为连接RL、蒸馏、对齐、多智能体系统的通用语言</strong>。
+</p>
+<p style="font-size:14px;color:var(--text2);line-height:2;text-align:left;margin:0;margin-top:8px;">
+  <strong style="color:#fff;">展望：</strong>未来OPD将走向何方？多模态推理蒸馏、自蒸馏闭环系统、统一对齐-蒸馏数学框架——这些前沿方向正在被积极探索。而"子空间锁定"的发现提示我们：OPD的参数更新可能存在内在的低维结构，理解它或许是打开下一个突破的钥匙。<strong style="color:var(--a4);">从蒸馏动作到蒸馏思维，从经验技巧到科学体系——OPD的故事才刚刚开始。</strong>
+</p>
 </div></section>
 
 <section data-transition="zoom"><div class="glass-card fragment fade-up">
-<span style="font-size:60px;display:block;animation:float 3s ease-in-out infinite;">@</span>
+<span style="font-size:60px;display:block;animation:float 3s ease-in-out infinite;">🏁</span>
 <h2 style="font-size:30px;font-weight:700;color:var(--text);margin-bottom:12px;">OPD 发展全历程 · 完结</h2><div class="glow-bar"></div>
-<p style="font-size:16px;color:var(--text2);">从小众RL技术 → AI领域通用范式</p>
+<p style="font-size:16px;color:var(--text2);line-height:1.8;">从小众RL技术 → AI领域通用范式<br>从蒸馏动作 → 蒸馏思维</p>
+<p style="font-size:13px;color:var(--text3);margin-top:8px;">2015–2026 · 15篇核心论文 · 11年演进</p>
 </div></section>
 </div></div>
 <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.js"></script>
