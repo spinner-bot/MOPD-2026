@@ -14,7 +14,7 @@ window.MathJax = {
 </script>
 
 <style>
-/* ============ 全局变量 (与 index.html 统一) ============ */
+/* ============ 全局变量 ============ */
 :root {
   --bg: #0a0a0f;
   --surface: rgba(255,255,255,0.04);
@@ -22,32 +22,35 @@ window.MathJax = {
   --text: #e8e8f0;
   --text2: rgba(255,255,255,0.65);
   --text3: rgba(255,255,255,0.4);
-  --accent-1: #6c5ce7;
-  --accent-2: #00d2ff;
-  --accent-3: #ff6b9d;
-  --accent-4: #feca57;
-  --accent-5: #00e676;
+  --a1: #6c5ce7; --a2: #00d2ff; --a3: #ff6b9d; --a4: #feca57; --a5: #00e676;
   --glow-1: 0 0 40px rgba(108, 92, 231, 0.3);
   --glow-2: 0 0 60px rgba(0, 210, 255, 0.25);
   --glow-3: 0 0 40px rgba(255, 107, 157, 0.25);
 }
 
-/* ============ Canvas 背景层 ============ */
-#particle-canvas {
-  position: fixed; inset: 0; z-index: 0;
-  pointer-events: none;
-}
+/* ============ Canvas 背景 ============ */
+#particle-canvas { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
 
 /* ============ Reveal 覆写 ============ */
 .reveal { background: transparent; }
-.reveal .slides { text-align: center; }
+.reveal .slides {
+  text-align: center;
+  width: 100% !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
 .reveal .slides section {
-  padding: 40px 60px;
-  height: 100%;
-  display: flex !important;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  padding: 36px 56px; height: 100%;
+  display: flex !important; flex-direction: column;
+  align-items: center; justify-content: center;
+  left: 0 !important;
+  margin: 0 auto !important;
+}
+/* 修复 Reveal 控件导致的偏移 */
+.reveal .controls {
+  right: 12px !important;
+  left: auto !important;
+  bottom: 12px !important;
 }
 
 /* ============ 玻璃卡片 ============ */
@@ -57,37 +60,30 @@ window.MathJax = {
   backdrop-filter: blur(24px) saturate(180%);
   -webkit-backdrop-filter: blur(24px) saturate(180%);
   border: 1px solid var(--border);
-  border-radius: 24px;
-  padding: 48px 64px;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
-  max-width: 850px;
+  border-radius: 24px; padding: 44px 56px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5); max-width: 880px;
 }
 
 /* ============ 标题动效 ============ */
 .hero-title {
-  font-size: 64px;
-  font-weight: 900;
-  letter-spacing: -2px;
-  background: linear-gradient(135deg, var(--accent-2), var(--accent-1), var(--accent-3));
+  font-size: 60px; font-weight: 900; letter-spacing: -2px;
+  background: linear-gradient(135deg, var(--a2), var(--a1), var(--a3));
   background-size: 300% 300%;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
   background-clip: text;
   animation: gradientShift 4s ease infinite;
-  margin: 0 0 16px;
-  line-height: 1.15;
+  margin: 0 0 14px; line-height: 1.15;
 }
 @keyframes gradientShift {
   0%, 100% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
 }
 
-/* ============ 底部光条 ============ */
+/* ============ 光条 ============ */
 .glow-bar {
   width: 120px; height: 3px;
-  background: linear-gradient(90deg, transparent, var(--accent-1), var(--accent-2), transparent);
-  border-radius: 2px;
-  margin: 24px auto;
+  background: linear-gradient(90deg, transparent, var(--a1), var(--a2), transparent);
+  border-radius: 2px; margin: 20px auto;
   animation: glowPulse 2s ease-in-out infinite;
 }
 @keyframes glowPulse {
@@ -95,20 +91,17 @@ window.MathJax = {
   50% { opacity: 1; width: 200px; }
 }
 
-/* ============ 关键词标签 ============ */
-.tag-row { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; margin-top: 20px; }
+/* ============ 标签 ============ */
+.tag-row { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin-top: 18px; }
 .tag {
-  padding: 8px 22px;
-  border-radius: 20px;
-  font-size: 14px; font-weight: 600;
-  border: 1px solid;
-  letter-spacing: 1px;
+  padding: 7px 20px; border-radius: 20px; font-size: 13px; font-weight: 600;
+  border: 1px solid; letter-spacing: 1px;
   opacity: 0;
   animation: tagPop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
-.tag:nth-child(1) { animation-delay: 0.3s; border-color: var(--accent-1); color: var(--accent-1); }
-.tag:nth-child(2) { animation-delay: 0.5s; border-color: var(--accent-2); color: var(--accent-2); }
-.tag:nth-child(3) { animation-delay: 0.7s; border-color: var(--accent-3); color: var(--accent-3); }
+.tag:nth-child(1) { animation-delay: 0.3s; border-color: var(--a1); color: var(--a1); }
+.tag:nth-child(2) { animation-delay: 0.5s; border-color: var(--a2); color: var(--a2); }
+.tag:nth-child(3) { animation-delay: 0.7s; border-color: var(--a3); color: var(--a3); }
 @keyframes tagPop {
   from { opacity: 0; transform: scale(0.7) translateY(10px); }
   to { opacity: 1; transform: scale(1) translateY(0); }
@@ -116,120 +109,76 @@ window.MathJax = {
 
 /* ============ fragment 增强 ============ */
 .reveal .slides section .fragment.fade-up {
-  opacity: 0;
-  transform: translateY(40px);
+  opacity: 0; transform: translateY(40px);
   transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 .reveal .slides section .fragment.fade-up.visible {
-  opacity: 1;
-  transform: translateY(0);
+  opacity: 1; transform: translateY(0);
 }
 
-/* ============ 论文卡片 ============ */
-.paper-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 28px;
-  max-width: 950px;
+/* ============ DAG 知识图谱 SVG ============ */
+.dag-container {
+  position: relative; z-index: 2;
+  width: 100%; max-width: 1100px;
 }
-.paper-card {
-  position: relative;
-  background: var(--surface);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  padding: 32px 24px;
-  text-align: center;
-  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  cursor: default;
-  overflow: hidden;
-}
-.paper-card::before {
-  content: '';
-  position: absolute; top: 0; left: 0; right: 0; height: 3px;
-}
-.paper-card:nth-child(1)::before { background: linear-gradient(90deg, var(--accent-1), var(--accent-2)); }
-.paper-card:nth-child(2)::before { background: linear-gradient(90deg, var(--accent-2), var(--accent-3)); }
-.paper-card:nth-child(3)::before { background: linear-gradient(90deg, var(--accent-3), var(--accent-4)); }
-.paper-card:hover {
-  transform: translateY(-8px);
-  border-color: rgba(255,255,255,0.2);
-}
-.paper-card:nth-child(1):hover { box-shadow: var(--glow-1); }
-.paper-card:nth-child(2):hover { box-shadow: var(--glow-2); }
-.paper-card:nth-child(3):hover { box-shadow: var(--glow-3); }
-.paper-icon { font-size: 48px; margin-bottom: 12px; }
-.paper-year {
-  font-size: 13px; font-weight: 700; letter-spacing: 2px;
-  color: var(--accent-2); margin-bottom: 4px;
-}
-.paper-title { font-size: 20px; font-weight: 700; color: #fff; margin-bottom: 4px; }
-.paper-venue { font-size: 13px; color: var(--text3); margin-bottom: 10px; }
-.paper-role {
-  display: inline-block;
-  padding: 4px 14px;
-  border-radius: 12px;
-  font-size: 12px; font-weight: 600;
-}
-.paper-role.name  { background: rgba(108,92,231,0.2); color: var(--accent-1); }
-.paper-role.eng   { background: rgba(0,210,255,0.15); color: var(--accent-2); }
-.paper-role.theory { background: rgba(255,107,157,0.2); color: var(--accent-3); }
+.dag-container svg { width: 100%; height: auto; }
+.dag-node { cursor: default; transition: all 0.3s; }
+.dag-node:hover { filter: brightness(1.4); }
+.dag-edge { stroke: rgba(255,255,255,0.15); stroke-width: 1.5; fill: none; }
+.dag-edge.highlight { stroke: var(--a2); stroke-width: 2; filter: drop-shadow(0 0 4px rgba(0,210,255,0.4)); }
+.dag-label { fill: rgba(255,255,255,0.8); font-size: 12px; font-family: 'PingFang SC','Microsoft YaHei',sans-serif; }
+.dag-label.title { fill: #fff; font-size: 15px; font-weight: 700; }
+.dag-label.sub { fill: var(--text3); font-size: 10px; }
 
-/* ============ 对比表格 (Slide 2) ============ */
+/* Node type colors */
+.node-paper rect { fill: rgba(0,210,255,0.12); stroke: rgba(0,210,255,0.35); rx: 10; }
+.node-concept rect { fill: rgba(108,92,231,0.12); stroke: rgba(108,92,231,0.3); rx: 10; }
+.node-merge rect { fill: rgba(0,230,118,0.1); stroke: rgba(0,230,118,0.3); rx: 10; }
+.node-foundation rect { fill: rgba(254,202,87,0.08); stroke: rgba(254,202,87,0.25); rx: 10; }
+.node-section rect { fill: rgba(255,107,157,0.08); stroke: rgba(255,107,157,0.25); rx: 10; }
+
+/* ============ 图片占位 ============ */
+.section-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 6px 16px; border-radius: 16px;
+  font-size: 12px; font-weight: 700; letter-spacing: 2px;
+}
+.section-badge.foundation { background: rgba(254,202,87,0.12); color: var(--a4); border: 1px solid rgba(254,202,87,0.2); }
+.section-badge.paper { background: rgba(0,210,255,0.1); color: var(--a2); border: 1px solid rgba(0,210,255,0.2); }
+.section-badge.distral { background: rgba(108,92,231,0.1); color: var(--a1); border: 1px solid rgba(108,92,231,0.2); }
+.section-badge.mimic { background: rgba(255,107,157,0.1); color: var(--a3); border: 1px solid rgba(255,107,157,0.2); }
+.section-badge.arch { background: rgba(0,230,118,0.1); color: var(--a5); border: 1px solid rgba(0,230,118,0.2); }
+
+/* ============ 对比表格 ============ */
 .compare-wrap {
-  display: flex; gap: 0; max-width: 900px;
-  align-items: stretch;
+  display: flex; gap: 0; max-width: 900px; align-items: stretch;
 }
 .compare-side {
-  flex: 1;
-  padding: 32px 28px;
-  border-radius: 20px;
-  position: relative;
+  flex: 1; padding: 28px 24px; border-radius: 20px; position: relative;
 }
-.compare-side.old {
-  background: rgba(255,107,157,0.06);
-  border: 1px solid rgba(255,107,157,0.15);
-}
-.compare-side.new {
-  background: rgba(0,210,255,0.06);
-  border: 1px solid rgba(0,210,255,0.18);
-}
-.compare-label {
-  font-size: 13px; font-weight: 700; letter-spacing: 2px;
-  text-transform: uppercase; margin-bottom: 16px;
-}
-.compare-side.old .compare-label { color: var(--accent-3); }
-.compare-side.new .compare-label { color: var(--accent-2); }
-.compare-flow {
-  font-size: 36px; font-weight: 900;
-  margin: 12px 0;
-}
+.compare-side.old { background: rgba(255,107,157,0.06); border: 1px solid rgba(255,107,157,0.15); }
+.compare-side.new { background: rgba(0,210,255,0.06); border: 1px solid rgba(0,210,255,0.18); }
+.compare-label { font-size: 13px; font-weight: 700; letter-spacing: 2px; margin-bottom: 14px; }
+.compare-side.old .compare-label { color: var(--a3); }
+.compare-side.new .compare-label { color: var(--a2); }
+.compare-flow { font-size: 32px; font-weight: 900; margin: 10px 0; }
 .compare-side.old .compare-flow { color: rgba(255,255,255,0.5); }
 .compare-side.new .compare-flow { color: #fff; }
 .compare-features {
-  list-style: none; padding: 0; margin: 16px 0 0;
-  text-align: left; font-size: 14px; color: var(--text2);
-  line-height: 2;
+  list-style: none; padding: 0; margin: 14px 0 0;
+  text-align: left; font-size: 14px; color: var(--text2); line-height: 2;
 }
-.compare-features li::before { margin-right: 8px; }
-.compare-side.old .compare-features li::before { content: '•'; color: var(--accent-3); }
-.compare-side.new .compare-features li::before { content: '✦'; color: var(--accent-2); }
-
-/* VS分隔线 */
+.compare-side.old .compare-features li::before { content: '•'; color: var(--a3); margin-right: 8px; }
+.compare-side.new .compare-features li::before { content: '✦'; color: var(--a2); margin-right: 8px; }
 .compare-vs {
   display: flex; align-items: center; justify-content: center;
-  width: 60px; flex-shrink: 0;
-  position: relative;
+  width: 56px; flex-shrink: 0;
 }
 .vs-badge {
-  width: 44px; height: 44px;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.12);
+  width: 42px; height: 42px; border-radius: 50%;
+  background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12);
   display: flex; align-items: center; justify-content: center;
-  font-weight: 900; font-size: 14px;
-  color: rgba(255,255,255,0.4);
+  font-weight: 900; font-size: 13px; color: rgba(255,255,255,0.4);
   animation: vsPulse 2s ease-in-out infinite;
 }
 @keyframes vsPulse {
@@ -237,93 +186,90 @@ window.MathJax = {
   50% { box-shadow: 0 0 24px rgba(255,255,255,0.2); }
 }
 
+/* ============ 论文卡片网格 ============ */
+.paper-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; max-width: 920px;
+}
+.paper-card {
+  position: relative;
+  background: var(--surface); backdrop-filter: blur(16px);
+  border: 1px solid var(--border); border-radius: 20px;
+  padding: 28px 20px; text-align: center;
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); cursor: default;
+}
+.paper-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+}
+.paper-card:nth-child(1)::before { background: linear-gradient(90deg, var(--a1), var(--a2)); }
+.paper-card:nth-child(2)::before { background: linear-gradient(90deg, var(--a2), var(--a3)); }
+.paper-card:nth-child(3)::before { background: linear-gradient(90deg, var(--a3), var(--a4)); }
+.paper-card:hover { transform: translateY(-8px); border-color: rgba(255,255,255,0.2); }
+.paper-card:nth-child(1):hover { box-shadow: var(--glow-1); }
+.paper-card:nth-child(2):hover { box-shadow: var(--glow-2); }
+.paper-card:nth-child(3):hover { box-shadow: var(--glow-3); }
+.paper-icon { font-size: 44px; margin-bottom: 10px; }
+.paper-year { font-size: 13px; font-weight: 700; letter-spacing: 2px; color: var(--a2); margin-bottom: 4px; }
+.paper-title { font-size: 19px; font-weight: 700; color: #fff; margin-bottom: 4px; }
+.paper-venue { font-size: 12px; color: var(--text3); margin-bottom: 10px; }
+.paper-role {
+  display: inline-block; padding: 4px 14px; border-radius: 12px; font-size: 12px; font-weight: 600;
+}
+.paper-role.name  { background: rgba(108,92,231,0.2); color: var(--a1); }
+.paper-role.eng   { background: rgba(0,210,255,0.15); color: var(--a2); }
+.paper-role.theory { background: rgba(255,107,157,0.2); color: var(--a3); }
+
 /* ============ 公式卡片 ============ */
 .formula-card {
   background: rgba(10,10,20,0.92);
-  border: 1px solid rgba(108,92,231,0.25);
-  border-radius: 18px;
-  padding: 28px 36px;
-  max-width: 820px;
-  text-align: center;
-  box-shadow: 0 12px 40px rgba(0,0,0,0.5);
-  position: relative;
-  overflow: hidden;
+  border: 1px solid rgba(108,92,231,0.25); border-radius: 18px;
+  padding: 24px 32px; max-width: 820px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.5); position: relative;
 }
 .formula-card::after {
-  content: '';
-  position: absolute; top: 0; left: 0; right: 0; height: 2px;
-  background: linear-gradient(90deg, var(--accent-1), var(--accent-2), var(--accent-3));
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, var(--a1), var(--a2), var(--a3));
 }
-.formula-card .math-block {
-  font-size: 18px; color: #cdd6f4;
-  overflow-x: auto; padding: 8px 0;
-}
-.formula-card .math-block mjx-container { margin: 0 auto; }
+.formula-card .math-block { font-size: 17px; color: #cdd6f4; overflow-x: auto; padding: 4px 0; }
 
-/* 公式拆解行 */
-.breakdown {
-  display: flex; gap: 16px; justify-content: center;
-  flex-wrap: wrap; margin-top: 24px;
-}
+/* 公式拆解 */
+.breakdown { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin-top: 20px; }
 .breakdown-item {
-  flex: 1; min-width: 180px; max-width: 220px;
-  padding: 18px 16px;
-  border-radius: 14px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  text-align: center;
-  opacity: 0;
-  animation: fadeSlideIn 0.6s ease forwards;
+  flex: 1; min-width: 170px; max-width: 210px;
+  padding: 16px 14px; border-radius: 14px;
+  background: var(--surface); border: 1px solid var(--border); text-align: center;
+  opacity: 0; animation: fadeSlideIn 0.6s ease forwards;
 }
-.breakdown-item:nth-child(1) { animation-delay: 0.2s; border-top: 3px solid var(--accent-5); }
-.breakdown-item:nth-child(2) { animation-delay: 0.4s; border-top: 3px solid var(--accent-2); }
-.breakdown-item:nth-child(3) { animation-delay: 0.6s; border-top: 3px solid var(--accent-4); }
+.breakdown-item:nth-child(1) { animation-delay: 0.2s; border-top: 3px solid var(--a5); }
+.breakdown-item:nth-child(2) { animation-delay: 0.4s; border-top: 3px solid var(--a2); }
+.breakdown-item:nth-child(3) { animation-delay: 0.6s; border-top: 3px solid var(--a4); }
 @keyframes fadeSlideIn {
   from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }
 }
-.breakdown-num {
-  font-size: 28px; font-weight: 900; margin-bottom: 4px; line-height: 1;
-}
-.breakdown-item:nth-child(1) .breakdown-num { color: var(--accent-5); }
-.breakdown-item:nth-child(2) .breakdown-num { color: var(--accent-2); }
-.breakdown-item:nth-child(3) .breakdown-num { color: var(--accent-4); }
-.breakdown-label { font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 4px; }
+.breakdown-num { font-size: 26px; font-weight: 900; margin-bottom: 4px; line-height: 1; }
+.breakdown-item:nth-child(1) .breakdown-num { color: var(--a5); }
+.breakdown-item:nth-child(2) .breakdown-num { color: var(--a2); }
+.breakdown-item:nth-child(3) .breakdown-num { color: var(--a4); }
+.breakdown-label { font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 4px; }
 .breakdown-desc { font-size: 12px; color: var(--text3); line-height: 1.5; }
 
-/* ============ 流程图 (Slide 6 & 7) ============ */
+/* ============ 流程图 ============ */
 .flow-row {
-  display: flex; align-items: center; gap: 24px;
+  display: flex; align-items: center; gap: 20px;
   justify-content: center; flex-wrap: wrap;
 }
 .flow-node {
-  padding: 20px 28px;
-  border-radius: 16px;
-  text-align: center;
-  font-weight: 700;
-  position: relative;
-  transition: all 0.3s;
+  padding: 18px 24px; border-radius: 16px; text-align: center;
+  font-weight: 700; transition: all 0.3s;
 }
-.flow-node.prior {
-  background: rgba(108,92,231,0.15);
-  border: 1px solid rgba(108,92,231,0.3);
-  color: var(--accent-1);
-}
-.flow-node.likelihood {
-  background: rgba(0,210,255,0.12);
-  border: 1px solid rgba(0,210,255,0.25);
-  color: var(--accent-2);
-}
-.flow-node.posterior {
-  background: rgba(255,107,157,0.12);
-  border: 1px solid rgba(255,107,157,0.25);
-  color: var(--accent-3);
-}
-.flow-node .node-icon { font-size: 32px; display: block; margin-bottom: 6px; }
-.flow-node .node-title { font-size: 16px; }
-.flow-node .node-sub { font-size: 12px; color: var(--text3); margin-top: 4px; }
+.flow-node.prior { background: rgba(108,92,231,0.15); border: 1px solid rgba(108,92,231,0.3); color: var(--a1); }
+.flow-node.like  { background: rgba(0,210,255,0.12); border: 1px solid rgba(0,210,255,0.25); color: var(--a2); }
+.flow-node.post  { background: rgba(255,107,157,0.12); border: 1px solid rgba(255,107,157,0.25); color: var(--a3); }
+.flow-node .node-icon { font-size: 30px; display: block; margin-bottom: 6px; }
+.flow-node .node-title { font-size: 15px; }
+.flow-node .node-sub { font-size: 11px; color: var(--text3); margin-top: 4px; }
 .flow-arrow {
-  font-size: 28px; color: rgba(255,255,255,0.3);
+  font-size: 26px; color: rgba(255,255,255,0.3);
   animation: arrowPulse 1.5s ease-in-out infinite;
 }
 @keyframes arrowPulse {
@@ -331,306 +277,164 @@ window.MathJax = {
   50% { opacity: 1; transform: translateX(6px); }
 }
 
-/* ============ 循环流程图 (Slide 7) ============ */
-.cycle-diagram {
-  position: relative;
-  width: 500px; height: 500px;
-  margin: 0 auto;
-}
-.cycle-center {
-  position: absolute; top: 50%; left: 50%;
-  transform: translate(-50%, -50%);
-  width: 120px; height: 120px;
-  border-radius: 50%;
-  background: rgba(108,92,231,0.12);
-  border: 2px solid rgba(108,92,231,0.35);
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  animation: centerGlow 3s ease-in-out infinite;
-  z-index: 2;
-}
-@keyframes centerGlow {
-  0%, 100% { box-shadow: 0 0 20px rgba(108,92,231,0.2); }
-  50% { box-shadow: 0 0 50px rgba(108,92,231,0.5); }
-}
-.cycle-center .center-label { font-size: 14px; font-weight: 700; color: var(--accent-1); }
-.cycle-center .center-icon { font-size: 36px; }
-.cycle-node {
-  position: absolute;
-  padding: 16px 22px;
-  border-radius: 14px;
-  font-size: 14px; font-weight: 600;
-  text-align: center;
-  z-index: 3;
-}
-.cycle-node.task {
-  background: rgba(0,210,255,0.1);
-  border: 1px solid rgba(0,210,255,0.25);
-  color: var(--accent-2);
-}
-.cycle-arrow-svg {
-  position: absolute; top: 0; left: 0;
-  width: 100%; height: 100%; z-index: 1;
-  pointer-events: none;
-}
-
-/* ============ 代码窗口 (Slide 4 & 8) ============ */
+/* ============ 代码窗口 ============ */
 .code-window {
-  background: rgba(10,10,20,0.92);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  overflow: hidden;
-  text-align: left;
-  font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
-  max-width: 700px;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+  background: rgba(10,10,20,0.92); border: 1px solid var(--border);
+  border-radius: 16px; overflow: hidden; text-align: left;
+  font-family: 'JetBrains Mono','Fira Code','Consolas',monospace;
+  max-width: 680px; box-shadow: 0 20px 60px rgba(0,0,0,0.6);
 }
 .code-header {
-  background: rgba(255,255,255,0.05);
-  padding: 10px 16px;
-  display: flex; gap: 8px; align-items: center;
-  border-bottom: 1px solid var(--border);
+  background: rgba(255,255,255,0.05); padding: 9px 14px;
+  display: flex; gap: 8px; align-items: center; border-bottom: 1px solid var(--border);
 }
-.code-dot { width: 12px; height: 12px; border-radius: 50%; }
-.code-dot.r { background: #ff5f56; }
-.code-dot.y { background: #ffbd2e; }
-.code-dot.g { background: #27c93f; }
-.code-body {
-  padding: 20px 24px;
-  font-size: 15px;
-  line-height: 1.8;
-  color: #cdd6f4;
-}
-.code-body .hl { color: #cba6f7; }
-.code-body .s  { color: #a6e3a1; }
-.code-body .fn { color: #89b4fa; }
-.code-body .cm { color: #6c7086; font-style: italic; }
-.code-body .em { color: var(--accent-4); font-weight: 700; }
+.code-dot { width: 11px; height: 11px; border-radius: 50%; }
+.code-dot.r { background: #ff5f56; } .code-dot.y { background: #ffbd2e; } .code-dot.g { background: #27c93f; }
+.code-body { padding: 18px 22px; font-size: 14px; line-height: 1.8; color: #cdd6f4; }
+.code-body .kw { color: #cba6f7; } .code-body .s { color: #a6e3a1; }
+.code-body .fn { color: #89b4fa; } .code-body .cm { color: #6c7086; font-style: italic; }
+.code-body .em { color: var(--a4); font-weight: 700; }
 
-/* ============ 条件分支展示 (Slide 8) ============ */
-.piecewise {
-  display: flex; gap: 20px; justify-content: center;
-  flex-wrap: wrap; max-width: 800px;
-  margin: 20px auto;
-}
+/* ============ 条件分支 ============ */
+.piecewise { display: flex; gap: 18px; justify-content: center; flex-wrap: wrap; max-width: 780px; }
 .piece-branch {
-  flex: 1; min-width: 240px;
-  padding: 24px 20px;
-  border-radius: 16px;
-  text-align: center;
-  transition: all 0.4s;
-  cursor: default;
+  flex: 1; min-width: 220px; padding: 20px 16px;
+  border-radius: 16px; text-align: center; transition: all 0.4s;
 }
-.piece-branch.if-branch {
-  background: rgba(0,210,255,0.06);
-  border: 1px solid rgba(0,210,255,0.2);
-}
-.piece-branch.else-branch {
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(255,255,255,0.06);
-}
-.piece-branch:hover {
-  border-color: rgba(255,255,255,0.25);
-}
-.piece-condition {
-  font-size: 13px; font-weight: 700; letter-spacing: 1px;
-  margin-bottom: 10px;
-}
-.piece-branch.if-branch .piece-condition { color: var(--accent-2); }
-.piece-branch.else-branch .piece-condition { color: var(--text3); }
-.piece-result {
-  font-size: 17px; font-weight: 700; color: #fff;
-}
+.piece-branch.if-br   { background: rgba(0,210,255,0.06); border: 1px solid rgba(0,210,255,0.2); }
+.piece-branch.else-br { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); }
+.piece-branch:hover { border-color: rgba(255,255,255,0.2); }
+.piece-condition { font-size: 13px; font-weight: 700; letter-spacing: 1px; margin-bottom: 10px; }
+.piece-branch.if-br .piece-condition { color: var(--a2); }
+.piece-branch.else-br .piece-condition { color: var(--text3); }
+.piece-result { font-size: 16px; font-weight: 700; color: #fff; }
 
-/* ============ 总结表 (Slide 9) ============ */
+/* ============ 双栏布局 ============ */
+.two-col { display: flex; gap: 28px; flex-wrap: wrap; justify-content: center; max-width: 960px; }
+.two-col > div { flex: 1; min-width: 280px; }
+
+/* ============ 概念卡片 ============ */
+.concept-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 16px; padding: 22px 20px; text-align: left; margin-bottom: 14px;
+}
+.concept-card h4 { margin: 0 0 8px; font-size: 15px; color: #fff; }
+.concept-card p { margin: 0; font-size: 13px; color: var(--text2); line-height: 1.6; }
+
+/* ============ 总结表 ============ */
 .summary-table {
-  width: 100%; max-width: 820px;
-  border-collapse: collapse;
-  font-size: 15px;
-  border-radius: 16px;
-  overflow: hidden;
+  width: 100%; max-width: 820px; border-collapse: collapse;
+  font-size: 14px; border-radius: 16px; overflow: hidden;
   box-shadow: 0 12px 40px rgba(0,0,0,0.4);
 }
-.summary-table thead {
-  background: linear-gradient(135deg, rgba(108,92,231,0.3), rgba(0,210,255,0.15));
-}
-.summary-table th {
-  padding: 14px 18px;
-  text-align: left;
-  font-weight: 700;
-  color: #fff;
-  font-size: 14px;
-  letter-spacing: 1px;
-}
-.summary-table td {
-  padding: 13px 18px;
-  border-bottom: 1px solid var(--border);
-  color: var(--text2);
-}
-.summary-table tbody tr {
-  background: var(--surface);
-  transition: all 0.3s;
-}
-.summary-table tbody tr:hover {
-  background: rgba(255,255,255,0.06);
-}
-.summary-table .paper-col { font-weight: 700; color: #fff; white-space: nowrap; }
-.summary-table .highlight { color: var(--accent-2); font-weight: 600; }
+.summary-table thead { background: linear-gradient(135deg, rgba(108,92,231,0.3), rgba(0,210,255,0.15)); }
+.summary-table th { padding: 13px 16px; text-align: left; font-weight: 700; color: #fff; font-size: 13px; letter-spacing: 1px; }
+.summary-table td { padding: 12px 16px; border-bottom: 1px solid var(--border); color: var(--text2); }
+.summary-table tbody tr { background: var(--surface); transition: all 0.3s; }
+.summary-table tbody tr:hover { background: rgba(255,255,255,0.06); }
+.summary-table .pc { font-weight: 700; color: #fff; white-space: nowrap; }
+.summary-table .hl { color: var(--a2); font-weight: 600; }
 
-/* ============ 金句横幅 ============ */
+/* ============ 金句 ============ */
 .quote-banner {
-  margin-top: 28px;
-  padding: 20px 32px;
-  border-radius: 16px;
-  background: rgba(108,92,231,0.08);
-  border: 1px solid rgba(108,92,231,0.2);
-  max-width: 820px;
-  font-size: 17px; font-weight: 600;
-  color: #fff;
+  margin-top: 24px; padding: 18px 28px; border-radius: 16px;
+  background: rgba(108,92,231,0.08); border: 1px solid rgba(108,92,231,0.15);
+  max-width: 820px; font-size: 16px; font-weight: 600; color: #fff;
   animation: borderPulse 3s ease-in-out infinite;
 }
 @keyframes borderPulse {
   0%, 100% { border-color: rgba(108,92,231,0.15); }
   50% { border-color: rgba(108,92,231,0.45); }
 }
-.quote-banner .quote-mark { color: var(--accent-4); font-size: 24px; }
 
-/* ============ 过渡页 (Slide 10) ============ */
-.cliffhanger {
-  font-size: 22px; color: var(--text2);
-  margin-bottom: 32px; line-height: 1.7;
-}
-.cliffhanger .highlight-word { color: var(--accent-3); font-weight: 700; }
-.cursor-blink {
-  display: inline-block;
-  width: 2px; height: 28px;
-  background: var(--accent-2);
-  animation: blink 1s step-end infinite;
-  vertical-align: text-bottom;
-  margin-left: 4px;
-}
-@keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0; }
-}
-.next-badge {
-  display: inline-flex; align-items: center; gap: 10px;
-  padding: 12px 28px;
-  border-radius: 24px;
-  background: rgba(0,210,255,0.08);
-  border: 1px solid rgba(0,210,255,0.2);
-  font-size: 16px; font-weight: 700;
-  color: var(--accent-2);
-  margin-top: 20px;
-  animation: float 3s ease-in-out infinite;
-}
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
-}
-
-/* ============ 图标网格 (Slide 3) ============ */
-.icon-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 28px;
-  max-width: 900px;
-}
-.icon-cell {
-  display: flex; flex-direction: column; align-items: center; gap: 10px;
-  padding: 28px 18px;
-  border-radius: 16px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  cursor: default;
-}
-.icon-cell:hover {
-  transform: translateY(-6px);
-  border-color: var(--accent-1);
-  box-shadow: var(--glow-1);
-}
-.icon-emoji { font-size: 42px; line-height: 1; animation: float 3s ease-in-out infinite; }
-.icon-cell:nth-child(2) .icon-emoji { animation-delay: -0.5s; }
-.icon-cell:nth-child(3) .icon-emoji { animation-delay: -1.0s; }
-
-/* ============ 参数指示器 (Slide 6) ============ */
-.param-row {
-  display: flex; gap: 32px; justify-content: center;
-  flex-wrap: wrap; margin-top: 20px;
-}
+/* ============ 参数指示器 ============ */
+.param-row { display: flex; gap: 24px; justify-content: center; flex-wrap: wrap; }
 .param-item {
-  padding: 18px 24px;
-  border-radius: 14px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  min-width: 200px;
-  text-align: left;
+  padding: 16px 20px; border-radius: 14px;
+  background: var(--surface); border: 1px solid var(--border);
+  min-width: 180px; text-align: left;
 }
-.param-symbol {
-  font-size: 28px; font-weight: 900; margin-bottom: 4px;
-}
-.param-item:nth-child(1) .param-symbol { color: var(--accent-1); }
-.param-item:nth-child(2) .param-symbol { color: var(--accent-2); }
-.param-name { font-size: 15px; font-weight: 700; color: #fff; }
+.param-symbol { font-size: 26px; font-weight: 900; margin-bottom: 4px; }
+.param-item:nth-child(1) .param-symbol { color: var(--a1); }
+.param-item:nth-child(2) .param-symbol { color: var(--a2); }
+.param-name { font-size: 14px; font-weight: 700; color: #fff; }
 .param-range { font-size: 12px; color: var(--text3); margin-top: 6px; line-height: 1.6; }
 .param-bar {
   height: 4px; border-radius: 2px; margin-top: 8px;
   background: rgba(255,255,255,0.08); position: relative; overflow: hidden;
 }
 .param-bar::before {
-  content: ''; position: absolute; left: 0; top: 0; bottom: 0;
-  border-radius: 2px;
-  animation: barFill 2s ease-in-out infinite alternate;
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0; border-radius: 2px;
+  animation: barAnim 2s ease-in-out infinite alternate;
 }
-.param-item:nth-child(1) .param-bar::before {
-  background: var(--accent-1); width: 70%;
-  animation-name: barFill1;
-}
-.param-item:nth-child(2) .param-bar::before {
-  background: var(--accent-2); width: 40%;
-  animation-name: barFill2;
-}
-@keyframes barFill1 {
-  from { width: 40%; }
-  to { width: 90%; }
-}
-@keyframes barFill2 {
-  from { width: 20%; }
-  to { width: 70%; }
-}
+.param-item:nth-child(1) .param-bar::before { background: var(--a1); animation-name: bar1; }
+.param-item:nth-child(2) .param-bar::before { background: var(--a2); animation-name: bar2; }
+@keyframes bar1 { from { width: 40%; } to { width: 90%; } }
+@keyframes bar2 { from { width: 20%; } to { width: 70%; } }
 
-/* 响应式 */
+/* ============ 信息卡片 (Slide info area) ============ */
+.info-row {
+  display: flex; gap: 20px; flex-wrap: wrap; justify-content: center;
+}
+.info-tile {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 14px; padding: 18px 20px;
+  max-width: 360px; text-align: left;
+}
+.info-tile h4 { margin: 0 0 6px; font-size: 14px; color: #fff; }
+.info-tile p  { margin: 0; font-size: 13px; color: var(--text2); line-height: 1.6; }
+.info-tile .info-accent { font-weight: 700; }
+
+/* ============ 过渡预告 ============ */
+.next-badge {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 12px 26px; border-radius: 24px;
+  background: rgba(0,210,255,0.08); border: 1px solid rgba(0,210,255,0.2);
+  font-size: 15px; font-weight: 700; color: var(--a2); margin-top: 18px;
+  animation: float 3s ease-in-out infinite;
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+.cursor-blink {
+  display: inline-block; width: 2px; height: 26px;
+  background: var(--a2); animation: blink 1s step-end infinite;
+  vertical-align: text-bottom; margin-left: 4px;
+}
+@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+/* ============ 响应式 ============ */
 @media (max-width: 768px) {
-  .hero-title { font-size: 36px; }
-  .glass-card { padding: 28px 22px; margin: 0 12px; max-width: 100%; }
+  .hero-title { font-size: 34px; }
+  .glass-card { padding: 24px 18px; max-width: 100%; }
   .paper-grid { grid-template-columns: 1fr; }
   .compare-wrap { flex-direction: column; }
-  .compare-vs { width: 100%; height: 40px; }
-  .icon-grid { grid-template-columns: 1fr; }
+  .compare-vs { width: 100%; height: 36px; }
+  .flow-row { flex-direction: column; }
   .breakdown { flex-direction: column; align-items: center; }
   .breakdown-item { max-width: 100%; }
-  .cycle-diagram { width: 320px; height: 320px; }
-  .flow-row { flex-direction: column; }
+  .dag-container svg { height: auto; }
 }
 </style>
 </head>
 <body>
 
-<!-- 粒子背景 -->
 <canvas id="particle-canvas"></canvas>
 
 <div class="reveal">
 <div class="slides">
 
-<!-- ═══════════════ Slide 1: 章节封面 ═══════════════ -->
+<!-- ═══════════════════════════ SLIDE 1: 标题 ═══════════════════════════ -->
 <section data-transition="zoom">
   <div class="glass-card fragment fade-up">
-    <p style="font-size:16px;color:var(--accent-2);letter-spacing:4px;font-weight:700;margin:0;">CHAPTER 1</p>
+    <p style="font-size:15px;color:var(--a2);letter-spacing:4px;font-weight:700;margin:0;">CHAPTER 1</p>
     <h1 class="hero-title">OPD 萌芽期</h1>
-    <p style="font-size:24px;color:rgba(255,255,255,0.7);margin:0 0 8px;">Online Policy Distillation · 2015–2017</p>
+    <p style="font-size:22px;color:rgba(255,255,255,0.7);margin:0 0 4px;">Online Policy Distillation · 2015–2017</p>
     <div class="glow-bar"></div>
-    <p style="font-size:15px;color:var(--text3);margin:0;">三篇奠基论文 · 从概念诞生到理论框架</p>
+    <p style="font-size:14px;color:var(--text3);margin:0;">
+      三篇奠基论文 · RL基础补课 · 核心公式拆解 · 架构概念
+    </p>
     <div class="tag-row">
       <span class="tag">#在线蒸馏</span>
       <span class="tag">#KL正则化</span>
@@ -639,15 +443,147 @@ window.MathJax = {
   </div>
 </section>
 
-<!-- ═══════════════ Slide 2: OPD vs 传统蒸馏 ═══════════════ -->
+<!-- ═══════════════════════════ SLIDE 2: DAG 知识图谱总览 ═══════════════════════════ -->
 <section data-transition="slide">
-  <h2 style="font-size:32px;font-weight:700;margin-bottom:8px;color:var(--text);">
-    OPD 与传统蒸馏，有什么不同？
+  <h2 style="font-size:28px;font-weight:700;margin-bottom:4px;color:var(--text);">
+    🗺️ Part 1 知识图谱 (DAG)
+  </h2>
+  <p style="font-size:13px;color:var(--text3);margin:0 0 8px;">
+    这不是简单的树——多条路径汇聚，形成有向无环图。深色节点 = 已讲解 · 每个方块代表一个知识点
+  </p>
+  <div class="dag-container">
+    <svg viewBox="0 0 1060 540" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arrow" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+          <path d="M0,0 L8,3 L0,6 Z" fill="rgba(255,255,255,0.25)"/>
+        </marker>
+        <marker id="arrowMerge" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+          <path d="M0,0 L8,3 L0,6 Z" fill="rgba(0,230,118,0.5)"/>
+        </marker>
+        <linearGradient id="gMerge" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stop-color="rgba(0,230,118,0.01)"/>
+          <stop offset="100%" stop-color="rgba(0,230,118,0.15)"/>
+        </linearGradient>
+      </defs>
+
+      <!-- ===== 边 (Edges) ===== -->
+      <!-- RL基础 → Policy Distillation -->
+      <path d="M220,115 L220,150 L260,150 L260,175" marker-end="url(#arrow)" class="dag-edge"/>
+      <!-- RL基础 → Actor-Mimic -->
+      <path d="M780,115 L780,145 L540,145 L540,175" marker-end="url(#arrow)" class="dag-edge"/>
+      <!-- Policy Distillation → Distral -->
+      <path d="M260,285 L260,315 L480,315 L480,340" marker-end="url(#arrow)" class="dag-edge"/>
+      <!-- Actor-Mimic → Distral (汇聚!) -->
+      <path d="M540,285 L540,315 L500,315 L500,340" marker-end="url(#arrowMerge)" class="dag-edge" style="stroke:rgba(0,230,118,0.35); stroke-dasharray: 5 3;"/>
+      <!-- Distral → 概念群 -->
+      <path d="M490,428 L490,460" marker-end="url(#arrow)" class="dag-edge"/>
+      <!-- 概念群 → 总结 -->
+      <path d="M260,510 L260,525 L490,525 L490,545" marker-end="url(#arrow)" class="dag-edge"/>
+      <path d="M720,510 L720,525 L500,525 L500,545" marker-end="url(#arrow)" class="dag-edge"/>
+      <!-- RL基础 → 架构概念 -->
+      <path d="M530,80 L530,55 L920,55 L920,175" marker-end="url(#arrow)" class="dag-edge" style="stroke:rgba(254,202,87,0.2); stroke-dasharray: 4 2;"/>
+      <!-- 架构概念 → 总结 (虚线) -->
+      <path d="M920,285 L920,525 L500,525" marker-end="url(#arrow)" class="dag-edge" style="stroke:rgba(255,255,255,0.08); stroke-dasharray: 3 4;"/>
+
+      <!-- ===== 节点 (Nodes) ===== -->
+      <!-- Layer 0: Title -->
+      <rect x="380" y="10" width="300" height="34" rx="17" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.12)"/>
+      <text x="530" y="32" text-anchor="middle" class="dag-label title">Part 1: OPD 萌芽期 (2015–2017)</text>
+
+      <!-- Layer 1: RL基础 -->
+      <g class="dag-node node-foundation">
+        <rect x="150" y="70" width="140" height="45"/>
+        <text x="220" y="90" text-anchor="middle" class="dag-label title" fill="#feca57">📚 RL基础概念</text>
+        <text x="220" y="106" text-anchor="middle" class="dag-label sub">R · 任务 · π · Q · 神经网络</text>
+      </g>
+
+      <!-- Layer 1: 架构概念 (右侧) -->
+      <g class="dag-node node-section">
+        <rect x="850" y="175" width="140" height="45"/>
+        <text x="920" y="195" text-anchor="middle" class="dag-label title" fill="#00e676">🏗️ 架构概念</text>
+        <text x="920" y="211" text-anchor="middle" class="dag-label sub">基座 · Progressive Nets</text>
+      </g>
+
+      <!-- Layer 2: Policy Distillation (左) -->
+      <g class="dag-node node-paper">
+        <rect x="120" y="175" width="280" height="110"/>
+        <text x="260" y="197" text-anchor="middle" class="dag-label title" fill="#00d2ff">🏛️ Policy Distillation (2015)</text>
+        <text x="260" y="215" text-anchor="middle" class="dag-label sub">"命名者" · ICLR 2016</text>
+        <line x1="170" y1="225" x2="350" y2="225" stroke="rgba(255,255,255,0.08)"/>
+        <text x="260" y="243" text-anchor="middle" class="dag-label">在线蒸馏概念诞生</text>
+        <text x="260" y="261" text-anchor="middle" class="dag-label">师生并行训练</text>
+        <text x="260" y="279" text-anchor="middle" class="dag-label">知识是"活的"</text>
+      </g>
+
+      <!-- Layer 2: Actor-Mimic (右) -->
+      <g class="dag-node node-paper">
+        <rect x="400" y="175" width="280" height="110"/>
+        <text x="540" y="197" text-anchor="middle" class="dag-label title" fill="#ff6b9d">🔬 Actor-Mimic (2016)</text>
+        <text x="540" y="215" text-anchor="middle" class="dag-label sub">"工程师" · ICLR 2016</text>
+        <line x1="450" y1="225" x2="630" y2="225" stroke="rgba(255,255,255,0.08)"/>
+        <text x="540" y="243" text-anchor="middle" class="dag-label">Q值截断 · 条件蒸馏</text>
+        <text x="540" y="261" text-anchor="middle" class="dag-label">特征回归 · 专家策略</text>
+        <text x="540" y="279" text-anchor="middle" class="dag-label">行为克隆 (硬压缩)</text>
+      </g>
+
+      <!-- Layer 3: Distral (中心, 汇聚节点) -->
+      <g class="dag-node node-merge">
+        <rect x="330" y="340" width="320" height="88" rx="12" fill="rgba(0,230,118,0.08)" stroke="rgba(0,230,118,0.35)" stroke-width="2"/>
+        <text x="490" y="362" text-anchor="middle" class="dag-label title" fill="#00e676">🧠 Distral (2017) ← 汇聚点</text>
+        <text x="490" y="378" text-anchor="middle" class="dag-label sub">"理论家" · NeurIPS 2017</text>
+        <line x1="380" y1="386" x2="600" y2="386" stroke="rgba(255,255,255,0.08)"/>
+        <text x="490" y="402" text-anchor="middle" class="dag-label">KL约束 · 交替优化 · 最优解 · 双向通信</text>
+        <text x="490" y="420" text-anchor="middle" class="dag-label sub">融合前两篇思想，形成统一理论框架</text>
+      </g>
+
+      <!-- Layer 4: 关键概念群 -->
+      <g class="dag-node node-concept">
+        <rect x="80" y="460" width="160" height="50"/>
+        <text x="160" y="480" text-anchor="middle" class="dag-label title" fill="#cba6f7">KL散度深入</text>
+        <text x="160" y="498" text-anchor="middle" class="dag-label sub">软约束 · 橡皮筋比喻</text>
+      </g>
+      <g class="dag-node node-concept">
+        <rect x="265" y="460" width="170" height="50"/>
+        <text x="350" y="480" text-anchor="middle" class="dag-label title" fill="#cba6f7">最优策略 &amp; 贝叶斯</text>
+        <text x="350" y="498" text-anchor="middle" class="dag-label sub">先验×似然=后验</text>
+      </g>
+      <g class="dag-node node-concept">
+        <rect x="460" y="460" width="170" height="50"/>
+        <text x="545" y="480" text-anchor="middle" class="dag-label title" fill="#cba6f7">蒸馏作为通信</text>
+        <text x="545" y="498" text-anchor="middle" class="dag-label sub">双向 · 社会化知识</text>
+      </g>
+      <g class="dag-node node-concept">
+        <rect x="655" y="460" width="170" height="50"/>
+        <text x="740" y="480" text-anchor="middle" class="dag-label title" fill="#cba6f7">软 vs 硬约束</text>
+        <text x="740" y="498" text-anchor="middle" class="dag-label sub">KL正则 vs 行为克隆</text>
+      </g>
+
+      <!-- Layer 5: 总结 -->
+      <g class="dag-node node-merge">
+        <rect x="370" y="545" width="240" height="36" rx="18" fill="rgba(108,92,231,0.1)" stroke="rgba(108,92,231,0.3)"/>
+        <text x="490" y="568" text-anchor="middle" class="dag-label title" fill="#fff">📋 萌芽期总结 → Part 2</text>
+      </g>
+
+      <!-- 汇聚标签 -->
+      <text x="505" y="333" class="dag-label sub" fill="#00e676" font-size="9">▲ 两条支线在此汇聚</text>
+    </svg>
+  </div>
+  <p style="font-size:12px;color:var(--text3);margin-top:8px;">
+    <span style="color:var(--a2);">■</span> 论文节点 &nbsp;
+    <span style="color:#cba6f7;">■</span> 概念节点 &nbsp;
+    <span style="color:#00e676;">■</span> 汇聚/合成节点 &nbsp;
+    <span style="color:var(--a4);">■</span> 基础节点 &nbsp;
+    —— 虚线 = 跨分支影响
+  </p>
+</section>
+
+<!-- ═══════════════════════════ SLIDE 3: OPD vs 传统蒸馏 ═══════════════════════════ -->
+<section data-transition="slide">
+  <h2 style="font-size:30px;font-weight:700;margin-bottom:4px;color:var(--text);">
+    先搞清楚：OPD 和传统蒸馏有什么不同？
   </h2>
   <div class="glow-bar"></div>
-  <br>
   <div class="compare-wrap">
-    <!-- 传统蒸馏 -->
     <div class="compare-side old fragment fade-up">
       <div class="compare-label">传统知识蒸馏</div>
       <div class="compare-flow">👨‍🏫 → 👨‍🎓</div>
@@ -656,23 +592,17 @@ window.MathJax = {
         <li>教师预训练好，参数冻结</li>
         <li>学生被动模仿教师输出</li>
         <li>蒸馏 = 模型压缩手段</li>
-        <li>教师能力是学生天花板</li>
+        <li>教师能力 = 学生天花板</li>
       </ul>
     </div>
-
-    <!-- VS -->
-    <div class="compare-vs">
-      <div class="vs-badge">VS</div>
-    </div>
-
-    <!-- OPD -->
+    <div class="compare-vs"><div class="vs-badge">VS</div></div>
     <div class="compare-side new fragment fade-up">
       <div class="compare-label">在线策略蒸馏 (OPD)</div>
       <div class="compare-flow">👨‍🏫 ⇄ 👨‍🎓</div>
       <p style="color:var(--text3);font-size:13px;">双向通信 · 训练过程中</p>
       <ul class="compare-features">
         <li>师生同步训练，共同进化</li>
-        <li>知识双向流动（蒸馏+广播）</li>
+        <li>知识双向流动（蒸馏↔广播）</li>
         <li>蒸馏 = 持续的知识传递</li>
         <li>学生可以超越教师</li>
       </ul>
@@ -680,352 +610,583 @@ window.MathJax = {
   </div>
 </section>
 
-<!-- ═══════════════ Slide 3: 三篇论文全景 ═══════════════ -->
-<section data-transition="convex">
-  <h2 style="font-size:32px;font-weight:700;margin-bottom:8px;color:var(--text);">
-    🏛️ 萌芽期三篇奠基论文
-  </h2>
+<!-- ═══════ SECTION 0: RL基础概念 ═══════ -->
+<!-- ═══════════════════════════ SLIDE 4: 节标题 - RL基础 ═══════════════════════════ -->
+<section data-transition="slide">
+  <div style="text-align:center;">
+    <span class="section-badge foundation">📚 支线补课 · SECTION 0</span>
+  </div>
+  <h2 style="font-size:32px;font-weight:700;margin:16px 0 4px;color:var(--a4);">RL 基础概念</h2>
   <div class="glow-bar"></div>
-  <br>
-  <div class="paper-grid">
-    <!-- Policy Distillation -->
-    <div class="paper-card fragment fade-up">
-      <div class="paper-icon">🏛️</div>
-      <div class="paper-year">ICLR 2016</div>
-      <div class="paper-title">Policy Distillation</div>
-      <div class="paper-venue">Rusu et al. · DeepMind</div>
-      <span class="paper-role name">命名者</span>
-      <p style="font-size:12px;color:var(--text3);margin-top:10px;">
-        首次提出"在线蒸馏"概念<br>创造了 OPD 这个词
-      </p>
-    </div>
-
-    <!-- Actor-Mimic -->
-    <div class="paper-card fragment fade-up">
-      <div class="paper-icon">🔬</div>
-      <div class="paper-year">ICLR 2016</div>
-      <div class="paper-title">Actor-Mimic</div>
-      <div class="paper-venue">Parisotto et al.</div>
-      <span class="paper-role eng">工程师</span>
-      <p style="font-size:12px;color:var(--text3);margin-top:10px;">
-        Q值截断 + 特征回归<br>提供 OPD 的技术组件
-      </p>
-    </div>
-
-    <!-- Distral -->
-    <div class="paper-card fragment fade-up">
-      <div class="paper-icon">🧠</div>
-      <div class="paper-year">NeurIPS 2017</div>
-      <div class="paper-title">Distral</div>
-      <div class="paper-venue">Teh et al. · DeepMind</div>
-      <span class="paper-role theory">理论家</span>
-      <p style="font-size:12px;color:var(--text3);margin-top:10px;">
-        KL约束 + 交替优化<br>奠定 OPD 的理论框架
-      </p>
-    </div>
+  <p style="font-size:16px;color:var(--text2);max-width:650px;line-height:1.7;">
+    在深入三篇论文之前，先掌握强化学习的<strong style="color:#fff;">基本词汇</strong>——
+    后面所有公式和算法都建立在这些概念之上。
+  </p>
+  <div style="margin-top:18px;display:flex;gap:32px;flex-wrap:wrap;justify-content:center;">
+    <span style="color:var(--a4);font-size:13px;font-weight:700;">R · 奖励信号</span>
+    <span style="color:var(--a4);font-size:13px;font-weight:700;">任务 · Task</span>
+    <span style="color:var(--a4);font-size:13px;font-weight:700;">π · 策略</span>
+    <span style="color:var(--a4);font-size:13px;font-weight:700;">Q · 价值函数</span>
+    <span style="color:var(--a4);font-size:13px;font-weight:700;">神经网络表示</span>
+  </div>
+  <!-- 迷你 DAG 高亮 -->
+  <div style="margin-top:16px; padding:10px 20px; background:rgba(254,202,87,0.06); border:1px solid rgba(254,202,87,0.15); border-radius:14px; font-size:11px; color:var(--text3); max-width:600px;">
+    DAG位置：最顶层基础节点 → 向下支撑所有论文节点
   </div>
 </section>
 
-<!-- ═══════════════ Slide 4: Policy Distillation (2015) ═══════════════ -->
+<!-- ═══════════════════════════ SLIDE 5: RL核心概念 ═══════════════════════════ -->
 <section data-transition="slide">
-  <h2 style="font-size:30px;font-weight:700;margin-bottom:16px;color:var(--text);">
-    🏛️ Policy Distillation (2015) — OPD 概念的诞生
+  <div style="display:flex;align-items:center;gap:12px;justify-content:center;margin-bottom:4px;">
+    <h2 style="font-size:28px;font-weight:700;color:var(--text);margin:0;">
+      📚 RL 核心概念 — R, 任务, π, Q
+    </h2>
+    <span style="background:rgba(254,202,87,0.15);border:1px solid rgba(254,202,87,0.3);border-radius:12px;padding:3px 12px;font-size:11px;color:var(--a4);font-weight:700;">💬 讨论</span>
+  </div>
+  <div class="glow-bar"></div>
+  <div style="display:flex;gap:20px;flex-wrap:wrap;justify-content:center;max-width:980px;">
+    <!-- R 和任务 -->
+    <div style="flex:1;min-width:260px;">
+      <div class="concept-card" style="border-left:3px solid var(--a5);">
+        <h4>🎯 R (Reward) — 即时奖励</h4>
+        <p>智能体每执行一个动作，环境返回的<strong style="color:var(--a5);">数字分数</strong>。<br>
+        例：机器人往前走一步 → R=+1；摔倒 → R=−10。<br>
+        Rᵢ(s,a) = 在第i个任务中，状态s下做动作a的即时奖励。</p>
+      </div>
+      <div class="concept-card" style="border-left:3px solid var(--a2);">
+        <h4>📋 任务 (Task) — 由奖励函数定义</h4>
+        <p><strong style="color:var(--a2);">任务 = 要达成什么目标，由怎么给分来决定。</strong><br>
+        任务1 (走路)：速度越快R越高。<br>
+        任务2 (导航)：离目标越近R越高，撞障碍R负。</p>
+      </div>
+    </div>
+    <!-- π 和 Q -->
+    <div style="flex:1;min-width:260px;">
+      <div class="concept-card" style="border-left:3px solid var(--a3);">
+        <h4>🧭 π (Policy) — 策略，决策大脑</h4>
+        <p>π(a|s) = 给定状态s，选择动作a的<strong style="color:var(--a3);">概率分布</strong>。<br>
+        它是智能体的"行为准则"——看到什么状态，该做什么动作。</p>
+      </div>
+      <div class="concept-card" style="border-left:3px solid var(--a1);">
+        <h4>📊 Q(s,a) — 价值函数，未来预言</h4>
+        <p>Q(s,a) = 从状态s执行动作a后，按照某策略继续走，<strong style="color:var(--a1);">未来能拿到的累积折扣奖励之和</strong>。<br>
+        Q值告诉你：这个动作在长远来看有多好？</p>
+      </div>
+    </div>
+  </div>
+  <p style="font-size:13px;color:var(--text3);margin-top:12px;">
+    💡 在OPD中：每个任务i有自己的Rᵢ → 训练出πᵢ → πᵢ的Q值反映其"局部智慧" → 蒸馏到共享π₀
+  </p>
+</section>
+
+<!-- ═══════════════════════════ SLIDE 6: 为什么需要神经网络 ═══════════════════════════ -->
+<section data-transition="slide">
+  <div style="display:flex;align-items:center;gap:12px;justify-content:center;margin-bottom:4px;">
+    <h2 style="font-size:28px;font-weight:700;color:var(--text);margin:0;">
+      🤖 为什么π和Q要用神经网络表示？
+    </h2>
+    <span style="background:rgba(254,202,87,0.15);border:1px solid rgba(254,202,87,0.3);border-radius:12px;padding:3px 12px;font-size:11px;color:var(--a4);font-weight:700;">💬 讨论</span>
+  </div>
+  <div class="glow-bar"></div>
+  <div class="two-col">
+    <div class="fragment fade-up">
+      <div class="concept-card" style="border-top:3px solid var(--a3);">
+        <h4>❌ 为什么不能手写？</h4>
+        <p>实际RL场景中，状态s是<strong style="color:var(--a3);">高维连续向量</strong>（如机器人关节角度×速度×触地传感器 = 数百维）。可能的(s,a)对是天文数字，<strong style="color:var(--a3);">完全无法靠人列表格或写死规则</strong>。</p>
+      </div>
+    </div>
+    <div class="fragment fade-up">
+      <div class="concept-card" style="border-top:3px solid var(--a5);">
+        <h4>✅ 神经网络的方案</h4>
+        <p>神经网络是一种<strong style="color:var(--a5);">万能函数近似器</strong>，从数据中自动学习映射。<br>
+        • <strong>策略网络</strong> π_φ(a|s)：输入s → 输出动作概率<br>
+        • <strong>价值网络</strong> Q_θ(s,a)：输入s和a → 输出一个预期回报数值<br>
+        <strong style="color:var(--a5);">可以内插推广</strong>：见到相似状态也能给出合理输出。</p>
+      </div>
+    </div>
+  </div>
+  <p style="font-size:13px;color:var(--text3);margin-top:16px;">
+    💡 理解了这个，才能明白后面"基座/backbone"、"网络共享"、"列/column"等概念
+  </p>
+</section>
+
+<!-- ═══════ SECTION 1: Policy Distillation ═══════ -->
+<!-- ═══════════════════════════ SLIDE 7: 节标题 - Policy Distillation ═══════════════════════════ -->
+<section data-transition="slide">
+  <div style="text-align:center;">
+    <span class="section-badge paper">🏛️ 主线 · SECTION 1</span>
+  </div>
+  <h2 style="font-size:32px;font-weight:700;margin:16px 0 4px;color:var(--a2);">Policy Distillation (2015)</h2>
+  <p style="font-size:16px;color:var(--text3);margin:0;">"命名者" — 首次提出在线蒸馏概念</p>
+  <div class="glow-bar"></div>
+  <div style="margin-top:14px; padding:10px 18px; background:rgba(0,210,255,0.05); border:1px solid rgba(0,210,255,0.15); border-radius:14px; font-size:11px; color:var(--text3); max-width:500px;">
+    DAG位置：左侧分支 — RL基础 → Policy Distillation → 汇入Distral
+  </div>
+</section>
+
+<!-- ═══════════════════════════ SLIDE 8: Policy Distillation 内容 ═══════════════════════════ -->
+<section data-transition="slide">
+  <h2 style="font-size:28px;font-weight:700;margin-bottom:8px;color:var(--text);">
+    🏛️ Policy Distillation — OPD 概念诞生
   </h2>
   <div class="glow-bar"></div>
-  <div style="display:flex;gap:32px;align-items:flex-start;flex-wrap:wrap;justify-content:center;max-width:950px;">
-    <!-- 左侧：关键信息 -->
-    <div style="flex:1;min-width:280px;text-align:left;">
-      <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:20px 24px;margin-bottom:16px;">
-        <p style="font-size:13px;color:var(--accent-2);font-weight:700;margin:0 0 4px;">📄 论文信息</p>
+  <div class="two-col">
+    <div class="fragment fade-up" style="text-align:left;">
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:18px 22px;margin-bottom:14px;">
+        <p style="font-size:13px;color:var(--a2);font-weight:700;margin:0 0 4px;">📄 论文信息</p>
         <p style="font-size:14px;color:#fff;margin:0;"><strong>Policy Distillation</strong></p>
-        <p style="font-size:12px;color:var(--text3);margin:4px 0;">Rusu et al., Google DeepMind</p>
-        <p style="font-size:12px;color:var(--text3);margin:0;">ICLR 2016 · arXiv: 1511.06295 · 引用 1000+</p>
+        <p style="font-size:12px;color:var(--text3);margin:2px 0;">Rusu et al., Google DeepMind</p>
+        <p style="font-size:12px;color:var(--text3);margin:0;">ICLR 2016 · arXiv:1511.06295 · 引用1000+</p>
       </div>
-      <div style="background:rgba(0,210,255,0.05);border:1px solid rgba(0,210,255,0.15);border-radius:16px;padding:20px 24px;">
-        <p style="font-size:14px;font-weight:700;color:var(--accent-2);margin:0 0 8px;">💡 核心创新</p>
-        <p style="font-size:14px;color:var(--text2);margin:0;line-height:1.7;">
-          提出三种蒸馏模式，其中<strong style="color:#fff;">第三种 = Online Distillation</strong>：<br>
-          • 教师与学生<strong style="color:var(--accent-2);">并行训练</strong><br>
-          • 教师边与环境交互边向学生提供信号<br>
-          • 学生学的是"训练过程"，不是"最终结果"
+      <div style="background:rgba(0,210,255,0.05);border:1px solid rgba(0,210,255,0.15);border-radius:16px;padding:18px 22px;">
+        <p style="font-size:14px;font-weight:700;color:var(--a2);margin:0 0 6px;">💡 三种蒸馏模式</p>
+        <p style="font-size:13px;color:var(--text2);margin:0;line-height:1.7;">
+          ① 离线蒸馏（传统）<br>
+          ② 在线蒸馏——<strong style="color:var(--a2);">OPD的起源</strong><br>
+          ③ 数据复用蒸馏
         </p>
       </div>
     </div>
-    <!-- 右侧：代码窗口 -->
-    <div class="code-window fragment fade-up" style="flex:1;min-width:300px;">
+    <div class="code-window fragment fade-up" style="flex:1;min-width:280px;">
       <div class="code-header">
         <span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span>
-        <span style="color:rgba(255,255,255,0.4);font-size:12px;margin-left:12px;">distillation_modes.py</span>
+        <span style="color:rgba(255,255,255,0.4);font-size:12px;margin-left:10px;">online_distillation.py</span>
       </div>
       <div class="code-body">
-        <span style="color:#6c7086;"># 模式1：离线蒸馏（传统）</span><br>
-        <span class="cm"># 教师先训练完 → 再教学生</span><br>
-        <span style="color:#cba6f7;">teacher</span>.train()  <span class="cm"># 冻结</span><br>
-        <span style="color:#89b4fa;">student</span>.clone(<span style="color:#cba6f7;">teacher</span>)<br>
+        <span class="cm"># 离线：教师先训练完 → 再教</span><br>
+        <span class="kw">teacher</span>.train(); <span class="kw">teacher</span>.freeze()<br>
+        <span class="fn">student</span>.clone(<span class="kw">teacher</span>)<br>
         <br>
-        <span style="color:#6c7086;"># 模式3：在线蒸馏 (OPD)</span><br>
-        <span class="cm"># 师生一起训练！</span><br>
+        <span class="cm"># 在线 (OPD!): 师生一起训练</span><br>
         <span class="em">while</span> training:<br>
-        &nbsp;&nbsp;<span style="color:#cba6f7;">teacher</span>.step()  <span class="cm"># 在线学习</span><br>
-        &nbsp;&nbsp;<span style="color:#89b4fa;">student</span>.distill(<span style="color:#cba6f7;">teacher</span>)<br>
-        &nbsp;&nbsp;<span class="cm"># 教师知识是活的↗</span><br>
+        &nbsp;&nbsp;<span class="kw">teacher</span>.step()   <span class="cm">← 持续学习</span><br>
+        &nbsp;&nbsp;<span class="fn">student</span>.distill(<span class="kw">teacher</span>)<br>
+        &nbsp;&nbsp;<span class="cm">↑ 教师知识是"活的"</span><br>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ═══════════════ Slide 5: Distral — 核心公式 ═══════════════ -->
+<!-- ═══════ SECTION 2: Distral ═══════ -->
+<!-- ═══════════════════════════ SLIDE 9: 节标题 - Distral ═══════════════════════════ -->
 <section data-transition="slide">
-  <h2 style="font-size:28px;font-weight:700;margin-bottom:8px;color:var(--text);">
-    🧠 Distral (2017) — 联合目标函数
+  <div style="text-align:center;">
+    <span class="section-badge distral">🧠 主线·核心 · SECTION 2</span>
+  </div>
+  <h2 style="font-size:32px;font-weight:700;margin:16px 0 4px;color:var(--a1);">Distral (2017)</h2>
+  <p style="font-size:16px;color:var(--text3);margin:0;">"理论家" — 蒸馏作为多任务通信协议</p>
+  <div class="glow-bar"></div>
+  <div style="margin-top:14px; padding:10px 18px; background:rgba(0,230,118,0.04); border:1px solid rgba(0,230,118,0.2); border-radius:14px; font-size:12px; color:var(--text3); max-width:560px;">
+    DAG位置：<span style="color:#00e676;">汇聚节点</span> — Policy Distillation + Actor-Mimic 两条支线在此汇合，形成统一框架。以下4页展开其核心内容。
+  </div>
+</section>
+
+<!-- ═══════════════════════════ SLIDE 10: Distral 核心公式 ═══════════════════════════ -->
+<section data-transition="slide">
+  <h2 style="font-size:26px;font-weight:700;margin-bottom:4px;color:var(--text);">
+    🧠 Distral — 联合目标函数 J(π₀, {πᵢ})
   </h2>
   <div class="glow-bar"></div>
-
-  <div class="formula-card fragment fade-up" style="margin-bottom:20px;">
-    <p style="font-size:13px;color:var(--text3);margin:0 0 8px;">核心目标：找到一个共享策略 π₀ 和一组任务策略 {πᵢ}</p>
+  <div class="formula-card fragment fade-up" style="margin-bottom:16px;">
+    <p style="font-size:12px;color:var(--text3);margin:0 0 6px;">两个层级：共享中心策略 π₀（捕获通用行为）+ 任务策略 πᵢ（专门解决第i个任务）</p>
     <div class="math-block">
-      $$J(\pi_0, \{\pi_i\}) = \sum_i \mathbb{E}_{\pi_i}\left[\sum_{t \geq 0} \gamma^t R_i - c_{\text{KL}} \gamma^t \log\frac{\pi_i}{\pi_0} - c_{\text{Ent}} \gamma^t \log \pi_i\right]$$
+      $$J(\pi_0, \{\pi_i\}) = \sum_i \mathbb{E}_{\pi_i}\left[\sum_{t \ge 0} \gamma^t R_i - c_{\text{KL}} \gamma^t \log\frac{\pi_i}{\pi_0} - c_{\text{Ent}} \gamma^t \log \pi_i\right]$$
     </div>
   </div>
-
-  <!-- 三项拆解 -->
   <div class="breakdown">
     <div class="breakdown-item">
       <div class="breakdown-num">①</div>
-      <div class="breakdown-label">标准 RL 奖励</div>
-      <div class="breakdown-desc">Σ γᵗ Rᵢ<br>完成第 i 个任务<br>最大化累积回报</div>
+      <div class="breakdown-label">标准RL奖励</div>
+      <div class="breakdown-desc">ΣγᵗRᵢ<br>完成自己的任务<br>最大化累积回报</div>
     </div>
     <div class="breakdown-item">
       <div class="breakdown-num">②</div>
-      <div class="breakdown-label">KL 惩罚项</div>
-      <div class="breakdown-desc">−c_KL · log(πᵢ/π₀)<br>别离中心策略太远<br>实现知识共享</div>
+      <div class="breakdown-label">KL惩罚项</div>
+      <div class="breakdown-desc">−c_KL·log(πᵢ/π₀)<br>别离中心策略太远<br>实现知识共享</div>
     </div>
     <div class="breakdown-item">
       <div class="breakdown-num">③</div>
       <div class="breakdown-label">熵奖励项</div>
-      <div class="breakdown-desc">−c_Ent · log πᵢ<br>保持策略随机性<br>鼓励探索新动作</div>
+      <div class="breakdown-desc">−c_Ent·log πᵢ<br>保持策略随机性<br>鼓励探索新动作</div>
     </div>
   </div>
-
-  <p style="font-size:13px;color:var(--text3);margin-top:16px;">
-    <span style="color:var(--accent-2);">KL 正则化</span> = 橡皮筋：可以撑开走远，但会越来越费力，迫使你在"拿高分"和"别走偏"之间权衡
+  <p style="font-size:12px;color:var(--text3);margin-top:14px;">
+    KL惩罚 = 橡皮筋：可以撑开走远，但会越来越费力——迫使在"拿高分"和"别走偏"之间权衡
   </p>
 </section>
 
-<!-- ═══════════════ Slide 6: 最优策略形式 & 贝叶斯视角 ═══════════════ -->
+<!-- ═══════════════════════════ SLIDE 11: KL散度深入 ═══════════════════════════ -->
+<section data-transition="slide">
+  <div style="display:flex;align-items:center;gap:12px;justify-content:center;margin-bottom:4px;">
+    <h2 style="font-size:28px;font-weight:700;color:var(--text);margin:0;">
+      🔍 KL散度深入 — 那把测量"差距"的尺子
+    </h2>
+    <span style="background:rgba(254,202,87,0.15);border:1px solid rgba(254,202,87,0.3);border-radius:12px;padding:3px 12px;font-size:11px;color:var(--a4);font-weight:700;">💬 讨论</span>
+  </div>
+  <div class="glow-bar"></div>
+  <div class="two-col">
+    <div class="fragment fade-up">
+      <div class="formula-card" style="margin-bottom:16px;">
+        <div class="math-block">
+          $$D_{KL}(P \| Q) = \sum_a P(a) \log\frac{P(a)}{Q(a)}$$
+        </div>
+      </div>
+      <div class="info-tile" style="max-width:100%;">
+        <h4>📐 核心性质</h4>
+        <p>• 如果P和Q完全一样 → KL=0<br>
+        • 只要有一点点不同 → KL &gt; 0<br>
+        • <strong style="color:var(--a3);">不对称</strong>：D_KL(P‖Q) ≠ D_KL(Q‖P)<br>
+        • 我们用的是<strong>前向KL</strong>：要求P覆盖Q的所有行为</p>
+      </div>
+    </div>
+    <div class="fragment fade-up">
+      <div class="concept-card" style="border-left:3px solid var(--a1);">
+        <h4>🎯 在Distral中的作用</h4>
+        <p>−c_KL · D_KL(πᵢ ‖ π₀) → <strong style="color:var(--a1);">惩罚πᵢ偏离π₀</strong><br>
+        最大化J → 必须最小化KL散度 → πᵢ被迫靠近π₀。<br>
+        这就是<strong style="color:var(--a1);">知识共享的数学机制</strong>。</p>
+      </div>
+      <div class="concept-card" style="border-left:3px solid var(--a2);">
+        <h4>🪢 比喻：家长划的"活动圈"</h4>
+        <p>中心策略π₀ = 家长给孩子划的安全玩耍范围。<br>
+        孩子(πᵢ)可以在圈内自由探索，但跑出圈外会被KL惩罚"拉回来"。圈的大小由c_KL调节。</p>
+      </div>
+      <div class="info-tile" style="max-width:100%;">
+        <h4>🔑 关键理解</h4>
+        <p>KL正则化 = <strong style="color:var(--a2);">"软"约束</strong>：不是禁止偏离，而是偏离了会扣分。算法自行权衡利弊——这正是不确定性下灵活决策的精髓。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════ SLIDE 12: 最优策略闭式解 & 贝叶斯视角 ═══════════════════════════ -->
 <section data-transition="convex">
-  <h2 style="font-size:28px;font-weight:700;margin-bottom:8px;color:var(--text);">
-    🎯 最优策略的闭式解 & 贝叶斯直觉
+  <h2 style="font-size:26px;font-weight:700;margin-bottom:4px;color:var(--text);">
+    🎯 最优策略闭式解 & 贝叶斯直觉
   </h2>
   <div class="glow-bar"></div>
-
-  <!-- 核心公式 -->
-  <div class="formula-card fragment fade-up" style="margin-bottom:24px;">
-    <p style="font-size:13px;color:var(--text3);margin:0 0 8px;">最大化 J 后，πᵢ 的最优形式为：</p>
+  <div class="formula-card fragment fade-up" style="margin-bottom:18px;">
+    <p style="font-size:12px;color:var(--text3);margin:0 0 6px;">最大化J后，πᵢ的最优形式（可直接用Q学习迭代求解）</p>
     <div class="math-block">
       $$\pi_i(a|s) \propto \pi_0(a|s)^{\alpha} \cdot \exp\!\left(\frac{Q_i(s,a)}{\beta}\right)$$
     </div>
-    <p style="font-size:13px;color:var(--text3);margin:4px 0 0;">α = c_KL/(c_KL+c_Ent) · β = c_KL+c_Ent</p>
+    <p style="font-size:12px;color:var(--text3);margin:4px 0 0;">α = c_KL/(c_KL+c_Ent) · β = c_KL+c_Ent</p>
   </div>
-
-  <!-- 贝叶斯流程 -->
   <div class="flow-row fragment fade-up">
     <div class="flow-node prior">
-      <span class="node-icon">📜</span>
-      <span class="node-title">先验 Prior</span>
-      <span class="node-sub">π₀^α<br>中心策略的集体智慧</span>
+      <span class="node-icon">📜</span><span class="node-title">先验 Prior</span>
+      <span class="node-sub">π₀^α · 集体智慧</span>
     </div>
     <span class="flow-arrow">×</span>
-    <div class="flow-node likelihood">
-      <span class="node-icon">🎯</span>
-      <span class="node-title">似然 Likelihood</span>
-      <span class="node-sub">exp(Qᵢ/β)<br>任务自身的价值判断</span>
+    <div class="flow-node like">
+      <span class="node-icon">🎯</span><span class="node-title">似然 Likelihood</span>
+      <span class="node-sub">exp(Qᵢ/β) · 任务价值</span>
     </div>
     <span class="flow-arrow">=</span>
-    <div class="flow-node posterior">
-      <span class="node-icon">✅</span>
-      <span class="node-title">后验 Posterior</span>
-      <span class="node-sub">πᵢ<br>融合先验与经验的最优策略</span>
+    <div class="flow-node post">
+      <span class="node-icon">✅</span><span class="node-title">后验 Posterior</span>
+      <span class="node-sub">πᵢ · 最优任务策略</span>
     </div>
   </div>
-
-  <!-- 参数说明 -->
-  <div class="param-row fragment fade-up">
+  <div class="param-row fragment fade-up" style="margin-top:20px;">
     <div class="param-item">
-      <div class="param-symbol">α</div>
-      <div class="param-name">先验强度</div>
-      <div class="param-range">α 大 → 策略保守，紧跟中心<br>α → 0 → 完全由 Q 值驱动</div>
+      <div class="param-symbol">α</div><div class="param-name">先验强度</div>
+      <div class="param-range">α大 → 保守，紧跟中心<br>α→0 → 纯Q值驱动，不用先验</div>
       <div class="param-bar"></div>
     </div>
     <div class="param-item">
-      <div class="param-symbol">β</div>
-      <div class="param-name">温度参数</div>
-      <div class="param-range">β 大 → 策略随机，偏探索<br>β 小 → 策略贪婪，偏利用</div>
+      <div class="param-symbol">β</div><div class="param-name">温度参数</div>
+      <div class="param-range">β大 → 随机，偏探索<br>β小 → 贪婪，偏利用</div>
       <div class="param-bar"></div>
     </div>
   </div>
+  <p style="font-size:12px;color:var(--text3);margin-top:12px;">
+    💡 这就是<strong style="color:var(--a2);">软Q学习视角</strong>：不是硬选Q最大的动作，而是通过exp(Q/β)形成概率分布——"软"就软在这里
+  </p>
 </section>
 
-<!-- ═══════════════ Slide 7: 蒸馏作为通信 ═══════════════ -->
+<!-- ═══════════════════════════ SLIDE 13: 蒸馏作为双向通信 ═══════════════════════════ -->
 <section data-transition="slide">
-  <h2 style="font-size:30px;font-weight:700;margin-bottom:8px;color:var(--text);">
-    🔄 "蒸馏作为通信" —— 双向知识流
+  <h2 style="font-size:28px;font-weight:700;margin-bottom:4px;color:var(--text);">
+    🔄 "蒸馏作为通信" — 双向知识循环
   </h2>
   <div class="glow-bar"></div>
-
-  <div style="display:flex;gap:32px;align-items:center;flex-wrap:wrap;justify-content:center;max-width:950px;">
-
-    <!-- 阶段一 -->
-    <div class="fragment fade-up" style="flex:1;min-width:280px;background:rgba(0,210,255,0.04);border:1px solid rgba(0,210,255,0.15);border-radius:18px;padding:28px 24px;text-align:left;">
-      <div style="font-size:13px;font-weight:700;letter-spacing:2px;color:var(--accent-2);margin-bottom:12px;">📥 阶段一：蒸馏 Distill</div>
-      <div style="font-size:36px;text-align:center;margin:8px 0;">π₁ → π₀ ← π₂</div>
-      <p style="font-size:14px;color:var(--text2);line-height:1.7;margin:0;">
-        各任务策略把经验<strong style="color:var(--accent-2);">"上交"</strong>给中心
-      </p>
-      <ul style="font-size:13px;color:var(--text3);line-height:2;padding-left:18px;margin:8px 0 0;">
-        <li>π₀ = argmin Σᵢ D_KL(πᵢ ‖ π₀)</li>
-        <li>汇聚所有子策略的共性智慧</li>
-        <li>中心策略是"集体笔记"</li>
-      </ul>
-      <p style="font-size:12px;color:rgba(255,255,255,0.3);margin-top:10px;font-style:italic;">
-        🧑‍🏫 此时：子策略 = 教师，中心 = 学生
-      </p>
+  <div style="display:flex;gap:24px;align-items:center;flex-wrap:wrap;justify-content:center;max-width:980px;">
+    <div class="fragment fade-up" style="flex:1;min-width:270px;background:rgba(0,210,255,0.04);border:1px solid rgba(0,210,255,0.15);border-radius:18px;padding:24px 20px;text-align:left;">
+      <div style="font-size:13px;font-weight:700;letter-spacing:2px;color:var(--a2);margin-bottom:10px;">📥 蒸馏 Distill</div>
+      <div style="font-size:32px;text-align:center;margin:6px 0;">π₁ → π₀ ← π₂</div>
+      <p style="font-size:13px;color:var(--text2);line-height:1.6;margin:0;">子策略把经验<strong style="color:var(--a2);">"上交"</strong>给中心<br>π₀ = argmin Σᵢ D_KL(πᵢ ‖ π₀)<br>汇聚共性智慧 → 集体笔记</p>
+      <p style="font-size:11px;color:rgba(255,255,255,0.3);margin-top:8px;">🧑‍🏫 子策略=教师，中心=学生</p>
     </div>
-
-    <!-- 中间箭头 -->
-    <div style="text-align:center;font-size:32px;color:rgba(255,255,255,0.2);">
-      ⇄
+    <div style="text-align:center;font-size:28px;color:rgba(255,255,255,0.2);">⇄<br><span style="font-size:11px;">循环</span></div>
+    <div class="fragment fade-up" style="flex:1;min-width:270px;background:rgba(108,92,231,0.04);border:1px solid rgba(108,92,231,0.15);border-radius:18px;padding:24px 20px;text-align:left;">
+      <div style="font-size:13px;font-weight:700;letter-spacing:2px;color:var(--a1);margin-bottom:10px;">📤 广播 Broadcast</div>
+      <div style="font-size:32px;text-align:center;margin:6px 0;">π₀ → π₁, π₂</div>
+      <p style="font-size:13px;color:var(--text2);line-height:1.6;margin:0;">中心把通用行为<strong style="color:var(--a1);">"广播"</strong>回去<br>通过KL正则 πᵢ∝π₀^α·exp(Qᵢ/β)<br>约束子策略，引导探索方向</p>
+      <p style="font-size:11px;color:rgba(255,255,255,0.3);margin-top:8px;">🧭 中心=文化约束/行为锚点</p>
     </div>
+  </div>
+  <p style="font-size:13px;color:var(--text2);margin-top:20px;max-width:800px;">
+    <strong style="color:#fff;">关键洞察：</strong>蒸馏不再是单向教→学，而是<strong style="color:var(--a2);">双向、社会化</strong>的知识共享。π₀一开始可能是空的——它靠吸收所有πᵢ的经验成长，同时立刻广播回去影响πᵢ的探索。互为师生，共同进化。
+  </p>
+</section>
 
-    <!-- 阶段二 -->
-    <div class="fragment fade-up" style="flex:1;min-width:280px;background:rgba(108,92,231,0.04);border:1px solid rgba(108,92,231,0.15);border-radius:18px;padding:28px 24px;text-align:left;">
-      <div style="font-size:13px;font-weight:700;letter-spacing:2px;color:var(--accent-1);margin-bottom:12px;">📤 阶段二：广播 Broadcast</div>
-      <div style="font-size:36px;text-align:center;margin:8px 0;">π₀ → π₁, π₂</div>
-      <p style="font-size:14px;color:var(--text2);line-height:1.7;margin:0;">
-        中心把通用行为<strong style="color:var(--accent-1);">"广播"</strong>回各任务
-      </p>
-      <ul style="font-size:13px;color:var(--text3);line-height:2;padding-left:18px;margin:8px 0 0;">
-        <li>通过 KL 正则：πᵢ ∝ π₀^α · exp(Qᵢ/β)</li>
-        <li>约束子策略不要偏离集体智慧</li>
-        <li>引导探索方向，稳定训练</li>
-      </ul>
-      <p style="font-size:12px;color:rgba(255,255,255,0.3);margin-top:10px;font-style:italic;">
-        🧭 此时：中心 = 文化约束/行为锚点
-      </p>
-    </div>
+<!-- ═══════ SECTION 3: Actor-Mimic ═══════ -->
+<!-- ═══════════════════════════ SLIDE 14: 节标题 - Actor-Mimic ═══════════════════════════ -->
+<section data-transition="slide">
+  <div style="text-align:center;">
+    <span class="section-badge mimic">🔬 主线 · SECTION 3</span>
+  </div>
+  <h2 style="font-size:32px;font-weight:700;margin:16px 0 4px;color:var(--a3);">Actor-Mimic (2016)</h2>
+  <p style="font-size:16px;color:var(--text3);margin:0;">"工程师" — 条件蒸馏 + 特征回归 + 行为克隆</p>
+  <div class="glow-bar"></div>
+  <div style="margin-top:14px; padding:10px 18px; background:rgba(255,107,157,0.04); border:1px solid rgba(255,107,157,0.15); border-radius:14px; font-size:11px; color:var(--text3); max-width:560px;">
+    DAG位置：右侧分支 — RL基础 → Actor-Mimic → 汇入Distral。其"硬压缩"与KL的"软约束"形成对比。
   </div>
 </section>
 
-<!-- ═══════════════ Slide 8: Actor-Mimic — 条件蒸馏 ═══════════════ -->
+<!-- ═══════════════════════════ SLIDE 15: 条件蒸馏 & Q值截断 ═══════════════════════════ -->
 <section data-transition="slide">
-  <h2 style="font-size:30px;font-weight:700;margin-bottom:8px;color:var(--text);">
-    🔬 Actor-Mimic (2016) — 带筛选的蒸馏
+  <h2 style="font-size:26px;font-weight:700;margin-bottom:4px;color:var(--text);">
+    🔬 条件蒸馏 — 只学教师"有把握"的状态
   </h2>
   <div class="glow-bar"></div>
-
-  <!-- 分段函数 -->
-  <div class="formula-card fragment fade-up" style="margin-bottom:24px;">
-    <p style="font-size:13px;color:var(--text3);margin:0 0 12px;">条件蒸馏损失：只学教师"有把握"的状态</p>
+  <div class="formula-card fragment fade-up" style="margin-bottom:20px;">
     <div class="math-block">
       $$\mathcal{L}_{\text{distill}}(s) = \begin{cases} D_{KL}(p_T\|p_S) & \text{if } \max_a Q_T(s,a) > \theta \\ 0 & \text{otherwise} \end{cases}$$
     </div>
   </div>
-
-  <!-- 两个分支 -->
   <div class="piecewise">
-    <div class="piece-branch if-branch fragment fade-up">
-      <div class="piece-condition">✅ max Q_T(s,a) > θ</div>
+    <div class="piece-branch if-br fragment fade-up">
+      <div class="piece-condition">✅ max Q_T(s,a) &gt; θ</div>
       <div class="piece-result">蒸馏！模仿教师</div>
-      <p style="font-size:12px;color:var(--text3);margin-top:8px;">
-        教师对这个状态很有把握<br>这是值得学习的好经验
-      </p>
+      <p style="font-size:12px;color:var(--text3);margin-top:8px;">教师有把握 → 值得学</p>
     </div>
-    <div class="piece-branch else-branch fragment fade-up">
+    <div class="piece-branch else-br fragment fade-up">
       <div class="piece-condition">❌ max Q_T(s,a) ≤ θ</div>
-      <div class="piece-result" style="color:var(--text3);">跳过，损失 = 0</div>
-      <p style="font-size:12px;color:var(--text3);margin-top:8px;">
-        教师自己也很困惑<br>不学垃圾经验，避免噪声污染
-      </p>
+      <div class="piece-result" style="color:var(--text3);">跳过，损失=0</div>
+      <p style="font-size:12px;color:var(--text3);margin-top:8px;">教师也困惑 → 不学垃圾</p>
     </div>
   </div>
-
-  <div style="display:flex;gap:24px;flex-wrap:wrap;justify-content:center;margin-top:16px;">
-    <div class="fragment fade-up" style="background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:14px;padding:16px 20px;max-width:320px;text-align:left;">
-      <p style="font-size:14px;font-weight:700;color:var(--accent-2);margin:0 0 6px;">🎯 Q 值截断的直觉</p>
-      <p style="font-size:13px;color:var(--text2);margin:0;line-height:1.6;">
-        类比：只总结学霸有把握的解题方法，<br>不学他们瞎蒙答案时的做法。
-      </p>
+  <div style="margin-top:18px;display:flex;gap:20px;flex-wrap:wrap;justify-content:center;">
+    <div class="fragment fade-up info-tile">
+      <h4>🎯 Q值截断直觉</h4>
+      <p>类比：只总结<strong style="color:var(--a2);">学霸有把握</strong>的解题方法，不学他们瞎蒙时的做法。防止噪声污染共享知识库。</p>
     </div>
-    <div class="fragment fade-up" style="background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:14px;padding:16px 20px;max-width:320px;text-align:left;">
-      <p style="font-size:14px;font-weight:700;color:var(--accent-1);margin:0 0 6px;">🔗 特征回归</p>
-      <p style="font-size:13px;color:var(--text2);margin:0;line-height:1.6;">
-        不仅模仿"做什么"（动作），<br>还模仿"怎么看"（中间层特征），<br>让学生的内部表征也向教师对齐。
+    <div class="fragment fade-up info-tile">
+      <h4>🔗 特征回归</h4>
+      <p>L_feature = ‖f_T(s) − W_r·f_S(s)‖²。不仅模仿<strong style="color:var(--a3);">"做什么"</strong>（动作输出），还模仿<strong style="color:var(--a3);">"怎么看"</strong>（中间层特征表征）。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════ SLIDE 16: 专家策略 & 行为克隆 ═══════════════════════════ -->
+<section data-transition="slide">
+  <div style="display:flex;align-items:center;gap:12px;justify-content:center;margin-bottom:4px;">
+    <h2 style="font-size:26px;font-weight:700;color:var(--text);margin:0;">
+      🎓 专家策略 & 行为克隆 — "先揉到一起，再各自优化"
+    </h2>
+    <span style="background:rgba(254,202,87,0.15);border:1px solid rgba(254,202,87,0.3);border-radius:12px;padding:3px 12px;font-size:11px;color:var(--a4);font-weight:700;">💬 讨论</span>
+  </div>
+  <div class="glow-bar"></div>
+  <div class="two-col">
+    <div class="fragment fade-up">
+      <div class="concept-card" style="border-top:3px solid var(--a3);">
+        <h4>👑 什么是"专家策略"？</h4>
+        <p><strong style="color:var(--a3);">先</strong>为每一个任务单独训练一个高性能智能体。这些训练好的π₁*, π₂*, ...就是<strong style="color:var(--a3);">专家策略</strong>——各自任务的"老手"，已经拿到很高奖励。它们被冻结，用作监督标签。</p>
+      </div>
+      <div class="concept-card" style="border-top:3px solid var(--a1);">
+        <h4>📝 什么是"行为克隆"？</h4>
+        <p>用<strong style="color:var(--a1);">监督学习</strong>让学生网络π_multi(a|s,i)去模仿专家输出。损失=交叉熵（离散动作）或MSE（连续动作）。<strong>不需要环境交互</strong>，纯粹地模仿专家的动作分布。</p>
+      </div>
+    </div>
+    <div class="fragment fade-up">
+      <div class="concept-card" style="border-top:3px solid var(--a5);">
+        <h4>🔀 Actor-Mimic 两步走</h4>
+        <p><strong style="color:var(--a5);">步骤一：多任务模仿（揉到一起）</strong><br>
+        学生网络输入(state, task_id)，模仿所有专家的行为 → "什么都会一点"的泛化策略。</p>
+        <p style="margin-top:8px;"><strong style="color:var(--a5);">步骤二：各自微调（各自优化）</strong><br>
+        以学生网络为初始化，每个任务单独用RL微调。因为起点已经很合理，微调所需样本远少于从头训练。</p>
+      </div>
+      <p style="font-size:13px;color:var(--text2);text-align:center;margin-top:10px;">
+        💡 这就是"先培养全能天才，再让他成为各领域专家"
       </p>
     </div>
   </div>
 </section>
 
-<!-- ═══════════════ Slide 9: 萌芽期总结 ═══════════════ -->
+<!-- ═══════════════════════════ SLIDE 17: 软约束 vs 硬约束 ═══════════════════════════ -->
 <section data-transition="slide">
-  <h2 style="font-size:32px;font-weight:700;margin-bottom:8px;color:var(--text);">
+  <div style="display:flex;align-items:center;gap:12px;justify-content:center;margin-bottom:4px;">
+    <h2 style="font-size:26px;font-weight:700;color:var(--text);margin:0;">
+      ⚖️ 软约束 vs 硬约束 — KL正则化 vs 行为克隆
+    </h2>
+    <span style="background:rgba(254,202,87,0.15);border:1px solid rgba(254,202,87,0.3);border-radius:12px;padding:3px 12px;font-size:11px;color:var(--a4);font-weight:700;">💬 讨论</span>
+  </div>
+  <div class="glow-bar"></div>
+  <p style="font-size:13px;color:var(--text3);margin-bottom:12px;">
+    这一对比揭示了 OPD 设计中一个核心哲学选择：给不给策略"讨价还价"的空间？
+  </p>
+  <div class="two-col">
+    <div class="fragment fade-up">
+      <div style="background:rgba(108,92,231,0.08);border:1px solid rgba(108,92,231,0.2);border-radius:18px;padding:24px 20px;text-align:left;">
+        <h4 style="color:var(--a1);margin:0 0 10px;">🪢 KL正则化 — "软"约束</h4>
+        <p style="font-size:13px;color:var(--text2);line-height:1.7;margin:0;">
+          <strong>机制：</strong>目标函数中加惩罚项 −c_KL·D_KL(πᵢ‖π₀)<br>
+          <strong>特点：</strong>允许偏离，但偏离了要扣分。算法自动权衡"多拿奖励"和"别走太远"。<br>
+          <strong>比喻：</strong>橡皮筋拉着你——可以撑开走远，只是越来越费力。<br>
+          <strong>结果：</strong>πᵢ可以超越π₀，只要有足够的任务奖励支撑。
+        </p>
+      </div>
+    </div>
+    <div class="fragment fade-up">
+      <div style="background:rgba(255,107,157,0.06);border:1px solid rgba(255,107,157,0.2);border-radius:18px;padding:24px 20px;text-align:left;">
+        <h4 style="color:var(--a3);margin:0 0 10px;">🔒 行为克隆 — "硬"压缩</h4>
+        <p style="font-size:13px;color:var(--text2);line-height:1.7;margin:0;">
+          <strong>机制：</strong>监督学习——学生输出必须和专家一模一样。<br>
+          <strong>特点：</strong>没有"适度偏离"的余地，强行复制专家行为。<br>
+          <strong>比喻：</strong>抄作业——只能原样照抄，不能有自己的解法。<br>
+          <strong>结果：</strong>学生能力上限 ≤ 专家。但作为初始化很好用。
+        </p>
+      </div>
+    </div>
+  </div>
+  <p style="font-size:13px;color:var(--text2);margin-top:16px;max-width:800px;">
+    <strong style="color:#fff;">在DAG中的位置：</strong>KL软约束来自Distral，硬压缩来自Actor-Mimic——两条线最终都汇入OPD的技术工具箱，各有适用场景。
+  </p>
+</section>
+
+<!-- ═══════ SECTION 4: 架构概念 ═══════ -->
+<!-- ═══════════════════════════ SLIDE 18: 节标题 - 架构概念 ═══════════════════════════ -->
+<section data-transition="slide">
+  <div style="text-align:center;">
+    <span class="section-badge arch">🏗️ 支线 · SECTION 4</span>
+  </div>
+  <h2 style="font-size:32px;font-weight:700;margin:16px 0 4px;color:var(--a5);">架构概念</h2>
+  <p style="font-size:16px;color:var(--text3);margin:0;">基座网络 · 共享特征 · Progressive Nets · 参数增长</p>
+  <div class="glow-bar"></div>
+  <div style="margin-top:14px; padding:10px 18px; background:rgba(0,230,118,0.04); border:1px solid rgba(0,230,118,0.15); border-radius:14px; font-size:11px; color:var(--text3); max-width:560px;">
+    DAG位置：右侧分支 — 独立于三条主线的技术基座，但影响所有后续方法的设计选择
+  </div>
+</section>
+
+<!-- ═══════════════════════════ SLIDE 19: 基座网络 & 共享特征 ═══════════════════════════ -->
+<section data-transition="slide">
+  <h2 style="font-size:26px;font-weight:700;margin-bottom:4px;color:var(--text);">
+    🏗️ 基座网络 & 共享特征 — 多任务学习的结构基础
+  </h2>
+  <div class="glow-bar"></div>
+  <div class="two-col">
+    <div class="fragment fade-up">
+      <div class="concept-card" style="border-top:3px solid var(--a5);">
+        <h4>🧱 什么是基座 (Backbone)？</h4>
+        <p><strong style="color:var(--a5);">多个任务共享的那部分网络层。</strong><br>
+        前面几层（靠近输入的）学通用特征：如边缘、纹理、运动原语。后面每个任务各自接一个"头"做特定输出。基座可以硬共享（强制共用）或软共享（参数相近但不完全一样）。</p>
+      </div>
+    </div>
+    <div class="fragment fade-up">
+      <div class="concept-card" style="border-top:3px solid var(--a2);">
+        <h4>📊 为什么需要共享基座？</h4>
+        <p>• <strong style="color:var(--a2);">样本效率</strong>：通用特征一次学习，所有任务受益<br>
+        • <strong style="color:var(--a2);">知识迁移</strong>：任务A学到的边缘检测自然用于任务B<br>
+        • <strong style="color:var(--a2);">与OPD的关系</strong>：蒸馏出的π₀本质上就是一个"行为基座"——捕获所有任务共有的动作模式</p>
+      </div>
+    </div>
+  </div>
+  <p style="font-size:13px;color:var(--text2);margin-top:14px;max-width:800px;">
+    <strong style="color:#fff;">软/硬共享对比：</strong>KL正则 → 基座的"软共享"（允许偏离但惩罚）。Actor-Mimic的行为克隆 → 基座的"硬共享"（强制复制）。这和我们Slide 17讨论的软vs硬约束是同一哲学的不同体现。
+  </p>
+</section>
+
+<!-- ═══════════════════════════ SLIDE 20: Progressive Nets ═══════════════════════════ -->
+<section data-transition="slide">
+  <h2 style="font-size:26px;font-weight:700;margin-bottom:4px;color:var(--text);">
+    🏛️ Progressive Nets — 另一条解决路径
+  </h2>
+  <div class="glow-bar"></div>
+  <div class="two-col">
+    <div class="fragment fade-up">
+      <div class="concept-card" style="border-top:3px solid var(--a4);">
+        <h4>💡 核心思想</h4>
+        <p>学新任务时<strong style="color:var(--a4);">不动旧网络参数</strong>，新增一整套路网络（称为一"列"），并通过横向连接把之前所有旧列的特征都接进来。彻底解决灾难性遗忘。</p>
+      </div>
+      <div class="code-window" style="max-width:100%;font-size:12px;">
+        <div class="code-header">
+          <span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span>
+          <span style="color:rgba(255,255,255,0.4);font-size:11px;margin-left:10px;">progressive_net.py</span>
+        </div>
+        <div class="code-body" style="font-size:12px;line-height:1.6;">
+          <span class="cm"># 列1 (任务1) → 冻结</span><br>
+          col1_l1 → col1_l2 → col1_l3 → <span class="kw">output1</span><br>
+          &nbsp;&nbsp;&nbsp;<span class="s">↘</span> adapter<br>
+          <span class="cm"># 列2 (任务2) → 可训练</span><br>
+          <span class="fn">concat</span>(col2_l1, col1_l1) → col2_l2 → ...<br>
+          <span class="cm"># 每一列 = 一整套网络（多层）</span><br>
+        </div>
+      </div>
+    </div>
+    <div class="fragment fade-up">
+      <div class="concept-card" style="border-top:3px solid var(--a3);">
+        <h4>⚠️ 参数增长问题</h4>
+        <p>1个任务 = 100万参数。10个任务 = <strong style="color:var(--a3);">1000万+参数</strong>（线性增长）。任务多了存不下、跑不动。<br><br><strong>后续优化方向：</strong><br>
+        • PackNet：剪枝+复用空置权重<br>
+        • EWC：用Fisher信息矩阵保护重要权重<br>
+        • PathNet：固定大小的模块库，按需组合<br>
+        • 趋势：从全量硬增长 → 灵活模块化复用</p>
+      </div>
+      <div class="info-tile" style="max-width:100%;">
+        <h4>🔗 与OPD的关系</h4>
+        <p>KL正则 → "软"约束。Actor-Mimic → "硬"压缩。Progressive Nets → 第三种路径：<strong>不约束也不压缩，直接扩展</strong>。它的扩展性局限直接引出了后续更灵活的模块化方法。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ SECTION 5: 总结与过渡 ═══════ -->
+<!-- ═══════════════════════════ SLIDE 21: 萌芽期总结 ═══════════════════════════ -->
+<section data-transition="slide">
+  <h2 style="font-size:28px;font-weight:700;margin-bottom:4px;color:var(--text);">
     📋 萌芽期总结 (2015–2017)
   </h2>
   <div class="glow-bar"></div>
-
   <table class="summary-table fragment fade-up">
     <thead>
-      <tr>
-        <th>工作</th>
-        <th>核心贡献</th>
-        <th>与 OPD 的关系</th>
-      </tr>
+      <tr><th>工作</th><th>角色</th><th>核心贡献</th><th>与OPD的关系</th></tr>
     </thead>
     <tbody>
-      <tr>
-        <td class="paper-col">🏛️ Policy Distillation (2015)</td>
-        <td>首次提出<span class="highlight">"在线蒸馏"</span></td>
-        <td>OPD 的<span class="highlight">词汇和概念来源</span></td>
-      </tr>
-      <tr>
-        <td class="paper-col">🔬 Actor-Mimic (2016)</td>
-        <td>自生成轨迹 + 特征回归 + Q值截断</td>
-        <td>OPD 的<span class="highlight">技术组件</span></td>
-      </tr>
-      <tr>
-        <td class="paper-col">🧠 Distral (2017)</td>
-        <td>KL 约束作为先验 + 交替优化</td>
-        <td>OPD 的<span class="highlight">理论框架</span></td>
-      </tr>
+      <tr><td class="pc">🏛️ Policy Distillation (2015)</td><td>命名者</td><td>首次提出<span class="hl">"在线蒸馏"</span></td><td>OPD的<span class="hl">词汇和概念来源</span></td></tr>
+      <tr><td class="pc">🔬 Actor-Mimic (2016)</td><td>工程师</td><td>Q值截断+特征回归+行为克隆</td><td>OPD的<span class="hl">技术组件</span></td></tr>
+      <tr><td class="pc">🧠 Distral (2017)</td><td>理论家</td><td>KL约束+交替优化+闭式解</td><td>OPD的<span class="hl">理论框架</span></td></tr>
+      <tr style="background:rgba(0,230,118,0.04);"><td class="pc" style="color:var(--a5);">🔗 DAG汇聚关系</td><td colspan="3" style="font-size:13px;color:var(--text2);">Policy Distillation + Actor-Mimic → 两条技术路线在<span style="color:#00e676;font-weight:700;">Distral处汇合</span>，形成统一框架。KL软约束(Actor-Mimic = 硬压缩的软化版) + 在线蒸馏概念 + 交替优化 = OPD理论基座</td></tr>
     </tbody>
   </table>
-
   <div class="quote-banner fragment fade-up">
-    <span class="quote-mark">"</span>
-    蒸馏不仅是训练后的压缩手段，更是一种<strong style="color:var(--accent-2);">在训练中持续发生的知识传递过程</strong>。
-    <span class="quote-mark">"</span>
-    <br>
-    <span style="font-size:13px;color:var(--text3);">—— 萌芽期核心共识</span>
+    <span style="font-size:20px;color:var(--a4);">"</span>
+    蒸馏不仅是训练后的压缩手段，更是一种<strong style="color:var(--a2);">在训练中持续发生的知识传递过程</strong>。
+    <span style="font-size:20px;color:var(--a4);">"</span>
+    <br><span style="font-size:12px;color:var(--text3);">—— 萌芽期核心共识</span>
   </div>
 </section>
 
-<!-- ═══════════════ Slide 10: 过渡到 Part 2 ═══════════════ -->
+<!-- ═══════════════════════════ SLIDE 22: 过渡到 Part 2 ═══════════════════════════ -->
 <section data-transition="zoom">
   <div class="glass-card fragment fade-up">
-    <span style="font-size:60px;display:block;animation:float 3s ease-in-out infinite;">🔮</span>
-    <h2 style="font-size:28px;font-weight:700;color:var(--text);margin-bottom:20px;">
-      萌芽期回答了<strong style="color:var(--accent-2);">「如何共享」</strong>
+    <span style="font-size:56px;display:block;animation:float 3s ease-in-out infinite;">🔮</span>
+    <h2 style="font-size:26px;font-weight:700;color:var(--text);margin-bottom:18px;">
+      萌芽期回答了<strong style="color:var(--a2);">"如何共享"</strong>
     </h2>
     <div class="glow-bar"></div>
-    <div class="cliffhanger">
+    <div style="font-size:20px;color:var(--text2);line-height:1.7;margin-bottom:8px;">
       但新问题来了——<br>
       如果那些需要蒸馏的复杂技能，<br>
-      在任务中<span class="highlight-word">根本没有明确的奖励信号</span>，怎么办？<span class="cursor-blink"></span>
+      在任务中<strong style="color:var(--a3);">根本没有明确的奖励信号</strong>，怎么办？<span class="cursor-blink"></span>
     </div>
+    <p style="font-size:13px;color:var(--text3);">
+      很多真实技能（跑、跳、翻身）的奖励函数很难人工编写——没有R，Distral框架就无法启动。
+    </p>
     <div class="next-badge">
       📖 Part 2 预告
-      <span style="font-size:13px;color:var(--text3);font-weight:400;">
-        DIAYN · 无监督技能发现 · 理论深化
-      </span>
+      <span style="font-size:12px;color:var(--text3);font-weight:400;">DIAYN · 无监督技能发现 · 理论深化</span>
     </div>
   </div>
 </section>
@@ -1037,70 +1198,52 @@ window.MathJax = {
 <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.js"></script>
 <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
-<!-- ============ 粒子背景引擎 (与 index.html 完全相同) ============ -->
+<!-- ============ 粒子背景 ============ -->
 <script>
 (function() {
   const canvas = document.getElementById('particle-canvas');
   const ctx = canvas.getContext('2d');
   let W, H, particles;
 
-  function resize() {
-    W = canvas.width = window.innerWidth;
-    H = canvas.height = window.innerHeight;
-  }
-  window.addEventListener('resize', resize);
-  resize();
+  function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+  window.addEventListener('resize', resize); resize();
 
   class Particle {
     constructor() { this.reset(); }
     reset() {
-      this.x = Math.random() * W;
-      this.y = Math.random() * H;
-      this.vx = (Math.random() - 0.5) * 0.6;
-      this.vy = (Math.random() - 0.5) * 0.6;
-      this.r = Math.random() * 2 + 0.5;
-      this.alpha = Math.random() * 0.5 + 0.1;
+      this.x = Math.random() * W; this.y = Math.random() * H;
+      this.vx = (Math.random() - 0.5) * 0.6; this.vy = (Math.random() - 0.5) * 0.6;
+      this.r = Math.random() * 2 + 0.5; this.alpha = Math.random() * 0.5 + 0.1;
     }
     update() {
-      this.x += this.vx;
-      this.y += this.vy;
-      if (this.x < -20 || this.x > W + 20 || this.y < -20 || this.y > H + 20) {
-        this.reset();
-      }
+      this.x += this.vx; this.y += this.vy;
+      if (this.x < -20 || this.x > W + 20 || this.y < -20 || this.y > H + 20) { this.reset(); }
     }
     draw(ctx) {
-      ctx.beginPath();
-      ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(108, 92, 231, ${this.alpha})`;
-      ctx.fill();
+      ctx.beginPath(); ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(108, 92, 231, ${this.alpha})`; ctx.fill();
     }
   }
-
   particles = Array.from({ length: 120 }, () => new Particle());
 
   function drawLines() {
     for (let i = 0; i < particles.length; i++) {
       for (let j = i + 1; j < particles.length; j++) {
-        const dx = particles[i].x - particles[j].x;
-        const dy = particles[i].y - particles[j].y;
+        const dx = particles[i].x - particles[j].x, dy = particles[i].y - particles[j].y;
         const dist = Math.sqrt(dx * dx + dy * dy);
         if (dist < 120) {
-          ctx.beginPath();
-          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.beginPath(); ctx.moveTo(particles[i].x, particles[i].y);
           ctx.lineTo(particles[j].x, particles[j].y);
           ctx.strokeStyle = `rgba(0, 210, 255, ${0.08 * (1 - dist / 120)})`;
-          ctx.lineWidth = 0.5;
-          ctx.stroke();
+          ctx.lineWidth = 0.5; ctx.stroke();
         }
       }
     }
   }
-
   function loop() {
     ctx.clearRect(0, 0, W, H);
     particles.forEach(p => { p.update(); p.draw(ctx); });
-    drawLines();
-    requestAnimationFrame(loop);
+    drawLines(); requestAnimationFrame(loop);
   }
   loop();
 })();
@@ -1109,21 +1252,11 @@ window.MathJax = {
 <!-- ============ Reveal 初始化 ============ -->
 <script>
 Reveal.initialize({
-  hash: true,
-  center: true,
-  transition: 'slide',
-  transitionSpeed: 'slow',
-  backgroundTransition: 'zoom',
-  slideNumber: false,
-  progress: false,
-  controls: true,
-  controlsLayout: 'edges',
-  controlsBackArrows: 'faded',
-  width: 1200,
-  height: 700,
-  margin: 0.05,
-  minScale: 0.2,
-  maxScale: 2.0,
+  hash: true, center: true,
+  transition: 'slide', transitionSpeed: 'slow', backgroundTransition: 'zoom',
+  slideNumber: false, progress: false,
+  controls: true, controlsLayout: 'bottom-right', controlsBackArrows: 'faded',
+  width: 1200, height: 700, margin: 0.02, minScale: 0.2, maxScale: 2.0,
 });
 </script>
 
