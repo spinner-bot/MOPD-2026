@@ -132,6 +132,44 @@
   <text x="450" y="195" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="10" font-family="sans-serif">ViT-L/16: 307M参数 · ImageNet 88.5% · 比CNN更少的归纳偏置</text>
 </svg></section>
 
-<section data-transition="slide"><div class="two-col fragment fade-up"><div class="concept-block" style="border-left:3px solid var(--vis);"><h4>🔑 关键创新</h4><p style="font-size:11px;">图像<strong style="color:var(--vis);">不需要</strong>专门的卷积操作。把图像切成 Patch 后线性投影，变成和文本 token 一样的向量序列——Transformer 自然地就能处理。这打破了 CV 和 NLP 的架构壁垒。</p></div><div class="concept-block" style="border-left:3px solid var(--gen);"><h4>⚠️ 局限</h4><p style="font-size:11px;">ViT 需要<strong style="color:var(--gen);">大量数据</strong>预训练（JFT-300M）才能超越 CNN。缺少卷积的归纳偏置——平移等变性、局部性——在小数据集上不如 ResNet。</p></div></div></section><script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<section data-transition="slide"><div class="two-col fragment fade-up"><div class="concept-block" style="border-left:3px solid var(--vis);"><h4>🔑 关键创新</h4><p style="font-size:11px;">图像<strong style="color:var(--vis);">不需要</strong>专门的卷积操作。把图像切成 Patch 后线性投影，变成和文本 token 一样的向量序列——Transformer 自然地就能处理。这打破了 CV 和 NLP 的架构壁垒。</p></div><div class="concept-block" style="border-left:3px solid var(--gen);"><h4>⚠️ 局限</h4><p style="font-size:11px;">ViT 需要<strong style="color:var(--gen);">大量数据</strong>预训练（JFT-300M）才能超越 CNN。缺少卷积的归纳偏置——平移等变性、局部性——在小数据集上不如 ResNet。</p></div></div></section>
+
+<!-- ═══════════ CLIP ═══════════ -->
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">CLIP · 2021.01</span></div>
+<div class="paper-card fragment fade-up"><div class="cite" style="font-size:10px;">arXiv: 2103.00020 · OpenAI · 4亿图文对 · 引用 30,000+</div>
+<div class="title" style="font-size:16px;font-weight:700;color:#fff;margin:4px 0;">CLIP — Contrastive Language–Image Pre-training</div>
+<div class="desc" style="font-size:12px;color:var(--text2);line-height:1.7;margin-top:6px;"><strong style="color:var(--vlm);">核心贡献：</strong>用<strong style="color:#fff;">对比学习</strong>在4亿图文对上训练，将图像和文本映射到<strong style="color:#fff;">同一个语义空间</strong>。"一只狗"的文字和狗的照片在这个空间中距离极近。</div></div></section>
+
+<section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--vlm);margin-bottom:8px;">CLIP 架构：双塔 + 对比学习</h2>
+<svg viewBox="0 0 900 280" xmlns="http://www.w3.org/2000/svg" style="max-width:900px;">
+  <defs><style>.fade{animation:fI 2s ease-in-out infinite alternate}@keyframes fI{from{opacity:0.6}to{opacity:1}}</style></defs>
+  <!-- 图像塔 -->
+  <rect x="20" y="20" width="200" height="140" rx="14" fill="rgba(96,165,250,0.08)" stroke="rgba(96,165,250,0.25)"/>
+  <text x="120" y="50" text-anchor="middle" fill="#60a5fa" font-size="15" font-weight="700" font-family="sans-serif">🖼️ 图像编码器</text>
+  <text x="120" y="75" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="11" font-family="sans-serif">ViT / ResNet</text>
+  <rect x="40" y="90" width="160" height="40" rx="8" fill="rgba(96,165,250,0.12)"/>
+  <text x="120" y="115" text-anchor="middle" fill="#60a5fa" font-size="12" font-weight="700" font-family="sans-serif">图像特征向量 f</text>
+  <text x="120" y="145" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="9">512维 · L2归一化</text>
+  <!-- 文本塔 -->
+  <rect x="680" y="20" width="200" height="140" rx="14" fill="rgba(183,148,244,0.08)" stroke="rgba(183,148,244,0.25)"/>
+  <text x="780" y="50" text-anchor="middle" fill="#b794f4" font-size="15" font-weight="700" font-family="sans-serif">📝 文本编码器</text>
+  <text x="780" y="75" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="11" font-family="sans-serif">Transformer</text>
+  <rect x="700" y="90" width="160" height="40" rx="8" fill="rgba(183,148,244,0.12)"/>
+  <text x="780" y="115" text-anchor="middle" fill="#b794f4" font-size="12" font-weight="700" font-family="sans-serif">文本特征向量 g</text>
+  <text x="780" y="145" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="9">512维 · L2归一化</text>
+  <!-- 共享空间 -->
+  <rect x="320" y="70" width="260" height="100" rx="16" fill="rgba(251,191,36,0.06)" stroke="rgba(251,191,36,0.3)" stroke-dasharray="6 3" class="fade"/>
+  <text x="450" y="95" text-anchor="middle" fill="#facc15" font-size="14" font-weight="700" font-family="sans-serif">🌐 共享语义空间</text>
+  <text x="450" y="120" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="10" font-family="sans-serif">cos(f, g) → 最大化</text>
+  <text x="450" y="140" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="9" font-family="sans-serif">N×N 相似度矩阵</text>
+  <!-- 箭头 -->
+  <path d="M220,90 L320,110" stroke="rgba(96,165,250,0.4)" stroke-width="2" marker-end="url(#a)"/>
+  <path d="M680,90 L580,110" stroke="rgba(183,148,244,0.4)" stroke-width="2" marker-end="url(#a)"/>
+  <!-- 底部公式 -->
+  <text x="450" y="200" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="12" font-family="sans-serif">损失 = 双向交叉熵：正确图文对得分最高，错误配对得分最低</text>
+  <text x="450" y="225" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="10" font-family="sans-serif">训练数据: 4亿 (图像, 文本描述) 对 · 从互联网收集</text>
+</svg></section>
+
+<section data-transition="slide"><div class="two-col fragment fade-up"><div class="concept-block" style="border-left:3px solid var(--vlm);"><h4>🔑 为什么CLIP是"桥"的起点</h4><p style="font-size:11px;">CLIP训练后，文本和图像<strong style="color:var(--vlm);">共享同一个嵌入空间</strong>。"a cat on a table"的文本向量和猫在桌上的照片向量几乎重合。这意味着——可以将<strong style="color:var(--vlm);">文本作为检索查询</strong>找到语义匹配的图像，或反过来。更重要的是：文本向量可以直接作为<strong style="color:var(--vlm);">条件信号</strong>指导图像生成。</p></div><div class="concept-block" style="border-left:3px solid var(--aud);"><h4>📊 零样本能力</h4><p style="font-size:11px;">ImageNet 零样本准确率 <strong style="color:var(--aud);">76.2%</strong>（与监督 ResNet-50 持平）。只需将类别名转为文本描述（如"a photo of a dog"），无需任何微调即可分类。这证明<strong style="color:var(--aud);">视觉和语言可以在统一的语义空间中被理解和处理</strong>。</p></div></div></section><script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 <script>(function(){const c=document.getElementById('bg-canvas'),x=c.getContext('2d');let W,H,ribbons=[],frame=0;function rs(){W=c.width=window.innerWidth;H=c.height=window.innerHeight}window.addEventListener('resize',rs);rs();class Ribbon{constructor(){this.reset()}reset(){this.points=[];this.y=H*0.3+Math.random()*H*0.7;this.speed=(Math.random()-0.5)*0.25;this.hue=Math.floor(Math.random()*360);this.light=Math.floor(Math.random()*16+20);this.hueDrift=Math.random()*0.35+0.15;this.lightDrift=(Math.random()-0.5)*0.04;this.yDrift=(Math.random()-0.5)*0.15;const a=Math.random()*0.07+0.05;this.alpha=a;this.alphaStr=a*30;for(let i=0;i<=20;i++)this.points.push({x:i*W/20,y:Math.random()*70-35})}update(){this.y+=this.speed+this.yDrift;this.speed+=(Math.random()-0.5)*0.003;if(this.y<H*0.2||this.y>H+80)this.reset();this.hue+=this.hueDrift;if(this.hue<0)this.hue+=360;if(this.hue>=360)this.hue-=360;this.light+=this.lightDrift;if(this.light<20)this.lightDrift=0.05;if(this.light>35)this.lightDrift=-0.05;for(let p of this.points)p.y+=(Math.random()-0.5)*0.6}draw(ctx){const col=`hsla(${Math.floor(this.hue)},100%,${Math.floor(this.light)}%,`;ctx.save();ctx.globalAlpha=this.alpha;ctx.shadowColor=col+'0.35)';ctx.shadowBlur=20;ctx.beginPath();ctx.moveTo(0,this.y);for(let i=0;i<this.points.length;i++){const px=this.points[i].x,py=this.y+this.points[i].y;if(i<this.points.length-1){const nx=this.points[i+1].x,ny=this.y+this.points[i+1].y;ctx.quadraticCurveTo(px,py,(px+nx)/2,(py+ny)/2)}}ctx.lineTo(W,H);ctx.lineTo(0,H);ctx.closePath();ctx.fillStyle=col+this.alphaStr+')';ctx.fill();ctx.shadowBlur=0;ctx.restore()}}ribbons=Array.from({length:8},()=>new Ribbon());function lp(){x.clearRect(0,0,W,H);const grad=x.createRadialGradient(W/2,H/2,0,W/2,H/2,Math.max(W,H)*0.8);grad.addColorStop(0,'rgba(20,12,30,0.35)');grad.addColorStop(0.5,'rgba(8,5,12,0.12)');grad.addColorStop(1,'rgba(2,1,4,0)');x.fillStyle=grad;x.fillRect(0,0,W,H);const bloom=x.createRadialGradient(W/2+Math.sin(frame*0.003)*W*0.08,H/2+Math.cos(frame*0.004)*H*0.06,Math.min(W,H)*0.03,W/2,H/2,Math.min(W,H)*0.45);bloom.addColorStop(0,'rgba(140,110,200,0.05)');bloom.addColorStop(0.4,'rgba(100,140,200,0.02)');bloom.addColorStop(1,'rgba(0,0,0,0)');x.fillStyle=bloom;x.fillRect(0,0,W,H);ribbons.forEach(r=>{r.update();r.draw(x)});frame++;requestAnimationFrame(lp)}lp()})();</script>
 <script>Reveal.initialize({hash:true,center:true,transition:'slide',transitionSpeed:'slow',backgroundTransition:'zoom',slideNumber:false,progress:false,controls:true,controlsLayout:'bottom-right',width:1200,height:700,margin:0,minScale:0.2,maxScale:2.0});(function(){const e=document.getElementById('page-indicator');function u(){const t=Reveal.getTotalSlides(),c=Reveal.getSlidePastCount()+1;e.textContent=c+' / '+t}Reveal.on('ready',u);Reveal.on('slidechanged',u)})();</script></body></html>
