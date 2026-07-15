@@ -3295,13 +3295,13 @@ window.MathJax = {
   </div>
 </section>
 
-<section data-transition="slide">
-  <h2 style="font-size:24px;font-weight:700;margin-bottom:4px;color:var(--text);">🔍 四象限逐一解读</h2><div class="glow-bar"></div>
-  <div class="cell-2x2 fragment fade-up">
-    <div class="cell c1"><strong>① 离线SFT/标准蒸馏</strong><br>前缀: 教师侧(固定数据集)<br>KL: Forward<br>→ 学生模仿教师所有输出<br>→ 最经典的大模型蒸馏范式</div>
-    <div class="cell c2"><strong>② 离线RL风格蒸馏</strong><br>前缀: 教师侧<br>KL: Reverse<br>→ 集中在教师高概率token<br>→ ⚡研究空白: 离线稳定+锐化决策</div>
-    <div class="cell c3"><strong>③ DAgger风格在线SFT</strong><br>前缀: 学生侧(在线采样)<br>KL: Forward<br>→ 学生犯错时请求教师标签<br>→ 解决分布偏移但需实时查询教师</div>
-    <div class="cell c4"><strong>④ OPD (在线策略蒸馏)</strong><br>前缀: 学生侧<br>KL: Reverse<br>→ 学生在线+Reverse KL拉回<br>→ 多任务RL和LLM对齐中的常见模式</div>
+<section data-transition="slide" style="padding:18px 40px !important;">
+  <h2 style="font-size:22px;font-weight:700;margin-bottom:2px;color:var(--text);">🔍 四象限逐一解读</h2><div class="glow-bar" style="margin:8px auto;"></div>
+  <div class="cell-2x2 fragment fade-up" style="gap:6px;">
+    <div class="cell c1" style="padding:10px 12px;font-size:11px;"><strong>① 离线SFT/标准蒸馏</strong><br>教师前缀 + Forward KL<br>→ 模仿教师所有输出<br>→ 最经典的大模型蒸馏</div>
+    <div class="cell c2" style="padding:10px 12px;font-size:11px;"><strong>② 离线RL风格蒸馏</strong><br>教师前缀 + Reverse KL<br>→ 集中在高概率token<br>→ 研究空白: 离线稳定+锐化</div>
+    <div class="cell c3" style="padding:10px 12px;font-size:11px;"><strong>③ DAgger风格在线SFT</strong><br>学生前缀 + Forward KL<br>→ 犯错时请求教师标签<br>→ 解决分布偏移</div>
+    <div class="cell c4" style="padding:10px 12px;font-size:11px;"><strong>④ OPD (在线策略蒸馏)</strong><br>学生前缀 + Reverse KL<br>→ 在线探索+KL拉回<br>→ 多任务RL &amp; LLM对齐</div>
   </div>
 </section>
 
