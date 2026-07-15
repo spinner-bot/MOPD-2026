@@ -70,24 +70,31 @@ function rs(){W=c.width=window.innerWidth;H=c.height=window.innerHeight}
 window.addEventListener("resize",rs);rs();
 
 class Ribbon{
-  constructor(){this.reset()}
-  reset(){
-    this.points=[];this.y=Math.random()*H;this.speed=(Math.random()-0.5)*0.35;
-    this.alpha=Math.random()*0.055+0.03;
-    // 色调随机(0-360全色谱) + 饱和度/亮度受控
+  constructor(){
+    this.born=frame;
+    // 三随机：色调(0-360)/位置高度/寿命(400-1000帧)
     const h=Math.floor(Math.random()*360);
-    const s=Math.floor(Math.random()*25+55); // 55-80% 适中饱和度
-    const l=Math.floor(Math.random()*15+50); // 50-65% 控制亮度
+    const s=Math.floor(Math.random()*25+55);
+    const l=Math.floor(Math.random()*15+50);
     this.color=`hsla(${h},${s}%,${l}%,`;
+    this.y=Math.random()*H;
+    this.lifespan=Math.floor(Math.random()*600+400);
+    this.speed=(Math.random()-0.5)*0.35;
+    this.alpha=Math.random()*0.07+0.04;
+    this.points=[];
+    this.currentAlpha=this.alpha;
     for(let i=0;i<=20;i++){this.points.push({x:i*W/20,y:Math.random()*70-35});}
   }
   update(){
     this.y+=this.speed;
-    if(this.y<-120||this.y>H+120)this.reset();
+    const t=(frame-this.born)/this.lifespan;
+    this.currentAlpha=this.alpha*Math.max(0,(1-t)); // 线性衰减至0
     for(let p of this.points){p.y+=(Math.random()-0.5)*0.6;}
   }
+  isDead(){return frame-this.born>this.lifespan||this.y<-150||this.y>H+150;}
   draw(ctx){
-    ctx.save();ctx.globalAlpha=this.alpha;
+    if(this.currentAlpha<0.004)return;
+    ctx.save();ctx.globalAlpha=this.currentAlpha;
     ctx.shadowColor=this.color+'0.35)';ctx.shadowBlur=20;
     ctx.beginPath();ctx.moveTo(0,this.y);
     for(let i=0;i<this.points.length;i++){
@@ -98,14 +105,20 @@ class Ribbon{
       }
     }
     ctx.lineTo(W,H);ctx.lineTo(0,H);ctx.closePath();
-    ctx.fillStyle=this.color+(this.alpha*30)+')';ctx.fill();
-    ctx.shadowBlur=0;
-    ctx.restore();
+    ctx.fillStyle=this.color+(this.currentAlpha*30)+')';ctx.fill();
+    ctx.shadowBlur=0;ctx.restore();
   }
 }
 
-
-ribbons=Array.from({length:8},()=>new Ribbon());
+ribbons=[];
+function manageRibbons(){
+  ribbons=ribbons.filter(r=>!r.isDead());
+  // 保持5-8条，概率补充
+  if(ribbons.length<5||(ribbons.length<8&&Math.random()<0.015)){
+    ribbons.push(new Ribbon());
+  }
+  ribbons.forEach(r=>{r.update();r.draw(x)});
+}
 
 
 function lp(){
@@ -123,8 +136,8 @@ function lp(){
   bloom.addColorStop(1,'rgba(0,0,0,0)');
   x.fillStyle=bloom;x.fillRect(0,0,W,H);
 
-  ribbons.forEach(r=>{r.update();r.draw(x)});
-  
+  manageRibbons();
+
   frame++;
   requestAnimationFrame(lp);
 }
