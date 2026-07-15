@@ -81,19 +81,75 @@
 <h2 style="font-size:20px;font-weight:700;color:var(--amber);margin-bottom:10px;">影响与后续</h2>
 <div class="fragment fade-up struct-content">MiniLLM 的 RKL+PG 方案直接启发了后续一整条技术线：DistiLLM (Skewed-KL 混合 FKL/RKL)→Entropy-Aware OPD (动态 KL 方向)→REOPOLD (解决 RKL 的模式坍缩/近零奖励/重尾负奖励)。<strong style="color:var(--amber);">从 MiniLLM 到 REOPOLD，KAIST 团队用了 3 年完成了 RKL 从"有用但不稳定"到"生产就绪"的进化。</strong></div></section>
 
-<!-- P3-P8 压缩版 (博客/综述/立场类) -->
-<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P3–P5 · 博客与综述</span></div>
+<!-- ═══════════ P3: Thinking Machines Blog ═══════════ -->
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P3 · S1/5</span></div>
+<div class="paper-card fragment fade-up"><div class="pn">PAPER 3 · Thinking Machines Lab · 2025.10</div><div class="title">On-Policy Distillation Blog — "swap KL ref for stronger teacher"</div><div class="venue">thinkingmachines.ai/blog/on-policy-distillation</div></div>
+<div class="fragment fade-up struct-content" style="margin-top:8px;"><strong style="color:var(--amber);">一句话核心贡献：</strong>被 AwesomeOPD 评为<strong style="color:#fff;">"最清晰的 OPD 单页解释"</strong>。用一句话概括 OPD 本质：<strong style="color:#fff;">"把 KL 正则化中的参考策略换成一个更强的教师"</strong>。将 OPD 的核心直觉浓缩为可立即理解的类比。</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P3 · S2/5</span></div>
+<h2 style="font-size:20px;font-weight:700;color:var(--amber);margin-bottom:10px;">背景 · OPD 与 RL 的关系</h2>
+<div class="fragment fade-up struct-content">标准 RL 训练中，KL 正则项 −β·D_KL(π_θ‖π_ref) 用于<strong style="color:#fff;">防止策略偏离太远</strong>。OPD 的巧妙之处：<strong style="color:var(--amber);">把 π_ref 换成更强的教师策略 π_T</strong>。原本用于"约束"的 KL 项瞬间变成了"学习"的驱动力——不需要额外的蒸馏步骤。</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P3 · S3/5</span></div>
+<h2 style="font-size:20px;font-weight:700;color:var(--amber);margin-bottom:10px;">核心洞察：为何 OPD 同时击败 SFT 和 RL</h2>
+<div class="fragment fade-up struct-content"><strong>SFT：</strong>学生只在教师见过数据上训练→分布不匹配→泛化差<br><strong>纯 RL：</strong>学生自己探索但奖励稀疏→效率极低<br><strong>OPD：</strong>学生<strong style="color:var(--amber);">自己探索</strong>(在线采样) + 教师提供<strong style="color:var(--amber);">密集逐 token 信号</strong>(KL 监督)→两全其美</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P3 · S4/5</span></div>
+<h2 style="font-size:20px;font-weight:700;color:var(--amber);margin-bottom:10px;">对 OPD 生态的影响</h2>
+<div class="fragment fade-up struct-content">这篇博客在 AwesomeOPD 中被列为<strong style="color:var(--amber);">"推荐阅读顺序 #1"</strong>——"如果你正要开始一个 OPD 项目，从这篇开始"。它用最少的技术术语传达了 OPD 的核心直觉，为后续所有白盒/黑盒/OPSD 论文的阅读提供了<strong style="color:#fff;">概念锚点</strong>。</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P3 · S5/5</span></div>
+<h2 style="font-size:20px;font-weight:700;color:var(--amber);margin-bottom:10px;">局限与审视</h2>
+<div class="fragment fade-up struct-content">作为博客而非学术论文，不包含实验数据和方法细节。其"swap KL ref"的类比虽然直观，但<strong style="color:var(--amber);">简化了 OPD 的复杂性</strong>——实际 OPD 涉及分布匹配、梯度场修复、熵管理等博客未覆盖的关键问题。应作为入门理解工具，而非技术参考。</div></section>
+
+<!-- ═══════════ P4: Revisiting OPD ═══════════ -->
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P4 · S1/5</span></div>
+<div class="paper-card fragment fade-up"><div class="pn">PAPER 4 · arXiv: 2603.25562 · 2026.03</div><div class="title">Revisiting OPD — 诊断 3 种失效模式</div><div class="venue">CASIA (中科院自动化所)</div></div>
+<div class="fragment fade-up struct-content" style="margin-top:8px;"><strong style="color:var(--amber);">核心贡献：</strong>系统诊断 OPD 在实践中失败的<strong style="color:#fff;">三种具体原因</strong>，补充了 UIUC (P7) 未覆盖的维度。</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P4 · S2/5</span></div>
+<h2 style="font-size:20px;font-weight:700;color:var(--amber);margin-bottom:10px;">三大失效模式</h2>
 <div class="tri-grid fragment fade-up">
-  <div class="concept-block" style="border-top:2px solid var(--amber);"><h4>P3: Thinking Machines</h4><p style="font-size:10px;">2025.10 · "swap KL ref for stronger teacher"——最清晰的 OPD 单页解释。被 AwesomeOPD 推荐为入门首选。</p></div>
-  <div class="concept-block" style="border-top:2px solid var(--sage);"><h4>P4: Revisiting OPD</h4><p style="font-size:10px;">2026.03 CASIA · 诊断3种失效: 单token信号不平衡 + 前缀不可靠 + tokenizer不匹配。补充了UIUC未覆盖的维度。</p></div>
-  <div class="concept-block" style="border-top:2px solid var(--bronze);"><h4>P5: Tencent Survey</h4><p style="font-size:10px;">2026.04 腾讯 · 分类50+方法。白盒/黑盒/OPSD/RL混合四范式。与 AwesomeOPD 互补。</p></div>
+  <div class="concept-block"><h4>① 单token信号不平衡</h4><p style="font-size:10px;">关键决策 token 和填充 token 被同等对待→关键信号稀释。与 REOPOLD 问题二同源。</p></div>
+  <div class="concept-block"><h4>② 前缀不可靠</h4><p style="font-size:10px;">学生劣质前缀污染教师输入→恶性循环。与 UIUC (P7) 一致。</p></div>
+  <div class="concept-block"><h4>③ tokenizer不匹配</h4><p style="font-size:10px;">师生不同 tokenizer 时 KL 失去意义。CASIA 首次诊断此问题。</p></div>
 </div></section>
 
-<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P6–P8 · 立场与诊断</span></div>
-<div class="tri-grid fragment fade-up">
-  <div class="concept-block" style="border-top:2px solid var(--amber);"><h4>P6: THUNLP Rethinking</h4><p style="font-size:10px;">2026.04 清华 · OPD 成功两条件: ①兼容思维模式 ②真正新的教师能力。回答"OPD 何时有效"。</p></div>
-  <div class="concept-block" style="border-top:2px solid var(--sage);"><h4>P7: Many Faces (UIUC)</h4><p style="font-size:10px;">2026.05 · 分布不匹配+优化不稳定+PI-free限制→3修复已在 Module 1 Part 5 精讲。</p></div>
-  <div class="concept-block" style="border-top:2px solid var(--bronze);"><h4>P8: McGill Blog</h4><p style="font-size:10px;">2026.06 Li Jiang · 局部教师噪声+覆盖衰减+短视梯度。从梯度动力学角度独立验证学术界发现。</p></div>
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P4 · S3/5</span></div>
+<h2 style="font-size:20px;font-weight:700;color:var(--amber);margin-bottom:10px;">与 UIUC (P7) 的互补关系</h2>
+<div class="fragment fade-up struct-content">UIUC 诊断：分布不匹配 + 优化不稳定 + PI-free 限制<br>CASIA 诊断：token 信号不平衡 + 前缀不可靠 + tokenizer 不匹配<br><strong style="color:var(--amber);">两者覆盖了不同层面的问题：</strong>UIUC 偏宏观机制，CASIA 偏 tokenization 和信号层面的系统性问题。共同构成<strong style="color:#fff;">OPD 失效的完整诊断体系</strong>。</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P4 · S4-5/5</span></div>
+<div class="two-col fragment fade-up">
+  <div class="concept-block"><h4>🔧 S4: 修复建议</h4><p style="font-size:10px;">针对三个失效模式分别提出：token重要性加权 / Stop-Gradient 保护教师输入 / 跨tokenizer对齐机制。</p></div>
+  <div class="concept-block"><h4>⚠️ S5: 局限</h4><p style="font-size:10px;">诊断性论文——提出问题和修复方向，但未在统一框架下验证修复的联合效果。</p></div>
+</div></section>
+
+<!-- P5-P8 压缩版 (survey/position类) -->
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P5 · Tencent Survey</span></div>
+<div class="paper-card fragment fade-up"><div class="pn">PAPER 5 · arXiv: 2604.00626 · 2026.04</div><div class="title">Tencent OPD Survey — 分类 50+ 方法</div><div class="venue">腾讯</div></div>
+<div class="two-col fragment fade-up" style="margin-top:8px;">
+  <div class="concept-block"><h4>📊 四大范式</h4><p style="font-size:10px;">白盒(逐token KL)/黑盒(标量信号)/OPSD(自蒸馏)/OPD-RL(嵌入RL)。与方法论分类互补 AwesomeOPD。</p></div>
+  <div class="concept-block"><h4>⚠️ 作为参考索引</h4><p style="font-size:10px;">Survey 本身不提出新方法——其价值在于提供<strong style="color:var(--amber);">系统性的分类视角</strong>。</p></div>
+</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P6 · THUNLP Rethinking</span></div>
+<div class="paper-card fragment fade-up"><div class="pn">PAPER 6 · arXiv: 2604.13016 · 2026.04</div><div class="title">THUNLP Rethinking OPD — 两个成功条件</div><div class="venue">清华大学</div></div>
+<div class="two-col fragment fade-up" style="margin-top:8px;">
+  <div class="concept-block"><h4>✅ 条件一</h4><p style="font-size:10px;"><strong>兼容思维模式：</strong>学生必须有能力覆盖教师的推理空间。教师策略与学生能力不兼容时 OPD 失效。</p></div>
+  <div class="concept-block"><h4>✅ 条件二</h4><p style="font-size:10px;"><strong>真正新的教师能力：</strong>教师必须在学生薄弱的维度上更强。学生已掌握的技能→OPD 无增益。</p></div>
+</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P7 · UIUC Many Faces</span></div>
+<div class="paper-card fragment fade-up"><div class="pn">PAPER 7 · arXiv: 2605.11182 · 2026.05</div><div class="title">The Many Faces of On-Policy Distillation — 已精讲</div><div class="venue">UIUC</div></div>
+<div class="fragment fade-up struct-content" style="margin-top:8px;">📖 <strong style="color:var(--amber);">已在 Module 1 Part 5 详细精讲。</strong>三大失效(分布不匹配/优化不稳定/PI-free)+三大修复(Stop-Gradient Top-K KL/显式other类别/RLVR-adapt)。本 Part 0 从综述视角定位其对 OPD 诊断体系的贡献。</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P8 · McGill Blog</span></div>
+<div class="paper-card fragment fade-up"><div class="pn">PAPER 8 · McGill / Mila · 2026.06</div><div class="title">OPD 反思 Blog — 三个失败机制 (Li Jiang)</div></div>
+<div class="tri-grid fragment fade-up" style="margin-top:8px;">
+  <div class="concept-block"><h4>⚠️ 局部教师噪声</h4><p style="font-size:10px;">教师某些 token 上 logits 噪声→OPD 放大→学生学到错误信号。</p></div>
+  <div class="concept-block"><h4>⚠️ 覆盖衰减</h4><p style="font-size:10px;">学生分布偏移→教师覆盖下降→信号<strong style="color:var(--amber);">持续衰减</strong>。</p></div>
+  <div class="concept-block"><h4>⚠️ 短视梯度</h4><p style="font-size:10px;">逐 token KL 忽略长期后果→早期决策梯度被后期稀释。</p></div>
 </div></section>
 
 <!-- Part 0 后总 -->
