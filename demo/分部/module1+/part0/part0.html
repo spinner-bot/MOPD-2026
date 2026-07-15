@@ -1,397 +1,65 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Module1+ · OPD 论文精读 · Part 0: 定义与综述</title>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/black.min.css">
-<script>window.MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']],displayMath:[['$$','$$'],['\\[','\\]']]},options:{skipHtmlTags:['script','noscript','style','textarea','pre']}};</script>
-<style>
-/* ═══════════ Module1+ 论文精读主题 ═══════════
-   风格：温暖学术 · 琥珀金 + 深棕 + 米白
-   与 Module1 (冷色蓝紫玻璃态) 形成鲜明对比
-   ═══════════════════════════════════════════ */
-:root{
-  --bg:#0d0b09;--surface:rgba(30,25,18,0.65);--border:rgba(180,140,80,0.15);
-  --text:#e8dcc8;--text2:rgba(220,200,160,0.75);--text3:rgba(180,155,120,0.5);
-  --amber:#d4a040;--gold:#c89630;--bronze:#b87333;--wheat:#dcc090;
-  --rust:#c05530;--sage:#809060;--ink:#3a3028;
-  --shadow-card:0 8px 32px rgba(0,0,0,0.6);
-}
-#bg-canvas{position:fixed;inset:0;z-index:0;pointer-events:none}
-.reveal{background:transparent}
-.reveal .slides{text-align:center;width:100%!important;left:50%!important;margin:0!important}
-.reveal .slides section{padding:32px 52px;height:100%;display:flex!important;flex-direction:column;align-items:center;justify-content:center}
-.reveal .controls{right:12px!important;left:auto!important;bottom:12px!important}
-.reveal .progress,.reveal .slide-number{display:none!important}
-#page-indicator{position:fixed;left:24px;bottom:20px;z-index:100;font-size:13px;color:rgba(200,170,120,0.4);font-family:'JetBrains Mono',monospace;letter-spacing:1px;pointer-events:none}
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><title>Module1+ · Part 0: OPD 定义与综述</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/black.min.css">
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]}};</script>
+<style>:root{--bg:#0d0b09;--surface:rgba(30,25,18,0.65);--border:rgba(180,140,80,0.15);--text:#e8dcc8;--text2:rgba(220,200,160,0.75);--text3:rgba(180,155,120,0.5);--amber:#d4a040;--wheat:#dcc090;--sage:#809060;--rust:#c05530;--bronze:#b87333}
+#bg-canvas{position:fixed;inset:0;z-index:0;pointer-events:none}.reveal{background:transparent}.reveal .slides{text-align:center;width:100%!important;left:50%!important;margin:0!important}.reveal .slides section{padding:28px 48px;height:100%;display:flex!important;flex-direction:column;align-items:center;justify-content:center}.reveal .controls{right:12px!important;left:auto!important;bottom:12px!important}#page-indicator{position:fixed;left:24px;bottom:20px;z-index:100;font-size:13px;color:rgba(200,170,120,0.4);font-family:'JetBrains Mono',monospace}
+.ac-card{position:relative;z-index:2;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:36px 46px;max-width:860px;box-shadow:0 8px 32px rgba(0,0,0,0.6)}.ac-card::before{content:'';height:2px;background:linear-gradient(90deg,transparent,var(--amber),var(--bronze),transparent);display:block;margin-bottom:12px}.hero-title{font-size:46px;font-weight:800;background:linear-gradient(135deg,var(--amber),var(--wheat));background-size:300%300%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:gS 5s ease infinite}@keyframes gS{0%,100%{background-position:0%50%}50%{background-position:100%50%}}.ac-bar{width:100px;height:2px;background:linear-gradient(90deg,transparent,var(--amber),var(--bronze),transparent);margin:14px auto}
+.struct-head{font-size:18px;font-weight:700;color:var(--amber);margin:0 0 8px;border-bottom:1px solid rgba(180,140,80,0.3);display:inline-block;padding-bottom:4px}.struct-content{font-size:13px;color:var(--text2);line-height:2;text-align:left;max-width:780px}.struct-content strong{color:#fff}
+.paper-card{background:linear-gradient(135deg,rgba(40,30,20,0.6),rgba(30,22,14,0.8));border:1px solid var(--border);border-radius:10px;padding:20px 22px;text-align:left;margin-bottom:10px;box-shadow:0 4px 16px rgba(0,0,0,0.4);max-width:780px}.paper-card .pn{font-size:10px;color:var(--amber);font-weight:700}.paper-card .title{font-size:16px;font-weight:700;color:var(--wheat);margin:4px 0}.paper-card .venue{font-size:11px;color:var(--text3)}
+.two-col{display:flex;gap:20px;flex-wrap:wrap;justify-content:center;max-width:940px}.two-col>div{flex:1;min-width:260px}.tri-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;max-width:940px}
+.concept-block{background:rgba(30,25,18,0.5);border:1px solid var(--border);border-radius:10px;padding:16px 14px;text-align:left}.concept-block h4{font-size:13px;color:var(--amber);margin:0 0 5px}.concept-block p{font-size:11px;color:var(--text2);line-height:1.7;margin:0}
+.formula-box{background:rgba(10,8,5,0.8);border:1px solid rgba(180,140,80,0.2);border-radius:10px;padding:18px 24px;max-width:780px;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,0.5);margin:8px 0}.formula-box .math-block{font-size:15px;color:#d4c8b0}
+.reveal .slides section .fragment.fade-up{opacity:0;transform:translateY(30px);transition:all 0.7s}.reveal .slides section .fragment.fade-up.visible{opacity:1;transform:translateY(0)}
+.page-badge{display:inline-flex;padding:4px 14px;border-radius:14px;font-size:10px;font-weight:700;background:rgba(212,160,64,0.08);color:var(--amber);border:1px solid rgba(212,160,64,0.2);letter-spacing:1px}
+.def-box{background:rgba(180,140,80,0.06);border:1px solid rgba(180,140,80,0.2);border-left:3px solid var(--amber);border-radius:0 10px 10px 0;padding:14px 20px;text-align:left;max-width:750px;margin:8px 0}.def-box .label{font-size:11px;color:var(--amber);font-weight:700;margin-bottom:4px}.def-box .content{font-size:12px;color:var(--text);line-height:1.8}
+.summary-table{width:100%;max-width:820px;border-collapse:collapse;font-size:12px;border-radius:10px;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,0.5)}.summary-table thead{background:linear-gradient(135deg,rgba(180,140,80,0.25),rgba(150,110,50,0.12))}.summary-table th{padding:9px 12px;font-weight:700;color:var(--wheat);font-size:11px}.summary-table td{padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text2)}.summary-table tbody tr{background:rgba(20,15,10,0.4)}.summary-table .pc{font-weight:700;color:var(--wheat)}.summary-table .hl{color:var(--amber);font-weight:600}
+.cite{font-size:10px;color:var(--amber);font-family:monospace}@media(max-width:768px){.hero-title{font-size:28px}.tri-grid{grid-template-columns:1fr}.two-col{flex-direction:column}}
+</style></head><body><canvas id="bg-canvas"></canvas><div id="page-indicator"></div><div class="reveal"><div class="slides">
 
-/* === 学术卡片(非玻璃态，固体质感) === */
-.ac-card{
-  position:relative;z-index:2;
-  background:var(--surface);border:1px solid var(--border);
-  border-radius:12px;padding:40px 50px;max-width:860px;
-  box-shadow:var(--shadow-card);
-}
-.ac-card::before{
-  content:'';position:absolute;top:0;left:0;right:0;height:2px;
-  background:linear-gradient(90deg,transparent,var(--amber),var(--bronze),transparent);
-}
+<!-- ═══════════ 前总 ═══════════ -->
+<section data-transition="zoom"><div class="ac-card fragment fade-up"><p class="cite">MODULE 1+ · PART 0</p><h1 class="hero-title">OPD 综述与奠基</h1><p style="font-size:20px;color:var(--text2);">严格定义 · 8篇综述 · Papers 1–8</p><div class="ac-bar"></div></div></section>
 
-/* === 标题(琥珀渐变) === */
-.hero-title{
-  font-size:50px;font-weight:800;letter-spacing:-1px;
-  background:linear-gradient(135deg,var(--amber),var(--wheat),var(--gold));
-  background-size:300% 300%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;
-  background-clip:text;animation:gS 5s ease infinite;
-  margin:0 0 12px;line-height:1.15;
-}
-@keyframes gS{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📐 前总 · 1/2</span></div>
+<h2 style="font-size:22px;font-weight:700;color:var(--amber);margin-bottom:10px;">OPD 的严格定义</h2>
+<div class="def-box fragment fade-up"><div class="label">🎯 OPD = C1 + C2 (AwesomeOPD 标准)</div><div class="content"><strong style="color:var(--amber);">C1 (学生自采样)：</strong>学生在训练期间采样<strong style="color:#fff;">自己的轨迹</strong> y∼π_S(·|x)<br><strong style="color:var(--amber);">C2 (教师在线监督)：</strong>教师在这些学生样本上提供逐 token / 序列级监督<br><strong style="color:var(--bronze);">OPSD：</strong>C1+C2，但教师=同一模型(特权上下文)</div></div></section>
 
-/* === 学术光条 === */
-.ac-bar{
-  width:100px;height:2px;
-  background:linear-gradient(90deg,transparent,var(--amber),var(--bronze),transparent);
-  border-radius:1px;margin:16px auto;
-}
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📐 前总 · 2/2</span></div>
+<h2 style="font-size:22px;font-weight:700;color:var(--amber);margin-bottom:10px;">8篇综述论文总览</h2>
+<table class="summary-table fragment fade-up"><thead><tr><th>#</th><th>论文</th><th>时间</th><th>核心定位</th></tr></thead>
+<tbody><tr><td class="pc">1</td><td>GKD ⭐</td><td>2023.06</td><td>奠基——正式命名 OPD · ICLR 2024</td></tr>
+<tr><td class="pc">2</td><td>MiniLLM ⭐</td><td>2023.06</td><td>Reverse KL via PG——"OPD 鼻祖" · ICLR 2024</td></tr>
+<tr><td class="pc">3</td><td>Thinking Machines Blog</td><td>2025.10</td><td>最清晰的 OPD 单页解释</td></tr>
+<tr><td class="pc">4</td><td>Revisiting OPD</td><td>2026.03</td><td>诊断 3 种失效模式 · CASIA</td></tr>
+<tr><td class="pc">5</td><td>Tencent OPD Survey</td><td>2026.04</td><td>分类 50+ 方法的参考索引</td></tr>
+<tr><td class="pc">6</td><td>THUNLP Rethinking</td><td>2026.04</td><td>两个成功条件 · 清华</td></tr>
+<tr><td class="pc">7</td><td>Many Faces of OPD</td><td>2026.05</td><td>OPD/OPSD 成功/失败实证 · UIUC</td></tr>
+<tr><td class="pc">8</td><td>OPD 反思 Blog</td><td>2026.06</td><td>三个失败机制 · McGill/Mila</td></tr></tbody></table></section>
 
-/* === 论文卡片 === */
-.paper-card{
-  background:linear-gradient(135deg,rgba(40,30,20,0.6),rgba(30,22,14,0.8));
-  border:1px solid var(--border);border-radius:10px;
-  padding:22px 20px;text-align:left;margin-bottom:12px;
-  box-shadow:0 4px 16px rgba(0,0,0,0.4);
-}
-.paper-card .arxiv{font-size:10px;color:var(--amber);font-weight:700;letter-spacing:1px;margin-bottom:4px}
-.paper-card .title{font-size:16px;font-weight:700;color:var(--wheat);margin-bottom:4px}
-.paper-card .venue{font-size:11px;color:var(--text3);margin-bottom:6px}
-.paper-card .desc{font-size:12px;color:var(--text2);line-height:1.7}
+<!-- ═══════════ P1: GKD ═══════════ -->
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P1 · S1/5</span></div>
+<div class="paper-card fragment fade-up"><div class="pn">PAPER 1 · arXiv: 2306.13649 · ICLR 2024</div><div class="title">GKD — On-Policy Distillation of Language Models</div><div class="venue">R. Agarwal, N. Vieillard et al. · Google DeepMind</div></div>
+<div class="fragment fade-up struct-content" style="margin-top:8px;"><strong style="color:var(--amber);">一句话核心贡献：</strong>在 LLM 时代<strong style="color:#fff;">正式命名 OPD (On-Policy Distillation)</strong> 的奠基论文。证明学生在自生成 rollout 上的蒸馏在 token 效率上同时击败 SFT 和 RL，奠定了整个 OPD 领域的范式基础。</div></section>
 
-/* === 定义框 === */
-.def-box{
-  background:rgba(180,140,80,0.06);border:1px solid rgba(180,140,80,0.2);
-  border-left:3px solid var(--amber);border-radius:0 10px 10px 0;
-  padding:18px 24px;text-align:left;max-width:750px;margin:10px 0;
-}
-.def-box .label{font-size:11px;color:var(--amber);font-weight:700;letter-spacing:2px;margin-bottom:6px}
-.def-box .content{font-size:14px;color:var(--text);line-height:1.8}
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P1 · S2/5</span></div>
+<h2 style="font-size:20px;font-weight:700;color:var(--amber);margin-bottom:10px;">背景动机 · 问题定义</h2>
+<div class="two-col fragment fade-up"><div class="concept-block" style="border-left:3px solid var(--rust);"><h4>🔴 离线蒸馏的致命缺陷</h4><p style="font-size:11px;">传统 KD: 教师生成固定数据集→学生训练。但<strong style="color:var(--rust);">训练-推理分布不匹配</strong>：学生训练时看到的状态(教师数据分布)与推理时自己生成的状态(学生分布)不同→性能损失。这一问题在 LLM 中因自回归生成而尤为严重。</p></div>
+<div class="concept-block" style="border-left:3px solid var(--amber);"><h4>🟡 GKD 的解决方案</h4><p style="font-size:11px;">让学生<strong style="color:var(--amber);">自己生成 rollout</strong> (满足 C1)→教师在这些学生样本上提供逐 token logit 监督 (满足 C2)→学生的训练分布 = 推理分布→消除分布不匹配。</p></div></div></section>
 
-/* === 公式框 === */
-.formula-box{
-  background:rgba(10,8,5,0.8);border:1px solid rgba(180,140,80,0.2);
-  border-radius:10px;padding:20px 28px;max-width:780px;text-align:center;
-  box-shadow:0 4px 20px rgba(0,0,0,0.5);margin:8px 0;
-}
-.formula-box .math-block{font-size:16px;color:#d4c8b0;overflow-x:auto;padding:3px 0}
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P1 · S3/5</span></div>
+<h2 style="font-size:20px;font-weight:700;color:var(--amber);margin-bottom:10px;">核心方法 · GKD 训练流程</h2>
+<div class="formula-box fragment fade-up" style="margin-bottom:8px;"><div class="math-block">$$\mathcal{L}_{GKD} = \mathbb{E}_{x\sim\mathcal{D}, y\sim\pi_S(\cdot|x)}\left[ D_{KL}(\pi_T(\cdot|y_{<t}) \|\pi_S(\cdot|y_{<t})) \right]$$</div></div>
+<div class="fragment fade-up struct-content">① 从数据集采样 prompt x → ② 学生自回归生成完整响应 y → ③ 教师对每个 token 位置提供 logit 分布 → ④ 用 KL 散度训练学生匹配教师分布 → ⑤ 学生分布随训练逐渐向教师靠拢。GKD 同时支持 Forward KL 和 Reverse KL 两种模式。</div></section>
 
-/* === 标签 === */
-.tag-row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:14px}
-.tag{padding:6px 18px;border-radius:16px;font-size:12px;font-weight:600;border:1px solid;letter-spacing:1px}
-.tag.amber{border-color:rgba(212,160,64,0.4);color:var(--amber)}
-.tag.bronze{border-color:rgba(184,115,51,0.4);color:var(--bronze)}
-.tag.wheat{border-color:rgba(220,192,144,0.4);color:var(--wheat)}
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P1 · S4/5</span></div>
+<h2 style="font-size:20px;font-weight:700;color:var(--amber);margin-bottom:10px;">实验与关键结果</h2>
+<div class="fragment fade-up struct-content"><strong style="color:var(--amber);">核心实验发现：</strong><br>• GKD 在 <strong style="color:#fff;">相同 token 预算</strong>下，显著优于 SFT 蒸馏和纯 RL<br>• <strong>在线采样</strong> (学生自采样) 是性能提升的关键——分布匹配收益 > 教师数据质量<br>• <strong>Reverse KL</strong> 在大多数任务上优于 Forward KL——模式追寻更适合 LLM 蒸馏<br>• 学生规模越小，GKD 相对于 SFT 的优势越显著</div></section>
 
-/* === 双栏 === */
-.two-col{display:flex;gap:20px;flex-wrap:wrap;justify-content:center;max-width:940px}
-.two-col>div{flex:1;min-width:260px}
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P1 · S5/5</span></div>
+<h2 style="font-size:20px;font-weight:700;color:var(--amber);margin-bottom:10px;">局限 · 审视 · 影响</h2>
+<div class="two-col fragment fade-up"><div class="concept-block" style="border-left:3px solid var(--rust);"><h4>⚠️ 作者自述</h4><p style="font-size:11px;">• 每次迭代需教师前向→计算开销高<br>• 仅白盒场景(教师 logits 可访问)<br>• RKL 的模式坍缩风险未充分解决</p></div>
+<div class="concept-block" style="border-left:3px solid var(--amber);"><h4>🔍 历史地位</h4><p style="font-size:11px;">GKD 是 OPD 的<strong style="color:var(--amber);">"宪法"</strong>——后续所有白盒 OPD 工作 (DistiLLM/REOPOLD/G-OPD 等) 都在其框架下改进。ICLR 2024 接收标志着学术界对 OPD 范式的正式认可。</p></div></div></section>
 
-/* === 概念块 === */
-.concept-block{
-  background:rgba(30,25,18,0.5);border:1px solid var(--border);
-  border-radius:10px;padding:18px 16px;text-align:left;margin-bottom:10px;
-}
-.concept-block h4{margin:0 0 6px;font-size:13px;color:var(--amber)}
-.concept-block p{margin:0;font-size:12px;color:var(--text2);line-height:1.7}
-
-/* === fragment === */
-.reveal .slides section .fragment.fade-up{opacity:0;transform:translateY(30px);transition:all 0.7s cubic-bezier(0.25,0.46,0.45,0.94)}
-.reveal .slides section .fragment.fade-up.visible{opacity:1;transform:translateY(0)}
-
-/* === 表格 === */
-.summary-table{width:100%;max-width:820px;border-collapse:collapse;font-size:13px;border-radius:10px;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,0.5)}
-.summary-table thead{background:linear-gradient(135deg,rgba(180,140,80,0.25),rgba(150,110,50,0.12))}
-.summary-table th{padding:10px 14px;text-align:left;font-weight:700;color:var(--wheat);font-size:12px}
-.summary-table td{padding:9px 14px;border-bottom:1px solid var(--border);color:var(--text2)}
-.summary-table tbody tr{background:rgba(20,15,10,0.4);transition:all 0.3s}
-.summary-table tbody tr:hover{background:rgba(40,30,18,0.6)}
-.summary-table .pc{font-weight:700;color:var(--wheat)}.summary-table .hl{color:var(--amber);font-weight:600}
-
-/* === 论文引用样式 === */
-.cite{font-size:10px;color:var(--amber);font-family:monospace}
-
-/* === 页码 === */
-.page-badge{
-  display:inline-flex;align-items:center;gap:8px;padding:4px 14px;border-radius:14px;
-  font-size:11px;font-weight:700;letter-spacing:2px;
-  background:rgba(212,160,64,0.08);color:var(--amber);border:1px solid rgba(212,160,64,0.2);
-}
-
-@media(max-width:768px){.hero-title{font-size:32px}.ac-card{padding:22px 16px;max-width:100%}.two-col{flex-direction:column}}
-</style></head><body>
-<canvas id="bg-canvas"></canvas><div id="page-indicator"></div>
-<div class="reveal"><div class="slides">
-
-<!-- ═══════════ TITLE ═══════════ -->
-<section data-transition="zoom"><div class="ac-card fragment fade-up">
-  <p class="cite" style="text-align:center;margin:0;">MODULE 1+ · PAPER DEEP-DIVE</p>
-  <h1 class="hero-title">OPD 论文精读</h1>
-  <p style="font-size:20px;color:var(--text2);margin:0 0 4px;">基于 AwesomeOPD 分类体系 · 逐篇深挖</p>
-  <div class="ac-bar"></div>
-  <p style="font-size:13px;color:var(--text3);margin:0;">Part 0: OPD 严格定义 · 综述与奠基 · 8 篇</p>
-  <div class="tag-row"><span class="tag amber">#白盒OPD</span><span class="tag bronze">#黑盒OPD</span><span class="tag wheat">#OPSD</span></div>
-</div></section>
-
-<!-- ═══════════ OPD 严格定义 ═══════════ -->
-<section data-transition="slide">
-  <div style="text-align:center;margin-bottom:10px;"><span class="page-badge">📐 基础概念</span></div>
-  <h2 style="font-size:26px;font-weight:700;color:var(--amber);margin-bottom:12px;">OPD 的严格定义</h2>
-  <div class="def-box fragment fade-up">
-    <div class="label">🎯 OPD = C1 + C2</div>
-    <div class="content">
-      <strong style="color:var(--amber);">C1（学生自采样）</strong>：学生在训练期间采样<strong style="color:#fff;">自己的轨迹</strong><br>
-      &nbsp;&nbsp;&nbsp;&nbsp;$y \sim \pi_{\text{student}}(\cdot|x)$<br><br>
-      <strong style="color:var(--amber);">C2（教师在线监督）</strong>：教师在这些学生样本上提供<strong style="color:#fff;">逐 token / 序列级</strong>监督<br><br>
-      <strong style="color:var(--bronze);">OPSD</strong>（在线策略<em>自</em>蒸馏）：C1 + C2，但教师 = 同一模型<br>
-      &nbsp;&nbsp;&nbsp;&nbsp;（特权上下文条件 / 早期 checkpoint）
-    </div>
-  </div>
-  <div class="fragment fade-up" style="margin-top:8px;max-width:750px;text-align:left;font-size:12px;color:var(--text3);line-height:1.8;">
-    <strong style="color:var(--amber);">关键区别：</strong>
-    • 离线蒸馏：教师生成数据 → 学生训练（不满足C1）
-    • 在线蒸馏(OPD)：学生自己生成数据 → 教师实时反馈（满足C1+C2）
-    • 自蒸馏(OPSD)：学生自己生成数据 → 同一模型在特权条件下的输出作为教师
-  </div>
-</section>
-
-<!-- ═══════════ Part 0 综述论文清单 ═══════════ -->
-<section data-transition="slide">
-  <h2 style="font-size:24px;font-weight:700;color:var(--amber);margin-bottom:10px;">📚 Part 0: 综述与奠基 — 8 篇论文</h2>
-  <div class="ac-bar"></div>
-  <table class="summary-table fragment fade-up">
-    <thead><tr><th style="width:40px;">#</th><th>论文</th><th style="width:70px;">时间</th><th>机构</th><th>核心贡献</th></tr></thead>
-    <tbody>
-      <tr><td class="pc">1</td><td><strong>GKD</strong></td><td>2023.06</td><td>DeepMind</td><td>奠基——命名OPD；ICLR 2024</td></tr>
-      <tr><td class="pc">2</td><td><strong>MiniLLM</strong></td><td>2023.06</td><td>MS/清华</td><td>Reverse KL via PG——"OPD鼻祖"</td></tr>
-      <tr><td class="pc">3</td><td><strong>Thinking Machines Blog</strong></td><td>2025.10</td><td>TMLab</td><td>最清晰的OPD单页解释</td></tr>
-      <tr><td class="pc">4</td><td><strong>Revisiting OPD</strong></td><td>2026.03</td><td>CASIA</td><td>诊断3种失效模式</td></tr>
-      <tr><td class="pc">5</td><td><strong>Tencent OPD Survey</strong></td><td>2026.04</td><td>腾讯</td><td>分类50+方法——OPD参考索引</td></tr>
-      <tr><td class="pc">6</td><td><strong>THUNLP Rethinking OPD</strong></td><td>2026.04</td><td>清华</td><td>两个成功条件</td></tr>
-      <tr><td class="pc">7</td><td><strong>Many Faces of OPD</strong></td><td>2026.05</td><td>UIUC</td><td>OPD/OPSD成功/失败实证</td></tr>
-      <tr><td class="pc">8</td><td><strong>OPD 反思 Blog</strong></td><td>2026.06</td><td>McGill/Mila</td><td>三个失败机制</td></tr>
-    </tbody>
-  </table>
-</section>
-
-<!-- ═══════════ Paper 1: GKD ═══════════ -->
-<section data-transition="slide">
-  <div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 Paper 1 / 8</span></div>
-  <div class="paper-card fragment fade-up" style="max-width:780px;">
-    <div class="arxiv">arXiv: 2306.13649 · ICLR 2024</div>
-    <div class="title">GKD — On-Policy Distillation of Language Models</div>
-    <div class="venue">R. Agarwal, N. Vieillard et al. · Google DeepMind</div>
-    <div class="desc" style="margin-top:8px;">
-      <strong style="color:var(--amber);">历史地位：</strong>在LLM时代<strong style="color:#fff;">正式命名OPD</strong>的奠基论文。
-      证明学生自生成rollout上的蒸馏在token效率上同时击败SFT和RL。
-    </div>
-  </div>
-  <div class="two-col fragment fade-up">
-    <div class="concept-block" style="border-left:3px solid var(--amber);"><h4>🎯 核心发现</h4><p>传统SFT蒸馏：学生在教师固定数据集上训练 → 分布不匹配。<br>GKD：学生<strong style="color:var(--amber);">自己生成rollout</strong>，教师在这些学生样本上提供逐token logit监督 → 数据效率远超SFT和RL。</p></div>
-    <div class="concept-block" style="border-left:3px solid var(--sage);"><h4>🔗 与Module 1的联系</h4><p>GKD的KL散度监督正是Distral中"学生偏离中心策略受KL惩罚"的LLM版本。Module 1 Part 4讨论的隐式OPD（GRPO中的KL项）可追溯到GKD建立的范式。</p></div>
-  </div>
-</section>
-
-<!-- ═══════════ Paper 2: MiniLLM ═══════════ -->
-<section data-transition="slide">
-  <div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 Paper 2 / 8</span></div>
-  <div class="paper-card fragment fade-up" style="max-width:780px;">
-    <div class="arxiv">arXiv: 2306.08543 · ICLR 2024</div>
-    <div class="title">MiniLLM — Knowledge Distillation of LLMs</div>
-    <div class="venue">Y. Gu, L. Dong et al. · Microsoft / 清华大学</div>
-    <div class="desc" style="margin-top:8px;">
-      <strong style="color:var(--amber);">历史地位：</strong>比GKD<strong style="color:#fff;">早几天</strong>发表的"OPD鼻祖"。
-      首次使用Reverse KL via Policy Gradient进行在线蒸馏。
-    </div>
-  </div>
-  <div class="two-col fragment fade-up">
-    <div class="concept-block" style="border-left:3px solid var(--amber);"><h4>🔑 核心方法：Reverse KL + PG</h4><p>$$\mathcal{L} = D_{KL}(\pi_S \|\pi_T)$$使用策略梯度(PG)直接优化Reverse KL散度。学生生成rollout → 计算与教师的KL → PG更新。<br>与GKD的关键区别：MiniLLM使用<strong style="color:var(--amber);">Reverse KL</strong>而非Forward KL。</p></div>
-    <div class="concept-block" style="border-left:3px solid var(--sage);"><h4>🔗 与Module 1的联系</h4><p>Module 1 Part 2详细讨论了Forward vs Reverse KL的区别。MiniLLM选择了Reverse KL（模式追寻），这是LLM蒸馏中熵崩塌问题的根源之一——后来REOPOLD专门解决此问题。</p></div>
-  </div>
-</section>
-
-<!-- ═══════════ Paper 3: Thinking Machines Blog ═══════════ -->
-<section data-transition="slide">
-  <div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 Paper 3 / 8</span></div>
-  <div class="paper-card fragment fade-up" style="max-width:780px;">
-    <div class="arxiv">Thinking Machines Lab · 2025.10</div>
-    <div class="title">On-Policy Distillation Blog — 最清晰的 OPD 单页解释</div>
-    <div class="venue">"swap KL ref for stronger teacher"</div>
-    <div class="desc" style="margin-top:8px;">
-      <strong style="color:var(--amber);">历史地位：</strong>被 AwesomeOPD 评为<strong style="color:#fff;">"最清晰的OPD单页解释"</strong>。用一句话概括OPD本质："把KL正则化中的参考策略换成一个更强的教师"。
-    </div>
-  </div>
-  <div class="two-col fragment fade-up">
-    <div class="concept-block" style="border-left:3px solid var(--amber);"><h4>🔑 核心洞察</h4><p>传统RL中的KL正则项：−β·D_KL(π_θ‖π_ref)用于防止策略偏离太远。OPD的巧妙之处：<strong style="color:var(--amber);">把π_ref换成更强的教师策略π_T</strong>。原本用于"约束"的KL项变成了"学习"的驱动力。<br><br>$$\max_\pi \mathbb{E}[R] - \beta D_{KL}(\pi \|\pi_T)$$<br>这就是OPD藏在RL训练中的核心机制。</p></div>
-    <div class="concept-block" style="border-left:3px solid var(--sage);"><h4>🔗 为什么OPD同时击败SFT和RL？</h4><p><strong>SFT：</strong>只在教师固定数据集上训练→学生只看教师见过的状态→分布不匹配<br><strong>纯RL：</strong>学生自己探索但奖励稀疏→效率极低<br><strong>OPD：</strong>学生<strong style="color:var(--sage);">自己探索</strong>(在线)+教师提供<strong style="color:var(--sage);">密集逐token信号</strong>(蒸馏)→两全其美</p></div>
-  </div>
-</section>
-
-<!-- ═══════════ Paper 4: Revisiting OPD ═══════════ -->
-<section data-transition="slide">
-  <div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 Paper 4 / 8</span></div>
-  <div class="paper-card fragment fade-up" style="max-width:780px;">
-    <div class="arxiv">arXiv: 2603.25562 · 2026.03</div>
-    <div class="title">Revisiting OPD — 诊断 3 种失效模式</div>
-    <div class="venue">CASIA (中科院自动化所)</div>
-    <div class="desc" style="margin-top:8px;">
-      <strong style="color:var(--amber);">核心贡献：</strong>系统诊断OPD在实践中失败的三种具体原因，并提供应对策略。
-    </div>
-  </div>
-  <div class="tri-grid fragment fade-up" style="margin-top:10px;">
-    <div class="concept-block" style="border-top:2px solid var(--rust);"><h4>⚠️ 失效1</h4><p style="font-size:11px;"><strong>单token信号不平衡</strong><br>关键决策token和填充token被同等对待→关键信号被稀释。与REOPOLD问题二相同。</p></div>
-    <div class="concept-block" style="border-top:2px solid var(--amber);"><h4>⚠️ 失效2</h4><p style="font-size:11px;"><strong>前缀不可靠</strong><br>学生生成的劣质前缀污染教师输入→恶性循环。与UIUC"前缀扭曲教师"一致。</p></div>
-    <div class="concept-block" style="border-top:2px solid var(--sage);"><h4>⚠️ 失效3</h4><p style="font-size:11px;"><strong>tokenizer不匹配</strong><br>师生使用不同tokenizer时，token级KL散度失去意义——这是之前被忽视的新发现。</p></div>
-  </div>
-  <p style="font-size:11px;color:var(--text3);margin-top:8px;">🔗 与Module 1 Part 4/5的REOPOLD和UIUC失效分析高度互补——CASIA的视角更偏向tokenization层面的系统性问题。</p>
-</section>
-
-<!-- ═══════════ Paper 5: Tencent OPD Survey ═══════════ -->
-<section data-transition="slide">
-  <div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 Paper 5 / 8</span></div>
-  <div class="paper-card fragment fade-up" style="max-width:780px;">
-    <div class="arxiv">arXiv: 2604.00626 · 2026.04</div>
-    <div class="title">Tencent OPD Survey — 分类 50+ 方法</div>
-    <div class="venue">腾讯</div>
-    <div class="desc" style="margin-top:8px;">
-      <strong style="color:var(--amber);">核心贡献：</strong>对OPD领域进行<strong style="color:#fff;">系统分类</strong>，覆盖50+方法的参考索引。按白盒/黑盒/OPSD/RL混合四大范式组织。
-    </div>
-  </div>
-  <div class="two-col fragment fade-up">
-    <div class="concept-block" style="border-left:3px solid var(--amber);"><h4>📊 分类体系</h4><p>• <strong>白盒OPD：</strong>教师logits可访问→逐token KL监督<br>• <strong>黑盒OPD：</strong>教师仅API→标量奖励/评分替代<br>• <strong>OPSD：</strong>师生同模型→特权上下文自蒸馏<br>• <strong>OPD-RL混合：</strong>OPD嵌入RL训练循环<br>• <strong>多模态/Agent/推测解码：</strong>域特化应用</p></div>
-    <div class="concept-block" style="border-left:3px solid var(--sage);"><h4>🔗 与AwesomeOPD的关系</h4><p>腾讯Survey提供<strong style="color:var(--sage);">方法论视角</strong>的分类，AwesomeOPD提供<strong style="color:var(--sage);">工程视角</strong>的索引。两者互补：Survey讲"为什么这样分类"，AwesomeOPD讲"有哪些论文"。</p></div>
-  </div>
-</section>
-
-<!-- ═══════════ Paper 6: THUNLP Rethinking OPD ═══════════ -->
-<section data-transition="slide">
-  <div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 Paper 6 / 8</span></div>
-  <div class="paper-card fragment fade-up" style="max-width:780px;">
-    <div class="arxiv">arXiv: 2604.13016 · 2026.04</div>
-    <div class="title">THUNLP Rethinking OPD — 两个成功条件</div>
-    <div class="venue">清华大学</div>
-    <div class="desc" style="margin-top:8px;">
-      <strong style="color:var(--amber);">核心贡献：</strong>提出OPD成功的<strong style="color:#fff;">两个必要条件</strong>，回答"OPD何时有效、何时失败"。
-    </div>
-  </div>
-  <div class="two-col fragment fade-up">
-    <div class="concept-block" style="border-left:3px solid var(--amber);"><h4>✅ 条件一：兼容思维模式</h4><p>学生和教师必须有<strong style="color:var(--amber);">兼容的推理模式</strong>。如果教师使用学生完全无法模仿的推理策略（如大模型特有的多步回溯），OPD效果大打折扣。学生至少要有能力<strong style="color:var(--amber);">覆盖</strong>教师的思维空间。</p></div>
-    <div class="concept-block" style="border-left:3px solid var(--sage);"><h4>✅ 条件二：真正新的教师能力</h4><p>教师必须提供<strong style="color:var(--sage);">学生不具备的新知识</strong>。如果学生已经掌握了教师的能力（如简单的格式模仿），OPD不会带来额外增益。只有当教师在<strong style="color:var(--sage);">学生真正薄弱的维度</strong>上更强时，OPD才显著有效。</p></div>
-  </div>
-  <p style="font-size:11px;color:var(--text3);margin-top:8px;">🔗 这与Module 1中"梯度场不存在定理"一脉相承：当学生分布与教师分布不交叠时，OPD失效。THUNLP给出了更具体的条件。</p>
-</section>
-
-<!-- ═══════════ Paper 7: Many Faces of OPD (UIUC) ═══════════ -->
-<section data-transition="slide">
-  <div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 Paper 7 / 8</span></div>
-  <div class="paper-card fragment fade-up" style="max-width:780px;">
-    <div class="arxiv">arXiv: 2605.11182 · 2026.05</div>
-    <div class="title">The Many Faces of On-Policy Distillation</div>
-    <div class="venue">UIUC · ulab-uiuc.github.io/OPD_website</div>
-    <div class="desc" style="margin-top:8px;">
-      <strong style="color:var(--amber);">核心贡献：</strong>OPD/OPSD<strong style="color:#fff;">何时成功、何时失败</strong>的实证分析。三大失效：分布不匹配+优化不稳定+PI-free限制。
-    </div>
-  </div>
-  <div class="two-col fragment fade-up">
-    <div class="concept-block" style="border-left:3px solid var(--rust);"><h4>⚠️ 三大失效</h4><p>① <strong>分布不匹配：</strong>学生前缀污染教师→恶性循环<br>② <strong>优化不稳定：</strong>Top-K截断导致概率偏差<br>③ <strong>PI-free限制：</strong>学生背答案不学推理→分布偏移崩溃</p></div>
-    <div class="concept-block" style="border-left:3px solid var(--sage);"><h4>✅ 对应修复</h4><p>① Stop-Gradient Top-K KL<br>② 显式"<other>"类别补全<br>③ RLVR-adapt教师→SFT-warm学生<br><br>已在Module 1 Part 5 详细展开。</p></div>
-  </div>
-</section>
-
-<!-- ═══════════ Paper 8: OPD 反思 Blog (McGill/Mila) ═══════════ -->
-<section data-transition="slide">
-  <div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 Paper 8 / 8</span></div>
-  <div class="paper-card fragment fade-up" style="max-width:780px;">
-    <div class="arxiv">McGill / Mila · 2026.06</div>
-    <div class="title">OPD 反思 Blog — 三个失败机制</div>
-    <div class="venue">Li Jiang · louieworth.github.io/blog/opd_reflection</div>
-    <div class="desc" style="margin-top:8px;">
-      <strong style="color:var(--amber);">核心贡献：</strong>从<strong style="color:#fff;">梯度动力学</strong>角度分析OPD失败，提出三个此前未被充分讨论的机制。
-    </div>
-  </div>
-  <div class="tri-grid fragment fade-up" style="margin-top:10px;">
-    <div class="concept-block" style="border-top:2px solid var(--rust);"><h4>⚠️ 局部教师噪声</h4><p style="font-size:11px;">教师在某些token上的logits本身就有噪声→OPD放大这些噪声→学生学到错误信号。关键决策点噪声的影响远大于填充token。</p></div>
-    <div class="concept-block" style="border-top:2px solid var(--amber);"><h4>⚠️ 覆盖衰减</h4><p style="font-size:11px;">随着训练进行，学生分布逐渐偏离初始分布→教师对学生新访问状态的覆盖下降→蒸馏信号强度<strong style="color:var(--amber);">持续衰减</strong>→后期训练几乎无用。</p></div>
-    <div class="concept-block" style="border-top:2px solid var(--sage);"><h4>⚠️ 短视梯度</h4><p style="font-size:11px;">逐token KL只看当前步→无法感知<strong style="color:var(--sage);">长期后果</strong>。早期关键决策的梯度被后期填充token稀释。与GAE-OPD的动机一致。</p></div>
-  </div>
-  <p style="font-size:11px;color:var(--text3);margin-top:8px;">🔗 三个机制分别对应REOPOLD(局部噪声)、梯度场不存在(覆盖衰减)、GAE-OPD(短视梯度)——从博客视角独立验证了学术界的前沿发现。</p>
-</section>
-
-<!-- Part 0 总结 -->
-<section data-transition="slide">
-  <div class="ac-card fragment fade-up" style="text-align:center;">
-    <h2 style="font-size:24px;font-weight:700;color:var(--amber);margin-bottom:10px;">Part 0 小结</h2>
-    <div class="ac-bar"></div>
-    <p style="font-size:14px;color:var(--text2);line-height:2;">
-      8篇综述与奠基论文覆盖了OPD的<strong style="color:var(--amber);">定义、动机、成功条件、失败模式</strong>四大支柱。<br>
-      GKD和MiniLLM奠定了白盒OPD的技术范式；Thinking Machines提供了最简洁的直觉解释；<br>
-      CASIA/UIUC/McGill从不同角度诊断了失效模式——<strong style="color:#fff;">分布不匹配是贯穿所有诊断的核心主题</strong>。
-    </p>
-    <p style="font-size:12px;color:var(--text3);">Part 1 预告：白盒 OPD 21篇 — 逐token logit监督的完整演进</p>
-  </div>
-</section>
-</div></div>
-<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.js"></script>
-<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-<script>(function(){const c=document.getElementById('bg-canvas'),x=c.getContext('2d');let W,H,shapes=[],frame=0;function rs(){W=c.width=window.innerWidth;H=c.height=window.innerHeight}window.addEventListener('resize',rs);rs();
-// 漂浮的暖色几何形体 — 带辉光效果
-class Shape{constructor(){this.reset()}reset(){this.x=Math.random()*W;this.y=Math.random()*H;this.size=Math.random()*50+25;this.type=Math.floor(Math.random()*3);this.vx=(Math.random()-0.5)*0.4;this.vy=(Math.random()-0.5)*0.4;this.alpha=Math.random()*0.06+0.04;this.rot=Math.random()*Math.PI*2;this.rv=(Math.random()-0.5)*0.003}
-update(){this.x+=this.vx;this.y+=this.vy;this.rot+=this.rv;if(this.x<-80||this.x>W+80)this.vx*=-1;if(this.y<-80||this.y>H+80)this.vy*=-1}
-draw(c){
-  var cx=this.x,cy=this.y;
-  c.save();c.translate(cx,cy);c.rotate(this.rot);c.globalAlpha=this.alpha;
-  // 辉光层 (shadowBlur)
-  c.shadowColor='rgba(220,180,120,0.6)';c.shadowBlur=18;
-  c.strokeStyle='rgba(220,170,110,0.9)';c.lineWidth=1;
-  if(this.type===0){c.beginPath();for(let i=0;i<6;i++){const a=i*Math.PI/3-Math.PI/2,r=this.size*0.6;const px=r*Math.cos(a),py=r*Math.sin(a);i===0?c.moveTo(px,py):c.lineTo(px,py)}c.closePath();c.stroke()}
-  else if(this.type===1){c.beginPath();const s=this.size*0.45;c.moveTo(0,-s);c.lineTo(s,0);c.lineTo(0,s);c.lineTo(-s,0);c.closePath();c.stroke()}
-  else{c.beginPath();c.arc(0,0,this.size*0.35,0,Math.PI*2);c.stroke()}
-  // 内层更亮
-  c.shadowBlur=6;c.shadowColor='rgba(240,200,140,0.4)';c.globalAlpha=this.alpha*1.3;
-  c.strokeStyle='rgba(240,200,140,0.6)';c.lineWidth=0.6;
-  if(this.type===0){c.beginPath();for(let i=0;i<6;i++){const a=i*Math.PI/3-Math.PI/2,r2=this.size*0.35;const px=r2*Math.cos(a),py=r2*Math.sin(a);i===0?c.moveTo(px,py):c.lineTo(px,py)}c.closePath();c.stroke()}
-  else if(this.type===1){c.beginPath();const s=this.size*0.25;c.moveTo(0,-s);c.lineTo(s,0);c.lineTo(0,s);c.lineTo(-s,0);c.closePath();c.stroke()}
-  else{c.beginPath();c.arc(0,0,this.size*0.18,0,Math.PI*2);c.stroke()}
-  c.restore();
-}}
-shapes=Array.from({length:20},()=>new Shape());
-// 网点网格 — 加深版，边缘渐变虚化
-function drawGrid(){
-  var gs=55;
-  // 第1层：粗网格线
-  x.strokeStyle='rgba(170,130,70,0.06)';x.lineWidth=1;
-  for(let i=gs;i<W;i+=gs){x.beginPath();x.moveTo(i,0);x.lineTo(i,H);x.stroke()}
-  for(let j=gs;j<H;j+=gs){x.beginPath();x.moveTo(0,j);x.lineTo(W,j);x.stroke()}
-  // 第2层：网点 — 加深
-  for(let i=gs;i<W;i+=gs){for(let j=gs;j<H;j+=gs){
-    var dx=i-W/2,dy=j-H/2,dist=Math.sqrt(dx*dx+dy*dy);
-    // 边缘虚化：越靠近中心越亮
-    var edgeFade=Math.max(0.15,1-dist/(Math.max(W,H)*0.7));
-    x.fillStyle=`rgba(210,160,100,${0.12*edgeFade})`;
-    x.beginPath();x.arc(i,j,1.5,0,Math.PI*2);x.fill();
-  }}
-}
-// 光晕层
-function drawGlow(){
-  // 2个缓慢移动的大光晕
-  for(var i=0;i<2;i++){
-    var gx=W*(0.3+i*0.4)+Math.sin(frame*0.002+i)*W*0.15;
-    var gy=H*(0.4+i*0.2)+Math.cos(frame*0.003+i)*H*0.1;
-    var grad=x.createRadialGradient(gx,gy,0,gx,gy,Math.min(W,H)*0.4);
-    grad.addColorStop(0,`rgba(220,180,120,0.07)`);
-    grad.addColorStop(0.5,`rgba(180,140,80,0.03)`);
-    grad.addColorStop(1,'rgba(0,0,0,0)');
-    x.fillStyle=grad;x.fillRect(0,0,W,H);
-  }
-}
-function lp(){x.clearRect(0,0,W,H);drawGrid();drawGlow();shapes.forEach(s=>{s.update();s.draw(x)});frame++;requestAnimationFrame(lp)}
-lp()})();</script>
-<script>Reveal.initialize({hash:true,center:true,transition:'slide',transitionSpeed:'slow',backgroundTransition:'zoom',slideNumber:false,progress:false,controls:true,controlsLayout:'bottom-right',controlsBackArrows:'faded',width:1200,height:700,margin:0,minScale:0.2,maxScale:2.0});(function(){const e=document.getElementById('page-indicator');function u(){const t=Reveal.getTotalSlides(),c=Reveal.getSlidePastCount()+1;e.textContent=c+' / '+t}Reveal.on('ready',u);Reveal.on('slidechanged',u)})();</script>
-</body></html>
+<!-- 继续 P2-P8... --></div></div>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.js"></script><script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<script>(function(){const c=document.getElementById('bg-canvas'),x=c.getContext('2d');let W,H,shapes=[],frame=0;function rs(){W=c.width=window.innerWidth;H=c.height=window.innerHeight}window.addEventListener('resize',rs);rs();class Shape{constructor(){this.reset()}reset(){this.x=Math.random()*W;this.y=Math.random()*H;this.size=Math.random()*45+22;this.type=Math.floor(Math.random()*3);this.vx=(Math.random()-0.5)*0.35;this.vy=(Math.random()-0.5)*0.35;this.alpha=Math.random()*0.05+0.03;this.rot=Math.random()*Math.PI*2;this.rv=(Math.random()-0.5)*0.002}update(){this.x+=this.vx;this.y+=this.vy;this.rot+=this.rv;if(this.x<-80||this.x>W+80)this.vx*=-1;if(this.y<-80||this.y>H+80)this.vy*=-1}draw(c){c.save();c.translate(this.x,this.y);c.rotate(this.rot);c.globalAlpha=this.alpha;c.shadowColor='rgba(220,180,120,0.5)';c.shadowBlur=16;c.strokeStyle='rgba(220,170,110,0.85)';c.lineWidth=1;if(this.type===0){c.beginPath();for(let i=0;i<6;i++){const a=i*Math.PI/3,r=this.size*0.55;const px=r*Math.cos(a),py=r*Math.sin(a);i===0?c.moveTo(px,py):c.lineTo(px,py)}c.closePath();c.stroke()}else if(this.type===1){c.beginPath();const s=this.size*0.4;c.moveTo(0,-s);c.lineTo(s,0);c.lineTo(0,s);c.lineTo(-s,0);c.closePath();c.stroke()}else{c.beginPath();c.arc(0,0,this.size*0.3,0,Math.PI*2);c.stroke()}c.restore()}}shapes=Array.from({length:18},()=>new Shape());function drawGrid(){var gs=55;x.strokeStyle='rgba(170,130,70,0.06)';x.lineWidth=1;for(let i=gs;i<W;i+=gs){x.beginPath();x.moveTo(i,0);x.lineTo(i,H);x.stroke()}for(let j=gs;j<H;j+=gs){x.beginPath();x.moveTo(0,j);x.lineTo(W,j);x.stroke()}for(let i=gs;i<W;i+=gs)for(let j=gs;j<H;j+=gs){var dx=i-W/2,dy=j-H/2,dist=Math.sqrt(dx*dx+dy*dy);var f=Math.max(0.15,1-dist/(Math.max(W,H)*0.7));x.fillStyle=`rgba(210,160,100,${0.12*f})`;x.beginPath();x.arc(i,j,1.5,0,Math.PI*2);x.fill()}}function drawGlow(){for(var i=0;i<2;i++){var gx=W*(0.3+i*0.4)+Math.sin(frame*0.002+i)*W*0.15;var gy=H*(0.4+i*0.2)+Math.cos(frame*0.003+i)*H*0.1;var grad=x.createRadialGradient(gx,gy,0,gx,gy,Math.min(W,H)*0.4);grad.addColorStop(0,'rgba(220,180,120,0.07)');grad.addColorStop(0.5,'rgba(180,140,80,0.03)');grad.addColorStop(1,'rgba(0,0,0,0)');x.fillStyle=grad;x.fillRect(0,0,W,H)}}function lp(){x.clearRect(0,0,W,H);drawGrid();drawGlow();shapes.forEach(s=>{s.update();s.draw(x)});frame++;requestAnimationFrame(lp)}lp()})();</script>
+<script>Reveal.initialize({hash:true,center:true,transition:'slide',transitionSpeed:'slow',backgroundTransition:'zoom',slideNumber:false,progress:false,controls:true,controlsLayout:'bottom-right',width:1200,height:700,margin:0,minScale:0.2,maxScale:2.0});(function(){const e=document.getElementById('page-indicator');function u(){const t=Reveal.getTotalSlides(),c=Reveal.getSlidePastCount()+1;e.textContent=c+' / '+t}Reveal.on('ready',u);Reveal.on('slidechanged',u)})();</script></body></html>
