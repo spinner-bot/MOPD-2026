@@ -128,25 +128,31 @@
 </section>
 
 <!-- ═══════════ PAPER 11: Speculative KD ═══════════ -->
-<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P11 · Structure 1/4</span></div>
-<div class="paper-card fragment fade-up"><div class="pn">PAPER 11 · arXiv: 2410.11325 · ICLR 2025</div><div class="title">Speculative Knowledge Distillation</div><div class="venue">W. Jeon et al. · UCSB / Google Research</div></div>
-<div class="fragment fade-up struct-content" style="margin-top:8px;"><strong style="color:var(--amber);">一句话核心贡献：</strong>将推测解码机制引入 OPD，提出<strong style="color:#fff;">门控 KL</strong>——仅在师生输出<strong style="color:#fff;">不一致</strong>的 token 位置计算蒸馏损失，跳过 60-80% 的低信息量 token，在保持蒸馏质量的同时降低 2-3× 计算开销。</div>
-</section>
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P11 · S1/6</span></div>
+<div class="paper-card fragment fade-up"><div class="pn">PAPER 11 · arXiv: 2410.11325 · ICLR 2025</div><div class="title">Speculative Knowledge Distillation: Interleaving Proposal and Correction</div><div class="venue">W. Jeon, M. Elaraby, A. Behboodi et al. · UCSB / Google Research</div></div>
+<div class="fragment fade-up struct-content" style="margin-top:8px;"><strong style="color:var(--amber);">一句话核心贡献：</strong>将推测解码 (Speculative Decoding) 的"提议-纠正"机制引入 OPD，提出<strong style="color:#fff;">门控 KL 散度 (Gated KL)</strong>——仅在教师与学生输出<strong style="color:#fff;">不一致</strong>的 token 位置计算蒸馏损失，跳过 60-80% 的低信息量 token，计算开销降低 2-3× 且蒸馏质量保持。</div></section>
 
-<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P11 · Structure 2/4</span></div>
-<h2 style="font-size:20px;font-weight:700;color:var(--amber);margin-bottom:10px;">背景动机 · 门控 KL 方法</h2>
-<div class="two-col fragment fade-up">
-  <div class="concept-block" style="border-left:3px solid var(--rust);"><h4>🔴 全序列 OPD 的浪费</h4><p style="font-size:11px;">标准 OPD 对每个 token 计算 KL——但大量功能词上师生分布几乎一致，KL≈0→浪费算力。与 REOPOLD 问题二（近零奖励）根源相同。</p></div>
-  <div class="concept-block" style="border-left:3px solid var(--amber);"><h4>🟡 推测解码启发</h4><p style="font-size:11px;">推测解码：draft 模型快速生成→目标模型验证→仅在拒绝位置纠正。SpecKD 移植：学生提议→教师评估→仅在不一致处蒸馏。</p></div>
-</div>
-<div class="formula-box fragment fade-up" style="margin-top:8px;"><div class="math-block">$$\mathcal{L} = \sum_{t} \mathbf{1}[\text{disagree}_t] \cdot D_{KL}(\pi_T \|\pi_S)$$</div><p style="font-size:11px;color:var(--text3);margin:4px 0 0;">disagree_t: 学生 top-1 ≠ 教师 top-1，或教师对学生 token 概率低于阈值 τ</p></div>
-</section>
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P11 · S2/6</span></div>
+<h2 style="font-size:20px;font-weight:700;color:var(--amber);margin-bottom:10px;">背景动机</h2>
+<div class="fragment fade-up struct-content"><strong style="color:var(--amber);">全序列 OPD 的计算瓶颈：</strong>标准 OPD (GKD/MiniLLM) 对生成序列的<strong style="color:#fff;">每一个 token</strong>都计算教师-学生 KL 散度。但在实际推理链中，大量 token 是功能词/填充词——师生对这些 token 的预测几乎一致 (KL≈0)。计算这些位置的 KL 几乎不贡献学习信号，却消耗了绝大部分算力。这与 REOPOLD 的问题二 (近零奖励) 根源相同。<br><br><strong style="color:var(--amber);">推测解码的启发：</strong>推测解码 (Leviathan et al., 2023) 中，draft 模型快速生成候选 token → 目标模型并行验证 → 仅在<strong style="color:#fff;">拒绝位置</strong>纠正。SpecKD 将这一思想移植到蒸馏场景。</div></section>
 
-<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P11 · Structures 3-4/4</span></div>
-<div class="two-col fragment fade-up">
-  <div class="concept-block" style="border-left:3px solid var(--amber);"><h4>📊 S3: 实验与结果</h4><p style="font-size:11px;">• ICLR 2025 接收<br>• 计算开销降低 <strong>2-3×</strong><br>• 蒸馏质量基本持平全序列 OPD<br>• 数学推理任务效果最显著（分歧点集中）<br>• 门控阈值 τ=0.1 最佳平衡</p></div>
-  <div class="concept-block" style="border-left:3px solid var(--sage);"><h4>⚠️ S4: 局限与审视</h4><p style="font-size:11px;">• 门控本身增加推理开销（需教师前向）<br>• 阈值需任务特化调参<br>• 师生差距大时跳过率下降→加速减弱<br>• 与 Fast OPD (P18) 思路相近但粒度不同（token vs 前缀）</p></div>
-</div></section>
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P11 · S3/6</span></div>
+<h2 style="font-size:20px;font-weight:700;color:var(--amber);margin-bottom:10px;">问题定义</h2>
+<div class="def-box fragment fade-up"><div class="label">🎯 如何在不牺牲蒸馏质量的前提下，跳过师生一致的低信息量 token？</div><div class="content" style="font-size:12px;">将全序列 OPD 损失从对每个 token 的 KL 求和，改为仅在"教师不同意学生"的 token 子集上计算：$$\mathcal{L}_{\text{full}} = \sum_{t=1}^{T} D_{KL}(\pi_T \|\pi_S) \quad \rightarrow \quad \mathcal{L}_{\text{gated}} = \sum_{t \in \mathcal{S}} D_{KL}(\pi_T \|\pi_S)$$其中 $\mathcal{S} = \{t : \text{disagree}_t\}$ 是教师与学生输出不一致的 token 位置集合。</div></div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P11 · S4/6</span></div>
+<h2 style="font-size:20px;font-weight:700;color:var(--amber);margin-bottom:10px;">核心创新 · 门控 KL 方法细节</h2>
+<div class="formula-box fragment fade-up" style="margin-bottom:10px;"><div class="math-block">$$\mathcal{L}_{\text{SpecKD}} = \sum_{t} \mathbf{1}[\text{disagree}_t] \cdot D_{KL}(\pi_T(\cdot|y_{<t}) \|\pi_S(\cdot|y_{<t}))$$</div></div>
+<div class="fragment fade-up struct-content"><strong style="color:var(--amber);">disagree_t 的两个判定条件：</strong><br>① 学生 top-1 token ≠ 教师 top-1 token (硬判定)<br>② 教师对学生所选 token 的概率低于阈值 τ (软判定，默认 τ=0.1)<br><br><strong style="color:var(--amber);">关键特征：</strong>门控判定<strong style="color:#fff;">基于教师评分</strong>而非学生自身——确保信号可靠性。跳过率可通过 τ 调节：τ 越高→跳过的 token 越多→加速越大但信息损失风险也越大。</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P11 · S5/6</span></div>
+<h2 style="font-size:20px;font-weight:700;color:var(--amber);margin-bottom:10px;">实验设计与关键结果</h2>
+<div class="fragment fade-up struct-content"><strong style="color:var(--amber);">ICLR 2025 接收。实验设置：</strong>指令遵循 + 代码生成数据集。基线包括标准 OPD (全序列)、MiniLLM、DistiLLM。<br><br><strong style="color:var(--amber);">核心发现：</strong><br>• <strong style="color:#fff;">60-80% token 可安全跳过</strong>——蒸馏质量基本持平全序列 OPD<br>• 计算开销降低 <strong style="color:#fff;">2-3×</strong><br>• <strong>数学推理任务效果最显著</strong>：分歧点高度集中在关键推理步骤<br>• 门控阈值 τ=0.1 时达到最佳<strong style="color:#fff;">加速-质量</strong>平衡<br>• 师生差距增大时跳过率下降→加速效果减弱</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P11 · S6/6</span></div>
+<h2 style="font-size:20px;font-weight:700;color:var(--amber);margin-bottom:10px;">局限性与批判审视</h2>
+<div class="two-col fragment fade-up"><div class="concept-block" style="border-left:3px solid var(--rust);"><h4>⚠️ 作者自述</h4><p style="font-size:11px;">• 门控判定本身增加推理开销 (需教师前向)<br>• 阈值 τ 需任务特化调参<br>• 仅在白盒场景 (教师 logits 可访问) 下验证</p></div>
+<div class="concept-block" style="border-left:3px solid var(--amber);"><h4>🔍 审视角度</h4><p style="font-size:11px;">• 与 Fast OPD (P18, 前缀截断) 思路相近但粒度不同——token 级 vs 前缀级，两者互补<br>• 门控 KL 是<strong style="color:var(--amber);">粗粒度筛选</strong> (agree/disagree 二元判定)，REOPOLD 的熵引导是<strong style="color:var(--amber);">细粒度加权</strong>——未来方向可能是两者的结合</p></div></div></section>
 
 <!-- ═══════════ PAPER 12: DistiLLM-2 ═══════════ -->
 <section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P12 · S1/4</span></div>
