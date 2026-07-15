@@ -64,7 +64,29 @@
 <div class="fragment fade-up struct-content" style="margin-top:8px;"><strong style="color:var(--amber);">一句话核心贡献：</strong>提出 <strong style="color:#fff;">Skewed KL Divergence</strong>——在 Forward KL 和 Reverse KL 之间进行自适应插值，解决了 LLM 蒸馏中"覆盖多样性"与"模式锐化"的根本张力。在<strong style="color:#fff;">指令遵循</strong>和<strong style="color:#fff;">文本生成</strong>任务上，DistiLLM 显著优于标准 KD 和 MiniLLM。</div>
 </section>
 
-<!-- Structure 2: 背景动机 + 问题定义（占位，待补充论文原文细节） -->
+<!-- Structure 2: 背景动机 + 问题定义 -->
+<section data-transition="slide">
+  <div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P10 · Structure 2/7</span></div>
+  <h2 style="font-size:20px;font-weight:700;color:var(--amber);margin-bottom:10px;">背景动机 · 问题定义</h2>
+  <div class="two-col fragment fade-up">
+    <div class="concept-block" style="border-left:3px solid var(--rust);"><h4>🔴 背景：LLM 蒸馏的困境</h4><p style="font-size:11px;line-height:1.7;">Knowledge Distillation (KD) 是压缩 LLM 的主流方法——用大教师模型的输出分布训练小学生模型。但标准 KD 使用<strong style="color:var(--rust);">教师预生成的固定数据集</strong>（离线数据）→ 训练-推理分布不匹配 → 学生无法覆盖教师行为空间。</p></div>
+    <div class="concept-block" style="border-left:3px solid var(--amber);"><h4>🟡 已有尝试</h4><p style="font-size:11px;line-height:1.7;">MiniLLM (2023) 首次提出用 Reverse KL + Policy Gradient 实现在线蒸馏——学生在自己生成的 rollout 上模仿教师。但 Reverse KL 有<strong style="color:var(--amber);">模式追寻 (mode-seeking)</strong> 问题：学生只集中在教师的高概率区域，丢失多样性。</p></div>
+  </div>
+  <div class="def-box fragment fade-up" style="margin-top:8px;"><div class="label">🎯 DistiLLM 要解决的问题</div><div class="content" style="font-size:12px;">$$\min_\theta \mathcal{L}(\theta) = D(\pi_T \|\pi_\theta)$$<br>其中 D 是衡量师生分布差异的散度。<strong style="color:var(--amber);">核心问题：应该用哪种散度 D？</strong><br>• Forward KL D_KL(π_T‖π_S)：覆盖模式 (mean-seeking)→ 多样性好但可能过度分散<br>• Reverse KL D_KL(π_S‖π_T)：追寻模式 (mode-seeking)→ 锐度高但模式坍缩风险<br>• <strong style="color:#fff;">是否存在中间地带？</strong></div></div>
+</section>
+
+<!-- Structure 3: 核心创新点 -->
+<section data-transition="slide">
+  <div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P10 · Structure 3/7</span></div>
+  <h2 style="font-size:20px;font-weight:700;color:var(--amber);margin-bottom:10px;">核心创新：Skewed KL Divergence</h2>
+  <div class="fragment fade-up struct-content" style="margin-bottom:10px;">DistiLLM 提出 <strong style="color:var(--amber);">Skewed KL</strong>——在 Forward KL 和 Reverse KL 之间通过<strong style="color:#fff;">一个偏度参数 λ</strong>进行连续插值，实现从"覆盖模式"到"追寻模式"的平滑过渡。</div>
+  <div class="formula-box fragment fade-up" style="margin-bottom:10px;"><div class="math-block">$$SKD(\pi_T \|\pi_S; \lambda) = \sum_{y} \pi_T(y)^\lambda \pi_S(y)^{1-\lambda} \cdot \log\frac{\pi_S(y)}{\pi_T(y)}$$</div></div>
+  <div class="tri-grid fragment fade-up">
+    <div class="concept-block" style="border-top:2px solid var(--amber);"><h4>λ=0 → Reverse KL</h4><p>标准 RKL → 模式追寻。学生集中在教师高概率区域。</p></div>
+    <div class="concept-block" style="border-top:2px solid var(--sage);"><h4>λ=1 → Forward KL</h4><p>标准 FKL → 覆盖全部模式。学生覆盖教师所有可能性。</p></div>
+    <div class="concept-block" style="border-top:2px solid var(--bronze);"><h4>0&lt;λ&lt;1 → Skewed</h4><p>在两种模式间平滑插值→兼顾覆盖与锐化。λ 可固定或动态调度。</p></div>
+  </div>
+</section>
 
 </div></div>
 <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.js"></script><script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
