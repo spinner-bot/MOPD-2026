@@ -61,6 +61,14 @@ window.MathJax = {
   bottom: 12px !important;
 }
 .reveal .progress, .reveal .slide-number { display: none !important; }
+/* 自定义页码 */
+#page-indicator {
+  position: fixed; left: 24px; bottom: 20px; z-index: 100;
+  font-size: 13px; color: rgba(255,255,255,0.35);
+  font-family: 'JetBrains Mono','Fira Code','Consolas',monospace;
+  letter-spacing: 1px;
+  pointer-events: none;
+}
 
 /* ============ 玻璃卡片 ============ */
 .glass-card {
@@ -430,6 +438,7 @@ window.MathJax = {
 <body>
 
 <canvas id="particle-canvas"></canvas>
+<div id="page-indicator"></div>
 
 <div class="reveal">
 <div class="slides">
@@ -1445,6 +1454,22 @@ Reveal.initialize({
   controls: true, controlsLayout: 'bottom-right', controlsBackArrows: 'faded',
   width: 1200, height: 700, margin: 0, minScale: 0.2, maxScale: 2.0,
 });
+
+// 自定义页码 (左下角)
+(function() {
+  const el = document.getElementById('page-indicator');
+  function update() {
+    const h = Reveal.getIndices();
+    // h.h = 当前水平index(从0起), h.v = 当前垂直index
+    // 总页数 = 水平幻灯片总数
+    const total = Reveal.getTotalSlides();
+    // 当前页: 水平位置 + 1 (跳过垂直嵌套，我们的幻灯片没有嵌套)
+    const cur = Reveal.getSlidePastCount() + 1;
+    el.textContent = cur + ' / ' + total;
+  }
+  Reveal.on('ready', update);
+  Reveal.on('slidechanged', update);
+})();
 </script>
 
 </body>
