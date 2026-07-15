@@ -1349,6 +1349,43 @@ window.MathJax = {
   </div>
 </section>
 
+<!-- ═══════════════════════════ SLIDE 20.2: UNREAL & 辅助预测头 ═══════════════════════════ -->
+<section data-transition="slide">
+  <div style="display:flex;align-items:center;gap:12px;justify-content:center;margin-bottom:4px;">
+    <h2 style="font-size:26px;font-weight:700;color:var(--text);margin:0;">
+      🔮 UNREAL (2016) — 辅助预测头：让特征"理解世界"
+    </h2>
+    <span style="background:rgba(254,202,87,0.15);border:1px solid rgba(254,202,87,0.3);border-radius:12px;padding:3px 12px;font-size:11px;color:var(--a4);font-weight:700;">💬 讨论</span>
+  </div>
+  <div class="glow-bar"></div>
+  <div class="two-col">
+    <div class="fragment fade-up">
+      <div class="concept-card" style="border-top:3px solid var(--a2);">
+        <h4>❓ 问题：蒸馏只学了"做什么"</h4>
+        <p>在 Actor-Mimic 的蒸馏中，中心策略只模仿了子策略的<strong style="color:var(--a2);">动作概率分布</strong> p_T。但这忽略了一个关键：<strong style="color:var(--a2);">环境的运转规律</strong>——球推一下滚多远、踩地摩擦力如何、开关按下灯会亮——这些"世界模型"没有被蒸馏。</p>
+      </div>
+      <div class="concept-card" style="border-top:3px solid var(--a1);">
+        <h4>💡 UNREAL 的解决方案</h4>
+        <p>在 A3C 基础网络上<strong style="color:var(--a1);">并行挂多个辅助预测头</strong>，与主 RL 任务同时训练：<br>
+        • <strong style="color:var(--a1);">像素控制头</strong>：预测动作后画面哪些像素会变<br>
+        • <strong style="color:var(--a1);">奖励预测头</strong>：预测接下来几步的奖励序列<br>
+        • <strong style="color:var(--a1);">价值回放头</strong>：对历史经验再做价值估计训练</p>
+      </div>
+    </div>
+    <div class="fragment fade-up">
+      <div class="concept-card" style="border-top:3px solid var(--a5);">
+        <h4>🔧 如何影响模型？</h4>
+        <p>辅助头<strong>不是</strong>死输出——每个头都有自己的<strong style="color:var(--a5);">损失函数</strong>。总损失 = 主RL损失 + λ₁·像素损失 + λ₂·奖励损失 + ...。<br><br>
+        通过<strong style="color:var(--a5);">反向传播（梯度下降）</strong>，辅助任务的梯度分量也流入共享基座层，<strong style="color:var(--a5);">强制</strong>基座在提取特征时编码环境动态信息。</p>
+      </div>
+      <div class="info-tile" style="max-width:100%;">
+        <h4>📈 效果：样本效率</h4>
+        <p><strong style="color:var(--a2);">用更少的数据达到同等性能。</strong>因为基座已经对"世界怎么运转"有了内部模型，主任务不需要从零摸索所有因果。在OPD语境下，把这种特征蒸馏进π₀ → 中心策略不仅"知道该做什么"，还"知道世界怎么运转"。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- ═══════════════════════════ SLIDE 20.4: 支线的支线 — 参数增长优化方法 ═══════════════════════════ -->
 <section data-transition="slide">
   <div style="display:flex;align-items:center;gap:12px;justify-content:center;margin-bottom:4px;">
