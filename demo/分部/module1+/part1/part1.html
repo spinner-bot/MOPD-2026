@@ -138,7 +138,55 @@
   </div>
 </section>
 
-<!-- 继续 Papers 13-29 --></div></div>
+<!-- P13: DSKDv2 -->
+<section data-transition="slide">
+  <div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 Paper 13</span></div>
+  <div class="paper-card fragment fade-up" style="max-width:780px;">
+    <div class="pn">PAPER 13 · arXiv: 2504.11426 · 2025.04</div>
+    <div class="title">DSKDv2 — 跨 Tokenizer 蒸馏 · 支持 On-Policy 模式</div>
+    <div class="venue">BJTU (北京交通大学)</div>
+    <div class="desc" style="margin-top:8px;"><strong style="color:var(--amber);">核心贡献：</strong>解决师生使用<strong style="color:#fff;">不同tokenizer</strong>时的OPD难题。当教师和学生的词汇表不对齐时，token级KL散度失去直接意义→DSKDv2通过跨tokenizer对齐机制实现OPD。</div>
+  </div>
+  <div class="fragment fade-up concept-block" style="max-width:780px;border-left:3px solid var(--sage);"><h4>🔗 与CASIA Revisiting OPD(Paper 4)呼应</h4><p style="font-size:11px;">Paper 4诊断了"tokenizer不匹配"是一种OPD失效模式。DSKDv2正是针对这一问题的<strong style="color:var(--sage);">解决方案</strong>。</p></div>
+</section>
+
+<!-- P14: Constrained OPD -->
+<section data-transition="slide">
+  <div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 Paper 14</span></div>
+  <div class="paper-card fragment fade-up" style="max-width:780px;">
+    <div class="pn">PAPER 14 · arXiv: 2509.22921 · 2025.09</div>
+    <div class="title">Constrained OPD — CMDP框架：硬KL约束替代软惩罚</div>
+    <div class="venue">华为诺亚方舟实验室</div>
+    <div class="desc" style="margin-top:8px;"><strong style="color:var(--amber);">核心贡献：</strong>将OPD从<strong style="color:#fff;">软约束(惩罚项)</strong>升级为<strong style="color:#fff;">硬约束(CMDP)</strong>。传统OPD用β·D_KL作为软惩罚；Constrained OPD用约束马尔可夫决策过程(CMDP)框架，将KL偏差设为硬性上限。</div>
+  </div>
+  <div class="fragment fade-up concept-block" style="max-width:780px;border-left:3px solid var(--amber);"><h4>🔑 硬约束 vs 软约束</h4><p style="font-size:11px;"><strong>软约束(Distral):</strong> max Reward − β·KL → 允许权衡，但可能偏离过多<br><strong>硬约束(Constrained OPD):</strong> max Reward subject to KL ≤ δ → 保证不越过红线<br>类似Module 1中"橡皮筋"(软) vs "围墙"(硬)的比喻。</p></div>
+</section>
+
+<!-- P15: AdaSwitch -->
+<section data-transition="slide">
+  <div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 Paper 15</span></div>
+  <div class="paper-card fragment fade-up" style="max-width:780px;">
+    <div class="pn">PAPER 15 · arXiv: 2510.07842 · 2025.10</div>
+    <div class="title">AdaSwitch — 基于散度阈值的自适应 On/Off-Policy 切换</div>
+    <div class="venue">RUC (中国人民大学) / 百度</div>
+    <div class="desc" style="margin-top:8px;"><strong style="color:var(--amber);">核心贡献：</strong>在训练过程中<strong style="color:#fff;">自动判断</strong>何时使用在线(学生自采样)vs离线(教师数据集)数据。当学生分布与教师分布差异过大时→切换到离线数据以避免无效在线学习。</div>
+  </div>
+  <div class="fragment fade-up concept-block" style="max-width:780px;border-left:3px solid var(--sage);"><h4>🔗 与梯度场不存在定理的联系</h4><p style="font-size:11px;">当学生分布远离教师时(梯度场不存在)→AdaSwitch自动切换到离线数据→等学生拉近后再切回在线。这提供了对Module 1 Part 2梯度场问题的<strong style="color:var(--sage);">工程化自适应解决方案</strong>。</p></div>
+</section>
+
+<!-- P16: Veto -->
+<section data-transition="slide">
+  <div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 Paper 16</span></div>
+  <div class="paper-card fragment fade-up" style="max-width:780px;">
+    <div class="pn">PAPER 16 · arXiv: 2601.07155 · ACL 2026 Findings</div>
+    <div class="title">Veto — 自适应目标重构：稳定 OPD</div>
+    <div class="venue">SNU (首尔大学)</div>
+    <div class="desc" style="margin-top:8px;"><strong style="color:var(--amber);">核心贡献：</strong>当学生生成<strong style="color:#fff;">明显错误</strong>的token时，教师不应被迫"将错就错"地输出→Veto允许教师<strong style="color:#fff;">否决</strong>学生的错误前缀，重构蒸馏目标。</div>
+  </div>
+  <div class="fragment fade-up concept-block" style="max-width:780px;border-left:3px solid var(--amber);"><h4>🔑 否决机制</h4><p style="font-size:11px;">与Module 1 Part 5失效诊断中的"学生前缀扭曲教师"形成对比：<br>UIUC的修复是Stop-Gradient Top-K KL(被动过滤)→Veto的修复是<strong style="color:var(--amber);">主动否决+重构目标</strong>，更激进但也更有效。</p></div>
+</section>
+
+<!-- 继续 P17-29 --></div></div>
 <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.js"></script>
 <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 <script>(function(){const c=document.getElementById('bg-canvas'),x=c.getContext('2d');let W,H,shapes=[],frame=0;function rs(){W=c.width=window.innerWidth;H=c.height=window.innerHeight}window.addEventListener('resize',rs);rs();class Shape{constructor(){this.reset()}reset(){this.x=Math.random()*W;this.y=Math.random()*H;this.size=Math.random()*50+25;this.type=Math.floor(Math.random()*3);this.vx=(Math.random()-0.5)*0.4;this.vy=(Math.random()-0.5)*0.4;this.alpha=Math.random()*0.06+0.04;this.rot=Math.random()*Math.PI*2;this.rv=(Math.random()-0.5)*0.003}update(){this.x+=this.vx;this.y+=this.vy;this.rot+=this.rv;if(this.x<-80||this.x>W+80)this.vx*=-1;if(this.y<-80||this.y>H+80)this.vy*=-1}draw(c){var cx=this.x,cy=this.y;c.save();c.translate(cx,cy);c.rotate(this.rot);c.globalAlpha=this.alpha;c.shadowColor='rgba(220,180,120,0.6)';c.shadowBlur=18;c.strokeStyle='rgba(220,170,110,0.9)';c.lineWidth=1;if(this.type===0){c.beginPath();for(let i=0;i<6;i++){const a=i*Math.PI/3-Math.PI/2,r=this.size*0.6;const px=r*Math.cos(a),py=r*Math.sin(a);i===0?c.moveTo(px,py):c.lineTo(px,py)}c.closePath();c.stroke()}else if(this.type===1){c.beginPath();const s=this.size*0.45;c.moveTo(0,-s);c.lineTo(s,0);c.lineTo(0,s);c.lineTo(-s,0);c.closePath();c.stroke()}else{c.beginPath();c.arc(0,0,this.size*0.35,0,Math.PI*2);c.stroke()}c.shadowBlur=6;c.shadowColor='rgba(240,200,140,0.4)';c.globalAlpha=this.alpha*1.3;c.strokeStyle='rgba(240,200,140,0.6)';c.lineWidth=0.6;if(this.type===0){c.beginPath();for(let i=0;i<6;i++){const a=i*Math.PI/3-Math.PI/2,r2=this.size*0.35;const px=r2*Math.cos(a),py=r2*Math.sin(a);i===0?c.moveTo(px,py):c.lineTo(px,py)}c.closePath();c.stroke()}c.restore()}}shapes=Array.from({length:20},()=>new Shape());function drawGrid(){var gs=55;x.strokeStyle='rgba(170,130,70,0.06)';x.lineWidth=1;for(let i=gs;i<W;i+=gs){x.beginPath();x.moveTo(i,0);x.lineTo(i,H);x.stroke()}for(let j=gs;j<H;j+=gs){x.beginPath();x.moveTo(0,j);x.lineTo(W,j);x.stroke()}for(let i=gs;i<W;i+=gs){for(let j=gs;j<H;j+=gs){var dx=i-W/2,dy=j-H/2,dist=Math.sqrt(dx*dx+dy*dy);var edgeFade=Math.max(0.15,1-dist/(Math.max(W,H)*0.7));x.fillStyle=`rgba(210,160,100,${0.12*edgeFade})`;x.beginPath();x.arc(i,j,1.5,0,Math.PI*2);x.fill()}}}function drawGlow(){for(var i=0;i<2;i++){var gx=W*(0.3+i*0.4)+Math.sin(frame*0.002+i)*W*0.15;var gy=H*(0.4+i*0.2)+Math.cos(frame*0.003+i)*H*0.1;var grad=x.createRadialGradient(gx,gy,0,gx,gy,Math.min(W,H)*0.4);grad.addColorStop(0,'rgba(220,180,120,0.07)');grad.addColorStop(0.5,'rgba(180,140,80,0.03)');grad.addColorStop(1,'rgba(0,0,0,0)');x.fillStyle=grad;x.fillRect(0,0,W,H)}}function lp(){x.clearRect(0,0,W,H);drawGrid();drawGlow();shapes.forEach(s=>{s.update();s.draw(x)});frame++;requestAnimationFrame(lp)}lp()})();</script>
