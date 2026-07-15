@@ -253,7 +253,90 @@
   <p style="font-size:11px;color:var(--text3);margin-top:8px;">🔗 与Module 1 Part 4/5的REOPOLD和UIUC失效分析高度互补——CASIA的视角更偏向tokenization层面的系统性问题。</p>
 </section>
 
-<!-- 继续（Paper 5-8将在后续commit中添加） -->
+<!-- ═══════════ Paper 5: Tencent OPD Survey ═══════════ -->
+<section data-transition="slide">
+  <div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 Paper 5 / 8</span></div>
+  <div class="paper-card fragment fade-up" style="max-width:780px;">
+    <div class="arxiv">arXiv: 2604.00626 · 2026.04</div>
+    <div class="title">Tencent OPD Survey — 分类 50+ 方法</div>
+    <div class="venue">腾讯</div>
+    <div class="desc" style="margin-top:8px;">
+      <strong style="color:var(--amber);">核心贡献：</strong>对OPD领域进行<strong style="color:#fff;">系统分类</strong>，覆盖50+方法的参考索引。按白盒/黑盒/OPSD/RL混合四大范式组织。
+    </div>
+  </div>
+  <div class="two-col fragment fade-up">
+    <div class="concept-block" style="border-left:3px solid var(--amber);"><h4>📊 分类体系</h4><p>• <strong>白盒OPD：</strong>教师logits可访问→逐token KL监督<br>• <strong>黑盒OPD：</strong>教师仅API→标量奖励/评分替代<br>• <strong>OPSD：</strong>师生同模型→特权上下文自蒸馏<br>• <strong>OPD-RL混合：</strong>OPD嵌入RL训练循环<br>• <strong>多模态/Agent/推测解码：</strong>域特化应用</p></div>
+    <div class="concept-block" style="border-left:3px solid var(--sage);"><h4>🔗 与AwesomeOPD的关系</h4><p>腾讯Survey提供<strong style="color:var(--sage);">方法论视角</strong>的分类，AwesomeOPD提供<strong style="color:var(--sage);">工程视角</strong>的索引。两者互补：Survey讲"为什么这样分类"，AwesomeOPD讲"有哪些论文"。</p></div>
+  </div>
+</section>
+
+<!-- ═══════════ Paper 6: THUNLP Rethinking OPD ═══════════ -->
+<section data-transition="slide">
+  <div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 Paper 6 / 8</span></div>
+  <div class="paper-card fragment fade-up" style="max-width:780px;">
+    <div class="arxiv">arXiv: 2604.13016 · 2026.04</div>
+    <div class="title">THUNLP Rethinking OPD — 两个成功条件</div>
+    <div class="venue">清华大学</div>
+    <div class="desc" style="margin-top:8px;">
+      <strong style="color:var(--amber);">核心贡献：</strong>提出OPD成功的<strong style="color:#fff;">两个必要条件</strong>，回答"OPD何时有效、何时失败"。
+    </div>
+  </div>
+  <div class="two-col fragment fade-up">
+    <div class="concept-block" style="border-left:3px solid var(--amber);"><h4>✅ 条件一：兼容思维模式</h4><p>学生和教师必须有<strong style="color:var(--amber);">兼容的推理模式</strong>。如果教师使用学生完全无法模仿的推理策略（如大模型特有的多步回溯），OPD效果大打折扣。学生至少要有能力<strong style="color:var(--amber);">覆盖</strong>教师的思维空间。</p></div>
+    <div class="concept-block" style="border-left:3px solid var(--sage);"><h4>✅ 条件二：真正新的教师能力</h4><p>教师必须提供<strong style="color:var(--sage);">学生不具备的新知识</strong>。如果学生已经掌握了教师的能力（如简单的格式模仿），OPD不会带来额外增益。只有当教师在<strong style="color:var(--sage);">学生真正薄弱的维度</strong>上更强时，OPD才显著有效。</p></div>
+  </div>
+  <p style="font-size:11px;color:var(--text3);margin-top:8px;">🔗 这与Module 1中"梯度场不存在定理"一脉相承：当学生分布与教师分布不交叠时，OPD失效。THUNLP给出了更具体的条件。</p>
+</section>
+
+<!-- ═══════════ Paper 7: Many Faces of OPD (UIUC) ═══════════ -->
+<section data-transition="slide">
+  <div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 Paper 7 / 8</span></div>
+  <div class="paper-card fragment fade-up" style="max-width:780px;">
+    <div class="arxiv">arXiv: 2605.11182 · 2026.05</div>
+    <div class="title">The Many Faces of On-Policy Distillation</div>
+    <div class="venue">UIUC · ulab-uiuc.github.io/OPD_website</div>
+    <div class="desc" style="margin-top:8px;">
+      <strong style="color:var(--amber);">核心贡献：</strong>OPD/OPSD<strong style="color:#fff;">何时成功、何时失败</strong>的实证分析。三大失效：分布不匹配+优化不稳定+PI-free限制。
+    </div>
+  </div>
+  <div class="two-col fragment fade-up">
+    <div class="concept-block" style="border-left:3px solid var(--rust);"><h4>⚠️ 三大失效</h4><p>① <strong>分布不匹配：</strong>学生前缀污染教师→恶性循环<br>② <strong>优化不稳定：</strong>Top-K截断导致概率偏差<br>③ <strong>PI-free限制：</strong>学生背答案不学推理→分布偏移崩溃</p></div>
+    <div class="concept-block" style="border-left:3px solid var(--sage);"><h4>✅ 对应修复</h4><p>① Stop-Gradient Top-K KL<br>② 显式"<other>"类别补全<br>③ RLVR-adapt教师→SFT-warm学生<br><br>已在Module 1 Part 5 详细展开。</p></div>
+  </div>
+</section>
+
+<!-- ═══════════ Paper 8: OPD 反思 Blog (McGill/Mila) ═══════════ -->
+<section data-transition="slide">
+  <div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 Paper 8 / 8</span></div>
+  <div class="paper-card fragment fade-up" style="max-width:780px;">
+    <div class="arxiv">McGill / Mila · 2026.06</div>
+    <div class="title">OPD 反思 Blog — 三个失败机制</div>
+    <div class="venue">Li Jiang · louieworth.github.io/blog/opd_reflection</div>
+    <div class="desc" style="margin-top:8px;">
+      <strong style="color:var(--amber);">核心贡献：</strong>从<strong style="color:#fff;">梯度动力学</strong>角度分析OPD失败，提出三个此前未被充分讨论的机制。
+    </div>
+  </div>
+  <div class="tri-grid fragment fade-up" style="margin-top:10px;">
+    <div class="concept-block" style="border-top:2px solid var(--rust);"><h4>⚠️ 局部教师噪声</h4><p style="font-size:11px;">教师在某些token上的logits本身就有噪声→OPD放大这些噪声→学生学到错误信号。关键决策点噪声的影响远大于填充token。</p></div>
+    <div class="concept-block" style="border-top:2px solid var(--amber);"><h4>⚠️ 覆盖衰减</h4><p style="font-size:11px;">随着训练进行，学生分布逐渐偏离初始分布→教师对学生新访问状态的覆盖下降→蒸馏信号强度<strong style="color:var(--amber);">持续衰减</strong>→后期训练几乎无用。</p></div>
+    <div class="concept-block" style="border-top:2px solid var(--sage);"><h4>⚠️ 短视梯度</h4><p style="font-size:11px;">逐token KL只看当前步→无法感知<strong style="color:var(--sage);">长期后果</strong>。早期关键决策的梯度被后期填充token稀释。与GAE-OPD的动机一致。</p></div>
+  </div>
+  <p style="font-size:11px;color:var(--text3);margin-top:8px;">🔗 三个机制分别对应REOPOLD(局部噪声)、梯度场不存在(覆盖衰减)、GAE-OPD(短视梯度)——从博客视角独立验证了学术界的前沿发现。</p>
+</section>
+
+<!-- Part 0 总结 -->
+<section data-transition="slide">
+  <div class="ac-card fragment fade-up" style="text-align:center;">
+    <h2 style="font-size:24px;font-weight:700;color:var(--amber);margin-bottom:10px;">Part 0 小结</h2>
+    <div class="ac-bar"></div>
+    <p style="font-size:14px;color:var(--text2);line-height:2;">
+      8篇综述与奠基论文覆盖了OPD的<strong style="color:var(--amber);">定义、动机、成功条件、失败模式</strong>四大支柱。<br>
+      GKD和MiniLLM奠定了白盒OPD的技术范式；Thinking Machines提供了最简洁的直觉解释；<br>
+      CASIA/UIUC/McGill从不同角度诊断了失效模式——<strong style="color:#fff;">分布不匹配是贯穿所有诊断的核心主题</strong>。
+    </p>
+    <p style="font-size:12px;color:var(--text3);">Part 1 预告：白盒 OPD 21篇 — 逐token logit监督的完整演进</p>
+  </div>
+</section>
 </div></div>
 <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.js"></script>
 <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
