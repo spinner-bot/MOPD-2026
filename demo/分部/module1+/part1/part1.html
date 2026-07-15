@@ -170,8 +170,19 @@
 
 <section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P12 · S4/4</span></div>
 <h2 style="font-size:20px;font-weight:700;color:var(--amber);margin-bottom:10px;">局限 · 审视</h2>
-<div class="fragment fade-up struct-content">⚠️ 需要<strong>同时维护教师和学生两套数据流</strong>→工程复杂度增加。λ 调度策略可进一步优化。<br>🔍 对比式设计本质上是将单一蒸馏<strong>拆分为两个子任务</strong>——这种"分而治之"的策略是否总是最优，还是可能在数据量不足时引入额外方差？</div>
+<div class="fragment fade-up struct-content">⚠️ 需要<strong>同时维护教师和学生两套数据流</strong>→工程复杂度增加。<br>🔍 对比式设计本质上是将单一蒸馏<strong>拆分为两个子任务</strong>——这种"分而治之"的策略是否总是最优？</div>
 </section>
+
+<!-- ═══════════ P13: DSKDv2 ═══════════ -->
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P13 · S1/3</span></div>
+<div class="paper-card fragment fade-up"><div class="pn">PAPER 13 · arXiv: 2504.11426 · 2025.04</div><div class="title">DSKDv2 — Cross-Tokenizer Distillation with On-Policy Support</div><div class="venue">BJTU (北京交通大学)</div></div>
+<div class="fragment fade-up struct-content" style="margin-top:8px;"><strong style="color:var(--amber);">核心贡献：</strong>首次解决师生使用<strong style="color:#fff;">不同 tokenizer</strong> 时的 OPD 问题——通过跨 tokenizer 对齐机制，使得即使词汇表不对齐也能进行 token 级 KL 监督。</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P13 · S2-3/3</span></div>
+<div class="two-col fragment fade-up">
+  <div class="concept-block" style="border-left:3px solid var(--amber);"><h4>📐 S2: 跨 tokenizer 对齐</h4><p style="font-size:11px;">当师生 tokenizer 不同时，token 级 KL 失去直接意义。DSKDv2 通过<strong>投影矩阵</strong>将学生 token 分布映射到教师 token 空间→在对齐后的空间计算 KL。支持 on-policy 模式。</p></div>
+  <div class="concept-block" style="border-left:3px solid var(--sage);"><h4>⚠️ S3: 局限</h4><p style="font-size:11px;">投影矩阵引入额外参数和计算开销。tokenizer 差异过大时对齐精度下降。与 CASIA Revisiting OPD (P4) 中"tokenizer 不匹配"的失效诊断形成闭环。</p></div>
+</div></section>
 
 </div></div>
 <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.js"></script><script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
