@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Part 6 · 行业落地 & 未来方向 & 纪事年表</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/black.min.css">
+<style>
+:root{--bg:#0a0a0f;--surface:rgba(255,255,255,0.04);--border:rgba(255,255,255,0.08);--text:#e8e8f0;--text2:rgba(255,255,255,0.65);--text3:rgba(255,255,255,0.4);--a1:#6c5ce7;--a2:#00d2ff;--a3:#ff6b9d;--a4:#feca57;--a5:#00e676;--gold:#f0a500}
+#particle-canvas{position:fixed;inset:0;z-index:0;pointer-events:none}
+.reveal{background:transparent}.reveal .slides{text-align:center;width:100%!important;left:50%!important;margin:0!important}
+.reveal .slides section{padding:30px 50px;height:100%;display:flex!important;flex-direction:column;align-items:center;justify-content:center}
+.reveal .controls{right:12px!important;left:auto!important;bottom:12px!important}
+.reveal .progress,.reveal .slide-number{display:none!important}
+#page-indicator{position:fixed;left:24px;bottom:20px;z-index:100;font-size:13px;color:rgba(255,255,255,0.35);font-family:'JetBrains Mono','Fira Code','Consolas',monospace;letter-spacing:1px;pointer-events:none}
+.glass-card{position:relative;z-index:2;background:var(--surface);backdrop-filter:blur(24px) saturate(180%);border:1px solid var(--border);border-radius:24px;padding:40px 50px;box-shadow:0 20px 60px rgba(0,0,0,0.5);max-width:880px}
+.hero-title{font-size:50px;font-weight:900;letter-spacing:-2px;background:linear-gradient(135deg,var(--gold),var(--a5),var(--a2));background-size:300% 300%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:gS 4s ease infinite;margin:0 0 14px;line-height:1.15}
+@keyframes gS{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+.glow-bar{width:120px;height:3px;background:linear-gradient(90deg,transparent,var(--gold),var(--a5),transparent);border-radius:2px;margin:18px auto;animation:gP 2s ease-in-out infinite}
+@keyframes gP{0%,100%{opacity:0.4;width:120px}50%{opacity:1;width:200px}}
+.tag-row{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:16px}
+.tag{padding:7px 20px;border-radius:20px;font-size:13px;font-weight:600;border:1px solid;letter-spacing:1px;opacity:0;animation:tP 0.6s cubic-bezier(0.34,1.56,0.64,1) forwards}
+.tag:nth-child(1){animation-delay:0.3s;border-color:var(--gold);color:var(--gold)}.tag:nth-child(2){animation-delay:0.5s;border-color:var(--a5);color:var(--a5)}.tag:nth-child(3){animation-delay:0.7s;border-color:var(--a2);color:var(--a2)}
+@keyframes tP{from{opacity:0;transform:scale(.7)translateY(10px)}to{opacity:1;transform:scale(1)translateY(0)}}
+.reveal .slides section .fragment.fade-up{opacity:0;transform:translateY(40px);transition:all 0.8s cubic-bezier(0.25,0.46,0.45,0.94)}
+.reveal .slides section .fragment.fade-up.visible{opacity:1;transform:translateY(0)}
+.two-col{display:flex;gap:22px;flex-wrap:wrap;justify-content:center;max-width:960px}.two-col>div{flex:1;min-width:260px}
+.concept-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:20px 18px;text-align:left;margin-bottom:12px}.concept-card h4{margin:0 0 6px;font-size:14px;color:#fff}.concept-card p{margin:0;font-size:12px;color:var(--text2);line-height:1.7}
+.summary-table{width:100%;max-width:820px;border-collapse:collapse;font-size:13px;border-radius:16px;overflow:hidden;box-shadow:0 12px 40px rgba(0,0,0,0.4)}.summary-table thead{background:linear-gradient(135deg,rgba(240,165,0,0.3),rgba(0,230,118,0.15))}.summary-table th{padding:11px 14px;text-align:left;font-weight:700;color:#fff;font-size:12px}.summary-table td{padding:10px 14px;border-bottom:1px solid var(--border);color:var(--text2)}.summary-table tbody tr{background:var(--surface)}.summary-table .pc{font-weight:700;color:#fff}.summary-table .hl{color:var(--gold);font-weight:600}
+.next-badge{display:inline-flex;align-items:center;gap:10px;padding:12px 26px;border-radius:24px;background:rgba(240,165,0,0.08);border:1px solid rgba(240,165,0,0.2);font-size:15px;font-weight:700;color:var(--gold);margin-top:16px;animation:fl 3s ease-in-out infinite}
+@keyframes fl{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+
+/* 纪事年表动画 */
+.timeline-slide{cursor:pointer;position:relative}
+.timeline-track{position:relative;width:4px;background:rgba(255,255,255,0.1);margin:0 auto}
+.timeline-year{position:absolute;left:50%;transform:translateX(-50%);font-size:28px;font-weight:900;color:var(--gold);transition:all 0.5s}
+.timeline-entry{position:absolute;left:50%;padding:12px 18px;border-radius:12px;font-size:12px;line-height:1.5;text-align:left;max-width:240px;transition:all 0.6s cubic-bezier(0.25,0.46,0.45,0.94);opacity:0;transform:translateX(20px)}
+.timeline-entry.left{transform:translateX(-260px);left:calc(50% - 2px)}
+.timeline-entry.right{transform:translateX(20px);left:calc(50% + 2px)}
+.timeline-entry.visible{opacity:1}
+.timeline-entry.visible.left{transform:translateX(-280px)}
+.timeline-entry.visible.right{transform:translateX(40px)}
+.timeline-entry.paper{border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.04)}
+.timeline-entry.paper .yr{color:var(--gold);font-weight:900;font-size:14px}
+.timeline-entry.paper .ttl{color:#fff;font-weight:700;font-size:13px}
+.timeline-entry.paper .cn{color:var(--text3);font-size:10px}
+.timeline-hint{font-size:13px;color:var(--text3);margin-top:8px;animation:bounce 1s ease-in-out infinite}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+@media(max-width:768px){.hero-title{font-size:32px}.glass-card{padding:22px 16px;max-width:100%}}
+</style></head><body>
+<canvas id="particle-canvas"></canvas><div id="page-indicator"></div>
+<div class="reveal"><div class="slides">
+
+<!-- S1: Title -->
+<section data-transition="zoom"><div class="glass-card fragment fade-up">
+  <p style="font-size:15px;color:var(--gold);letter-spacing:4px;font-weight:700;margin:0;">CHAPTER 6 &amp; 7</p>
+  <h1 class="hero-title">OPD 行业落地 &amp; 未来</h1>
+  <p style="font-size:22px;color:rgba(255,255,255,0.7);margin:0 0 4px;">工业实践 · 开放问题 · 纪事年表</p>
+  <div class="glow-bar"></div><p style="font-size:14px;color:var(--text3);margin:0;">从实验室到生产线——OPD 的 2026 全景</p>
+  <div class="tag-row"><span class="tag">#Qwen3</span><span class="tag">#DeepSeek</span><span class="tag">#2015→2026</span></div>
+</div></section>
+
+<!-- S2: DAG -->
+<section data-transition="slide">
+  <h2 style="font-size:26px;font-weight:700;margin-bottom:4px;color:var(--text);">🗺️ Part 6 结构</h2><div class="glow-bar"></div>
+  <svg viewBox="0 0 900 320" xmlns="http://www.w3.org/2000/svg" style="max-width:900px;">
+    <defs><marker id="a" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><path d="M0,0 L7,2.5 L0,5 Z" fill="rgba(255,255,255,0.2)"/></marker></defs>
+    <rect x="270" y="8" width="360" height="28" rx="14" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.12)"/><text x="450" y="27" text-anchor="middle" fill="#fff" font-size="13" font-weight="700" font-family="sans-serif">Part 6: 行业落地 &amp; 未来方向</text>
+    <path d="M350,36 L170,60" marker-end="url(#a)" stroke="rgba(255,255,255,0.12)" stroke-width="1" fill="none"/><path d="M450,36 L450,60" marker-end="url(#a)" stroke="rgba(255,255,255,0.12)" stroke-width="1" fill="none"/><path d="M550,36 L730,60" marker-end="url(#a)" stroke="rgba(255,255,255,0.12)" stroke-width="1" fill="none"/>
+    <g><rect x="30" y="65" width="280" height="90" rx="10" fill="rgba(240,165,0,0.06)" stroke="rgba(240,165,0,0.2)"/><text x="170" y="87" text-anchor="middle" fill="#f0a500" font-size="14" font-weight="700" font-family="sans-serif">🏭 A: 行业落地</text><text x="170" y="105" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="10" font-family="sans-serif">Qwen 3 Pipeline</text><text x="170" y="120" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="10" font-family="sans-serif">DeepSeek V3.2交替</text><text x="170" y="135" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="10" font-family="sans-serif">2026工业界7大共识</text><text x="170" y="150" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="10" font-family="sans-serif">RL发现·蒸馏传播</text></g>
+    <g><rect x="325" y="65" width="250" height="90" rx="10" fill="rgba(0,230,118,0.05)" stroke="rgba(0,230,118,0.18)"/><text x="450" y="87" text-anchor="middle" fill="#00e676" font-size="14" font-weight="700" font-family="sans-serif">🔮 B: 开放问题 &amp; 前沿</text><text x="450" y="105" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="10" font-family="sans-serif">收敛性·最优KL·子空间锁定</text><text x="450" y="120" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="10" font-family="sans-serif">统一对齐框架·自蒸馏闭环</text><text x="450" y="135" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="10" font-family="sans-serif">多模态OPD·持续学习</text><text x="450" y="150" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="10" font-family="sans-serif">研究路线图 Week 1-7</text></g>
+    <g><rect x="590" y="65" width="280" height="90" rx="10" fill="rgba(108,92,231,0.06)" stroke="rgba(108,92,231,0.2)"/><text x="730" y="87" text-anchor="middle" fill="#a0a0ff" font-size="14" font-weight="700" font-family="sans-serif">📜 C: 纪事年表</text><text x="730" y="108" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="10" font-family="sans-serif">2015 → 2026</text><text x="730" y="126" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="10" font-family="sans-serif">15篇核心论文串联</text><text x="730" y="144" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="10" font-family="sans-serif">点击逐步展开</text></g>
+    <path d="M170,155 L170,190 L450,190 L450,210" stroke="rgba(255,255,255,0.06)" stroke-width="1" fill="none"/><path d="M450,155 L450,210" stroke="rgba(255,255,255,0.06)" stroke-width="1" fill="none"/><path d="M730,155 L730,190 L450,190" stroke="rgba(255,255,255,0.06)" stroke-width="1" fill="none"/>
+    <rect x="300" y="215" width="300" height="30" rx="15" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.1)"/><text x="450" y="235" text-anchor="middle" fill="#fff" font-size="12" font-weight="700" font-family="sans-serif">📋 OPD发展全历程 · 完结</text>
+  </svg>
+</section>
+
+<!-- ═══════ A: Industry ═══════ -->
+<section data-transition="slide">
+  <h2 style="font-size:26px;font-weight:700;margin-bottom:4px;color:var(--text);">🏭 Qwen 3 — 四步迭代 Pipeline</h2><div class="glow-bar"></div>
+  <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:center;margin:10px 0;font-size:12px;">
+    <span style="background:rgba(108,92,231,0.1);border:1px solid rgba(108,92,231,0.2);padding:10px 14px;border-radius:10px;"><strong style="color:var(--a1);">① GRPO</strong><br>可验证奖励<br>渐进难度课程</span>
+    <span style="color:rgba(255,255,255,0.3);">→</span>
+    <span style="background:rgba(255,107,157,0.1);border:1px solid rgba(255,107,157,0.2);padding:10px 14px;border-radius:10px;"><strong style="color:var(--a3);">② OPD</strong><br>在线生成推理链<br>教师提供KL信号</span>
+    <span style="color:rgba(255,255,255,0.3);">→</span>
+    <span style="background:rgba(0,210,255,0.08);border:1px solid rgba(0,210,255,0.18);padding:10px 14px;border-radius:10px;"><strong style="color:var(--a2);">③ 拒绝采样</strong><br>只保留正确<br>精选SFT</span>
+    <span style="color:rgba(255,255,255,0.3);">→</span>
+    <span style="background:rgba(0,230,118,0.08);border:1px solid rgba(0,230,118,0.18);padding:10px 14px;border-radius:10px;"><strong style="color:var(--a5);">④ 迭代</strong><br>回到①<br>更强模型=新教师</span>
+  </div>
+</section>
+
+<section data-transition="slide">
+  <h2 style="font-size:26px;font-weight:700;margin-bottom:4px;color:var(--text);">🐋 DeepSeek-V3.2 — 交替三阶段</h2><div class="glow-bar"></div>
+  <div class="two-col">
+    <div class="fragment fade-up"><div class="concept-card" style="border-top:3px solid var(--gold);"><h4>Phase 1: 能力发现</h4><p>GRPO + 强奖励 → 大模型发现<strong style="color:var(--gold);">新推理模式</strong>。纯RL探索，不设上限。</p></div></div>
+    <div class="fragment fade-up"><div class="concept-card" style="border-top:3px solid var(--a5);"><h4>Phase 2: 知识固化</h4><p><strong style="color:var(--a5);">OPD</strong> → 将Phase 1发现的能力固化到<strong style="color:var(--a5);">小模型参数</strong>。RL发现→蒸馏固化。</p></div></div>
+  </div>
+  <div class="fragment fade-up" style="margin-top:10px;max-width:750px;background:rgba(240,165,0,0.04);border:1px solid rgba(240,165,0,0.12);border-radius:12px;padding:12px 20px;">
+    <p style="font-size:12px;color:var(--text2);margin:0;"><strong style="color:var(--gold);">Phase 3: 专家蒸馏</strong> → 多专家蒸馏合并为统一模型 → <strong style="color:var(--gold);">循环回到Phase 1</strong>。这实质上就是CoPD思想在工业界的实践——发现→固化→再发现→再固化。</p>
+  </div>
+</section>
+
+<section data-transition="slide">
+  <h2 style="font-size:26px;font-weight:700;margin-bottom:4px;color:var(--text);">📊 2026 工业界 OPD 七大共识</h2><div class="glow-bar"></div>
+  <table class="summary-table fragment fade-up">
+    <thead><tr><th>#</th><th>共识</th><th>含义</th></tr></thead>
+    <tbody>
+      <tr><td class="pc">1</td><td><strong>RL发现，蒸馏传播</strong></td><td>分工明确：大模型RL探索 → 小模型蒸馏继承</td></tr>
+      <tr><td class="pc">2</td><td><strong>在线 &gt; 离线</strong></td><td>推理任务中OPD优于离线蒸馏</td></tr>
+      <tr><td class="pc">3</td><td><strong>混合模式最优</strong></td><td>RL奖励 + OPD KL信号组合效果最好</td></tr>
+      <tr><td class="pc">4</td><td><strong>温度动态调度</strong></td><td>随训练进程递减温度T</td></tr>
+      <tr><td class="pc">5</td><td><strong>教师也需要更新</strong></td><td>固定教师→距离扩大→效果衰减→CoPD</td></tr>
+      <tr><td class="pc">6</td><td><strong>位置感知重要</strong></td><td>不同位置token需不同权重(PW-OPSD)</td></tr>
+      <tr><td class="pc">7</td><td><strong>计算成本可接受</strong></td><td>比纯RL便宜<strong class="hl">10–100×</strong></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ═══════ B: Open Problems ═══════ -->
+<section data-transition="slide">
+  <h2 style="font-size:26px;font-weight:700;margin-bottom:4px;color:var(--text);">🔮 开放问题 &amp; 前沿方向</h2><div class="glow-bar"></div>
+  <div class="two-col">
+    <div class="fragment fade-up"><div class="concept-card" style="border-top:3px solid var(--a3);"><h4>🧪 理论开放问题</h4><p style="font-size:12px;line-height:1.8;">• <strong>收敛性</strong>: 修正后OPD仅证到局部收敛，缺全局保证<br>• <strong>最优KL方向</strong>: 缺少统一准则决定Forward vs Reverse KL<br>• <strong>子空间锁定</strong>: OPD参数更新进入低维通道——是高效特征还是学习牢笼？(arXiv 2606.07082)</p></div></div>
+    <div class="fragment fade-up"><div class="concept-card" style="border-top:3px solid var(--a5);"><h4>🚀 前沿方向</h4><p style="font-size:12px;line-height:1.8;">• <strong>统一对齐-蒸馏框架</strong>: DPO/RLHF/OPD是否同源？<br>• <strong>自蒸馏闭环</strong>: 生→超师→新师→新生 (AlphaGo风格)<br>• <strong>多模态OPD</strong>: 视觉推理/视频理解/具身AI<br>• <strong>OPD作为持续学习</strong>: 旧策约束新策，防止灾难性遗忘</p></div></div>
+  </div>
+  <div class="fragment fade-up" style="margin-top:10px;max-width:750px;background:rgba(0,230,118,0.04);border:1px solid rgba(0,230,118,0.12);border-radius:12px;padding:10px 18px;text-align:left;">
+    <p style="font-size:12px;color:var(--text2);margin:0;"><strong style="color:var(--a5);">推荐学习路径: </strong>Week 1-2 Hinton→Czarnecki→Teh | Week 3-4 R1→REOPOLD→2×2矩阵 | Week 5-6 UIUC失效→CoPD→CR/GAE→几何视角 | Week 7+ 用verl/ROLL复现实验</p>
+  </div>
+</section>
+
+<!-- ═══════ C: 纪事年表 (动画!) ═══════ -->
+<section data-transition="slide" class="timeline-slide" id="timelineSlide">
+  <h2 style="font-size:26px;font-weight:700;margin-bottom:4px;color:var(--text);">📜 纪事年表 — OPD 发展全历程</h2>
+  <div class="glow-bar"></div>
+  <p style="font-size:12px;color:var(--text3);margin:0 0 8px;">点击屏幕逐步展开 · 共 12 个时间节点</p>
+  <div style="position:relative;width:100%;max-width:900px;height:460px;margin:0 auto;" id="timelineArea">
+    <!-- 时间线中轴 -->
+    <div style="position:absolute;left:50%;top:0;bottom:0;width:3px;background:linear-gradient(180deg,var(--gold),var(--a3),var(--a1),var(--a5));transform:translateX(-1.5px);border-radius:2px;" id="timelineBar"></div>
+    <!-- 年份节点由JS动态生成 -->
+  </div>
+  <p class="timeline-hint" id="timelineHint">👆 点击展开下一个时间点 (1/12)</p>
+</section>
+
+<!-- Final -->
+<section data-transition="zoom"><div class="glass-card fragment fade-up">
+  <span style="font-size:56px;display:block;animation:float 3s ease-in-out infinite;">🔥</span>
+  <h2 style="font-size:26px;font-weight:700;color:var(--text);margin-bottom:16px;">OPD 发展全历程 · 完结</h2>
+  <div class="glow-bar"></div>
+  <p style="font-size:14px;color:var(--text2);line-height:1.7;">
+    <strong style="color:var(--gold);">2015</strong> 在线蒸馏概念诞生 →<br>
+    <strong style="color:var(--gold);">2017-2019</strong> 理论框架与数学基石 →<br>
+    <strong style="color:var(--gold);">2023-2025</strong> LLM革命引爆 →<br>
+    <strong style="color:var(--gold);">2026</strong> 统一框架 · 协同进化 · 失效诊断<br><br>
+    <strong style="color:#fff;">"RL discovers capabilities; distillation makes them stable and efficient."</strong>
+  </p>
+</div></section>
+
+</div></div>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.js"></script>
+<script>(function(){const c=document.getElementById('particle-canvas'),x=c.getContext('2d');let W,H,P;function rs(){W=c.width=window.innerWidth;H=c.height=window.innerHeight}window.addEventListener('resize',rs);rs();class Pt{constructor(){this.reset()}reset(){this.x=Math.random()*W;this.y=Math.random()*H;this.vx=(Math.random()-0.5)*0.6;this.vy=(Math.random()-0.5)*0.6;this.r=Math.random()*2+0.5;this.alpha=Math.random()*0.5+0.1}update(){this.x+=this.vx;this.y+=this.vy;if(this.x<-20||this.x>W+20||this.y<-20||this.y>H+20)this.reset()}draw(c){c.beginPath();c.arc(this.x,this.y,this.r,0,Math.PI*2);c.fillStyle=`rgba(240,165,0,${this.alpha})`;c.fill()}}P=Array.from({length:120},()=>new Pt());function dl(){for(let i=0;i<P.length;i++){for(let j=i+1;j<P.length;j++){const dx=P[i].x-P[j].x,dy=P[i].y-P[j].y,d=Math.sqrt(dx*dx+dy*dy);if(d<120){x.beginPath();x.moveTo(P[i].x,P[i].y);x.lineTo(P[j].x,P[j].y);x.strokeStyle=`rgba(0,230,118,${0.08*(1-d/120)})`;x.lineWidth=0.5;x.stroke()}}}}function lp(){x.clearRect(0,0,W,H);P.forEach(p=>{p.update();p.draw(x)});dl();requestAnimationFrame(lp)}lp()})();</script>
+<script>Reveal.initialize({hash:true,center:true,transition:'slide',transitionSpeed:'slow',backgroundTransition:'zoom',slideNumber:false,progress:false,controls:true,controlsLayout:'bottom-right',controlsBackArrows:'faded',width:1200,height:700,margin:0,minScale:0.2,maxScale:2.0});(function(){const e=document.getElementById('page-indicator');function u(){const t=Reveal.getTotalSlides(),c=Reveal.getSlidePastCount()+1;e.textContent=c+' / '+t}Reveal.on('ready',u);Reveal.on('slidechanged',u)})();</script>
+
+<!-- ============ 纪事年表动画逻辑 ============ -->
+<script>
+(function(){
+  var timelineData=[
+    {yr:'2015',title:'Policy Distillation',sub:'Rusu et al. · DeepMind · ICLR 2016',info:'OPD概念诞生——首次提出"在线蒸馏"',color:'#f0a500',side:'right'},
+    {yr:'2016',title:'Actor-Mimic',sub:'Parisotto et al. · ICLR 2016',info:'Q值截断+特征回归——OPD技术组件',color:'#ff6b9d',side:'left'},
+    {yr:'2017',title:'Distral',sub:'Teh et al. · DeepMind · NeurIPS 2017',info:'KL约束+交替优化——OPD理论框架',color:'#a0a0ff',side:'right'},
+    {yr:'2018',title:'Kickstarting Deep RL',sub:'Schmitt et al. · DeepMind',info:'λ→0衰减+PBT——9.58×加速,超越教师42.2%',color:'#00d2ff',side:'left'},
+    {yr:'2019',title:'Distilling Policy Distillation ★',sub:'Czarnecki et al. · AISTATS 2019',info:'梯度场定理——Thm1非梯度场+Thm2修正恢复',color:'#ff6b4a',side:'right'},
+    {yr:'2023',title:'DPO',sub:'Rafailov et al. · Stanford · NeurIPS 2023',info:'RLHF简化为分类——与OPD共享KL约束数学结构',color:'#6c5ce7',side:'left'},
+    {yr:'2025.01',title:'DeepSeek-R1 ★',sub:'Guo et al. · DeepSeek',info:'RL蒸馏革命——蒸馏32B(+25.6)远超纯RL训练',color:'#ff4444',side:'right'},
+    {yr:'2025',title:'REOPOLD + PW-OPSD + GAR',sub:'Ko/Liu et al.',info:'松弛OPD·位置加权·对抗推理——三箭齐发',color:'#feca57',side:'left'},
+    {yr:'2026.04',title:'CoPD',sub:'arXiv 2604.27083',info:'师生协同进化——打破教师>学生假设·2×收敛',color:'#a855f7',side:'right'},
+    {yr:'2026.05',title:'前缀×KL统一框架',sub:'arXiv 2605.16826',info:'2×2矩阵——四种蒸馏模式统一+标示研究空白',color:'#7c3aed',side:'left'},
+    {yr:'2026.06',title:'CR/GAE-OPSD + StepOPSD + OPD失效',sub:'多团队',info:'反事实路由·时序信用·步骤级·3失效→3修复',color:'#00e676',side:'right'},
+    {yr:'2026.07',title:'OPD 几何视角',sub:'arXiv 2606.07082',info:'子空间锁定——参数更新进入低维通道·未来方向',color:'#fff',side:'left'}
+  ];
+  var step=0,container=null;
+
+  function buildEntry(d,i){
+    var div=document.createElement('div');
+    div.className='timeline-entry paper '+(d.side||'right');
+    div.style.top=(10+i*38)+'px';
+    div.innerHTML='<div class="yr">'+d.yr+'</div><div class="ttl">'+d.title+'</div><div class="cn">'+d.info+'</div>';
+    div.style.borderLeft=d.side==='left'?'3px solid '+d.color:'none';
+    div.style.borderRight=d.side==='right'?'3px solid '+d.color:'none';
+    return div;
+  }
+
+  function revealNext(){
+    if(!container)container=document.getElementById('timelineArea');
+    if(!container)return;
+    if(step===0){container.querySelectorAll('.timeline-entry').forEach(function(e){e.remove()});}
+    if(step<timelineData.length){
+      var entry=buildEntry(timelineData[step],step);
+      container.appendChild(entry);
+      setTimeout(function(){entry.classList.add('visible');},10);
+      step++;
+      var hint=document.getElementById('timelineHint');
+      if(hint&&step<=timelineData.length)hint.innerHTML='👆 点击展开下一个时间点 ('+step+'/'+timelineData.length+')';
+    }
+    if(step>=timelineData.length){
+      var hint=document.getElementById('timelineHint');
+      if(hint)hint.innerHTML='✅ 全部展开 — OPD发展全历程 2015→2026';
+    }
+  }
+
+  document.addEventListener('click',function(e){
+    var slide=e.target.closest('#timelineSlide');
+    if(slide)revealNext();
+  });
+  Reveal.on('slidechanged',function(ev){
+    if(ev.currentSlide.id==='timelineSlide'){
+      container=document.getElementById('timelineArea');
+      if(container&&container.querySelectorAll('.timeline-entry.visible').length===0){
+        step=0;revealNext();
+      }
+    }
+  });
+})();
+</script>
+</body></html>
