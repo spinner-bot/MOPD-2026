@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module1+ · Part 2: 黑盒 OPD — 无 Logit 访问</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/black.min.css">
+<script>window.MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']],displayMath:[['$$','$$'],['\\[','\\]']]},options:{skipHtmlTags:['script','noscript','style','textarea','pre']}};</script>
+<style>
+:root{--bg:#0d0b09;--surface:rgba(30,25,18,0.65);--border:rgba(180,140,80,0.15);--text:#e8dcc8;--text2:rgba(220,200,160,0.75);--text3:rgba(180,155,120,0.5);--amber:#d4a040;--gold:#c89630;--bronze:#b87333;--wheat:#dcc090;--rust:#c05530;--sage:#809060;--ink:#3a3028;--shadow-card:0 8px 32px rgba(0,0,0,0.6)}
+#bg-canvas{position:fixed;inset:0;z-index:0;pointer-events:none}
+.reveal{background:transparent}.reveal .slides{text-align:center;width:100%!important;left:50%!important;margin:0!important}
+.reveal .slides section{padding:32px 52px;height:100%;display:flex!important;flex-direction:column;align-items:center;justify-content:center}
+.reveal .controls{right:12px!important;left:auto!important;bottom:12px!important}.reveal .progress,.reveal .slide-number{display:none!important}
+#page-indicator{position:fixed;left:24px;bottom:20px;z-index:100;font-size:13px;color:rgba(200,170,120,0.4);font-family:'JetBrains Mono',monospace}
+.ac-card{position:relative;z-index:2;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:36px 46px;max-width:860px;box-shadow:var(--shadow-card)}.ac-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--amber),var(--bronze),transparent)}
+.hero-title{font-size:48px;font-weight:800;background:linear-gradient(135deg,var(--amber),var(--wheat),var(--gold));background-size:300%300%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:gS 5s ease infinite;margin:0 0 12px}@keyframes gS{0%,100%{background-position:0%50%}50%{background-position:100%50%}}
+.ac-bar{width:100px;height:2px;background:linear-gradient(90deg,transparent,var(--amber),var(--bronze),transparent);margin:14px auto}
+.paper-card{background:linear-gradient(135deg,rgba(40,30,20,0.6),rgba(30,22,14,0.8));border:1px solid var(--border);border-radius:10px;padding:20px 18px;text-align:left;margin-bottom:10px;box-shadow:0 4px 16px rgba(0,0,0,0.4)}.paper-card .pn{font-size:10px;color:var(--amber);font-weight:700;letter-spacing:1px;margin-bottom:4px}.paper-card .title{font-size:15px;font-weight:700;color:var(--wheat)}.paper-card .venue{font-size:11px;color:var(--text3)}.paper-card .desc{font-size:12px;color:var(--text2);line-height:1.7;margin-top:6px}
+.two-col{display:flex;gap:18px;flex-wrap:wrap;justify-content:center;max-width:940px}.two-col>div{flex:1;min-width:260px}.tri-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;max-width:940px}
+.concept-block{background:rgba(30,25,18,0.5);border:1px solid var(--border);border-radius:10px;padding:16px 14px;text-align:left;margin-bottom:8px}.concept-block h4{margin:0 0 5px;font-size:13px;color:var(--amber)}.concept-block p{margin:0;font-size:11px;color:var(--text2);line-height:1.7}
+.formula-box{background:rgba(10,8,5,0.8);border:1px solid rgba(180,140,80,0.2);border-radius:10px;padding:18px 24px;max-width:780px;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,0.5);margin:6px 0}.formula-box .math-block{font-size:15px;color:#d4c8b0}
+.reveal .slides section .fragment.fade-up{opacity:0;transform:translateY(30px);transition:all 0.7s cubic-bezier(0.25,0.46,0.45,0.94)}.reveal .slides section .fragment.fade-up.visible{opacity:1;transform:translateY(0)}
+.page-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 14px;border-radius:14px;font-size:11px;font-weight:700;letter-spacing:2px;background:rgba(212,160,64,0.08);color:var(--amber);border:1px solid rgba(212,160,64,0.2)}
+.cite{font-size:10px;color:var(--amber);font-family:monospace}@media(max-width:768px){.hero-title{font-size:30px}.two-col{flex-direction:column}.tri-grid{grid-template-columns:1fr}}
+</style></head><body>
+<canvas id="bg-canvas"></canvas><div id="page-indicator"></div>
+<div class="reveal"><div class="slides">
+
+<section data-transition="zoom"><div class="ac-card fragment fade-up">
+  <p class="cite" style="text-align:center;">MODULE 1+ · PART 2</p><h1 class="hero-title">黑盒 OPD</h1>
+  <p style="font-size:20px;color:var(--text2);margin:0;">无 Logit 访问 · 标量奖励/评分/判别器 · 6 篇</p>
+  <div class="ac-bar"></div><p style="font-size:12px;color:var(--text3);">Papers 30–35</p>
+</div></section>
+
+<!-- Overview -->
+<section data-transition="slide">
+  <h2 style="font-size:22px;font-weight:700;color:var(--amber);margin-bottom:8px;">📚 Papers 30–35: 黑盒 OPD</h2><div class="ac-bar"></div>
+  <table class="summary-table fragment fade-up">
+    <thead><tr><th>Paper</th><th>论文</th><th>信号类型</th><th>核心方法</th></tr></thead>
+    <tbody>
+      <tr><td class="pc">30</td><td>ORPO-Distill</td><td>SGO+ORPO对比</td><td>学生生成负样本+教师正样本</td></tr>
+      <tr><td class="pc">31</td><td><strong>GAD</strong></td><td>判别器(在线RM)</td><td>对抗判别器区分学生vs教师输出</td></tr>
+      <tr><td class="pc">32</td><td>OVD</td><td>语言评分(0-9)</td><td>逐序列语言评分替代token级logit</td></tr>
+      <tr><td class="pc">33</td><td>SPOT</td><td>黑盒Oracle编辑</td><td>最小编辑保持学生分布近端</td></tr>
+      <tr><td class="pc">34</td><td>SODA</td><td>DPO偏好对比</td><td>半在线范式·10×更快</td></tr>
+      <tr><td class="pc">35</td><td>ROPD</td><td>Rubric评分</td><td>教师-学生对比诱导评分标准·10×样本效率</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- P30-P31 -->
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 Paper 30-31</span></div>
+<div class="two-col fragment fade-up">
+  <div class="paper-card"><div class="pn">PAPER 30 · arXiv: 2509.25100</div><div class="title">ORPO-Distill</div><div class="venue">SGO+ORPO 对比信号</div><div class="desc"><strong style="color:var(--amber);">学生生成负样本+教师正样本</strong>。不访问教师logits→用教师生成的文本作为正例，学生生成作为负例→对比学习。</div></div>
+  <div class="paper-card"><div class="pn">PAPER 31 · arXiv: 2511.10643</div><div class="title">GAD ⭐</div><div class="venue">对抗判别器(在线RM)</div><div class="desc"><strong style="color:var(--amber);">对抗判别器区分学生vs教师输出</strong>→14B学生达到GPT-5水平。判别器=在线奖励模型，实时评估学生输出质量→PG更新。</div></div>
+</div></section>
+
+<!-- P32-P35 -->
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 Papers 32-35</span></div>
+<div class="tri-grid fragment fade-up">
+  <div class="concept-block" style="border-top:2px solid var(--amber);"><h4>P32: OVD</h4><p style="font-size:11px;"><span class="cite">2601.21968</span><br><strong>逐序列语言评分(0-9)</strong>替代token级logit匹配→适用于完全无法访问logits的场景。</p></div>
+  <div class="concept-block" style="border-top:2px solid var(--sage);"><h4>P33: SPOT</h4><p style="font-size:11px;"><span class="cite">2603.01683</span><br><strong>最小编辑保持近端</strong>→黑盒Oracle仅提供最优编辑→学生学习最小改动。</p></div>
+  <div class="concept-block" style="border-top:2px solid var(--bronze);"><h4>P34: SODA</h4><p style="font-size:11px;"><span class="cite">2604.03873</span><br><strong>半在线DPO</strong>→静态快照捕获学生弱点→10×加速。</p></div>
+</div>
+<div class="two-col fragment fade-up" style="margin-top:10px;">
+  <div class="concept-block" style="border-left:3px solid var(--amber);"><h4>P35: ROPD</h4><p style="font-size:11px;"><span class="cite">2605.07396</span><br><strong>Rubric评分</strong>：教师-学生对比→自动诱导prompt特定评分标准→<strong style="color:var(--amber);">10×样本效率</strong>。</p></div>
+  <div class="concept-block" style="border-left:3px solid var(--sage);"><h4>黑盒OPD的核心特征</h4><p style="font-size:11px;">白盒OPD用<strong style="color:#fff;">logits</strong>→黑盒OPD用<strong style="color:#fff;">标量信号</strong>(评分/判别/偏好对比)。牺牲信号密度，换取模型无关的通用性。</p></div>
+</div></section>
+
+<!-- Part 2 小结 -->
+<section data-transition="slide"><div class="ac-card fragment fade-up" style="text-align:center;">
+  <h2 style="font-size:22px;font-weight:700;color:var(--amber);">Part 2 小结 — 黑盒 OPD</h2><div class="ac-bar"></div>
+  <p style="font-size:13px;color:var(--text2);line-height:2;">6篇论文展示了<strong style="color:var(--amber);">无logits访问</strong>时的OPD策略：从对比学习→对抗判别器→语言评分→DPO偏好→Rubric评分。<br>核心权衡：<strong style="color:#fff;">信号密度↔通用性</strong>。黑盒OPD更灵活(任何API可用)但信号更稀疏。</p>
+</div></section>
+
+</div></div>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.js"></script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<script>(function(){const c=document.getElementById('bg-canvas'),x=c.getContext('2d');let W,H,shapes=[],frame=0;function rs(){W=c.width=window.innerWidth;H=c.height=window.innerHeight}window.addEventListener('resize',rs);rs();class Shape{constructor(){this.reset()}reset(){this.x=Math.random()*W;this.y=Math.random()*H;this.size=Math.random()*50+25;this.type=Math.floor(Math.random()*3);this.vx=(Math.random()-0.5)*0.4;this.vy=(Math.random()-0.5)*0.4;this.alpha=Math.random()*0.06+0.04;this.rot=Math.random()*Math.PI*2;this.rv=(Math.random()-0.5)*0.003}update(){this.x+=this.vx;this.y+=this.vy;this.rot+=this.rv;if(this.x<-80||this.x>W+80)this.vx*=-1;if(this.y<-80||this.y>H+80)this.vy*=-1}draw(c){c.save();c.translate(this.x,this.y);c.rotate(this.rot);c.globalAlpha=this.alpha;c.shadowColor='rgba(220,180,120,0.6)';c.shadowBlur=18;c.strokeStyle='rgba(220,170,110,0.9)';c.lineWidth=1;if(this.type===0){c.beginPath();for(let i=0;i<6;i++){const a=i*Math.PI/3-Math.PI/2,r=this.size*0.6;const px=r*Math.cos(a),py=r*Math.sin(a);i===0?c.moveTo(px,py):c.lineTo(px,py)}c.closePath();c.stroke()}else if(this.type===1){c.beginPath();const s=this.size*0.45;c.moveTo(0,-s);c.lineTo(s,0);c.lineTo(0,s);c.lineTo(-s,0);c.closePath();c.stroke()}else{c.beginPath();c.arc(0,0,this.size*0.35,0,Math.PI*2);c.stroke()}c.restore()}}shapes=Array.from({length:20},()=>new Shape());function drawGrid(){var gs=55;x.strokeStyle='rgba(170,130,70,0.06)';x.lineWidth=1;for(let i=gs;i<W;i+=gs){x.beginPath();x.moveTo(i,0);x.lineTo(i,H);x.stroke()}for(let j=gs;j<H;j+=gs){x.beginPath();x.moveTo(0,j);x.lineTo(W,j);x.stroke()}for(let i=gs;i<W;i+=gs){for(let j=gs;j<H;j+=gs){var dx=i-W/2,dy=j-H/2,dist=Math.sqrt(dx*dx+dy*dy);var edgeFade=Math.max(0.15,1-dist/(Math.max(W,H)*0.7));x.fillStyle=`rgba(210,160,100,${0.12*edgeFade})`;x.beginPath();x.arc(i,j,1.5,0,Math.PI*2);x.fill()}}}function drawGlow(){for(var i=0;i<2;i++){var gx=W*(0.3+i*0.4)+Math.sin(frame*0.002+i)*W*0.15;var gy=H*(0.4+i*0.2)+Math.cos(frame*0.003+i)*H*0.1;var grad=x.createRadialGradient(gx,gy,0,gx,gy,Math.min(W,H)*0.4);grad.addColorStop(0,'rgba(220,180,120,0.07)');grad.addColorStop(0.5,'rgba(180,140,80,0.03)');grad.addColorStop(1,'rgba(0,0,0,0)');x.fillStyle=grad;x.fillRect(0,0,W,H)}}function lp(){x.clearRect(0,0,W,H);drawGrid();drawGlow();shapes.forEach(s=>{s.update();s.draw(x)});frame++;requestAnimationFrame(lp)}lp()})();</script>
+<script>Reveal.initialize({hash:true,center:true,transition:'slide',transitionSpeed:'slow',backgroundTransition:'zoom',slideNumber:false,progress:false,controls:true,controlsLayout:'bottom-right',controlsBackArrows:'faded',width:1200,height:700,margin:0,minScale:0.2,maxScale:2.0});(function(){const e=document.getElementById('page-indicator');function u(){const t=Reveal.getTotalSlides(),c=Reveal.getSlidePastCount()+1;e.textContent=c+' / '+t}Reveal.on('ready',u);Reveal.on('slidechanged',u)})();</script>
+</body></html>
