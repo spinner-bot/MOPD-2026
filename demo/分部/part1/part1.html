@@ -1526,6 +1526,126 @@ window.MathJax = {
       </div>
     </div>
   </div>
+</section>
+
+<!-- ═══════════════════════════ SLIDE 20.71: K-means类比 ═══════════════════════════ -->
+<section data-transition="slide">
+  <div style="display:flex;align-items:center;gap:12px;justify-content:center;margin-bottom:4px;">
+    <h2 style="font-size:26px;font-weight:700;color:var(--text);margin:0;">
+      🔬 K-means 类比 — 技能发现 vs 静态聚类
+    </h2>
+    <span style="background:rgba(254,202,87,0.15);border:1px solid rgba(254,202,87,0.3);border-radius:12px;padding:3px 12px;font-size:11px;color:var(--a4);font-weight:700;">💬 讨论</span>
+  </div>
+  <div class="glow-bar"></div>
+  <div class="two-col">
+    <div class="fragment fade-up">
+      <div style="background:rgba(255,107,157,0.06);border:1px solid rgba(255,107,157,0.2);border-radius:16px;padding:20px 18px;text-align:left;">
+        <h4 style="color:var(--a3);margin:0 0 8px;">📊 K-means（静态聚类）</h4>
+        <p style="font-size:13px;color:var(--text2);line-height:1.7;margin:0;">
+          • 对<strong style="color:var(--a3);">已有的</strong>数据点分组<br>
+          • 需要人工定义<strong style="color:var(--a3);">特征维度</strong><br>
+          • 分配标签后<strong style="color:var(--a3);">不改变数据本身</strong><br>
+          • 聚类质量取决于初始中心点
+        </p>
+      </div>
+    </div>
+    <div class="fragment fade-up">
+      <div style="background:rgba(0,210,255,0.05);border:1px solid rgba(0,210,255,0.2);border-radius:16px;padding:20px 18px;text-align:left;">
+        <h4 style="color:var(--a2);margin:0 0 8px;">🤖 DIAYN 技能发现（动态生成）</h4>
+        <p style="font-size:13px;color:var(--text2);line-height:1.7;margin:0;">
+          • 智能体<strong style="color:var(--a2);">主动修改数据生成过程</strong><br>
+          • 维度<strong style="color:var(--a2);">由传感器硬件决定</strong>（关节角度/速度/触地）<br>
+          • 神经网络自动抽取区分特征<br>
+          • 策略被驱动使簇间差异<strong style="color:var(--a2);">最大化</strong>
+        </p>
+      </div>
+    </div>
+  </div>
+  <div class="fragment fade-up" style="margin-top:16px;max-width:800px;text-align:left;background:rgba(254,202,87,0.04);border:1px solid rgba(254,202,87,0.12);border-radius:14px;padding:14px 20px;">
+    <p style="font-size:13px;color:var(--text2);margin:0;line-height:1.7;">
+      <strong style="color:var(--a4);">💡 本质区别：</strong>K-means 是对已存在数据贴标签；DIAYN 是让智能体<strong style="color:#fff;">主动改变自己的行为</strong>来产生更容易被区分的状态轨迹。这是"被动分类"和"主动塑造"的根本不同。
+    </p>
+  </div>
+</section>
+
+<!-- ═══════════════════════════ SLIDE 20.72: 互信息最大化 ═══════════════════════════ -->
+<section data-transition="slide">
+  <div style="display:flex;align-items:center;gap:12px;justify-content:center;margin-bottom:4px;">
+    <h2 style="font-size:26px;font-weight:700;color:var(--text);margin:0;">
+      📐 互信息 I(S;Z) — 技能多样性的数学保证
+    </h2>
+    <span style="background:rgba(254,202,87,0.15);border:1px solid rgba(254,202,87,0.3);border-radius:12px;padding:3px 12px;font-size:11px;color:var(--a4);font-weight:700;">💬 讨论</span>
+  </div>
+  <div class="glow-bar"></div>
+  <div class="two-col">
+    <div class="fragment fade-up">
+      <div class="formula-card" style="margin-bottom:14px;">
+        <div class="math-block">$$I(S; Z) = H(S) - H(S|Z)$$</div>
+      </div>
+      <div class="concept-card" style="border-left:3px solid var(--a1);">
+        <h4>🔑 三个核心概念</h4>
+        <p style="font-size:13px;color:var(--text2);line-height:1.7;margin:0;">
+          <strong style="color:var(--a1);">H(S)：状态总不确定性</strong>—所有技能混合在一起时，状态分布有多"乱"<br><br>
+          <strong style="color:var(--a2);">H(S|Z)：已知技能编号后的剩余不确定性</strong>—知道是哪个技能后，还能猜中状态吗？<br><br>
+          <strong style="color:var(--a3);">I(S;Z)：互信息</strong>—知道技能编号能减少多少状态的不确定性。越大 → 技能之间越容易区分
+        </p>
+      </div>
+    </div>
+    <div class="fragment fade-up">
+      <div class="concept-card" style="border-left:3px solid var(--a5);">
+        <h4>🎯 最大化 I(S;Z) 的效果</h4>
+        <p style="font-size:13px;color:var(--text2);line-height:1.7;margin:0;">
+          强迫 H(S|Z) 尽可能小 = <strong style="color:var(--a5);">给定技能编号就能猜出状态</strong><br>
+          → 不同技能必须访问<strong style="color:var(--a5);">不同的状态区域</strong><br>
+          → 自然涌现可区分的运动模式
+        </p>
+      </div>
+      <div class="info-tile" style="max-width:100%;margin-top:12px;">
+        <h4>📊 状态访问分布 d^π(s)</h4>
+        <p>策略 π 长期运行时，处于各状态的概率分布。"跳"的状态分布在关节高频震荡区，"走"在低频摆动区。<strong style="color:var(--a2);">统计依赖</strong>：两个变量不独立，知道一个就能预测另一个——互信息是量化这种依赖的最高指标。</p>
+      </div>
+    </div>
+  </div>
+  <p style="font-size:12px;color:var(--text3);margin-top:12px;">
+    💡 伪奖励 log D(z|s) — 判别器猜得越准→互信息越大→技能越多样化→自然分簇
+  </p>
+</section>
+
+<!-- ═══════════════════════════ SLIDE 20.73: 精细微调三法 ═══════════════════════════ -->
+<section data-transition="slide">
+  <div style="display:flex;align-items:center;gap:12px;justify-content:center;margin-bottom:4px;">
+    <h2 style="font-size:26px;font-weight:700;color:var(--text);margin:0;">
+      🔧 选出技能后，如何精细优化？— 三种微调方法
+    </h2>
+    <span style="background:rgba(254,202,87,0.15);border:1px solid rgba(254,202,87,0.3);border-radius:12px;padding:3px 12px;font-size:11px;color:var(--a4);font-weight:700;">💬 讨论</span>
+  </div>
+  <div class="glow-bar"></div>
+  <p style="font-size:13px;color:var(--text3);margin:0 0 16px;">
+    无监督发现的技能只是"接近"目标，需进一步精炼。K个技能设得比目标多（如50个），人工筛选后微调。
+  </p>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;max-width:960px;">
+    <div class="fragment fade-up" style="background:rgba(0,230,118,0.05);border:1px solid rgba(0,230,118,0.18);border-radius:16px;padding:20px 16px;text-align:left;">
+      <div style="font-size:14px;font-weight:700;color:var(--a5);margin-bottom:8px;">🎯 1. 微调 + 任务奖励 R</div>
+      <p style="font-size:12px;color:var(--text2);line-height:1.6;margin:0;">
+        为选出的技能设计<strong style="color:var(--a5);">真实奖励函数</strong>（如"速度越快分越高"）。以无监督策略为初始化，用RL（PPO/SAC）继续训练。<br>
+        <strong style="color:#fff;">优势：</strong>起点已经很接近，只需<strong style="color:var(--a5);">少量样本</strong>。
+      </p>
+    </div>
+    <div class="fragment fade-up" style="background:rgba(0,210,255,0.04);border:1px solid rgba(0,210,255,0.18);border-radius:16px;padding:20px 16px;text-align:left;">
+      <div style="font-size:14px;font-weight:700;color:var(--a2);margin-bottom:8px;">👁️ 2. RLHF (人类反馈)</div>
+      <p style="font-size:12px;color:var(--text2);line-height:1.6;margin:0;">
+        写不出R时，让人当评判：<strong style="color:var(--a2);">看视频 → 选"更像跑"的那段</strong> → 用偏好信号训练奖励模型 → 用奖励模型微调策略。<br>
+        <strong style="color:#fff;">优势：</strong>把<strong style="color:var(--a2);">模糊的人类感觉</strong>变成可优化的目标。
+      </p>
+    </div>
+    <div class="fragment fade-up" style="background:rgba(108,92,231,0.05);border:1px solid rgba(108,92,231,0.18);border-radius:16px;padding:20px 16px;text-align:left;">
+      <div style="font-size:14px;font-weight:700;color:var(--a1);margin-bottom:8px;">🔒 3. KL 约束微调</div>
+      <p style="font-size:12px;color:var(--text2);line-height:1.6;margin:0;">
+        微调时加 <strong style="color:var(--a1);">KL 散度项</strong>约束新策略不要偏离原始无监督策略太远。<br>
+        <strong style="color:#fff;">优势：</strong>防止为追求高奖励而<strong style="color:var(--a1);">动作变形</strong>，保持技能原有"风格"——这正是Distral框架思想的延续。
+      </p>
+    </div>
+  </div>
   <p style="font-size:12px;color:var(--text3);margin-top:14px;">
     📖 完整展开 → Part 2: DIAYN · 互信息最大化 · 无监督预训练 · 技能微调
   </p>
