@@ -176,20 +176,61 @@
 
 <!-- ═══════════ DAG高亮: Section A ═══════════ -->
 <section data-transition="slide">
-  <div style="text-align:center;margin-bottom:12px;"><span style="background:rgba(255,68,68,0.1);color:var(--red);border:1px solid rgba(255,68,68,0.2);padding:4px 14px;border-radius:12px;font-size:11px;font-weight:700;letter-spacing:2px;">📍 当前位置</span></div>
-  <div class="struct-tree-box">
-    <div style="color:var(--text3);margin-bottom:4px;">Part 4: LLM时代的OPD革命 (2024-2026)</div>
-    <div class="cur sa">🔴 Section A: 范式转变 ← <strong>当前</strong></div>
-    <div style="color:var(--text3);">&nbsp;&nbsp;├── 推理链详解 ★核心</div>
-    <div style="color:var(--text3);">&nbsp;&nbsp;├── LLM打破OPD假设</div>
-    <div style="color:var(--text3);">&nbsp;&nbsp;├── DeepSeek-R1 五阶段</div>
-    <div style="color:var(--text3);">&nbsp;&nbsp;└── 强策略→弱策略</div>
-    <div style="color:var(--text3);">🟠 Section B: GRPO与隐式OPD</div>
-    <div style="color:var(--text3);">🟡 Section C: REOPOLD三问题</div>
-    <div style="color:var(--text3);">🟢 Section D: PW-OPSD</div>
-    <div style="color:var(--text3);">🔵 Section E: GAR</div>
-    <div style="color:var(--text3);">📋 Section F: 总结 → Part 5</div>
-  </div>
+  <h2 style="font-size:22px;font-weight:700;margin-bottom:4px;color:var(--text);">🗺️ 当前位置：🔴 Section A — 范式转变</h2>
+  <div class="glow-bar"></div>
+  <svg viewBox="0 0 1000 340" xmlns="http://www.w3.org/2000/svg" style="max-width:1000px;">
+    <defs><marker id="dh" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><path d="M0,0 L7,2.5 L0,5 Z" fill="rgba(255,255,255,0.3)"/></marker></defs>
+    <!-- Title -->
+    <rect x="320" y="8" width="360" height="28" rx="14" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.12)"/>
+    <text x="500" y="27" text-anchor="middle" fill="#fff" font-size="13" font-weight="700" font-family="sans-serif">Part 4: LLM时代的OPD革命 (2024-2026)</text>
+    <!-- Root→Sections -->
+    <path d="M400,36 L120,60" marker-end="url(#dh)" stroke="rgba(255,255,255,0.2)" stroke-width="1" fill="none"/>
+    <path d="M440,36 L300,60" marker-end="url(#dh)" stroke="rgba(255,255,255,0.2)" stroke-width="1" fill="none"/>
+    <path d="M500,36 L500,60" marker-end="url(#dh)" stroke="rgba(255,255,255,0.2)" stroke-width="1" fill="none"/>
+    <path d="M560,36 L700,60" marker-end="url(#dh)" stroke="rgba(255,255,255,0.2)" stroke-width="1" fill="none"/>
+    <path d="M600,36 L880,60" marker-end="url(#dh)" stroke="rgba(255,255,255,0.2)" stroke-width="1" fill="none"/>
+
+    <!-- Sec A: HIGHLIGHTED -->
+    <g opacity="1"><rect x="30" y="65" width="175" height="82" rx="10" fill="rgba(255,68,68,0.12)" stroke="rgba(255,68,68,0.4)" stroke-width="2"/>
+      <text x="117" y="84" text-anchor="middle" fill="#ff4444" font-size="13" font-weight="700" font-family="sans-serif">🔴 A: 范式转变</text>
+      <text x="117" y="102" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-size="10" font-family="sans-serif">推理链详解</text>
+      <text x="117" y="116" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-size="10" font-family="sans-serif">LLM打破OPD假设</text>
+      <text x="117" y="130" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-size="10" font-family="sans-serif">R1五阶段Pipeline</text>
+      <text x="117" y="144" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-size="10" font-family="sans-serif">强策略→弱策略</text></g>
+    <!-- Sec B -->
+    <g opacity="0.2"><rect x="215" y="65" width="170" height="82" rx="10" fill="rgba(255,140,66,0.08)" stroke="rgba(255,140,66,0.25)"/>
+      <text x="300" y="84" text-anchor="middle" fill="#ff8c42" font-size="13" font-weight="700" font-family="sans-serif">🟠 B: GRPO</text>
+      <text x="300" y="104" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="10" font-family="sans-serif">公式拆解·隐式OPD</text>
+      <text x="300" y="120" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="10" font-family="sans-serif">RL vs 蒸馏对比</text>
+      <text x="300" y="136" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="10" font-family="sans-serif">强模型如何诞生?</text></g>
+    <!-- Sec C -->
+    <g opacity="0.2"><rect x="395" y="65" width="170" height="82" rx="10" fill="rgba(254,202,87,0.06)" stroke="rgba(254,202,87,0.2)"/>
+      <text x="480" y="84" text-anchor="middle" fill="#feca57" font-size="13" font-weight="700" font-family="sans-serif">🟡 C: REOPOLD</text>
+      <text x="480" y="104" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="10" font-family="sans-serif">松弛+在线/离线</text>
+      <text x="480" y="120" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="10" font-family="sans-serif">重尾·近零·熵崩塌</text>
+      <text x="480" y="136" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="10" font-family="sans-serif">三问题→三解法</text></g>
+    <!-- Sec D -->
+    <g opacity="0.2"><rect x="575" y="65" width="165" height="82" rx="10" fill="rgba(0,230,118,0.05)" stroke="rgba(0,230,118,0.18)"/>
+      <text x="657" y="84" text-anchor="middle" fill="#00e676" font-size="13" font-weight="700" font-family="sans-serif">🟢 D: PW-OPSD</text>
+      <text x="657" y="108" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="10" font-family="sans-serif">位置加权 w(t)</text>
+      <text x="657" y="126" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="10" font-family="sans-serif">AUROC 0.83</text></g>
+    <!-- Sec E -->
+    <g opacity="0.2"><rect x="750" y="65" width="170" height="82" rx="10" fill="rgba(0,210,255,0.05)" stroke="rgba(0,210,255,0.18)"/>
+      <text x="835" y="84" text-anchor="middle" fill="#00d2ff" font-size="13" font-weight="700" font-family="sans-serif">🔵 E: GAR</text>
+      <text x="835" y="108" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="10" font-family="sans-serif">Reasoner↔Discrim.</text>
+      <text x="835" y="126" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="10" font-family="sans-serif">局部切片评估</text></g>
+
+    <!-- Section→Summary edges -->
+    <path d="M117,147 L117,190 L500,190 L500,265" stroke="rgba(255,68,68,0.4)" stroke-width="1.5" fill="none" marker-end="url(#dh)"/>
+    <path d="M300,147 L300,190" stroke="rgba(255,255,255,0.06)" stroke-width="1" fill="none"/>
+    <path d="M480,147 L480,210" stroke="rgba(255,255,255,0.06)" stroke-width="1" fill="none"/>
+    <path d="M657,147 L657,190" stroke="rgba(255,255,255,0.06)" stroke-width="1" fill="none"/>
+    <path d="M835,147 L835,210 L500,210 L500,265" stroke="rgba(255,255,255,0.06)" stroke-width="1" fill="none"/>
+
+    <!-- Summary -->
+    <rect x="360" y="270" width="280" height="30" rx="15" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.15)"/>
+    <text x="500" y="290" text-anchor="middle" fill="#fff" font-size="12" font-weight="700" font-family="sans-serif">📋 Section F: 总结 → Part 5</text>
+  </svg>
 </section>
 
 <!-- ═══════════ SECTION A: 范式转变 ═══════════ -->
@@ -307,19 +348,28 @@
 
 <!-- ═══════════ DAG高亮: Section B ═══════════ -->
 <section data-transition="slide">
-  <div style="text-align:center;margin-bottom:12px;"><span style="background:rgba(255,140,66,0.1);color:var(--orange);border:1px solid rgba(255,140,66,0.2);padding:4px 14px;border-radius:12px;font-size:11px;font-weight:700;letter-spacing:2px;">📍 当前位置</span></div>
-  <div class="struct-tree-box">
-    <div style="color:var(--text3);margin-bottom:4px;">Part 4: LLM时代的OPD革命</div>
-    <div style="color:var(--text3);">🔴 A: 范式转变 ✓</div>
-    <div class="cur sb">🟠 Section B: GRPO与隐式OPD ← <strong>当前</strong></div>
-    <div style="color:var(--text3);">&nbsp;&nbsp;├── GRPO公式逐项拆解</div>
-    <div style="color:var(--text3);">&nbsp;&nbsp;├── 隐式OPD数学本质</div>
-    <div style="color:var(--text3);">&nbsp;&nbsp;├── RL vs 蒸馏数据对比</div>
-    <div style="color:var(--text3);">&nbsp;&nbsp;├── 传统OPD vs LLM蒸馏</div>
-    <div style="color:var(--text3);">&nbsp;&nbsp;└── 强模型如何诞生?</div>
-    <div style="color:var(--text3);">🟡 C: REOPOLD 🟢 D: PW-OPSD 🔵 E: GAR</div>
-    <div style="color:var(--text3);">📋 F: 总结</div>
-  </div>
+  <h2 style="font-size:22px;font-weight:700;margin-bottom:4px;color:var(--text);">🗺️ 当前位置：🟠 Section B — GRPO与隐式OPD</h2>
+  <div class="glow-bar"></div>
+  <svg viewBox="0 0 1000 340" xmlns="http://www.w3.org/2000/svg" style="max-width:1000px;">
+    <defs><marker id="dhb" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><path d="M0,0 L7,2.5 L0,5 Z" fill="rgba(255,255,255,0.3)"/></marker></defs>
+    <rect x="320" y="8" width="360" height="28" rx="14" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.12)"/><text x="500" y="27" text-anchor="middle" fill="#fff" font-size="13" font-weight="700" font-family="sans-serif">Part 4: LLM时代的OPD革命 (2024-2026)</text>
+    <path d="M400,36 L120,60" stroke="rgba(255,255,255,0.06)" stroke-width="1" fill="none"/>
+    <path d="M440,36 L300,60" marker-end="url(#dhb)" stroke="rgba(255,255,255,0.2)" stroke-width="1" fill="none"/>
+    <path d="M500,36 L500,60" stroke="rgba(255,255,255,0.06)" stroke-width="1" fill="none"/>
+    <path d="M560,36 L700,60" stroke="rgba(255,255,255,0.06)" stroke-width="1" fill="none"/>
+    <path d="M600,36 L880,60" stroke="rgba(255,255,255,0.06)" stroke-width="1" fill="none"/>
+    <g opacity="0.2"><rect x="30" y="65" width="175" height="82" rx="10" fill="rgba(255,68,68,0.08)" stroke="rgba(255,68,68,0.2)"/><text x="117" y="84" text-anchor="middle" fill="#ff4444" font-size="13" font-weight="700" font-family="sans-serif">🔴 A: 范式转变</text><text x="117" y="108" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="10" font-family="sans-serif">推理链·LLM假设</text><text x="117" y="126" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="10" font-family="sans-serif">R1五阶段</text></g>
+    <g opacity="1"><rect x="215" y="65" width="170" height="82" rx="10" fill="rgba(255,140,66,0.12)" stroke="rgba(255,140,66,0.4)" stroke-width="2"/><text x="300" y="84" text-anchor="middle" fill="#ff8c42" font-size="13" font-weight="700" font-family="sans-serif">🟠 B: GRPO与隐式OPD</text><text x="300" y="102" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-size="10" font-family="sans-serif">GRPO公式逐项拆解</text><text x="300" y="116" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-size="10" font-family="sans-serif">隐式OPD数学本质</text><text x="300" y="130" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-size="10" font-family="sans-serif">RL vs 蒸馏对比</text><text x="300" y="144" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-size="10" font-family="sans-serif">强模型如何诞生?</text></g>
+    <g opacity="0.2"><rect x="395" y="65" width="170" height="82" rx="10" fill="rgba(254,202,87,0.06)" stroke="rgba(254,202,87,0.2)"/><text x="480" y="84" text-anchor="middle" fill="#feca57" font-size="13" font-weight="700" font-family="sans-serif">🟡 C: REOPOLD</text><text x="480" y="112" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="10" font-family="sans-serif">三问题→三解法</text></g>
+    <g opacity="0.2"><rect x="575" y="65" width="165" height="82" rx="10" fill="rgba(0,230,118,0.05)" stroke="rgba(0,230,118,0.18)"/><text x="657" y="84" text-anchor="middle" fill="#00e676" font-size="13" font-weight="700" font-family="sans-serif">🟢 D: PW-OPSD</text><text x="657" y="114" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="10" font-family="sans-serif">位置加权</text></g>
+    <g opacity="0.2"><rect x="750" y="65" width="170" height="82" rx="10" fill="rgba(0,210,255,0.05)" stroke="rgba(0,210,255,0.18)"/><text x="835" y="84" text-anchor="middle" fill="#00d2ff" font-size="13" font-weight="700" font-family="sans-serif">🔵 E: GAR</text><text x="835" y="114" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="10" font-family="sans-serif">对抗推理</text></g>
+    <path d="M117,147 L117,210 L500,210 L500,265" stroke="rgba(255,255,255,0.04)" stroke-width="1" fill="none"/>
+    <path d="M300,147 L300,190 L500,190 L500,265" stroke="rgba(255,140,66,0.4)" stroke-width="1.5" fill="none" marker-end="url(#dhb)"/>
+    <path d="M480,147 L480,210" stroke="rgba(255,255,255,0.04)" stroke-width="1" fill="none"/>
+    <path d="M657,147 L657,190" stroke="rgba(255,255,255,0.04)" stroke-width="1" fill="none"/>
+    <path d="M835,147 L835,210" stroke="rgba(255,255,255,0.04)" stroke-width="1" fill="none"/>
+    <rect x="360" y="270" width="280" height="30" rx="15" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.15)"/><text x="500" y="290" text-anchor="middle" fill="#fff" font-size="12" font-weight="700" font-family="sans-serif">📋 Section F: 总结 → Part 5</text>
+  </svg>
 </section>
 
 <!-- ═══════════ SECTION B: GRPO ═══════════ -->
