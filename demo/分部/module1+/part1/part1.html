@@ -220,7 +220,34 @@
 <!-- P20: REOPOLD -->
 <section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P20 · S1</span></div>
 <div class="paper-card fragment fade-up"><div class="pn">PAPER 20 · arXiv: 2603.11137 · 2026.03</div><div class="title">REOPOLD — 松弛在线策略蒸馏 (已精讲)</div><div class="venue">KAIST / MS</div></div>
-<div class="fragment fade-up struct-content" style="margin-top:8px;">📖 <strong style="color:var(--amber);">已在 Module 1 Part 4 详细精讲。</strong>在白盒 OPD 中，REOPOLD 代表了 KAIST 团队从 DistiLLM→DistiLLM-2→Entropy-Aware→REOPOLD 的<strong style="color:#fff;">完整技术栈</strong>——从 KL 方向选择到系统性工程问题解决。三核心：奖励裁剪+熵引导采样+两阶段训练。</div></section>
+<div class="fragment fade-up struct-content" style="margin-top:8px;">📖 <strong style="color:var(--amber);">已在 Module 1 Part 4 详细精讲。</strong>KAIST 从 DistiLLM→DistiLLM-2→Entropy-Aware→REOPOLD 的完整技术栈终点。</div></section>
+
+<!-- P21-P29: 2026 年前沿 -->
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P21–P25</span></div>
+<h2 style="font-size:20px;font-weight:700;color:var(--amber);margin-bottom:10px;">2026 前沿: PACED · TSD-KD · SCOPE · TIP · HPD</h2>
+<div class="tri-grid fragment fade-up">
+  <div class="concept-block"><h4>P21: PACED</h4><p style="font-size:10px;"><span class="cite">2603.11178</span> LinkedIn<br>课程自蒸馏: w(p)=p(1-p)<br>聚焦学习前沿</p></div>
+  <div class="concept-block"><h4>P22: TSD-KD</h4><p style="font-size:10px;"><span class="cite">2603.13260</span> Korea Univ · ICLR 2026<br>Token选择性双蒸馏</p></div>
+  <div class="concept-block"><h4>P23: SCOPE</h4><p style="font-size:10px;"><span class="cite">2604.10688</span> USTC/美团<br>教师PPL+学生PPL双校准</p></div>
+  <div class="concept-block"><h4>P24: TIP</h4><p style="font-size:10px;"><span class="cite">2604.14084</span> Meta/LinkedIn<br>50%高熵token→47%内存节省</p></div>
+  <div class="concept-block"><h4>P25: HPD</h4><p style="font-size:10px;"><span class="cite">2604.20244</span><br>重加权似然统一FKL+RKL</p></div>
+</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P26–P29</span></div>
+<h2 style="font-size:20px;font-weight:700;color:var(--amber);margin-bottom:10px;">2026 前沿: BRTS · TRD · OPRD ⭐ · FiRe-OPD</h2>
+<div class="two-col fragment fade-up">
+  <div><div class="concept-block"><h4>P26: BRTS</h4><p style="font-size:10px;"><span class="cite">2605.09725</span> JHU · Best-of-N 教师 rollout 选择: 正确性+学生对齐</p></div><div class="concept-block"><h4>P27: TRD</h4><p style="font-size:10px;"><span class="cite">2606.08432</span> McGill/Mila · 轨迹级精炼→蒸馏: 学生先自我修正再学习</p></div></div>
+  <div><div class="concept-block" style="border-left:3px solid var(--amber);"><h4>P28: OPRD ⭐ 首个特征空间 OPD</h4><p style="font-size:10px;"><span class="cite">2606.06021</span> ZJU/蚂蚁 · 监督<strong style="color:var(--amber);">隐藏状态</strong>而非输出 logits——学生不仅学"做什么"还学"怎么思考"。与 Module 1 Actor-Mimic 特征回归一脉相承。</p></div><div class="concept-block"><h4>P29: FiRe-OPD</h4><p style="font-size:10px;"><span class="cite">2606.02684</span> 清华/港科大 · 轨迹硬过滤+Token 软加权: 双粒度解耦优化</p></div></div>
+</div></section>
+
+<!-- ═══════════ Part 1 后总 ═══════════ -->
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📋 后总 · 1/2</span></div>
+<h2 style="font-size:22px;font-weight:700;color:var(--amber);margin-bottom:10px;">Part 1 总结: 21篇论文的关联网络</h2>
+<div class="fragment fade-up struct-content"><strong style="color:var(--amber);">KAIST 主线 (DistiLLM→DistiLLM-2→Entropy-Aware→REOPOLD):</strong><br>从 FKL/RKL 混合 → 解耦数据源 → 动态 KL 方向 → 系统性工程解决。一条清晰的演进轨迹。<br><strong style="color:var(--sage);">信号聚焦支线 (SpecKD→Fast OPD→TIP):</strong><br>全序列→门控→前缀截断→高熵筛选。都在回答"哪些 token 值得蒸馏"。</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📋 后总 · 2/2</span></div>
+<h2 style="font-size:22px;font-weight:700;color:var(--amber);margin-bottom:10px;">核心趋势与展望</h2>
+<div class="fragment fade-up struct-content">21篇论文共同描绘了白盒 OPD 的三个核心趋势：<br>• <strong style="color:var(--amber);">从静态到动态</strong>：KL 方向/数据源/权重从固定→自适应 (Skewed→Entropy-Aware→PACED)<br>• <strong style="color:var(--sage);">从整体到局部</strong>：蒸馏从全序列→门控→高熵→前缀→特征空间<br>• <strong style="color:var(--rust);">从软到硬</strong>：约束从 KL 惩罚→CMDP 硬约束 (Constrained OPD)<br>OPRD (特征空间 OPD) 和 FiRe-OPD (双粒度) 代表了<strong style="color:#fff;">2026 年 6 月的最新前沿</strong>。</div></section>
 
 </div></div>
 <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.js"></script><script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
