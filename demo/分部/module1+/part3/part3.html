@@ -46,7 +46,10 @@
 <tr><td class="pc">34</td><td>SODA</td><td>DPO 偏好对比</td><td>半在线 · 10× 更快</td></tr>
 <tr><td class="pc">35</td><td>ROPD</td><td>Rubric 评分</td><td>10× 样本效率</td></tr></tbody></table></section>
 
-<!-- ═══════════ P30-P35 ═══════════ -->
+<!-- ═══════════ P36: OPSD ⭐ (8S) ═══════════ -->
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P36 · OPSD ⭐ S1/8</span></div>
+<div class="paper-card fragment fade-up"><div class="pn">PAPER 36 · arXiv: 2601.18734 · OPSD 正典</div><div class="title">Self-Distilled Reasoner — OPSD 奠基论文</div><div class="venue">逐 token RKL + 裁剪 · TRL GOLD trainer</div></div>
+<div class="fragment fade-up struct-content" style="margin-top:8px;"><strong style="color:var(--amber);">S1 论文信息+核心贡献：</strong>确立 OPSD (Online Policy Self-Distillation) 的<strong style="color:#fff;">正典范式</strong>——同一模型在"已验证推理轨迹"作为特权上下文的条件下扮演教师，在无条件时扮演学生。通过逐 token Reverse KL + 裁剪实现自蒸馏。</div></section>
 <section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P30 · S1/5</span></div><div class="paper-card fragment fade-up"><div class="pn">PAPER 30 · arXiv: 2509.25100</div><div class="title">ORPO-Distill — 学生负样本 + 教师正样本对比</div></div><div class="fragment fade-up struct-content" style="margin-top:8px;"><strong style="color:var(--amber);">S1 核心贡献：</strong>不访问教师 logits→用教师生成的文本作为正例，学生生成作为负例→对比学习。SGO+ORPO 双信号驱动。</div></section>
 <section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">📄 P30 · S2-5/5</span></div><div class="fragment fade-up struct-content"><strong>S2 背景：</strong>黑盒场景下无法获取逐 token KL。<strong>S3 创新：</strong>对比学习替代 logit 匹配——拉近学生到教师正例，推远学生负例。<strong>S4 实验：</strong>ORPO+SGO 联合优化。<strong>S5 局限：</strong>对比信号稀疏，负样本质量影响大。</div></section>
 
