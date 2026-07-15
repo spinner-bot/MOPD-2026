@@ -461,7 +461,7 @@ window.MathJax = {
     这不是简单的树——多条路径汇聚，形成有向无环图。深色节点 = 已讲解 · 每个方块代表一个知识点
   </p>
   <div class="dag-container">
-    <svg viewBox="0 0 1060 540" xmlns="http://www.w3.org/2000/svg">
+    <svg viewBox="0 0 1060 720" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <marker id="arrow" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
           <path d="M0,0 L8,3 L0,6 Z" fill="rgba(255,255,255,0.25)"/>
@@ -476,113 +476,165 @@ window.MathJax = {
       </defs>
 
       <!-- ===== 边 (Edges) ===== -->
-      <!-- RL基础 → Policy Distillation -->
-      <path d="M220,115 L220,150 L260,150 L260,175" marker-end="url(#arrow)" class="dag-edge"/>
-      <!-- RL基础 → Actor-Mimic -->
-      <path d="M780,115 L780,145 L540,145 L540,175" marker-end="url(#arrow)" class="dag-edge"/>
-      <!-- Policy Distillation → Distral -->
-      <path d="M260,285 L260,315 L480,315 L480,340" marker-end="url(#arrow)" class="dag-edge"/>
-      <!-- Actor-Mimic → Distral (汇聚!) -->
-      <path d="M540,285 L540,315 L500,315 L500,340" marker-end="url(#arrowMerge)" class="dag-edge" style="stroke:rgba(0,230,118,0.35); stroke-dasharray: 5 3;"/>
+      <!-- RL基础 → Policy Distillation & Actor-Mimic & 网络架构 -->
+      <path d="M160,115 L160,150 L260,150 L260,175" marker-end="url(#arrow)" class="dag-edge"/>
+      <path d="M160,115 L160,145 L520,145 L520,175" marker-end="url(#arrow)" class="dag-edge"/>
+      <path d="M160,115 L160,65 L830,65 L830,110" marker-end="url(#arrow)" class="dag-edge" style="stroke:rgba(254,202,87,0.2); stroke-dasharray: 4 2;"/>
+      <!-- Policy Distillation + Actor-Mimic → Distral (汇聚) -->
+      <path d="M260,290 L260,328 L475,328 L475,348" marker-end="url(#arrow)" class="dag-edge"/>
+      <path d="M520,290 L520,328 L495,328 L495,348" marker-end="url(#arrowMerge)" class="dag-edge" style="stroke:rgba(0,230,118,0.35); stroke-dasharray: 5 3;"/>
       <!-- Distral → 概念群 -->
-      <path d="M490,428 L490,460" marker-end="url(#arrow)" class="dag-edge"/>
-      <!-- 概念群 → 总结 -->
-      <path d="M260,510 L260,525 L490,525 L490,545" marker-end="url(#arrow)" class="dag-edge"/>
-      <path d="M720,510 L720,525 L500,525 L500,545" marker-end="url(#arrow)" class="dag-edge"/>
-      <!-- RL基础 → 架构概念 -->
-      <path d="M530,80 L530,55 L920,55 L920,175" marker-end="url(#arrow)" class="dag-edge" style="stroke:rgba(254,202,87,0.2); stroke-dasharray: 4 2;"/>
-      <!-- 架构概念 → 总结 (虚线) -->
-      <path d="M920,285 L920,525 L500,525" marker-end="url(#arrow)" class="dag-edge" style="stroke:rgba(255,255,255,0.08); stroke-dasharray: 3 4;"/>
+      <path d="M485,438 L485,458" marker-end="url(#arrow)" class="dag-edge"/>
+      <!-- 概念群 → 架构概念 -->
+      <path d="M350,500 L350,520 L520,520 L520,535" marker-end="url(#arrow)" class="dag-edge" style="stroke:rgba(255,255,255,0.1);"/>
+      <path d="M620,500 L620,520 L530,520 L530,535" marker-end="url(#arrow)" class="dag-edge" style="stroke:rgba(255,255,255,0.1);"/>
+      <!-- 架构概念 → 桥梁 -->
+      <path d="M350,575 L350,595 L520,595 L520,608" marker-end="url(#arrow)" class="dag-edge" style="stroke:rgba(255,107,157,0.25);"/>
+      <path d="M690,575 L690,595 L530,595 L530,608" marker-end="url(#arrow)" class="dag-edge" style="stroke:rgba(255,107,157,0.25);"/>
+      <!-- 桥梁 → 总结 -->
+      <path d="M530,650 L530,670" marker-end="url(#arrow)" class="dag-edge"/>
 
-      <!-- ===== 节点 (Nodes) ===== -->
+      <!-- ===== 节点 ===== -->
       <!-- Layer 0: Title -->
-      <rect x="380" y="10" width="300" height="34" rx="17" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.12)"/>
-      <text x="530" y="32" text-anchor="middle" class="dag-label title">Part 1: OPD 萌芽期 (2015–2017)</text>
+      <rect x="350" y="8" width="370" height="32" rx="16" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.12)"/>
+      <text x="535" y="29" text-anchor="middle" class="dag-label title" font-size="14">Part 1: OPD 萌芽期 (2015–2017)</text>
 
       <!-- Layer 1: RL基础 -->
       <g class="dag-node node-foundation">
-        <rect x="150" y="70" width="140" height="45"/>
-        <text x="220" y="90" text-anchor="middle" class="dag-label title" fill="#feca57">📚 RL基础概念</text>
-        <text x="220" y="106" text-anchor="middle" class="dag-label sub">R · 任务 · π · Q · 神经网络</text>
+        <rect x="60" y="70" width="200" height="45"/>
+        <text x="160" y="90" text-anchor="middle" class="dag-label title" fill="#feca57">📚 RL基础概念</text>
+        <text x="160" y="106" text-anchor="middle" class="dag-label sub">R · 任务 · π · Q · 循环</text>
       </g>
-
-      <!-- Layer 1: 架构概念 (右侧) -->
+      <!-- Layer 1b: 网络架构 -->
       <g class="dag-node node-section">
-        <rect x="850" y="175" width="140" height="45"/>
-        <text x="920" y="195" text-anchor="middle" class="dag-label title" fill="#00e676">🏗️ 架构概念</text>
-        <text x="920" y="211" text-anchor="middle" class="dag-label sub">基座 · Progressive Nets</text>
+        <rect x="760" y="70" width="140" height="45"/>
+        <text x="830" y="90" text-anchor="middle" class="dag-label title" fill="#a0a0ff">🔧 网络架构</text>
+        <text x="830" y="106" text-anchor="middle" class="dag-label sub">Softmax · Gaussian · TD</text>
       </g>
 
       <!-- Layer 2: Policy Distillation (左) -->
       <g class="dag-node node-paper">
-        <rect x="120" y="175" width="280" height="110"/>
-        <text x="260" y="197" text-anchor="middle" class="dag-label title" fill="#00d2ff">🏛️ Policy Distillation (2015)</text>
-        <text x="260" y="215" text-anchor="middle" class="dag-label sub">"命名者" · ICLR 2016</text>
-        <line x1="170" y1="225" x2="350" y2="225" stroke="rgba(255,255,255,0.08)"/>
-        <text x="260" y="243" text-anchor="middle" class="dag-label">在线蒸馏概念诞生</text>
-        <text x="260" y="261" text-anchor="middle" class="dag-label">师生并行训练</text>
-        <text x="260" y="279" text-anchor="middle" class="dag-label">知识是"活的"</text>
+        <rect x="100" y="180" width="320" height="110"/>
+        <text x="260" y="202" text-anchor="middle" class="dag-label title" fill="#00d2ff">🏛️ Policy Distillation (2015)</text>
+        <text x="260" y="220" text-anchor="middle" class="dag-label sub">"命名者" · ICLR 2016</text>
+        <line x1="150" y1="230" x2="370" y2="230" stroke="rgba(255,255,255,0.08)"/>
+        <text x="260" y="248" text-anchor="middle" class="dag-label">在线蒸馏概念诞生 · 师生并行训练</text>
+        <text x="260" y="268" text-anchor="middle" class="dag-label">知识是"活的" · OPD词汇来源</text>
+        <text x="260" y="286" text-anchor="middle" class="dag-label sub">↘ 汇入Distral</text>
       </g>
 
       <!-- Layer 2: Actor-Mimic (右) -->
       <g class="dag-node node-paper">
-        <rect x="400" y="175" width="280" height="110"/>
-        <text x="540" y="197" text-anchor="middle" class="dag-label title" fill="#ff6b9d">🔬 Actor-Mimic (2016)</text>
-        <text x="540" y="215" text-anchor="middle" class="dag-label sub">"工程师" · ICLR 2016</text>
-        <line x1="450" y1="225" x2="630" y2="225" stroke="rgba(255,255,255,0.08)"/>
-        <text x="540" y="243" text-anchor="middle" class="dag-label">Q值截断 · 条件蒸馏</text>
-        <text x="540" y="261" text-anchor="middle" class="dag-label">特征回归 · 专家策略</text>
-        <text x="540" y="279" text-anchor="middle" class="dag-label">行为克隆 (硬压缩)</text>
+        <rect x="420" y="180" width="300" height="110"/>
+        <text x="570" y="202" text-anchor="middle" class="dag-label title" fill="#ff6b9d">🔬 Actor-Mimic (2016)</text>
+        <text x="570" y="220" text-anchor="middle" class="dag-label sub">"工程师" · ICLR 2016</text>
+        <line x1="460" y1="230" x2="680" y2="230" stroke="rgba(255,255,255,0.08)"/>
+        <text x="570" y="248" text-anchor="middle" class="dag-label">Q值截断 · 条件蒸馏 · 特征回归</text>
+        <text x="570" y="268" text-anchor="middle" class="dag-label">专家策略 · 行为克隆(硬压缩)</text>
+        <text x="570" y="286" text-anchor="middle" class="dag-label sub">↙ 汇入Distral</text>
       </g>
 
-      <!-- Layer 3: Distral (中心, 汇聚节点) -->
+      <!-- Layer 3: Distral (汇聚) -->
       <g class="dag-node node-merge">
-        <rect x="330" y="340" width="320" height="88" rx="12" fill="rgba(0,230,118,0.08)" stroke="rgba(0,230,118,0.35)" stroke-width="2"/>
-        <text x="490" y="362" text-anchor="middle" class="dag-label title" fill="#00e676">🧠 Distral (2017) ← 汇聚点</text>
-        <text x="490" y="378" text-anchor="middle" class="dag-label sub">"理论家" · NeurIPS 2017</text>
-        <line x1="380" y1="386" x2="600" y2="386" stroke="rgba(255,255,255,0.08)"/>
-        <text x="490" y="402" text-anchor="middle" class="dag-label">KL约束 · 交替优化 · 最优解 · 双向通信</text>
-        <text x="490" y="420" text-anchor="middle" class="dag-label sub">融合前两篇思想，形成统一理论框架</text>
+        <rect x="335" y="350" width="340" height="88" rx="12" fill="rgba(0,230,118,0.08)" stroke="rgba(0,230,118,0.35)" stroke-width="2"/>
+        <text x="505" y="372" text-anchor="middle" class="dag-label title" fill="#00e676">🧠 Distral (2017) ← 汇聚点</text>
+        <text x="505" y="388" text-anchor="middle" class="dag-label sub">"理论家" · NeurIPS 2017</text>
+        <line x1="385" y1="396" x2="625" y2="396" stroke="rgba(255,255,255,0.08)"/>
+        <text x="505" y="412" text-anchor="middle" class="dag-label">KL约束 · 交替优化 · 最优闭式解 · 双向通信</text>
+        <text x="505" y="430" text-anchor="middle" class="dag-label sub">融合前两篇 → 统一理论框架</text>
+      </g>
+      <text x="510" y="346" class="dag-label sub" fill="#00e676" font-size="9">▲ 两条支线在此汇聚</text>
+
+      <!-- Layer 4: Distral概念群 -->
+      <g class="dag-node node-concept">
+        <rect x="55" y="460" width="145" height="42"/>
+        <text x="127" y="478" text-anchor="middle" class="dag-label title" fill="#cba6f7">🔍 KL散度深入</text>
+        <text x="127" y="496" text-anchor="middle" class="dag-label sub">不对称尺子·橡皮筋</text>
+      </g>
+      <g class="dag-node node-concept">
+        <rect x="215" y="460" width="145" height="42"/>
+        <text x="287" y="478" text-anchor="middle" class="dag-label title" fill="#cba6f7">🌊 Soft Q-learning</text>
+        <text x="287" y="496" text-anchor="middle" class="dag-label sub">硬max vs LogSumExp</text>
+      </g>
+      <g class="dag-node node-concept">
+        <rect x="375" y="460" width="145" height="42"/>
+        <text x="447" y="478" text-anchor="middle" class="dag-label title" fill="#cba6f7">🎯 最优解 &amp; 贝叶斯</text>
+        <text x="447" y="496" text-anchor="middle" class="dag-label sub">先验×似然=后验</text>
+      </g>
+      <g class="dag-node node-concept">
+        <rect x="535" y="460" width="145" height="42"/>
+        <text x="607" y="478" text-anchor="middle" class="dag-label title" fill="#cba6f7">🔄 蒸馏作为通信</text>
+        <text x="607" y="496" text-anchor="middle" class="dag-label sub">双向·社会化知识</text>
+      </g>
+      <g class="dag-node node-concept">
+        <rect x="695" y="460" width="145" height="42"/>
+        <text x="767" y="478" text-anchor="middle" class="dag-label title" fill="#cba6f7">⚖️ 软 vs 硬约束</text>
+        <text x="767" y="496" text-anchor="middle" class="dag-label sub">KL正则 vs 行为克隆</text>
       </g>
 
-      <!-- Layer 4: 关键概念群 -->
-      <g class="dag-node node-concept">
-        <rect x="80" y="460" width="160" height="50"/>
-        <text x="160" y="480" text-anchor="middle" class="dag-label title" fill="#cba6f7">KL散度深入</text>
-        <text x="160" y="498" text-anchor="middle" class="dag-label sub">软约束 · 橡皮筋比喻</text>
+      <!-- Layer 5: 架构概念群 -->
+      <g class="dag-node node-section">
+        <rect x="55" y="535" width="145" height="42"/>
+        <text x="127" y="553" text-anchor="middle" class="dag-label title" fill="#00e676">🏗️ 基座网络</text>
+        <text x="127" y="571" text-anchor="middle" class="dag-label sub">共享特征·软硬共享</text>
       </g>
-      <g class="dag-node node-concept">
-        <rect x="265" y="460" width="170" height="50"/>
-        <text x="350" y="480" text-anchor="middle" class="dag-label title" fill="#cba6f7">最优策略 &amp; 贝叶斯</text>
-        <text x="350" y="498" text-anchor="middle" class="dag-label sub">先验×似然=后验</text>
+      <g class="dag-node node-section">
+        <rect x="215" y="535" width="145" height="42"/>
+        <text x="287" y="553" text-anchor="middle" class="dag-label title" fill="#00e676">🏛️ Progressive Nets</text>
+        <text x="287" y="571" text-anchor="middle" class="dag-label sub">横向连接·列概念</text>
       </g>
-      <g class="dag-node node-concept">
-        <rect x="460" y="460" width="170" height="50"/>
-        <text x="545" y="480" text-anchor="middle" class="dag-label title" fill="#cba6f7">蒸馏作为通信</text>
-        <text x="545" y="498" text-anchor="middle" class="dag-label sub">双向 · 社会化知识</text>
+      <g class="dag-node node-section">
+        <rect x="375" y="535" width="145" height="42"/>
+        <text x="447" y="553" text-anchor="middle" class="dag-label title" fill="#00e676">🔮 UNREAL</text>
+        <text x="447" y="571" text-anchor="middle" class="dag-label sub">辅助预测头·样本效率</text>
       </g>
-      <g class="dag-node node-concept">
-        <rect x="655" y="460" width="170" height="50"/>
-        <text x="740" y="480" text-anchor="middle" class="dag-label title" fill="#cba6f7">软 vs 硬约束</text>
-        <text x="740" y="498" text-anchor="middle" class="dag-label sub">KL正则 vs 行为克隆</text>
+      <g class="dag-node node-section">
+        <rect x="535" y="535" width="185" height="42"/>
+        <text x="627" y="553" text-anchor="middle" class="dag-label title" fill="#a0ffa0">🌿 支线支线</text>
+        <text x="627" y="571" text-anchor="middle" class="dag-label sub">PackNet·EWC·PathNet</text>
       </g>
 
-      <!-- Layer 5: 总结 -->
+      <!-- Layer 6: 桥梁群 -->
+      <g class="dag-node node-section">
+        <rect x="55" y="610" width="115" height="42" fill="rgba(255,107,157,0.06)" stroke="rgba(255,107,157,0.2)"/>
+        <text x="112" y="628" text-anchor="middle" class="dag-label title" fill="#ff6b9d">🤖 奖励缺口</text>
+        <text x="112" y="646" text-anchor="middle" class="dag-label sub">R难以定义的技能</text>
+      </g>
+      <g class="dag-node node-section">
+        <rect x="185" y="610" width="115" height="42" fill="rgba(255,107,157,0.06)" stroke="rgba(255,107,157,0.2)"/>
+        <text x="242" y="628" text-anchor="middle" class="dag-label title" fill="#ff6b9d">🔮 DIAYN预览</text>
+        <text x="242" y="646" text-anchor="middle" class="dag-label sub">伪奖励·判别器</text>
+      </g>
+      <g class="dag-node node-section">
+        <rect x="315" y="610" width="115" height="42" fill="rgba(255,107,157,0.06)" stroke="rgba(255,107,157,0.2)"/>
+        <text x="372" y="628" text-anchor="middle" class="dag-label title" fill="#ff6b9d">🔬 K-means类比</text>
+        <text x="372" y="646" text-anchor="middle" class="dag-label sub">聚类vs主动塑造</text>
+      </g>
+      <g class="dag-node node-section">
+        <rect x="445" y="610" width="130" height="42" fill="rgba(255,107,157,0.06)" stroke="rgba(255,107,157,0.2)"/>
+        <text x="510" y="628" text-anchor="middle" class="dag-label title" fill="#ff6b9d">📐 互信息I(S;Z)</text>
+        <text x="510" y="646" text-anchor="middle" class="dag-label sub">H(S)-H(S|Z)</text>
+      </g>
+      <g class="dag-node node-section">
+        <rect x="590" y="610" width="130" height="42" fill="rgba(255,107,157,0.06)" stroke="rgba(255,107,157,0.2)"/>
+        <text x="655" y="628" text-anchor="middle" class="dag-label title" fill="#ff6b9d">🔧 微调三法</text>
+        <text x="655" y="646" text-anchor="middle" class="dag-label sub">R微调·RLHF·KL约束</text>
+      </g>
+
+      <!-- Layer 7: 总结 -->
       <g class="dag-node node-merge">
-        <rect x="370" y="545" width="240" height="36" rx="18" fill="rgba(108,92,231,0.1)" stroke="rgba(108,92,231,0.3)"/>
-        <text x="490" y="568" text-anchor="middle" class="dag-label title" fill="#fff">📋 萌芽期总结 → Part 2</text>
+        <rect x="370" y="670" width="290" height="34" rx="17" fill="rgba(108,92,231,0.1)" stroke="rgba(108,92,231,0.3)"/>
+        <text x="515" y="692" text-anchor="middle" class="dag-label title" fill="#fff">📋 萌芽期总结 → Part 2</text>
       </g>
-
-      <!-- 汇聚标签 -->
-      <text x="505" y="333" class="dag-label sub" fill="#00e676" font-size="9">▲ 两条支线在此汇聚</text>
     </svg>
   </div>
   <p style="font-size:12px;color:var(--text3);margin-top:8px;">
-    <span style="color:var(--a2);">■</span> 论文节点 &nbsp;
-    <span style="color:#cba6f7;">■</span> 概念节点 &nbsp;
-    <span style="color:#00e676;">■</span> 汇聚/合成节点 &nbsp;
-    <span style="color:var(--a4);">■</span> 基础节点 &nbsp;
-    —— 虚线 = 跨分支影响
+    <span style="color:var(--a2);">■</span> 论文 &nbsp;
+    <span style="color:#cba6f7;">■</span> 概念 &nbsp;
+    <span style="color:#00e676;">■</span> 汇聚 &nbsp;
+    <span style="color:var(--a4);">■</span> 基础 &nbsp;
+    <span style="color:var(--a3);">■</span> 桥梁 &nbsp;
+    —— 虚线=跨分支 · 7层 · 28节点
   </p>
 </section>
 
