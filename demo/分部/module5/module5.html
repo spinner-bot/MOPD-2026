@@ -49,6 +49,41 @@
 <div class="struct-content fragment fade-up" style="margin-top:8px;"><p style="text-align:center;">💡 离线 + 在线双重平衡：<strong>离线确保数据的难度谱完整</strong>，<strong>在线确保每个训练步的梯度有信息量</strong>——两者互补，缺一不可。</p></div>
 </div></section>
 
+<!-- ═══════ 26. 互补关系分析 ═══════ -->
+<section data-transition="slide"><div class="star-card fragment fade-up"><p class="page-badge-g">Part 4 · 互补</p><h2 style="font-size:26px;font-weight:700;color:var(--gold);margin:8px 0;">🔄 互补关系分析</h2><div class="star-bar"></div>
+<div class="two-col fragment fade-up" style="margin-top:10px;">
+<div style="text-align:left;background:rgba(56,189,248,0.04);border:1px solid rgba(56,189,248,0.15);border-radius:10px;padding:18px;">
+<p style="font-size:14px;font-weight:700;color:var(--prism);margin-bottom:8px;">🔷 PRISM 能做但 Uni-OPD 不能做的</p>
+<p style="font-size:12px;color:var(--text2);line-height:1.9;">🔹 利用<strong>对抗训练实现黑盒蒸馏</strong>——不需要教师logits，API-only教师也可用<br/>🔹 分离感知与推理的<strong>解耦矫正信号</strong>——MoE判别器提供维度专精反馈<br/>🔹 将OPD作为<strong>管道中间阶段</strong>——不追求OPD本身的终端性能，而追求下游RLVR的增益</p>
+</div>
+<div style="text-align:left;background:rgba(251,113,133,0.04);border:1px solid rgba(251,113,133,0.15);border-radius:10px;padding:18px;">
+<p style="font-size:14px;font-weight:700;color:var(--uniopd);margin-bottom:8px;">🔶 Uni-OPD 能做但 PRISM 不能做的</p>
+<p style="font-size:12px;color:var(--text2);line-height:1.9;">🔹 <strong>多教师能力合并</strong>——将多个领域专家的能力注入同一学生<br/>🔹 <strong>强到弱蒸馏</strong>——系统性研究能力差距对OPD的影响<br/>🔹 <strong>跨模态蒸馏</strong>——文本+多模态联合训练互相强化<br/>🔹 系统性<strong>分析和解决</strong>OPD的底层瓶颈（而非绕过）</p>
+</div>
+</div>
+</div></section>
+
+<!-- ═══════ 27. 两者结合的可能性（左右布局） ═══════ -->
+<section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--gold);margin-bottom:6px;">🔮 两者结合的可能性</h2>
+<div class="paper-split fragment fade-up">
+<div class="paper-left">
+<p style="font-size:11px;color:var(--text3);margin-bottom:6px;">💡 设想方案</p>
+<p><strong>一个整合PRISM和Uni-OPD优势的框架：</strong></p>
+<p style="margin-top:6px;">1. <span class="hl-b">保留PRISM的三阶段管道框架</span>（SFT→Alignment→RLVR）作为顶层架构</p>
+<p>2. <span class="hl-r">在对齐阶段引入Uni-OPD的优化策略</span>：</p>
+<p style="margin-left:12px;">🔹 <strong>离线/在线数据平衡</strong>：确保对抗训练的prompt和rollout具有充分的难度多样性<br/>🔹 <strong>边距校准</strong>：用outcome reward校准判别器的打分，确保order consistency</p>
+<p>3. <span class="hl-g">用Uni-OPD的多教师设置扩展PRISM</span>：多个领域专家的监督pool同时参与对齐</p>
+<p>4. 将PRISM的<strong>MoE判别器迁移到Uni-OPD</strong>的框架中作为教师信号的一种</p>
+</div>
+<div class="paper-right">
+<div class="section-label">🔍 理论优势分析</div>
+<div class="comment"><strong>对抗式OPD（PRISM）</strong>提供了<strong>分布级别的匹配</strong>——让学生的整体生成分布向监督分布靠拢。这是粗粒度的对齐。</div>
+<div class="comment" style="border-left-color:var(--uniopd);"><strong>边距校准（Uni-OPD）</strong>提供了<strong>样本级的可靠性保障</strong>——确保每个训练样本的教师信号都是可靠的。这是细粒度的校准。</div>
+<div class="insight">💡 <strong>两者天然互补：</strong><br/>粗粒度对齐 → 保证学生在"对的方向"上<br/>细粒度校准 → 保证每一步的梯度信号都是可靠的<br/>= 既有大方向，又有小步骤的正确引导</div>
+<div class="warn" style="margin-top:8px;">⚠️ <strong>挑战：</strong>对抗训练的不稳定性 + 边距校准的超参数选择 → 需要更复杂的训练调度。另外，MoE判别器的预热要求与Uni-OPD的数据平衡策略如何协调也需要实验验证。</div>
+</div>
+</div></section>
+
 <!-- ═══════ 25. 关键对比表 ═══════ -->
 <section data-transition="slide"><h2 style="font-size:24px;font-weight:700;color:var(--gold);margin-bottom:8px;">⭐ PRISM vs Uni-OPD：12维度全面对比</h2>
 <table class="summary-table fragment fade-up" style="font-size:10px;"><thead><tr><th style="width:14%">维度</th><th style="width:38%">PRISM</th><th style="width:38%">Uni-OPD</th><th style="width:10%">互补？</th></tr></thead>
