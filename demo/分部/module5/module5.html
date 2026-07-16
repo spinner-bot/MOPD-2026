@@ -40,6 +40,19 @@
 <p style="font-size:12px;color:var(--text3);margin-top:12px;">组会报告 · 2026/07</p></div></section>
 
 
+<!-- ═══════ 5. 两篇论文定位对比 ═══════ -->
+<section data-transition="slide"><h2 style="font-size:26px;font-weight:700;color:#fff;margin-bottom:10px;">两篇论文在 OPD 研究版图中的定位</h2>
+<table class="summary-table fragment fade-up"><thead><tr><th style="width:16%">维度</th><th style="width:42%">PRISM</th><th style="width:42%">Uni-OPD</th></tr></thead>
+<tbody>
+<tr><td class="pc">核心关注</td><td class="hl">OPD 作为 SFT→RLVR 之间的<strong>中间对齐阶段</strong></td><td class="wr">OPD 本身作为<strong>独立的后训练范式</strong></td></tr>
+<tr><td class="pc">解决问题</td><td>SFT 引入的<strong>分布漂移</strong>（多模态下异质化）</td><td>OPD 的两个<strong>基础瓶颈</strong>（探索不足 + 监督不可靠）</td></tr>
+<tr><td class="pc">技术贡献</td><td class="hl">MoE 判别器的对抗式 OPD</td><td class="wr">双视角优化策略（数据平衡 + 边距校准）</td></tr>
+<tr><td class="pc">模态范围</td><td class="hl"><strong>聚焦多模态</strong>（MLLM）</td><td class="wr"><strong>LLM + MLLM 统一</strong>框架</td></tr>
+<tr><td class="pc">OPD 角色</td><td>过渡阶段（pre-alignment）</td><td>独立训练范式</td></tr>
+<tr><td class="pc">教师形式</td><td class="hl"><strong>黑盒</strong>（仅需 demonstration 样本）</td><td class="wr"><strong>白盒</strong>（需 logits 访问）</td></tr>
+</tbody></table>
+<div class="struct-content fragment fade-up" style="margin-top:10px;max-width:860px;"><p style="text-align:center;font-size:14px;"><strong>关键理解</strong>：PRISM 把 OPD 当作<strong style="color:var(--prism);">管道中的一环</strong>（修复 SFT→RLVR 之间的 gap），而 Uni-OPD 把 OPD 当作<strong style="color:var(--uniopd);">独立的优化范式</strong>来系统性研究其成功条件。</p></div></section>
+
 <!-- ═══════ 4. OPD 核心思想与公式 ═══════ -->
 <section data-transition="slide"><div class="star-card fragment fade-up"><p class="page-badge">核心概念</p><h2 style="font-size:28px;font-weight:700;color:var(--gold);margin:8px 0;">On-Policy Distillation (OPD)</h2><p style="font-size:14px;color:var(--text2);">结合 RL 的 on-policy 采样优势 + SFT 的细粒度信号优势</p><div class="star-bar"></div>
 <div class="def-box fragment fade-up"><div class="label">OPD 的核心定义</div><div class="content">让学生模型在自己的 <strong>on-policy 生成轨迹</strong>上接受教师模型的 <strong>token-level 监督</strong>。学生先生成，教师在学生的轨迹上打分——训练分布 = 推理分布，消除 exposure bias。</div></div>
