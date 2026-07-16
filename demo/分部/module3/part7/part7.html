@@ -20,6 +20,72 @@
 <!-- ═══════ 标题页 ═══════ -->
 <section data-transition="zoom"><div class="core-card fragment fade-up"><p class="cite">MODULE 3 · PART 7</p><h1 class="hero-title">扩散与生成</h1><p style="font-size:20px;color:var(--text2);">OPD 超越判别模型 · D-OPSD · LiveTalk</p><div class="core-bar"></div><p style="font-size:13px;color:var(--text3);">从「优化策略分布」到「优化生成分布」— OPSD 作为通用分布匹配范式的跨越</p></div></section>
 
+<!-- ═══════ DAG 知识结构图 ═══════ -->
+<section data-transition="slide"><h2 style="font-size:24px;font-weight:700;color:var(--core);margin-bottom:8px;">Part 7 知识结构图</h2>
+<svg viewBox="0 0 960 400" xmlns="http://www.w3.org/2000/svg" style="max-width:960px;">
+<defs><marker id="a7" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><path d="M0,0 L7,2.5 L0,5 Z" fill="rgba(255,255,255,0.25)"/></marker></defs>
+<rect x="330" y="5" width="300" height="30" rx="15" fill="rgba(124,92,231,0.08)" stroke="rgba(124,92,231,0.2)"/>
+<text x="480" y="25" text-anchor="middle" fill="#fff" font-size="13" font-weight="700" font-family="sans-serif">Part 7: 扩散与生成 — OPD 超越判别模型</text>
+
+<rect x="40" y="50" width="880" height="48" rx="10" fill="rgba(253,203,110,0.04)" stroke="rgba(253,203,110,0.15)"/>
+<text x="480" y="70" text-anchor="middle" fill="#fdcb6e" font-size="12" font-weight="700" font-family="sans-serif">🚀 范式跨越：优化「策略分布」（自回归 · 判别）→ 优化「生成分布」（扩散 · 生成）</text>
+<text x="480" y="88" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="10" font-family="sans-serif">通用条件：只要存在「教师有更多上下文 → 更强预测」的信息不对称，OPSD 就能工作</text>
+
+<path d="M300,98 L300,112" marker-end="url(#a7)" stroke="rgba(255,255,255,0.12)" stroke-width="1" fill="none"/>
+<path d="M760,98 L760,112" marker-end="url(#a7)" stroke="rgba(255,255,255,0.12)" stroke-width="1" fill="none"/>
+
+<g><rect x="40" y="116" width="520" height="42" rx="10" fill="rgba(124,92,231,0.07)" stroke="rgba(124,92,231,0.25)"/>
+<text x="300" y="134" text-anchor="middle" fill="#7c5ce7" font-size="12" font-weight="700" font-family="sans-serif">📄 D-OPSD — 图像扩散 · 步蒸馏模型的持续调优</text>
+<text x="300" y="150" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="9" font-family="sans-serif">阿里 Z-Image × 港科大 × UCSD × 港中文 · arXiv 2605.05204 · 2026.05</text></g>
+
+<path d="M140,158 L140,172" marker-end="url(#a7)" stroke="rgba(255,255,255,0.12)" stroke-width="1" fill="none"/>
+<path d="M300,158 L300,172" marker-end="url(#a7)" stroke="rgba(255,255,255,0.12)" stroke-width="1" fill="none"/>
+<path d="M460,158 L460,172" marker-end="url(#a7)" stroke="rgba(255,255,255,0.12)" stroke-width="1" fill="none"/>
+
+<g><rect x="55" y="176" width="170" height="58" rx="8" fill="rgba(0,206,201,0.05)" stroke="rgba(0,206,201,0.18)"/>
+<text x="140" y="196" text-anchor="middle" fill="#00cec9" font-size="10.5" font-weight="700" font-family="sans-serif">🎓 学生分支</text>
+<text x="140" y="211" text-anchor="middle" fill="rgba(255,255,255,0.45)" font-size="9" font-family="sans-serif">仅文本条件</text>
+<text x="140" y="225" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="9" font-family="sans-serif">少步采样 rollout</text></g>
+
+<g><rect x="240" y="176" width="170" height="58" rx="8" fill="rgba(225,112,85,0.05)" stroke="rgba(225,112,85,0.18)"/>
+<text x="325" y="196" text-anchor="middle" fill="#e17055" font-size="10.5" font-weight="700" font-family="sans-serif">👑 教师分支（特权）</text>
+<text x="325" y="211" text-anchor="middle" fill="rgba(255,255,255,0.45)" font-size="9" font-family="sans-serif">文本 + 目标图像多模态特征</text>
+<text x="325" y="225" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="9" font-family="sans-serif">更强的速度场预测</text></g>
+
+<g><rect x="425" y="176" width="120" height="58" rx="8" fill="rgba(168,85,247,0.05)" stroke="rgba(168,85,247,0.18)"/>
+<text x="485" y="196" text-anchor="middle" fill="#a855f7" font-size="10.5" font-weight="700" font-family="sans-serif">⚖️ MSE 对齐</text>
+<text x="485" y="211" text-anchor="middle" fill="rgba(255,255,255,0.45)" font-size="9" font-family="sans-serif">同一 on-policy 轨迹</text>
+<text x="485" y="225" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="9" font-family="sans-serif">速度预测对齐</text></g>
+
+<g><rect x="55" y="244" width="490" height="34" rx="8" fill="rgba(0,206,201,0.04)" stroke="rgba(0,206,201,0.12)"/>
+<text x="300" y="265" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="9.5" font-family="sans-serif">✅ 在线策略 · 消除分布偏移　✅ 无需奖励模型 · 仅图文对　✅ 学新不忘旧 · 保留少步能力</text></g>
+
+<g><rect x="600" y="116" width="320" height="42" rx="10" fill="rgba(0,206,201,0.06)" stroke="rgba(0,206,201,0.22)"/>
+<text x="760" y="134" text-anchor="middle" fill="#00cec9" font-size="12" font-weight="700" font-family="sans-serif">📄 LiveTalk — 视频扩散 · 实时多模态交互</text>
+<text x="760" y="150" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="9" font-family="sans-serif">arXiv 2512.23576 · 2025.12</text></g>
+
+<path d="M680,158 L680,172" marker-end="url(#a7)" stroke="rgba(255,255,255,0.12)" stroke-width="1" fill="none"/>
+<path d="M840,158 L840,172" marker-end="url(#a7)" stroke="rgba(255,255,255,0.12)" stroke-width="1" fill="none"/>
+
+<g><rect x="600" y="176" width="150" height="58" rx="8" fill="rgba(225,112,85,0.05)" stroke="rgba(225,112,85,0.18)"/>
+<text x="675" y="196" text-anchor="middle" fill="#e17055" font-size="10.5" font-weight="700" font-family="sans-serif">🛠️ 改进 OPD</text>
+<text x="675" y="211" text-anchor="middle" fill="rgba(255,255,255,0.45)" font-size="9" font-family="sans-serif">解决多模态条件下</text>
+<text x="675" y="225" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="9" font-family="sans-serif">的视觉伪影</text></g>
+
+<g><rect x="765" y="176" width="155" height="58" rx="8" fill="rgba(253,203,110,0.05)" stroke="rgba(253,203,110,0.18)"/>
+<text x="843" y="196" text-anchor="middle" fill="#fdcb6e" font-size="10.5" font-weight="700" font-family="sans-serif">⚡ 20× 推理加速</text>
+<text x="843" y="211" text-anchor="middle" fill="rgba(255,255,255,0.45)" font-size="9" font-family="sans-serif">质量保持匹配 · 实时化身</text>
+<text x="843" y="225" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="9" font-family="sans-serif">多轮一致性超 Sora2 / Veo3</text></g>
+
+<path d="M300,278 L300,306 L470,306 L470,322" marker-end="url(#a7)" stroke="rgba(255,255,255,0.12)" stroke-width="1" fill="none"/>
+<path d="M760,234 L760,306 L490,306 L490,322" marker-end="url(#a7)" stroke="rgba(255,255,255,0.12)" stroke-width="1" fill="none"/>
+
+<g><rect x="280" y="326" width="400" height="52" rx="12" fill="rgba(0,206,201,0.06)" stroke="rgba(0,206,201,0.25)">
+<animate attributeName="stroke-opacity" values="0.5;1;0.5" dur="3s" repeatCount="indefinite"/></rect>
+<text x="480" y="348" text-anchor="middle" fill="#00cec9" font-size="13" font-weight="700" font-family="sans-serif">💡 深层意义：OPSD 是通用的分布匹配范式</text>
+<text x="480" y="366" text-anchor="middle" fill="rgba(255,255,255,0.45)" font-size="10" font-family="sans-serif">不是 LLM 特化技巧 — 策略、速度场、生成分布皆可蒸馏</text></g>
+</svg></section>
+
 </div></div>
 <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.js"></script>
 <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
