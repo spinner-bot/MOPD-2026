@@ -33,34 +33,32 @@
 <!-- 步骤0: 编码器对比学习 -->
 <section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--aud);margin-bottom:6px;">步骤0：编码器对比学习</h2>
 <div class="two-col"><div class="concept-block fragment fade-up" style="border-left:3px solid var(--aud);"><h4>🔧 如何做</h4><p style="font-size:11px;">在图文对上用<strong style="color:var(--aud);">SigLIP 风格</strong>的对比损失训练视觉编码器。图文匹配的为正样本，不匹配的为负样本——sigmoid 独立判断每对是否匹配。</p></div>
-<div class="concept-block fragment fade-up" style="border-left:3px solid var(--vid);"><h4>💡 为什么需要</h4><p style="font-size:11px;">CLIP 的预训练数据与VLM实际场景存在<strong style="color:var(--vid);">分布差异</strong>。用目标数据重新训练可让编码器更好适配后续VLM任务。</p></div></div>
+<div class="concept-block fragment fade-up" style="border-left:3px solid var(--vid);"><h4>💡 为什么需要</h4><p style="font-size:11px;">CLIP 的预训练数据与VLM实际场景存在<strong style="color:var(--vid);">分布差异</strong>。用目标数据重新训练可让编码器更好适配后续VLM任务。</p></div></div></section>
 
 <!-- 名词: SigLIP风格 + 分布差异 -->
 <section data-transition="concave"><h2 style="font-size:22px;font-weight:700;color:var(--vlm);margin-bottom:6px;">名词解释</h2>
 <div class="two-col"><div class="concept-block fragment fade-up" style="border-left:3px solid var(--aud);"><h4>SigLIP 风格</h4><p style="font-size:11px;"><strong>SigLIP</strong> 用 <strong style="color:var(--aud);">sigmoid</strong> 替代 CLIP 的 softmax。CLIP: 每个样本与批次中所有其他样本竞争→需全局归一化。SigLIP: 对每个图文对<strong style="color:var(--aud);">独立判断匹配</strong>(0/1二分类)，不再依赖 batch size。更高效，更适合大规模训练。</p></div>
 <div class="concept-block fragment fade-up" style="border-left:3px solid var(--vid);"><h4>分布差异</h4><p style="font-size:11px;">CLIP 在<strong style="color:var(--vid);">互联网图文对</strong>上训练（alt-text, caption），但 VLM 实际面对的是<strong style="color:var(--vid);">用户提问+多轮对话</strong>。训练数据分布 ≠ 使用场景分布→直接使用会产生性能损失。需要在目标分布上重新对齐。</p></div></div></section>
-</section>
 
 <!-- 步骤1: 跨模态对齐 -->
 <section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--vlm);margin-bottom:6px;">步骤1：跨模态对齐（仅训练连接器）</h2>
 <div class="two-col"><div class="concept-block fragment fade-up" style="border-left:3px solid var(--vlm);"><h4>🔧 如何做</h4><p style="font-size:11px;"><strong style="color:var(--vlm);">冻结</strong>视觉编码器和LLM，<strong style="color:var(--vlm);">仅训练</strong>中间的MLP投影层。用图文caption数据训练——让投影层学会将视觉特征"翻译"到LLM能理解的嵌入空间。</p></div>
-<div class="concept-block fragment fade-up" style="border-left:3px solid var(--vis);"><h4>💡 为什么需要</h4><p style="font-size:11px;">视觉编码器输出的是视觉特征空间，LLM期待文本嵌入空间。这步是"翻译层"的训练——<strong style="color:var(--vis);">对齐两个原本不相通的表示空间</strong>。冻结大模型保证了不破坏已有能力。</p></div></div>
+<div class="concept-block fragment fade-up" style="border-left:3px solid var(--vis);"><h4>💡 为什么需要</h4><p style="font-size:11px;">视觉编码器输出的是视觉特征空间，LLM期待文本嵌入空间。这步是"翻译层"的训练——<strong style="color:var(--vis);">对齐两个原本不相通的表示空间</strong>。冻结大模型保证了不破坏已有能力。</p></div></div></section>
 
 <!-- 名词: MLP投影层 + caption -->
 <section data-transition="concave"><h2 style="font-size:22px;font-weight:700;color:var(--vlm);margin-bottom:6px;">名词解释</h2>
 <div class="two-col"><div class="concept-block fragment fade-up" style="border-left:3px solid var(--vlm);"><h4>MLP 投影层</h4><p style="font-size:11px;"><strong>MLP</strong> = 多层感知机 = 若干全连接层+激活函数。在 LLaVA 中，MLP 将视觉 token 的维度（如 ViT 输出的 1024 维）<strong style="color:var(--vlm);">线性映射</strong>到 LLM 嵌入空间（如 4096 维）。是最简单的连接器——仅做维度变换，不引入复杂结构。</p></div>
 <div class="concept-block fragment fade-up" style="border-left:3px solid var(--aud);"><h4>Caption 数据</h4><p style="font-size:11px;">Caption = <strong style="color:var(--aud);">图像的文字描述</strong>。如"一只橘猫坐在窗台上晒太阳"。用于训练模型看图说话的基本能力。来源：人工标注 / 大模型自动生成（如 ShareGPT4V）。</p></div></div></section>
-</section>
 
 <!-- 步骤2: 多任务预训练 -->
 <section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--vid);margin-bottom:6px;">步骤2：多任务预训练（全参数）</h2>
-<div class="struct-content fragment fade-up"><strong style="color:var(--vid);">🔧 如何做：</strong>解冻<strong style="color:#fff;">所有参数</strong>（视觉编码器+连接器+LLM），在<strong style="color:#fff;">多种类型数据</strong>上联合训练——caption、VQA、OCR、grounding、交错图文。<br><br><strong style="color:var(--vid);">💡 为什么需要：</strong>步骤1只训练了连接器，视觉和语言模块之间还是"陌生"的。全参数训练让两个模块<strong style="color:#fff;">真正学会协同工作</strong>——视觉编码器学会提取LLM需要的特征，LLM学会利用视觉信息。</div>
+<div class="struct-content fragment fade-up"><strong style="color:var(--vid);">🔧 如何做：</strong>解冻<strong style="color:#fff;">所有参数</strong>（视觉编码器+连接器+LLM），在<strong style="color:#fff;">多种类型数据</strong>上联合训练——caption、VQA、OCR、grounding、交错图文。<br><br><strong style="color:var(--vid);">💡 为什么需要：</strong>步骤1只训练了连接器，视觉和语言模块之间还是"陌生"的。全参数训练让两个模块<strong style="color:#fff;">真正学会协同工作</strong>——视觉编码器学会提取LLM需要的特征，LLM学会利用视觉信息。</div></section>
+
 <!-- 名词: VQA/OCR/grounding -->
 <section data-transition="concave"><h2 style="font-size:22px;font-weight:700;color:var(--vlm);margin-bottom:6px;">名词解释：VQA · OCR · Grounding</h2>
 <div class="tri-grid"><div class="concept-block fragment fade-up" style="border-top:2px solid var(--vis);"><h4>VQA (视觉问答)</h4><p style="font-size:10px;">给一张图+一个问题→模型回答。如"图中有几个人？"→需要<strong style="color:var(--vis);">看图理解+推理</strong>。训练数据：(图, 问题, 答案)三元组。</p></div>
 <div class="concept-block fragment fade-up" style="border-top:2px solid var(--vid);"><h4>OCR (光学字符识别)</h4><p style="font-size:10px;">识别图像中的<strong style="color:var(--vid);">文字</strong>——场景文字(路牌)、文档文字(PDF)、手写文字。VLM 必须"会读"才能理解图表/文档。</p></div>
 <div class="concept-block fragment fade-up" style="border-top:2px solid var(--gen);"><h4>Grounding (视觉定位)</h4><p style="font-size:10px;">根据文字描述在图中<strong style="color:var(--gen);">定位具体区域</strong>——"那个红色的球在哪里？"→输出边界框坐标。让模型学会"指哪看哪"。</p></div></div></section>
-</section>
 
 <!-- 步骤3: 退火 -->
 <section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--gen);margin-bottom:6px;">步骤3：退火（高质量数据精调）</h2>
@@ -69,13 +67,13 @@
 <!-- 步骤4-5: 后训练 -->
 <section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--vlm);margin-bottom:6px;">步骤4-5：后训练（SFT→MPO→GRPO→RL）</h2>
 <div class="two-col"><div class="concept-block fragment fade-up" style="border-left:3px solid var(--vlm);"><h4>步骤4: SFT → MPO</h4><p style="font-size:11px;"><strong>SFT：</strong>在高质量指令数据上监督微调。<strong>MPO (混合偏好优化)：</strong>结合多种偏好信号（人类偏好+自动评分+对比信号），让模型学会更符合人类期望的回答。</p></div>
-<div class="concept-block fragment fade-up" style="border-left:3px solid var(--vis);"><h4>步骤5: GRPO → Alignment RL</h4><p style="font-size:11px;"><strong>LongCoT冷启动→GRPO迭代→最终对齐。</strong>整个过程让模型的推理和指令遵循能力螺旋上升。</p></div></div>
+<div class="concept-block fragment fade-up" style="border-left:3px solid var(--vis);"><h4>步骤5: GRPO → Alignment RL</h4><p style="font-size:11px;"><strong>LongCoT冷启动→GRPO迭代→最终对齐。</strong>整个过程让模型的推理和指令遵循能力螺旋上升。</p></div></div></section>
+
 <!-- 名词: 偏好信号专题 -->
 <section data-transition="concave"><h2 style="font-size:22px;font-weight:700;color:var(--vlm);margin-bottom:6px;">偏好信号专题</h2>
 <div class="tri-grid"><div class="concept-block fragment fade-up" style="border-top:2px solid var(--gen);"><h4>👤 人类偏好</h4><p style="font-size:10px;">让人类标注员<strong style="color:var(--gen);">比较两个回答</strong>，选出更好的一个。数据格式：(图, 问题, 好回答, 差回答)。最可靠但也最昂贵——用于训练奖励模型(RM)或直接DPO优化。</p></div>
 <div class="concept-block fragment fade-up" style="border-top:2px solid var(--vis);"><h4>🤖 自动评分</h4><p style="font-size:10px;">用<strong style="color:var(--vis);">规则/模型</strong>自动打分——如答案正确性(数学题)、格式规范性、与参考答案的相似度。便宜可规模化，但可能被"钻空子"(reward hacking)。</p></div>
 <div class="concept-block fragment fade-up" style="border-top:2px solid var(--vid);"><h4>⚖️ 对比信号</h4><p style="font-size:10px;">不需要绝对评分，只需<strong style="color:var(--vid);">比较两个输出的相对好坏</strong>。DPO/MPO都基于对比信号。优势：相对判断比绝对打分更容易、更一致(人擅长比较，不擅长打分)。</p></div></div></section>
-</section>
 
 <!-- 名词: 长推理链+ SFT -->
 <section data-transition="concave"><h2 style="font-size:22px;font-weight:700;color:var(--vlm);margin-bottom:6px;">名词解释：LongCoT · SFT</h2>
@@ -95,12 +93,12 @@
 
 <!-- Apple MM1 -->
 <section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--vid);margin-bottom:6px;">Apple MM1：VLM 最系统性的消融实验</h2>
-<div class="struct-content fragment fade-up"><strong style="color:var(--vid);">Apple 2024.03 · 五大核心发现（按重要性排序）：</strong><br><br>① <strong style="color:#fff;">图像分辨率最重要</strong>——增大分辨率带来的增益远超增大编码器或LLM<br>② <strong style="color:#fff;">视觉token数量与分辨率同等重要</strong>——不能靠压缩token来节约成本<br>③ <strong style="color:#fff;">视觉编码器的预训练损失 > 参数量</strong>——好的预训练比更大的模型更重要<br>④ <strong style="color:#fff;">连接器设计影响不大</strong>——MLP ≈ Q-Former ≈ 交叉注意力，数据量大时差异消失<br>⑤ <strong style="color:#fff;">数据混合策略非常关键</strong>——合成caption+交错图文+纯文本按5:3:2最优</div>
+<div class="struct-content fragment fade-up"><strong style="color:var(--vid);">Apple 2024.03 · 五大核心发现（按重要性排序）：</strong><br><br>① <strong style="color:#fff;">图像分辨率最重要</strong>——增大分辨率带来的增益远超增大编码器或LLM<br>② <strong style="color:#fff;">视觉token数量与分辨率同等重要</strong>——不能靠压缩token来节约成本<br>③ <strong style="color:#fff;">视觉编码器的预训练损失 > 参数量</strong>——好的预训练比更大的模型更重要<br>④ <strong style="color:#fff;">连接器设计影响不大</strong>——MLP ≈ Q-Former ≈ 交叉注意力，数据量大时差异消失<br>⑤ <strong style="color:#fff;">数据混合策略非常关键</strong>——合成caption+交错图文+纯文本按5:3:2最优</div></section>
+
 <!-- 名词: 消融实验 + 预训练 -->
 <section data-transition="concave"><h2 style="font-size:22px;font-weight:700;color:var(--vlm);margin-bottom:6px;">名词解释</h2>
 <div class="two-col"><div class="concept-block fragment fade-up" style="border-left:3px solid var(--vid);"><h4>消融实验 (Ablation)</h4><p style="font-size:11px;">系统性地<strong style="color:var(--vid);">移除或改变一个组件</strong>，观察性能变化。如"去掉OCR数据会怎样？""把分辨率从224换成448？"Apple MM1 用这个方法逐一测试每个设计选择的影响——是最严谨的<strong style="color:#fff;">因果验证</strong>方法。</p></div>
 <div class="concept-block fragment fade-up" style="border-left:3px solid var(--aud);"><h4>视觉编码器的预训练损失</h4><p style="font-size:11px;"><strong>预训练损失越低</strong> = 编码器从原始数据中提取特征的能力越强。MM1 发现：在相同的参数量下，<strong style="color:var(--aud);">预训练更充分</strong>的编码器对下游VLM的贡献远超参数量更大但预训练不足的编码器。</p></div></div></section>
-</section>
 
 <!-- 连接器+数据混合解释 -->
 <section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--vlm);margin-bottom:6px;">为什么连接器不重要？数据混合为什么关键？</h2>
