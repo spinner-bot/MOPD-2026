@@ -130,6 +130,16 @@
 <p style="font-size:15px;color:var(--beam);text-align:center;margin:10px 0;">📊 结果：<strong>熵爆炸</strong>——学生输出的视觉分布熵极高，丧失判别力，注意力发散</p>
 <p><strong>直观比喻：</strong>考试制度被恶意利用——学生发现把所有选项涂一点（全均值分布）就能在 Forward KL 下得「不错」的分数，于是心安理得地停在模糊状态，永远学不会精确的视觉辨别。</p></div></div></section>
 
+
+<!-- ═══════ Reverse KL / JSD / Top-K JSD 解决方案 ═══════ -->
+<section data-transition="slide"><div class="core-card fragment fade-up"><p class="page-badge">KL 散度战场</p><h2 style="font-size:26px;font-weight:700;color:var(--nova);margin:8px 0;">💎 Reverse KL / JSD / Top-K JSD 的救赎</h2><div class="core-bar"></div>
+<div class="tri-grid" style="max-width:960px;margin-top:6px;">
+<div class="concept-block fragment fade-up" style="border-left:3px solid var(--nova);"><h4>🔄 Reverse KL · Mode-Seeking</h4><p>$$\min_{\pi_S} D_{KL}(\pi_S \|\pi_T)$$ 学生只追教师的<strong>峰值</strong>——在教师低概率区浪费概率会被严惩。对抗熵爆炸，学生视觉决策变「尖」。代价：可能丢失多样性，但在多模态理解中<strong>锐度 > 多样性</strong>。</p></div>
+<div class="concept-block fragment fade-up" style="border-left:3px solid var(--fuse);"><h4>⚖️ JSD · 对称折中</h4><p>$$\frac{1}{2}D_{KL}(\pi_T\|M)+\frac{1}{2}D_{KL}(\pi_S\|M)$$ 其中 \(M=(\pi_T+\pi_S)/2\)。不过度覆盖也不过度追寻，在锐度和多样性之间<strong>平衡</strong>。对视觉 token 既减轻熵爆炸，又不陷入极端模式崩塌。</p></div>
+<div class="concept-block fragment fade-up" style="border-left:3px solid var(--beam);"><h4>✂️ Top-K 截断 · 噪声修剪</h4><p>先截断教师分布到 Top-K，只在这 K 个 token 上计算散度。进一步<strong>排除尾部噪声</strong>——很多视觉 token 概率在教师那也是均匀噪声，直接裁剪掉避免学生浪费容量拟合无意义的背景模式。</p></div>
+</div>
+<div class="struct-content" style="margin-top:10px;"><p style="text-align:center;">💡 <strong>一句话：</strong>Forward KL = "覆盖所有可能"（被恶意利用→全均值） → Reverse KL = "精准命中峰值"（模型被迫学会真正的视觉辨别） → <strong>JSD / Top-K 是进一步的保险</strong></p></div></div></section>
+
 </div></div>
 <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.js"></script>
 <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
