@@ -216,6 +216,17 @@
 <p style="font-size:13px;color:var(--beam);text-align:center;margin:6px 0;">📌 关键：<strong>冷启动 SFT 是必不可少的</strong>——没有它，文本教师的分布与 VLM 学生的采样分布差距过大，蒸馏完全失败（VOLD 的核心发现）</p>
 <p><strong>典型场景：</strong>VOLD（Text LLM→VLM）· X-OPD（VLM→语音LLM）· SightSound-R1（多模态推理链蒸馏）</p></div></div></section>
 
+
+<!-- ═══════ 范式③ OPD+RL混合 ═══════ -->
+<section data-transition="slide"><div class="core-card fragment fade-up"><p class="page-badge">范式 ③</p><h2 style="font-size:26px;font-weight:700;color:var(--beam);margin:8px 0;">🟡 OPD + RL 混合系统</h2><p style="font-size:13px;color:var(--text2);margin:0 0 6px;">核心论文：PRISM · PTD-PO · HDPO · Distill-R1</p><div class="core-bar"></div>
+<div class="def-box" style="border-left-color:var(--beam);"><div class="label" style="color:var(--beam);">核心问题</div><div class="content">多模态任务的奖励通常<strong>极其稀疏</strong>（只有最终答案对错、生成质量评分），纯 RL 探索极难。如何提供<strong>逐 token 密集信号</strong>引导探索，同时保留 RL 对稀疏奖励的优化能力？</div></div>
+<div class="formula-box"><div class="math-block">$$\mathcal{L} = \mathcal{L}_{\text{RL}} + \lambda \cdot \mathcal{L}_{\text{OPD}}$$</div></div>
+<div class="struct-content">
+<p><strong>OPD 扮演的两种角色：</strong></p>
+<p style="margin-left:16px;">🔸 <strong>预对齐阶段</strong>：先用纯 OPD（大量教师数据）让学生学会基本合理行为，避免 RL 阶段从零开始乱撞<br/>🔸 <strong>辅助损失（软护栏）</strong>：RL 训练中 OPD 损失一直存在，防止策略为追求稀疏奖励而崩溃——如防止模型为拿高分而输出乱码</p>
+<p><strong>典型论文：</strong>PRISM（黑盒对抗 OPD 预对齐）· PTD-PO（特权辅导+偏好优化）· Distill-R1（SFT蒸馏→RL微调的标准框架）</p>
+<p style="font-size:13px;color:var(--nova);text-align:center;margin-top:6px;">💡 核心挑战：<strong>λ 权重的平衡</strong>——OPD 太强→学生不敢探索；OPD 太弱→RL 阶段崩溃</p></div></div></section>
+
 </div></div>
 <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.js"></script>
 <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
