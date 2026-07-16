@@ -54,3 +54,11 @@
 <!-- 节点2-1: DataComp -->
 <section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--aud);margin-bottom:6px;">2-1. DataComp (2023)</h2>
 <div class="fragment fade-up struct-content"><strong style="color:var(--aud);">核心贡献：</strong>建立<strong style="color:#fff;">大规模多模态数据筛选的标准化基准</strong>。DataComp 不是一种数据筛选方法，而是一个<strong style="color:var(--aud);">竞赛平台</strong>——提供统一的原始数据池和评估协议，让不同筛选算法在公平条件下比较。<br><br>关键发现：<strong style="color:#fff;">数据筛选算法的重要性远超模型架构</strong>——最好的筛选策略用较小模型就能达到甚至超越 CLIP 的性能。</div></section>
+
+<!-- 节点2-2: MetaCLIP -->
+<section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--vid);margin-bottom:6px;">2-2. MetaCLIP — 逆向工程 OpenAI 数据管线</h2>
+<div class="fragment fade-up struct-content"><strong style="color:var(--vid);">核心方法：</strong>使用<strong style="color:#fff;">元数据驱动的策展 (Metadata-driven Curation)</strong>——从 Wikidata/WordNet 获取概念词条，按概念平衡采样，而非简单的网络爬取。<strong style="color:var(--vid);">在相同数据量下超越原始 CLIP。</strong><br><br>关键在于<strong style="color:#fff;">"概念平衡"</strong>：原始网络爬取会导致高频概念（如"狗"、"车"）占据大量训练样本，而稀有概念（如"鸭嘴兽"）几乎不可见。MetaCLIP 确保了每个概念都有足够的训练样本。</div></section>
+
+<!-- 节点2-2a: 概念平衡 -->
+<section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--vlm);margin-bottom:6px;">2-2a. 什么是概念平衡？</h2>
+<div class="two-col fragment fade-up"><div class="concept-block" style="border-left:3px solid var(--vid);"><h4>⚖️ 概念平衡采样的含义</h4><p style="font-size:11px;">不按<strong style="color:var(--vid);">数据出现频率</strong>采样，而是按<strong style="color:var(--vid);">概念多样性</strong>采样。每个概念（来自 Wikidata 的数万个条目）获得大致相等的样本配额。这避免了模型被高频概念主导，强制学习长尾知识。</p></div><div class="concept-block" style="border-left:3px solid var(--aud);"><h4>📊 三个核心结论 (2-2rs)</h4><p style="font-size:11px;">① <strong style="color:var(--aud);">概念平衡显著提升零样本迁移</strong>——尤其对稀有类别<br>② <strong style="color:var(--aud);">数据量不是越多越好</strong>——平衡的4亿样本超越不平衡的10亿<br>③ <strong style="color:var(--aud);">元数据策展成本极低</strong>——Wikidata/WordNet 是免费知识库</p></div></div></section>
