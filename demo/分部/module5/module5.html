@@ -63,6 +63,43 @@
 </div>
 </div></section>
 
+<!-- ═══════ 28. OPD研究整体启示 ═══════ -->
+<section data-transition="slide"><div class="star-card fragment fade-up"><p class="page-badge-g">Part 4 · 启示</p><h2 style="font-size:26px;font-weight:700;color:var(--gold);margin:8px 0;">💡 对 OPD 研究的整体启示</h2><div class="star-bar"></div>
+<div class="struct-content fragment fade-up" style="margin-top:8px;">
+<div style="background:rgba(56,189,248,0.03);border-radius:8px;padding:12px 16px;margin-bottom:6px;text-align:left;">
+<p><span style="color:var(--prism);font-weight:700;">1. OPD 不是一个确定的算法，而是一个设计空间。</span> PRISM证明了OPD可以放在管道中间、可以用对抗方式实现；Uni-OPD证明了OPD的成功取决于数据分布和教师监督质量。未来工作不应只问"OPD好用吗"，而应问"哪个OPD设计在什么场景下最优"。</p>
+</div>
+<div style="background:rgba(251,113,133,0.03);border-radius:8px;padding:12px 16px;margin-bottom:6px;text-align:left;">
+<p><span style="color:var(--uniopd);font-weight:700;">2. 多模态OPD ≠ 文本OPD + 图像。</span> PRISM揭示了多模态场景下分布漂移的异质性——感知和推理是不同的维度，需要不同的矫正信号。OPD研究不能简单地将文本方法移植到多模态——视觉的熵爆炸、多模态shortcut等问题需要专门设计。</p>
+</div>
+<div style="background:rgba(251,191,36,0.03);border-radius:8px;padding:12px 16px;margin-bottom:6px;text-align:left;">
+<p><span style="color:var(--gold);font-weight:700;">3. 黑盒 vs 白盒的选择是场景依赖的。</span> 如果你有教师的logits访问权，Uni-OPD的白盒方案提供更精细的优化；如果教师是API-only（如GPT-4V），PRISM的黑盒方案是唯一选择。两者互补而非互斥。</p>
+</div>
+<div style="background:rgba(34,211,160,0.03);border-radius:8px;padding:12px 16px;text-align:left;">
+<p><span style="color:var(--accent-g);font-weight:700;">4. OPD + RLVR 可能是后训练的下一步范式。</span> 两篇论文都指向同一个未来：OPD提供密集的过程监督，RLVR提供稀疏的结果优化。关键问题不是"是否混合"，而是"如何混合"——λ权重、阶段划分、信号优先级。</p>
+</div>
+</div></div></section>
+
+<!-- ═══════ 29. 未来方向 ═══════ -->
+<section data-transition="slide"><div class="star-card fragment fade-up"><p class="page-badge-g">Part 4 · 展望</p><h2 style="font-size:26px;font-weight:700;color:var(--gold);margin:8px 0;">🔭 未来方向与开放问题</h2><div class="star-bar"></div>
+<div class="tri-grid fragment fade-up" style="margin-top:10px;">
+<div class="concept-block"><h4>🔹 稳定的对抗式OPD</h4><p>PRISM的对抗训练仅500步——如何借鉴Wasserstein GAN、Spectral Normalization等技术实现更稳定的长程对抗蒸馏？</p></div>
+<div class="concept-block r"><h4>🔸 自适应边距校准</h4><p>Uni-OPD的δ需要手动选择——能否根据训练动态自动调整？如何将order consistency扩展为soft约束而非硬阈值？</p></div>
+<div class="concept-block g"><h4>🔹 统一OPD框架</h4><p>将PRISM的三阶段管道 + Uni-OPD的双视角优化 + 多教师/跨模态整合为单一可配置的训练框架。</p></div>
+<div class="concept-block"><h4>🔹 OPD的理论理解</h4><p>为什么OPD的token-level信号比RL的outcome-level信号更高效？OPD的收敛性质与传统蒸馏有何本质区别？</p></div>
+<div class="concept-block r"><h4>🔸 超越结构化输出</h4><p>PRISM的MoE依赖caption+think+answer——如何让判别器自动或学习式地分解反馈维度，适用于任意输出格式？</p></div>
+<div class="concept-block g"><h4>🔹 极小模型的OPD极限</h4><p>Uni-OPD中1.7B从30B蒸馏仍远低于教师——OPD的能力传递效率是否存在根本性的上限？如何突破？</p></div>
+</div></div></section>
+
+<!-- ═══════ 30. 致谢/结束页 + 公式速查 ═══════ -->
+<section data-transition="zoom"><div class="star-card fragment fade-up"><p class="page-badge">Thanks</p><h1 class="hero-title">谢谢！</h1><p style="font-size:18px;color:var(--text2);">PRISM & Uni-OPD 论文精讲 · 组会报告</p><div class="star-bar"></div>
+<div class="two-col fragment fade-up" style="margin-top:8px;max-width:900px;">
+<div style="text-align:left;font-size:11px;color:var(--text2);line-height:1.8;"><p style="color:var(--prism);font-weight:700;font-size:13px;">🔷 PRISM 关键公式</p><p>MoE: \(r(x,y)=\alpha D_v(x,c)+(1-\alpha)D_r(x,t)\)<br/>BT Loss: \(\mathcal{L}_{D_k}=-\mathbb{E}\log\sigma(D_k^+-D_k^-)\)<br/>Minimax: \(\min_\theta\max_\phi\mathbb{E}[r_\phi(x,y^+)-r_\phi(x,y^-)]\)</p></div>
+<div style="text-align:left;font-size:11px;color:var(--text2);line-height:1.8;"><p style="color:var(--uniopd);font-weight:700;font-size:13px;">🔶 Uni-OPD 关键公式</p><p>OPD Reward: \(r_t^{OPD}=\log\frac{\pi_T(o_t|q,o_{&lt;t})}{\pi_\theta(o_t|q,o_{&lt;t})}\)<br/>Trajectory Return: \(G_{OPD}(q,\tau)=\frac{1}{|\tau|}\sum r_t^{OPD}\)<br/>Margin: \(m(q)=\min G_{OPD}(\tau^+)-\max G_{OPD}(\tau^-)\)</p></div>
+</div>
+<div class="tag-row fragment fade-up" style="margin-top:10px;"><span class="tag tag-b">PRISM · 黑盒对抗OPD</span><span class="tag tag-r">Uni-OPD · 双视角统一</span><span class="tag tag-g">OPD = 设计空间</span></div>
+<p style="font-size:12px;color:var(--text3);margin-top:8px;">论文来源：arXiv:2604.28123v1 (PRISM) · arXiv:2605.03677v2 (Uni-OPD) &nbsp;|&nbsp; 报告生成：2026/07/16</p></div></section>
+
 <!-- ═══════ 27. 两者结合的可能性（左右布局） ═══════ -->
 <section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--gold);margin-bottom:6px;">🔮 两者结合的可能性</h2>
 <div class="paper-split fragment fade-up">
