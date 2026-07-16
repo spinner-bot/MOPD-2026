@@ -40,6 +40,23 @@
 <p style="font-size:12px;color:var(--text3);margin-top:12px;">组会报告 · 2026/07</p></div></section>
 
 
+<!-- ═══════ 19. Uni-OPD 离线数据平衡（左右布局） ═══════ -->
+<section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--prism);margin-bottom:4px;">👨‍🎓 学生视角：离线难度感知数据平衡</h2><p style="font-size:11px;color:var(--text3);margin-bottom:8px;">Offline Difficulty-aware Data Balancing</p>
+<div class="paper-split fragment fade-up">
+<div class="paper-left">
+<p style="font-size:11px;color:var(--text3);margin-bottom:4px;">📄 论文原文 · Sec 3.1 Offline Data Balancing</p>
+<p>Standard RL practice filters out samples that are <span class="hl-r">too easy</span> (all correct) or <span class="hl-r">too hard</span> (all incorrect). However, Uni-OPD finds that:</p>
+<p style="margin-top:6px;">🔸 Small models' training data often exhibits a <span class="hl-g">mirror-J-shaped or U-shaped distribution</span> — most samples cluster at the extremes (very easy or very hard).</p>
+<p>🔸 Direct filtering <span class="hl-r">drastically reduces data diversity</span>, causing significant performance drops.</p>
+<p style="margin-top:6px;"><span class="hl-b">Uni-OPD's solution:</span> <strong>Upsample</strong> medium-difficulty samples (those with partial correctness across multiple rollouts) to reshape the distribution into a more uniform one — preserving both diversity and the full difficulty spectrum.</p>
+</div>
+<div class="paper-right uniopd-theme">
+<div class="section-label">🔍 核心解读</div>
+<div class="comment" style="border-left-color:var(--uniopd);"><strong>过滤 vs 平衡的本质区别：</strong><br/>🔹 <strong>过滤</strong> = 把极难/极易样本扔掉 → 数据量减少，多样性丧失<br/>🔹 <strong>平衡</strong> = 对中等难度样本多采样几次 → 所有样本都保留，但难度分布更均匀<br/>在J形/U形分布下（小模型的常见情况），过滤会丢失大量数据。</div>
+<div class="insight">💡 <strong>为什么中等难度样本更"informative"？</strong>极简单的样本——学生已经会了，OPD学不到东西；极难的样本——学生完全不会，教师的监督信号在学生的OOD区域也变得不可靠。中等难度样本正好处于"学习区"——学生部分对部分错，教师能提供有效的矫正信号。</div>
+</div>
+</div></section>
+
 <!-- ═══════ 18. Uni-OPD 双视角优化框架 ═══════ -->
 <section data-transition="slide"><div class="star-card fragment fade-up"><p class="page-badge-r">Uni-OPD · 框架</p><h2 style="font-size:28px;font-weight:700;color:var(--uniopd);margin:8px 0;">🔶 双视角优化策略</h2><p style="font-size:14px;color:var(--text2);">学生视角：数据平衡 &nbsp;|&nbsp; 教师视角：边距校准</p><div class="star-bar"></div>
 <div class="two-col fragment fade-up" style="margin-top:12px;">
