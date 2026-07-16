@@ -95,6 +95,18 @@
 <text x="140" y="340" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="8" font-family="sans-serif">Forward → Reverse → JSD → Top-K</text>
 </svg></section>
 
+
+<!-- ═══════ 文本OPD vs 多模态OPD ═══════ -->
+<section data-transition="slide"><div class="core-card fragment fade-up"><p class="page-badge">范式迁移</p><h2 style="font-size:28px;font-weight:700;color:#fff;margin:8px 0;">文本 OPD → 多模态 OPD：三大新维度</h2><div class="core-bar"></div>
+<table class="summary-table fragment fade-up" style="margin-top:10px;"><thead><tr><th style="width:18%">维度</th><th style="width:38%">文本 OPD</th><th style="width:44%">多模态 OPD</th></tr></thead>
+<tbody>
+<tr><td class="pc">特权信息类型</td><td>参考答案 · 推理链 (rationale)</td><td class="hl">视觉裁剪 · 生成式视觉思维 · 注意力图 · 未来帧 · 音频</td></tr>
+<tr><td class="pc">教师-学生差异</td><td>同一模型，有无参考文本</td><td class="hl">同一模型，<strong>跨模态上下文差异</strong><br/>crop vs full · text+audio vs text-only · VT vs no-VT</td></tr>
+<tr><td class="pc">核心风险</td><td>答案泄漏 (answer leakage)</td><td class="wd"><strong>多模态 Shortcut</strong>：PALR 诊断 17–26% 的 token 级监督来源于文本而非图像</td></tr>
+<tr><td class="pc">散度选择</td><td>Forward KL / JSD</td><td class="hl"><strong>Reverse KL / JSD / Top-K JSD</strong><br/>防止视觉 token 上的熵爆炸</td></tr>
+</tbody></table>
+<div class="struct-content" style="margin-top:10px;"><p style="text-align:center;color:var(--nova);">💡 多模态 OPD 不仅继承了文本 OPD 的 on-policy 框架，还引入了<strong>全新的挑战维度</strong>——特权信息不再只是文本，KL 散度的选择也不再是默认选项。</p></div></div></section>
+
 </div></div>
 <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.js"></script>
 <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
