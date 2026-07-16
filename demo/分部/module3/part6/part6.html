@@ -22,6 +22,71 @@
 <!-- ═══════ 标题页 ═══════ -->
 <section data-transition="zoom"><div class="core-card fragment fade-up"><p class="cite">MODULE 3 · PART 6</p><h1 class="hero-title">RL + OPD 混合系统</h1><p style="font-size:20px;color:var(--text2);">密集信号与稀疏奖励的协同 · 从预对齐到软护栏</p><div class="core-bar"></div><p style="font-size:13px;color:var(--text3);">2026 年最重要的工程趋势 — OPD 不再独立，而是与 RLVR 深度集成</p></div></section>
 
+
+<!-- ═══════ DAG 知识图谱 ═══════ -->
+<section data-transition="slide"><h2 style="font-size:24px;font-weight:700;color:var(--beam);margin-bottom:8px;">Part 6 知识结构图</h2>
+<svg viewBox="0 0 960 420" xmlns="http://www.w3.org/2000/svg" style="max-width:960px;">
+<defs><marker id="a" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><path d="M0,0 L7,2.5 L0,5 Z" fill="rgba(255,255,255,0.2)"/></marker></defs>
+<rect x="330" y="5" width="300" height="30" rx="15" fill="rgba(253,203,110,0.08)" stroke="rgba(253,203,110,0.2)"/>
+<text x="480" y="25" text-anchor="middle" fill="var(--beam)" font-size="13" font-weight="700" font-family="sans-serif">Part 6: RL + OPD 混合系统</text>
+
+<!-- 核心公式 -->
+<rect x="250" y="50" width="460" height="36" rx="10" fill="rgba(8,6,15,0.7)" stroke="rgba(253,203,110,0.15)"/>
+<text x="480" y="73" text-anchor="middle" fill="#d4c8b0" font-size="13" font-weight="700" font-family="sans-serif">ℒ = ℒ_RL（稀疏·终点判决） + λ · ℒ_OPD（密集·逐token软约束）</text>
+
+<!-- 两翼 -->
+<rect x="50" y="105" width="220" height="65" rx="10" fill="rgba(225,112,85,0.05)" stroke="rgba(225,112,85,0.18)"/>
+<text x="160" y="128" text-anchor="middle" fill="var(--flare)" font-size="12" font-weight="700" font-family="sans-serif">🔴 RLVR 的局限</text>
+<text x="160" y="146" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="9" font-family="sans-serif">稀疏序列级奖励</text>
+<text x="160" y="162" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="9" font-family="sans-serif">信用分配失效 · 探索低效</text>
+
+<rect x="690" y="105" width="220" height="65" rx="10" fill="rgba(0,206,201,0.05)" stroke="rgba(0,206,201,0.18)"/>
+<text x="800" y="128" text-anchor="middle" fill="var(--nova)" font-size="12" font-weight="700" font-family="sans-serif">🟢 OPD 的局限</text>
+<text x="800" y="146" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="9" font-family="sans-serif">缺乏客观终极目标</text>
+<text x="800" y="162" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="9" font-family="sans-serif">教师可能有偏或受限</text>
+
+<path d="M270,137 L310,137" stroke="rgba(255,255,255,0.15)" stroke-width="1.5"/>
+<path d="M650,137 L690,137" stroke="rgba(255,255,255,0.15)" stroke-width="1.5"/>
+
+<!-- 中间汇聚 -->
+<rect x="310" y="100" width="340" height="75" rx="12" fill="rgba(253,203,110,0.06)" stroke="rgba(253,203,110,0.25)"/>
+<text x="480" y="122" text-anchor="middle" fill="var(--beam)" font-size="13" font-weight="700" font-family="sans-serif">✨ 混合 = 互补</text>
+<text x="480" y="140" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="9.5" font-family="sans-serif">全程有教师轻声提示</text>
+<text x="480" y="156" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="9.5" font-family="sans-serif">终点有裁判一锤定音</text>
+<text x="480" y="172" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="8" font-family="sans-serif">适用前提：正向可验 · 逆向难成</text>
+
+<!-- 四大论文 -->
+<path d="M480,175 L480,202" marker-end="url(#a)" stroke="rgba(255,255,255,0.1)" stroke-width="1.5"/>
+
+<rect x="30" y="208" width="205" height="72" rx="8" fill="rgba(124,92,231,0.05)" stroke="rgba(124,92,231,0.15)"/>
+<text x="132" y="230" text-anchor="middle" fill="var(--core)" font-size="10" font-weight="700" font-family="sans-serif">🟣 PRISM (2026.04)</text>
+<text x="132" y="248" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="8.5" font-family="sans-serif">三阶段Pipeline</text>
+<text x="132" y="264" text-anchor="middle" fill="rgba(255,255,255,0.25)" font-size="8" font-family="sans-serif">SFT→OPD预对齐→RLVR</text>
+<text x="132" y="278" text-anchor="middle" fill="rgba(255,255,255,0.2)" font-size="7.5" font-family="sans-serif">MoE判别器·黑盒教师</text>
+
+<rect x="260" y="208" width="205" height="72" rx="8" fill="rgba(168,85,247,0.05)" stroke="rgba(168,85,247,0.15)"/>
+<text x="362" y="230" text-anchor="middle" fill="var(--fuse)" font-size="10" font-weight="700" font-family="sans-serif">🟣 PTD-PO (2026.06)</text>
+<text x="362" y="248" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="8.5" font-family="sans-serif">教方法不教答案</text>
+<text x="362" y="264" text-anchor="middle" fill="rgba(255,255,255,0.25)" font-size="8" font-family="sans-serif">特权辅导·Top-K JSD</text>
+<text x="362" y="278" text-anchor="middle" fill="rgba(255,255,255,0.2)" font-size="7.5" font-family="sans-serif">缓解熵坍塌</text>
+
+<rect x="490" y="208" width="205" height="72" rx="8" fill="rgba(225,112,85,0.05)" stroke="rgba(225,112,85,0.15)"/>
+<text x="592" y="230" text-anchor="middle" fill="var(--flare)" font-size="10" font-weight="700" font-family="sans-serif">🔴 HDPO (2026.03)</text>
+<text x="592" y="248" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="8.5" font-family="sans-serif">混合蒸馏策略优化</text>
+<text x="592" y="264" text-anchor="middle" fill="rgba(255,255,255,0.25)" font-size="8" font-family="sans-serif">理论保证</text>
+<text x="592" y="278" text-anchor="middle" fill="rgba(255,255,255,0.2)" font-size="7.5" font-family="sans-serif">恢复最优KL正则化RL策略</text>
+
+<rect x="720" y="208" width="205" height="72" rx="8" fill="rgba(0,206,201,0.05)" stroke="rgba(0,206,201,0.15)"/>
+<text x="822" y="230" text-anchor="middle" fill="var(--nova)" font-size="10" font-weight="700" font-family="sans-serif">🟢 Distill-R1 (2026.03)</text>
+<text x="822" y="248" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="8.5" font-family="sans-serif">首个开源框架</text>
+<text x="822" y="264" text-anchor="middle" fill="rgba(255,255,255,0.25)" font-size="8" font-family="sans-serif">兼容7种RL算法</text>
+<text x="822" y="278" text-anchor="middle" fill="rgba(255,255,255,0.2)" font-size="7.5" font-family="sans-serif">标准化实验基准</text>
+
+<!-- 底部总结 -->
+<rect x="180" y="300" width="600" height="32" rx="10" fill="rgba(8,6,15,0.5)" stroke="rgba(124,92,231,0.1)"/>
+<text x="480" y="321" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="9.5" font-family="sans-serif">OPD 作为 RL 的预对齐阶段或辅助损失 —— 从独立范式走向深度集成</text>
+</svg></section>
+
 </div></div>
 <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.js"></script>
 <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
