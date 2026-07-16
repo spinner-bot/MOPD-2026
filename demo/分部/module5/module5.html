@@ -49,6 +49,25 @@
 <div class="struct-content fragment fade-up" style="margin-top:8px;"><p style="text-align:center;">💡 离线 + 在线双重平衡：<strong>离线确保数据的难度谱完整</strong>，<strong>在线确保每个训练步的梯度有信息量</strong>——两者互补，缺一不可。</p></div>
 </div></section>
 
+<!-- ═══════ 25. 关键对比表 ═══════ -->
+<section data-transition="slide"><h2 style="font-size:24px;font-weight:700;color:var(--gold);margin-bottom:8px;">⭐ PRISM vs Uni-OPD：12维度全面对比</h2>
+<table class="summary-table fragment fade-up" style="font-size:10px;"><thead><tr><th style="width:14%">维度</th><th style="width:38%">PRISM</th><th style="width:38%">Uni-OPD</th><th style="width:10%">互补？</th></tr></thead>
+<tbody>
+<tr><td class="pc">OPD 定位</td><td class="hl">中间过渡阶段（pre-alignment）</td><td class="wr">独立后训练范式</td><td class="hl">✅</td></tr>
+<tr><td class="pc">教师需求</td><td class="hl"><strong>黑盒</strong>（仅需demonstration样本）</td><td class="wr"><strong>白盒</strong>（需logits访问）</td><td class="hl">✅</td></tr>
+<tr><td class="pc">核心技术</td><td class="hl">对抗式MoE判别器</td><td class="wr">数据平衡 + 边距校准</td><td class="hl">✅</td></tr>
+<tr><td class="pc">模态范围</td><td>聚焦多模态（MLLM）</td><td class="wr">LLM + MLLM 统一</td><td class="hl">✅</td></tr>
+<tr><td class="pc">问题诊断</td><td>SFT引入分布漂移（异质化）</td><td>OPD的两个基础瓶颈（探索+监督）</td><td class="hl">✅</td></tr>
+<tr><td class="pc">解决路径</td><td>插入新阶段（三阶段管道）</td><td>优化现有OPD训练过程</td><td class="hl">✅</td></tr>
+<tr><td class="pc">判断标准</td><td>下游RLVR性能提升</td><td>直接蒸馏性能提升</td><td class="hl">✅</td></tr>
+<tr><td class="pc">对抗训练</td><td class="hl">是（minimax game）</td><td class="wr">否（直接校准）</td><td class="hl">✅</td></tr>
+<tr><td class="pc">数据构建</td><td>1.37M多模态·结构化输出</td><td>5域16基准·难度谱reshape</td><td>—</td></tr>
+<tr><td class="pc">模型规模</td><td>4B / 8B</td><td>1.7B / 4B / 30B teacher</td><td>—</td></tr>
+<tr><td class="pc">多教师支持</td><td class="wr">否</td><td class="hl">✅ 多教师+跨模态</td><td class="hl">✅</td></tr>
+<tr><td class="pc">理论基础</td><td>分布匹配 + 对抗学习</td><td class="wr">第一性原理 + 排序一致性</td><td class="hl">✅</td></tr>
+</tbody></table>
+<div class="struct-content fragment fade-up" style="margin-top:6px;"><p style="text-align:center;font-size:12px;">💡 <strong>几乎每行都是互补的</strong>——PRISM解决"OPD放在管道哪"，Uni-OPD解决"OPD怎么做才对"。两者不存在直接竞争，而是<strong>从不同角度完善OPD技术栈</strong>。</p></div></section>
+
 <!-- ═══════ 24. Uni-OPD 小结 ═══════ -->
 <section data-transition="slide"><div class="star-card fragment fade-up" style="border-color:rgba(251,113,133,0.25);"><p class="page-badge-r">Uni-OPD · 小结</p><h2 style="font-size:28px;font-weight:700;color:var(--uniopd);margin:8px 0;">🔶 Uni-OPD 总结</h2><div class="star-bar"></div>
 <div class="two-col" style="margin-top:10px;">
