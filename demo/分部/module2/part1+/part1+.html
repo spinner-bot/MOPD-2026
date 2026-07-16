@@ -50,3 +50,7 @@
 <!-- 节点1: 历史背景 -->
 <section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--vis);margin-bottom:6px;">1. CLIP 未公开的数据管线</h2>
 <div class="fragment fade-up struct-content">OpenAI 在 CLIP 论文中描述了使用<strong style="color:var(--vis);">4亿图文对</strong>进行训练，但<strong style="color:#fff;">从未公开数据收集和筛选的具体方法</strong>。开源社区面临核心问题：<strong style="color:var(--vis);">如何复现甚至超越 CLIP？</strong><br><br>两条路径：① 大规模数据筛选基准 (DataComp) ② 逆向工程 OpenAI 的数据管线 (MetaCLIP)。</div></section>
+
+<!-- 节点2-1: DataComp -->
+<section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--aud);margin-bottom:6px;">2-1. DataComp (2023)</h2>
+<div class="fragment fade-up struct-content"><strong style="color:var(--aud);">核心贡献：</strong>建立<strong style="color:#fff;">大规模多模态数据筛选的标准化基准</strong>。DataComp 不是一种数据筛选方法，而是一个<strong style="color:var(--aud);">竞赛平台</strong>——提供统一的原始数据池和评估协议，让不同筛选算法在公平条件下比较。<br><br>关键发现：<strong style="color:#fff;">数据筛选算法的重要性远超模型架构</strong>——最好的筛选策略用较小模型就能达到甚至超越 CLIP 的性能。</div></section>
