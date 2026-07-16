@@ -205,6 +205,17 @@
 <p style="font-size:14px;color:var(--beam);text-align:center;margin:6px 0;">✅ <strong>零外部依赖</strong>：不需要更强的教师，不需要新数据，只需已有的图文对</p>
 <p><strong>典型实例：</strong>Vision-OPD 的 crop-vs-full 自蒸馏 → 将「视觉放大」能力内化到模型中，而非依赖推理时外部工具调用。</p></div></div></section>
 
+
+<!-- ═══════ 范式② 跨模态教师蒸馏 ═══════ -->
+<section data-transition="slide"><div class="core-card fragment fade-up"><p class="page-badge">范式 ②</p><h2 style="font-size:26px;font-weight:700;color:var(--flare);margin:8px 0;">🔴 跨模态教师蒸馏</h2><p style="font-size:13px;color:var(--text2);margin:0 0 6px;">核心论文：VOLD · X-OPD · CORD · SightSound-R1</p><div class="core-bar"></div>
+<div class="def-box" style="border-left-color:var(--flare);"><div class="label" style="color:var(--flare);">核心问题</div><div class="content">如何将一种模态上已经训练好的强能力，迁移到<strong>另一种模态</strong>的模型上？（text LLM 推理能力 → VLM；VLM 视觉理解 → 音频模型）</div></div>
+<div class="def-box" style="border-left-color:var(--nova);"><div class="label" style="color:var(--nova);">核心思想</div><div class="content">教师和学生来自<strong>不同模态</strong>，输入/输出空间可能完全不同。必须让学生<strong>在自己的模态里采样轨迹</strong>，教师评估轨迹质量后提供反馈——这正是"在线"的不可替代之处。</div></div>
+<div class="struct-content" style="margin-top:8px;">
+<p><strong>运作机制（四步）：</strong></p>
+<p style="margin-left:16px;">① <strong>冷启动 SFT 对齐</strong>（必需前置）→ ② <strong>在线采样</strong>：学生在目标模态生成轨迹 → ③ <strong>教师评估</strong>：似然度打分 / 生成参考轨迹 / 价值函数评估 → ④ <strong>策略更新</strong>：根据教师信号进行 RL 更新 + KL 约束防偏离</p>
+<p style="font-size:13px;color:var(--beam);text-align:center;margin:6px 0;">📌 关键：<strong>冷启动 SFT 是必不可少的</strong>——没有它，文本教师的分布与 VLM 学生的采样分布差距过大，蒸馏完全失败（VOLD 的核心发现）</p>
+<p><strong>典型场景：</strong>VOLD（Text LLM→VLM）· X-OPD（VLM→语音LLM）· SightSound-R1（多模态推理链蒸馏）</p></div></div></section>
+
 </div></div>
 <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.js"></script>
 <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
