@@ -40,6 +40,16 @@
 <p style="font-size:12px;color:var(--text3);margin-top:12px;">组会报告 · 2026/07</p></div></section>
 
 
+<!-- ═══════ 4. OPD 核心思想与公式 ═══════ -->
+<section data-transition="slide"><div class="star-card fragment fade-up"><p class="page-badge">核心概念</p><h2 style="font-size:28px;font-weight:700;color:var(--gold);margin:8px 0;">On-Policy Distillation (OPD)</h2><p style="font-size:14px;color:var(--text2);">结合 RL 的 on-policy 采样优势 + SFT 的细粒度信号优势</p><div class="star-bar"></div>
+<div class="def-box fragment fade-up"><div class="label">OPD 的核心定义</div><div class="content">让学生模型在自己的 <strong>on-policy 生成轨迹</strong>上接受教师模型的 <strong>token-level 监督</strong>。学生先生成，教师在学生的轨迹上打分——训练分布 = 推理分布，消除 exposure bias。</div></div>
+<div class="formula-box fragment fade-up"><div class="math-block">$$J_{\text{OPD}}(\theta) = \min_\theta \mathbb{E}_{q \sim \mathcal{D}, \tau \sim \pi_\theta(\cdot|q)} D_{KL}\left(\pi_\theta(\tau|q) \| \pi_T(\tau|q)\right)$$</div></div>
+<div class="struct-content fragment fade-up"><p style="text-align:center;color:var(--prism);">让学生在自己生成的轨迹上，最小化与教师分布的 Reverse KL 散度</p>
+<p><strong>OPD 的梯度 = Token 级奖励信号：</strong></p></div>
+<div class="formula-box fragment fade-up"><div class="math-block">$$r_t^{\text{OPD}} = \log \frac{\pi_T(o_t | q, o_{&lt;t})}{\pi_\theta(o_t | q, o_{&lt;t})}$$</div></div>
+<div class="struct-content fragment fade-up"><p style="text-align:center;">当教师比学生更偏好某个 token（\(r_t^{\text{OPD}} > 0\)）→ 学生向该方向更新<br/>当教师比学生更不偏好某个 token（\(r_t^{\text{OPD}} < 0\)）→ 学生远离该方向</p>
+<p style="text-align:center;color:var(--gold);margin-top:8px;">💡 OPD 的本质：<strong>逐 token 的"教师认同度"打分</strong>——它告诉你每一步推理中，教师有多同意你的选择</p></div></div></section>
+
 <!-- ═══════ 3. SFT→RLVR 标准范式及问题 ═══════ -->
 <section data-transition="slide"><div class="star-card fragment fade-up"><p class="page-badge">背景</p><h2 style="font-size:28px;font-weight:700;color:#fff;margin:8px 0;">LLM/MLLM 后训练的标准范式</h2><p style="font-size:14px;color:var(--text2);">SFT → RLVR：两阶段管道的隐藏缺陷</p><div class="star-bar"></div>
 <div class="flow-diagram fragment fade-up"><div class="flow-node fn-b">Stage 1<div style="font-size:10px;font-weight:400;color:var(--text2);">SFT · 监督微调</div></div><div class="flow-arrow">→</div><div class="flow-node fn-r">Stage 2<div style="font-size:10px;font-weight:400;color:var(--text2);">RLVR · 可验证奖励RL</div></div></div>
