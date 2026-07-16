@@ -125,6 +125,61 @@
 <div class="def-box"><div class="label">为什么用Reverse KL？</div><div class="content">音频token分布天然高熵——Forward KL强制学生覆盖教师所有高概率区域会导致<strong>熵爆炸</strong>，学生输出模糊的"全均值分布"。Reverse KL通过mode-seeking让学生<strong>精准命中教师峰值</strong>，在音频这种天然高熵模态中保持判别力。结合<strong>重要性感知加权</strong>——对教师分布中置信度更高的token赋予更大权重，进一步压制噪声。</div></div>
 <div class="warn-box"><div class="label">关键意义</div><div class="content"><strong>OPD在极小数据规模下仍然有效</strong>——80k合成样本对比典型视觉域动辄百万级数据，差距达1-2个数量级。这证明了OPD是音频/语音域<strong>数据效率最高的训练范式</strong>。</div></div></div></section>
 
+
+<!-- ═══════ Ark-ASR OPD ═══════ -->
+<section data-transition="slide"><div class="core-card fragment fade-up"><p class="page-badge">工业验证 · 数据效率</p><h2 style="font-size:24px;font-weight:700;color:var(--wave);margin:8px 0;">📡 Ark-ASR OPD：数据高效ASR的工业验证 (2025/2026)</h2><p style="font-size:11px;color:var(--nova);margin:2px 0;font-family:monospace;">AutoArk-AI · arXiv:2605.28139</p><div class="core-bar"></div>
+<div class="blue-box"><div class="label">核心发现：OPD可以极大降低训练数据需求</div><div class="content">仅用 <strong>100k 小时</strong>音频训练，0.6B OPD训练的学生模型在 <strong>4/5 基准上超越 Qwen3-ASR-0.6B</strong>（该模型使用了 <strong>20M 小时</strong>音频——200倍的训练数据）。使用 <strong>union top-k KL 目标</strong>进行on-policy蒸馏。</div></div>
+<div class="two-col" style="max-width:900px;margin-top:10px;">
+<div style="background:rgba(9,132,227,0.05);border:1px solid rgba(9,132,227,0.18);border-radius:8px;padding:14px;text-align:left;"><p style="font-size:12px;font-weight:700;color:var(--wave);margin:0 0 6px;">📊 数据效率对比</p><p style="font-size:10.5px;color:var(--text2);margin:2px 0;">OPD学生：<strong>100k hrs → 4/5 超越</strong></p><p style="font-size:10.5px;color:var(--text2);margin:2px 0;">Qwen3-ASR：20M hrs → 被超越</p><p style="font-size:10.5px;color:var(--nova);margin:2px 0;font-weight:600;">数据效率提升 ≈ 200×</p></div>
+<div style="background:rgba(168,85,247,0.05);border:1px solid rgba(168,85,247,0.18);border-radius:8px;padding:14px;text-align:left;"><p style="font-size:12px;font-weight:700;color:var(--fuse);margin:0 0 6px;">🔑 Union Top-K KL</p><p style="font-size:10.5px;color:var(--text2);margin:0;">取教师和学生分布的<strong>并集Top-K</strong> token计算KL散度——既保留了教师的高置信度token，也不遗漏学生探索到的新token。比单独截断任一方更鲁棒，尤其适合ASR这种输出空间极大的任务。</p></div>
+</div>
+<div class="struct-content" style="margin-top:8px;"><p style="text-align:center;color:var(--nova);">💡 从CORD的80k样本到Ark-ASR的100k小时——OPD在音频域展现出<strong>跨数量级的数据效率优势</strong>。对于中小型团队，用OPD+小数据 > 传统训练+大数据。</p></div></div></section>
+
+
+<!-- ═══════ SightSound-R1 ═══════ -->
+<section data-transition="slide"><div class="core-card fragment fade-up"><p class="page-badge">跨模态推理迁移</p><h2 style="font-size:24px;font-weight:700;color:var(--beam);margin:8px 0;">🔗 SightSound-R1：视觉→音频跨模态推理蒸馏 (2025.09)</h2><p style="font-size:11px;color:var(--nova);margin:2px 0;font-family:monospace;">Qiaolin Wang 等 · ICASSP 2026 · arXiv:2509.15661</p><div class="core-bar"></div>
+<div class="def-box" style="border-left-color:var(--beam);"><div class="label" style="color:var(--beam);">核心问题</div><div class="content">音频推理数据极其稀缺——但<strong>视频天然附带音频</strong>。能否利用VLM从无声视频中生成音频推理知识，再蒸馏到音频模型？</div></div>
+<div class="step-flow" style="max-width:960px;margin-top:10px;">
+<div class="step"><div class="sn">Step 1</div><div class="st">教师推理生成</div><div class="sd">VLM教师从<strong>无声视频+问题</strong>生成多条音频聚焦CoT，自洽性过滤（仅保留所有路径答案一致的轨迹）</div></div>
+<div class="step-arrow">→</div>
+<div class="step"><div class="sn">Step 2</div><div class="st">AGFV事实验证</div><div class="sd">独立音频检查器(GPT-4o-audio)<strong>验证教师声学声明的真实性</strong>——过滤VLM教师"听不到"导致的幻觉</div></div>
+<div class="step-arrow">→</div>
+<div class="step"><div class="sn">Step 3</div><div class="st">学生训练</div><div class="sd">验证后的CoT做<strong>SFT → GRPO精炼</strong>，音频模型学习视觉教师验证过的推理模式</div></div>
+</div>
+<div class="two-col" style="max-width:900px;margin-top:10px;">
+<div style="background:rgba(253,203,110,0.05);border:1px solid rgba(253,203,110,0.15);border-radius:8px;padding:14px;text-align:left;"><p style="font-size:12px;font-weight:700;color:var(--beam);margin:0 0 5px;">✅ 有效场景</p><p style="font-size:10.5px;color:var(--text2);margin:0;">MMAU Test-mini (Sound) <strong>66.1%</strong><br/>MUSIC-AVQA <strong>59.5%</strong> (temporal 62.7%, comparative 63.3%)<br/>视觉关联强的声学理解任务显著提升</p></div>
+<div style="background:rgba(225,112,85,0.05);border:1px solid rgba(225,112,85,0.15);border-radius:8px;padding:14px;text-align:left;"><p style="font-size:12px;font-weight:700;color:var(--flare);margin:0 0 5px;">⚠️ 局限</p><p style="font-size:10.5px;color:var(--text2);margin:0;">语音和音乐任务上性能<strong>下降</strong>——精细声学属性（音色、音高、韵律）缺乏视觉关联。VLM教师看不到声音的<strong>物理本质</strong>，只能从画面推测。</p></div>
+</div>
+<div class="struct-content" style="margin-top:8px;"><p style="text-align:center;color:var(--nova);">💡 开创了<strong>视觉→音频</strong>的跨模态推理迁移路径，但也暴露了"视觉可解释的声音"vs"纯声学属性"的边界。</p></div></div></section>
+
+
+<!-- ═══════ Nemotron Audex ═══════ -->
+<section data-transition="slide"><div class="core-card fragment fade-up"><p class="page-badge">工业级统一 · 多域OPD</p><h2 style="font-size:24px;font-weight:700;color:var(--fuse);margin:8px 0;">🏭 Nemotron Audex：统一音频智能的多域OPD (2026.07)</h2><p style="font-size:11px;color:var(--nova);margin:2px 0;font-family:monospace;">Zhifeng Kong 等 (NVIDIA) · arXiv:2607.05196</p><div class="core-bar"></div>
+<div class="def-box" style="border-left-color:var(--fuse);"><div class="label" style="color:var(--fuse);">架构与规模</div><div class="content"><strong>30B-A3B MoE</strong>（Mixture of Experts）音频-文本LLM。多阶段监督训练 + <strong>多域on-policy distillation</strong>——ASR、TTS、音频生成、语音到语音等<strong>每个域各有一个OPD教师</strong>。关键约束：<strong>文本推理能力不能退化</strong>。</div></div>
+<div class="tri-grid" style="max-width:960px;margin-top:10px;">
+<div class="concept-block fragment fade-up" style="border-left:3px solid var(--wave);"><h4>🎤 ASR域教师</h4><p>监督语音识别能力——确保音频→文本的转录精度，同时不让文本LM的通用理解能力被ASR的窄域训练冲淡。</p></div>
+<div class="concept-block fragment fade-up" style="border-left:3px solid var(--core);"><h4>🗣️ TTS域教师</h4><p>监督文本→语音生成——OPD教师提供逐token的韵律和发音监督，学生从部分条件（文本only）逼近教师（文本+参考音频）。</p></div>
+<div class="concept-block fragment fade-up" style="border-left:3px solid var(--nova);"><h4>🔊 音频生成+语音对话域教师</h4><p>环境音生成和语音到语音对话——每个域独立的教师提供专门化监督，共同蒸馏到统一的MoE学生中。</p></div>
+</div>
+<div class="green-box" style="margin-top:10px;"><div class="label">里程碑意义</div><div class="content"><strong>第一个证明OPD可以在多域统一模型中同时提升所有模态（包括原始文本能力）的工业级验证。</strong>SOTA音频理解 + ASR + TTS + 音频生成 + 语音到语音。这是对"全模态统一OPD"愿景的最接近实现——Nemotron Audex证明了多域OPD不会互相干扰，反而可以协同增益。</div></div></div></section>
+
+
+<!-- ═══════ Part 4 小结 ═══════ -->
+<section data-transition="slide"><div class="core-card fragment fade-up"><p class="page-badge">Part 4 小结</p><h2 style="font-size:28px;font-weight:700;color:var(--core);margin:8px 0;">🎯 音频/语音域 OPD：数据稀缺驱动的范式革命</h2><div class="core-bar"></div>
+<div class="struct-content">
+<p>音频/语音域是多模态OPD中<strong>数据约束最极端、范式依赖最纯粹</strong>的子领域：</p>
+<p style="margin-left:16px;">
+🔴 <strong>数据稀缺五维度</strong>：信息密度（时序 vs 瞬时）· 采集壁垒（隐私+信噪比）· 类别失衡（弱标注）· 应用生态（马太效应）· 标注效率（数十倍差距）<br/>
+💡 <strong>范式2是必选项</strong>：音频域连基础标注都匮乏，无法像视觉域用范式1自蒸馏——必须从文本/VLM<strong>搭桥</strong>迁移能力<br/>
+📊 <strong>数据效率跨越式提升</strong>：CORD（80k样本）→ Ark-ASR（100k hrs 超越 20M hrs 基线）→ 证明了OPD的核心卖点<br/>
+🔗 <strong>三条蒸馏路径</strong>：文本→语音（X-OPD）· 模型内文本→音频（CORD）· 视觉→音频（SightSound-R1）<br/>
+🏭 <strong>工业验证</strong>：Nemotron Audex（30B MoE）多域OPD统一模型——ASR+TTS+音频生成+语音对话+文本推理不退化
+</p>
+<p style="font-size:14px;color:var(--nova);text-align:center;margin-top:10px;">核心规律：<strong>数据越稀缺的模态，越依赖跨模态蒸馏搭桥——音频是最极端的案例。</strong></p>
+<p style="font-size:14px;color:var(--beam);text-align:center;margin-top:8px;">🎯 从CORD的80k到Nemotron Audex的30B MoE——OPD在音频域覆盖了从学术探索到工业部署的完整光谱。</p>
+<p style="text-align:center;margin-top:16px;color:var(--nova);font-size:14px;">✦ 接下来：Part 5 — Agent与具身智能 ✦</p>
+</div></div></section>
+
 </div></div>
 <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.js"></script>
 <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
