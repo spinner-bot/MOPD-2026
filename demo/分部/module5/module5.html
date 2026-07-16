@@ -40,6 +40,16 @@
 <p style="font-size:12px;color:var(--text3);margin-top:12px;">组会报告 · 2026/07</p></div></section>
 
 
+<!-- ═══════ 9. PRISM 三阶段管道 ═══════ -->
+<section data-transition="slide"><div class="star-card fragment fade-up"><p class="page-badge">PRISM · 管道</p><h2 style="font-size:28px;font-weight:700;color:var(--prism);margin:8px 0;">三阶段管道：SFT → Alignment → RLVR</h2><p style="font-size:13px;color:var(--text2);">核心创新在 Stage 2——对抗式 OPD 分布对齐</p><div class="star-bar"></div>
+<div class="flow-diagram fragment fade-up" style="margin-top:12px;"><div class="flow-node fn-b" style="text-align:center;">Stage 1<div style="font-size:10px;font-weight:400;color:var(--text2);">冷启动 SFT</div><div style="font-size:9px;color:var(--text3);">1.37M 多模态数据</div></div><div class="flow-arrow">→</div><div class="flow-node" style="text-align:center;background:rgba(251,191,36,0.1);border:2px solid rgba(251,191,36,0.35);color:var(--gold);">Stage 2 ⚡<div style="font-size:10px;font-weight:400;color:var(--text2);">对抗式 OPD 对齐</div><div style="font-size:9px;color:var(--text3);">500步 · MoE判别器</div></div><div class="flow-arrow">→</div><div class="flow-node fn-r" style="text-align:center;">Stage 3<div style="font-size:10px;font-weight:400;color:var(--text2);">RLVR 优化</div><div style="font-size:9px;color:var(--text3);">2K 难度筛选样本</div></div></div>
+<div class="tri-grid fragment fade-up" style="margin-top:16px;">
+<div class="concept-block"><h4>🧊 Stage 1 · 冷启动 SFT</h4><p>113K Gemini 3 Flash 蒸馏 + 1.26M 公开数据。核心要求：每个样本必须包含完整 <code>&lt;caption&gt;</code>（细粒度视觉描述）+ <code>&lt;think&gt;</code>（逐步推理）+ <code>&lt;answer&gt;</code>。目的：建立初始推理能力，<strong>缩小与监督分布的差距</strong>使对抗训练可行。</p></div>
+<div class="concept-block" style="border-color:rgba(251,191,36,0.25);"><h4 style="color:var(--gold);">⚡ Stage 2 · 对抗式 OPD 对齐</h4><p><strong>核心贡献。</strong>MoE 判别器（感知专家+推理专家）与策略进行 minimax 博弈：判别器学习区分策略 rollout 和监督数据；策略最大化判别器奖励。黑盒设计——<strong>不需要教师 logits</strong>，只需监督 demonstration pool。去掉 KL 正则化，因为目标就是让分布发生偏移。</p></div>
+<div class="concept-block r"><h4>🎯 Stage 3 · RLVR</h4><p>在 2K 难度筛选样本上做 outcome-based RL（GRPO/DAPO/GSPO）。奖励 = 答案准确性 + 格式合规性。对齐阶段让模型从"正确的分布"出发，RLVR 只需微调到"正确的答案"——token 效率大幅提升。</p></div>
+</div>
+<div class="struct-content fragment fade-up" style="margin-top:6px;text-align:center;"><p style="color:var(--gold);">💡 三阶段是"能力 → 分布 → 结果"的递进关系，<strong>缺一不可</strong>（消融：去对齐 -4.4 · 去SFT -16.8）</p></div></div></section>
+
 <!-- ═══════ 8. PRISM 核心动机：SFT分布漂移（左右布局） ═══════ -->
 <section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--prism);margin-bottom:6px;">🔷 PRISM 核心动机：SFT 引入的分布漂移</h2>
 <div class="paper-split fragment fade-up">
