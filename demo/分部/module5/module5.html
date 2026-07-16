@@ -40,6 +40,38 @@
 <p style="font-size:12px;color:var(--text3);margin-top:12px;">组会报告 · 2026/07</p></div></section>
 
 
+<!-- ═══════ 20. Uni-OPD 在线数据平衡 + 边距校准引入 ═══════ -->
+<section data-transition="slide"><div class="star-card fragment fade-up"><p class="page-badge-r">Uni-OPD · 学生视角</p><h2 style="font-size:26px;font-weight:700;color:var(--prism);margin:8px 0;">👨‍🎓 在线正确率感知数据平衡</h2><p style="font-size:13px;color:var(--text2);">Online Correctness-aware Data Balancing</p><div class="star-bar"></div>
+<div class="two-col fragment fade-up" style="margin-top:10px;">
+<div class="def-box"><div class="label">核心机制</div><div class="content">训练时每个 rollout 组内强制保持<strong>正确和错误轨迹的平衡组合</strong>。防止退化情况：所有样本相同结果→梯度无信息量。最佳比例：<strong>correct/incorrect ≈ 0.75–1.0</strong>。</div></div>
+<div class="def-box r"><div class="label">为什么需要在线平衡？</div><div class="content">离线平衡只能保证<strong>初始数据分布</strong>合理。但随着训练进行，学生在不同prompt上的表现会变化——需要<strong>动态调整</strong>每个batch的组内构成，确保梯度始终有信息量。</div></div>
+</div>
+<div class="struct-content fragment fade-up" style="margin-top:8px;"><p style="text-align:center;">💡 离线 + 在线双重平衡：<strong>离线确保数据的难度谱完整</strong>，<strong>在线确保每个训练步的梯度有信息量</strong>——两者互补，缺一不可。</p></div>
+</div></section>
+
+<!-- ═══════ 21. Uni-OPD Order Consistency 边距校准（左右布局） ═══════ -->
+<section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--gold);margin-bottom:4px;">👩‍🏫 教师视角：Order Consistency 与边距校准</h2><p style="font-size:11px;color:var(--text3);margin-bottom:8px;">Outcome-Guided Margin Calibration</p>
+<div class="paper-split fragment fade-up">
+<div class="paper-left">
+<p style="font-size:11px;color:var(--text3);margin-bottom:4px;">📄 论文原文 · Sec 3.2 Margin Calibration</p>
+<p><span class="hl-g">Trajectory-level Distillation Return:</span></p>
+<p style="font-size:13px;">$$G_{OPD}(q, \tau) = \frac{1}{|\tau|} \sum_{t=1}^{|\tau|} \log \frac{\pi_T(o_t|q, o_{&lt;t})}{\pi_\theta(o_t|q, o_{&lt;t})}$$</p>
+<p style="margin-top:6px;"><span class="hl-g">Order Consistency Criterion:</span></p>
+<p style="font-size:12px;">$$G_{OPD}(q, \tau^+) \geq G_{OPD}(q, \tau^-), \quad \forall \tau^+ \in S^+(q), \tau^- \in S^-(q)$$</p>
+<p style="margin-top:6px;"><span class="hl-g">Prompt-level Margin:</span></p>
+<p style="font-size:13px;">$$m(q) = \min_{\tau \in S^+(q)} G_{OPD}(q, \tau) - \max_{\tau \in S^-(q)} G_{OPD}(q, \tau)$$</p>
+<p style="margin-top:6px;">Target: \(m(q) \geq \delta\) (\(\delta > 0\) is safety margin)</p>
+<p style="margin-top:6px;"><span class="hl-b">Margin Shift Correction:</span></p>
+<p style="font-size:11px;">$$\Delta(q) = \delta - m(q), \quad \tilde{G}_{OPD}(q, \tau) = G_{OPD}(q, \tau) + \Delta(q) \cdot \mathbf{1}\{R(q, \tau) = 1\}$$</p>
+</div>
+<div class="paper-right uniopd-theme">
+<div class="section-label">🔍 逐行解读</div>
+<div class="comment" style="border-left-color:var(--uniopd);"><strong>Order Consistency 的直觉：</strong>正确的推理轨迹应该比错误的轨迹获得更高的教师评分。如果教师的蒸馏回报（trajectory-level）违反了这一排序——错误轨迹得分高于正确轨迹——那么教师的监督就是<strong>不可靠的</strong>。</div>
+<div class="insight">💡 <strong>Margin Shift 为什么优于 Margin Mask？</strong><br/>🔹 <strong>Margin Mask：</strong>丢弃违反order consistency的组→保守但浪费数据<br/>🔹 <strong>Margin Shift：</strong>给正确轨迹加上最小修正量来恢复排序→<strong>保留所有训练信号</strong><br/>实验表明Margin Shift略好——说明保留更多训练数据比保守丢弃更有利。</div>
+<div class="warn" style="margin-top:6px;">⚠️ <strong>局限性：</strong>Order consistency假设outcome reward是排序的gold standard——但"幸运的正确"（推理错但答案对）和"接近正确的错误"（推理几乎全对最后一步错）会打破这个假设。</div>
+</div>
+</div></section>
+
 <!-- ═══════ 19. Uni-OPD 离线数据平衡（左右布局） ═══════ -->
 <section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--prism);margin-bottom:4px;">👨‍🎓 学生视角：离线难度感知数据平衡</h2><p style="font-size:11px;color:var(--text3);margin-bottom:8px;">Offline Difficulty-aware Data Balancing</p>
 <div class="paper-split fragment fade-up">
