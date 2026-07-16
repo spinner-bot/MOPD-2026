@@ -135,6 +135,18 @@
 </div>
 <div class="struct-content" style="margin-top:8px;"><p style="text-align:center;color:var(--nova);">💡 三篇同期论文，三种不同哲学——分别从<strong>诊断、重构、抛弃</strong>三个角度解决了同一个核心问题。</p></div></div></section>
 
+
+<!-- ═══════ ViGOS ═══════ -->
+<section data-transition="slide"><div class="core-card fragment fade-up"><p class="page-badge">防 Shortcut · 诊断者</p><h2 style="font-size:24px;font-weight:700;color:var(--flare);margin:8px 0;">🔴 ViGOS：三教师解耦 + PALR 诊断 (2026.06)</h2><p style="font-size:11px;color:var(--nova);margin:2px 0;font-family:monospace;">Sihan Wang 等（中科院）· arXiv:2606.19120</p><div class="core-bar"></div>
+<div class="warn-box"><div class="label">核心发现：PALR 首次量化 Shortcut 严重程度</div><div class="content"><strong>PALR（Privileged Answer Leakage Rate）</strong>——跨三个基准测量显示 <strong>17–26% 的 token 级监督是「答案驱动」而非「图像驱动」</strong>。首次用数据证明：多模态 OPSD 的教师信号被文本捷径污染了近四分之一。</div></div>
+<div class="struct-content" style="margin-top:8px;"><p><strong>方法：三教师解耦架构</strong></p></div>
+<div class="tri-grid" style="max-width:900px;">
+<div class="concept-block fragment fade-up"><h4>👁️ 仅图像感知教师</h4><p>监督<strong>视觉描述段落</strong>（不接触参考答案）。确保图像内容的描述来自视觉证据，而非文本先验。</p></div>
+<div class="concept-block fragment fade-up"><h4>🧠 特权推理教师</h4><p>监督<strong>推理/答案段落</strong>（接触参考答案），但仅作用于推理段。将文本引导限定在合理范围。</p></div>
+<div class="concept-block fragment fade-up"><h4>🔄 参考教师</h4><p>仅在学生 rollout <strong>无效时介入</strong>，用于格式恢复。不参与正常内容的蒸馏，避免干扰。</p></div>
+</div>
+<div class="struct-content" style="margin-top:6px;"><p style="text-align:center;color:var(--nova);">💡 核心哲学：<strong>让视觉描述由视觉监督，让推理由推理监督</strong>——将 OPSD 的监督信号按来源解耦。</p></div></div></section>
+
 </div></div>
 <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.js"></script>
 <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
