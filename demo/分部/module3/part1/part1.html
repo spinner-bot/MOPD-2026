@@ -194,6 +194,17 @@
 <text x="500" y="412" text-anchor="middle" fill="rgba(255,255,255,0.18)" font-size="7.5" font-family="sans-serif">核心挑战：信号权重平衡</text>
 </svg></section>
 
+
+<!-- ═══════ 范式① 同模型跨上下文OPSD ═══════ -->
+<section data-transition="slide"><div class="core-card fragment fade-up"><p class="page-badge">范式 ①</p><h2 style="font-size:26px;font-weight:700;color:var(--core);margin:8px 0;">🟣 同模型跨上下文 OPSD</h2><p style="font-size:13px;color:var(--text2);margin:0 0 6px;">核心论文：Vision-OPD · Visual-OPSD · ViGOS · ViCuR</p><div class="core-bar"></div>
+<div class="def-box"><div class="label">核心问题</div><div class="content">如何在<strong>不依赖外部教师模型、不需要额外标注数据</strong>的情况下，提升 VLM 的视觉理解鲁棒性？</div></div>
+<div class="def-box" style="border-left-color:var(--nova);"><div class="label" style="color:var(--nova);">核心思想</div><div class="content">教师和学生是<strong>同一个模型</strong>，只是看到的<strong>视觉上下文不同</strong>。教师=冻结副本看完整/高质量图像；学生=训练副本看被破坏/受限的视觉上下文。目标：让学生从部分推断整体。</div></div>
+<div class="struct-content" style="margin-top:8px;">
+<p><strong>运作机制：</strong></p>
+<p style="margin-left:16px;">① 冻结一份预训练 VLM 作为教师 → ② 同一图像，学生看裁剪版、教师看完整版 → ③ 同一问题，教师产生完整视野输出分布，学生产生受限视野分布 → ④ Reverse KL / JSD 让学生模仿教师的分布</p>
+<p style="font-size:14px;color:var(--beam);text-align:center;margin:6px 0;">✅ <strong>零外部依赖</strong>：不需要更强的教师，不需要新数据，只需已有的图文对</p>
+<p><strong>典型实例：</strong>Vision-OPD 的 crop-vs-full 自蒸馏 → 将「视觉放大」能力内化到模型中，而非依赖推理时外部工具调用。</p></div></div></section>
+
 </div></div>
 <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.js"></script>
 <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
