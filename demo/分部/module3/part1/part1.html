@@ -227,6 +227,17 @@
 <p><strong>典型论文：</strong>PRISM（黑盒对抗 OPD 预对齐）· PTD-PO（特权辅导+偏好优化）· Distill-R1（SFT蒸馏→RL微调的标准框架）</p>
 <p style="font-size:13px;color:var(--nova);text-align:center;margin-top:6px;">💡 核心挑战：<strong>λ 权重的平衡</strong>——OPD 太强→学生不敢探索；OPD 太弱→RL 阶段崩溃</p></div></div></section>
 
+
+<!-- ═══════ 范式④ 生成式OPD ═══════ -->
+<section data-transition="slide"><div class="core-card fragment fade-up"><p class="page-badge">范式 ④</p><h2 style="font-size:26px;font-weight:700;color:var(--nova);margin:8px 0;">🟢 生成式 OPD</h2><p style="font-size:13px;color:var(--text2);margin:0 0 6px;">核心论文：D-OPSD · LiveTalk · OmniOPSD</p><div class="core-bar"></div>
+<div class="def-box" style="border-left-color:var(--nova);"><div class="label" style="color:var(--nova);">核心问题</div><div class="content">如何将 OPD 从<strong>离散 token 的自回归生成</strong>，扩展到<strong>扩散模型等连续生成任务</strong>？——传统 KL 散度无法直接用于连续潜空间。</div></div>
+<div class="def-box"><div class="label">核心思想</div><div class="content"><strong>学生采样噪声轨迹，教师用更强的多模态条件提供更准确的速度场/分布预测。</strong>「动作空间」从离散 token 变成了连续的去噪向量，但「在线策略」的灵魂完全保留——学生在自己搞出来的局面上接受纠正。</div></div>
+<div class="struct-content" style="margin-top:8px;">
+<p><strong>运作机制（与范式①—③的本质差异）：</strong></p>
+<p style="margin-left:16px;">① 学生（扩散模型）在潜空间采样噪声轨迹（随机噪声→生成图像的每一步中间状态）<br/>② 教师（更强的扩散模型 / 带多模态条件）对同一中间状态预测更优的去噪方向<br/>③ <strong>蒸馏损失 = MSE / 余弦相似度</strong>（非 KL 散度）：学生预测的噪声 vs 教师预测的噪声</p>
+<p style="font-size:13px;color:var(--nova);text-align:center;margin:6px 0;">🔑 关键突破：<strong>OPD 从离散分布匹配 → 连续向量回归</strong>，扩散模型的去噪步骤天然构成"轨迹"，在线策略框架完美迁移</p>
+<p><strong>典型场景：</strong>D-OPSD（图像扩散）· LiveTalk（语音驱动数字人）· OmniOPSD（全模态生成）</p></div></div></section>
+
 </div></div>
 <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.js"></script>
 <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
