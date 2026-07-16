@@ -49,6 +49,26 @@
 <div class="struct-content fragment fade-up" style="margin-top:8px;"><p style="text-align:center;">💡 离线 + 在线双重平衡：<strong>离线确保数据的难度谱完整</strong>，<strong>在线确保每个训练步的梯度有信息量</strong>——两者互补，缺一不可。</p></div>
 </div></section>
 
+<!-- ═══════ 24. Uni-OPD 小结 ═══════ -->
+<section data-transition="slide"><div class="star-card fragment fade-up" style="border-color:rgba(251,113,133,0.25);"><p class="page-badge-r">Uni-OPD · 小结</p><h2 style="font-size:28px;font-weight:700;color:var(--uniopd);margin:8px 0;">🔶 Uni-OPD 总结</h2><div class="star-bar"></div>
+<div class="two-col" style="margin-top:10px;">
+<div style="text-align:left;"><p style="font-size:14px;font-weight:700;color:var(--accent-g);">✅ 贡献</p>
+<div class="concept-block g fragment fade-up" style="margin-bottom:4px;"><p>✅ 从<strong>第一性原理</strong>分解OPD成功条件——学生视角+教师视角</p></div>
+<div class="concept-block g fragment fade-up" style="margin-bottom:4px;"><p>✅ <strong>双视角优化策略</strong>——数据平衡（学生）+ 边距校准（教师）</p></div>
+<div class="concept-block g fragment fade-up" style="margin-bottom:4px;"><p>✅ <strong>最全面的OPD实验</strong>——5场景·16基准·LLM+MLLM</p></div>
+<div class="concept-block g fragment fade-up" style="margin-bottom:4px;"><p>✅ OPD优于RL的收敛速度——更少步数达到更好性能</p></div>
+<div class="concept-block g fragment fade-up"><p>✅ 发现OPD推理能力是<strong>模态无关</strong>的——文本+多模态互相强化</p></div>
+</div>
+<div style="text-align:left;"><p style="font-size:14px;font-weight:700;color:var(--uniopd);">⚠️ 局限</p>
+<div class="concept-block r fragment fade-up" style="margin-bottom:4px;"><p>⚠️ <strong>需要白盒教师</strong>（logits访问）——无法用于API-only教师</p></div>
+<div class="concept-block r fragment fade-up" style="margin-bottom:4px;"><p>⚠️ Order consistency假设outcome reward是gold standard——<strong>存在反例</strong></p></div>
+<div class="concept-block r fragment fade-up" style="margin-bottom:4px;"><p>⚠️ 1.7B从30B蒸馏仍远低于教师——<strong>能力差距过大时</strong>OPD有限制</p></div>
+<div class="concept-block r fragment fade-up" style="margin-bottom:4px;"><p>⚠️ 边距校准的δ阈值<strong>需要手动选择</strong></p></div>
+<div class="concept-block r fragment fade-up"><p>⚠️ <strong>不涉及对抗训练</strong>——黑盒场景下不适用</p></div>
+</div>
+</div>
+<p style="text-align:center;margin-top:12px;color:var(--gold);font-size:15px;">✦ 接下来：Part 4 — PRISM vs Uni-OPD 全面对比与展望 ✦</p></div></section>
+
 <!-- ═══════ 23. Uni-OPD 实验结果 + 消融 ═══════ -->
 <section data-transition="slide"><div class="star-card fragment fade-up"><p class="page-badge-r">Uni-OPD · 结果</p><h2 style="font-size:26px;font-weight:700;color:var(--uniopd);margin:8px 0;">📊 关键实验结果与消融</h2><div class="star-bar"></div>
 <div class="two-col fragment fade-up" style="margin-top:10px;">
