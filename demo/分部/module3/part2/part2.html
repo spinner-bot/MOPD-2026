@@ -112,6 +112,18 @@
 </div>
 <div class="struct-content" style="margin-top:6px;"><p style="text-align:center;"><strong>损失：</strong>token 级 KL 散度 · <strong>零外部依赖：</strong>无需外部教师、无需 GT 标签、无需奖励验证器、无需推理时工具</p><p style="text-align:center;color:var(--nova);">💡 证明「视觉放大」能力可通过自蒸馏<strong>内化</strong>到模型中——而非依赖推理时外部工具调用</p></div></div></section>
 
+
+<!-- ═══════ Visual-OPSD ═══════ -->
+<section data-transition="slide"><div class="core-card fragment fade-up"><p class="page-badge">自蒸馏 · 里程碑</p><h2 style="font-size:24px;font-weight:700;color:var(--nova);margin:8px 0;">⚡ Visual-OPSD：14.3× 加速 · 学生超越教师 (2026.06)</h2><p style="font-size:11px;color:var(--nova);margin:2px 0;font-family:monospace;">Pengyu Li 等（西安交大）· arXiv:2606.18974 · github.com/TiezMind/Visual-OPSD</p><div class="core-bar"></div>
+<div class="def-box" style="border-left-color:var(--nova);"><div class="label" style="color:var(--nova);">核心发现（极具洞察力）</div><div class="content">统一多模态模型（UMMs）中，生成式「视觉思维」（Visual Thoughts, VTs）通过多步扩散生成，推理成本≈纯文本的 <strong>14 倍</strong>（142.8s vs 10.0s/sample），但——<strong>移除或扰动 VTs 几乎不改变准确率</strong>。渲染的像素本身不是答案载体，但<strong>生成路径中编码了有效的推理知识</strong>。</div></div>
+<div class="two-col" style="max-width:900px;margin-top:6px;">
+<div style="background:rgba(124,92,231,0.05);border:1px solid rgba(124,92,231,0.15);border-radius:8px;padding:12px;text-align:left;"><p style="font-size:11px;font-weight:700;color:var(--core);margin:0 0 4px;">👨‍🏫 教师</p><p style="font-size:10.5px;color:var(--text2);margin:0;">UMM · 条件为<strong>生成的 VTs</strong>（特权视觉思维，需14步扩散）</p></div>
+<div style="background:rgba(0,206,201,0.05);border:1px solid rgba(0,206,201,0.15);border-radius:8px;padding:12px;text-align:left;"><p style="font-size:11px;font-weight:700;color:var(--nova);margin:0 0 4px;">🎓 学生</p><p style="font-size:10.5px;color:var(--text2);margin:0;">UMM · 条件仅为文本问题（<strong>无视觉思维生成步骤</strong>）</p></div>
+</div>
+<div class="struct-content" style="margin-top:4px;"><p><strong>损失：</strong>token 级 JSD · 沿学生 on-policy 轨迹</p>
+<p style="font-size:15px;color:var(--beam);text-align:center;margin:4px 0;">🎯 <strong>+3.40pp 超越生成式教师</strong> · 14.3× 推理加速 · VSP 基准 +63.83pp</p>
+<p style="text-align:center;">深层启示：多模态推理中，<strong>关键信息比显式像素承载的多得多</strong>——蒸馏可以提取出比教师更强的推理能力。</p></div></div></section>
+
 </div></div>
 <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.js"></script>
 <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
