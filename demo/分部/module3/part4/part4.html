@@ -107,6 +107,24 @@
 </div>
 <div class="struct-content" style="margin-top:8px;"><p style="text-align:center;color:var(--nova);">💡 音频域验证了一个设计哲学：<strong>数据稀缺的模态可以通过"搭桥"，从数据富足的模态中汲取能力。</strong></p></div></div></section>
 
+
+<!-- ═══════ X-OPD ═══════ -->
+<section data-transition="slide"><div class="core-card fragment fade-up"><p class="page-badge">范式2典范 · 文本→语音</p><h2 style="font-size:24px;font-weight:700;color:var(--core);margin:8px 0;">🔬 X-OPD：文本→语音跨模态能力对齐 (2026.03)</h2><p style="font-size:11px;color:var(--nova);margin:2px 0;font-family:monospace;">Tencent Hunyuan × 浙江大学 · arXiv:2603.24596</p><div class="core-bar"></div>
+<div class="def-box" style="border-left-color:var(--core);"><div class="label">核心问题：跨模态对齐差距</div><div class="content">端到端语音LLM在各种基准上的表现始终落后于其文本对应物——平均差距 <strong>11.29%（语音基准）</strong>和 <strong>5.51%（文本基准）</strong>。这种"cross-modal alignment gap"是语音LLM实用化的核心障碍。</div></div>
+<div class="two-col" style="max-width:900px;margin-top:8px;">
+<div style="background:rgba(124,92,231,0.05);border:1px solid rgba(124,92,231,0.18);border-radius:10px;padding:14px 16px;text-align:left;"><p style="font-size:12px;font-weight:700;color:var(--core);margin:0 0 6px;">👨‍🏫 教师：文本LLM</p><p style="font-size:11px;color:var(--text2);margin:0;">条件为<strong>纯文本</strong>——拥有成熟的推理能力，在相同轨迹上提供逐token分布监督</p></div>
+<div style="background:rgba(0,206,201,0.05);border:1px solid rgba(0,206,201,0.18);border-radius:10px;padding:14px 16px;text-align:left;"><p style="font-size:12px;font-weight:700;color:var(--nova);margin:0 0 6px;">🎓 学生：语音LLM</p><p style="font-size:11px;color:var(--text2);margin:0;">条件为<strong>语音输入</strong>——自己on-policy采样生成轨迹，教师评估并提供纠正信号</p></div>
+</div>
+<div class="green-box"><div class="label">核心效果</div><div class="content">差距从 <strong>11.29% → 3.43%</strong>（语音基准）和 <strong>5.51% → 0.97%</strong>（文本基准），横跨 BIG Bench Audio、Audio Multi-Challenge、VoiceBench 三大测试集。首次系统性地证明了<strong>文本LLM的推理能力可以通过on-policy蒸馏迁移到语音LLM</strong>。</div></div>
+<div class="struct-content" style="margin-top:4px;"><p style="text-align:center;color:var(--nova);">💡 X-OPD建立了音频域跨模态蒸馏的<strong>基线范式</strong>——就像VOLD在视觉域的地位。</p></div></div></section>
+
+
+<!-- ═══════ CORD ═══════ -->
+<section data-transition="slide"><div class="core-card fragment fade-up"><p class="page-badge">范式2典范 · 内部教师</p><h2 style="font-size:24px;font-weight:700;color:var(--nova);margin:8px 0;">🎯 CORD：加权On-Policy跨模态蒸馏 (2026.01)</h2><p style="font-size:11px;color:var(--nova);margin:2px 0;font-family:monospace;">arXiv:2601.16547</p><div class="core-bar"></div>
+<div class="green-box"><div class="label">核心方法：单一模型内的跨模态蒸馏</div><div class="content">在<strong>单一模型内</strong>使用文本模态作为内部教师、音频模态作为学生——无需外部教师模型。结合 <strong>token级Reverse KL（重要性感知加权）</strong>和<strong>序列级GRPO</strong>，仅需 <strong>80k 合成样本</strong>即可实现一致的音频条件推理提升。</div></div>
+<div class="def-box"><div class="label">为什么用Reverse KL？</div><div class="content">音频token分布天然高熵——Forward KL强制学生覆盖教师所有高概率区域会导致<strong>熵爆炸</strong>，学生输出模糊的"全均值分布"。Reverse KL通过mode-seeking让学生<strong>精准命中教师峰值</strong>，在音频这种天然高熵模态中保持判别力。结合<strong>重要性感知加权</strong>——对教师分布中置信度更高的token赋予更大权重，进一步压制噪声。</div></div>
+<div class="warn-box"><div class="label">关键意义</div><div class="content"><strong>OPD在极小数据规模下仍然有效</strong>——80k合成样本对比典型视觉域动辄百万级数据，差距达1-2个数量级。这证明了OPD是音频/语音域<strong>数据效率最高的训练范式</strong>。</div></div></div></section>
+
 </div></div>
 <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.js"></script>
 <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
