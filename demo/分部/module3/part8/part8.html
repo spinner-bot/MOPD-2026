@@ -96,6 +96,30 @@
 <div class="formula-box"><div class="math-block">$$\mathcal{L} = \mathcal{L}_{\text{token-RL}} + \beta \cdot \mathcal{L}_{\text{attention-RL}}$$</div></div>
 <div class="struct-content" style="margin-top:4px;"><p style="text-align:center;"><strong>On-Policy Attention Distillation：</strong>学生用自己的策略采样轨迹 → 教师提供注意力分布做对齐。相比传统 KD 仅对齐 logits，注意力蒸馏同时传递<strong>"答案是什么样的"和"证据该从哪里找"</strong>。</p></div></div></section>
 
+
+<!-- ═══════ RAL-zero + 世界模型 ═══════ -->
+<section data-transition="slide"><div class="core-card fragment fade-up"><p class="page-badge">突破性发现</p><h2 style="font-size:24px;font-weight:700;color:var(--beam);margin:8px 0;">💡 RAL-zero：去掉 CoT，仅优化注意力就超越 GRPO</h2><div class="core-bar"></div>
+<div class="warn-box"><div class="label">惊人发现</div><div class="content">RAL-zero 完全去掉 &lt;think&gt; 推理文本（仅输出答案），<strong>仅靠优化注意力分布就超过了 GRPO</strong>。这证明：<strong>优化"看哪里"本身就能提升推理能力</strong>——不依赖显式思维链。多模态推理中，注意力质量可能是比 CoT 文本更本质的因素。</div></div>
+<div class="def-box" style="margin-top:10px;border-left-color:var(--beam);"><div class="label" style="color:var(--beam);">意义</div><div class="content">RAL 将多模态后训练从"输出空间"推进到<strong>"内部表示空间"</strong>，为理解多模态推理的本质机制开辟了新路径。如果注意力 OPD 的有效性被进一步验证，未来的多模态模型可能不再需要手写 CoT 来提升推理——优化注意力本身就足够。</div></div></div></section>
+
+<!-- ═══════ 世界模型 + OmniOPSD ═══════ -->
+<section data-transition="slide"><h2 style="font-size:24px;font-weight:700;color:var(--nova);margin-bottom:12px;">🌍 世界模型+OPD · 情感计算 OmniOPSD</h2>
+<div class="two-col" style="max-width:940px;">
+<div style="background:rgba(253,203,110,0.05);border:1px solid rgba(253,203,110,0.2);border-radius:10px;padding:18px;text-align:left;">
+<p style="font-size:14px;font-weight:700;color:var(--beam);margin:0 0 8px;">🟡 世界模型 + OPD</p>
+<p style="font-size:10.5px;color:var(--text2);margin:0 0 6px;"><strong>核心思想：</strong>特权不再局限于"同一时刻的更多信息"，而是<strong>跨时间的因果信息</strong>。教师看到真实未来帧（特权上下文），学生在 on-policy rollout 中仅基于当前观测推理。</p>
+<p style="font-size:10.5px;color:var(--text2);margin:0 0 6px;"><strong>效果：</strong>VRQABench +10.6% · OpenWorldQA +10.9%</p>
+<p style="font-size:10.5px;color:var(--text2);margin:0;"><strong>深层含义：</strong>将世界模型（生成未来帧）与 MLLM 的抽象推理结合，OPD 从空间特权 → 时间特权。</p>
+</div>
+<div style="background:rgba(0,206,201,0.05);border:1px solid rgba(0,206,201,0.2);border-radius:10px;padding:18px;text-align:left;">
+<p style="font-size:14px;font-weight:700;color:var(--nova);margin:0 0 8px;">🟢 OmniOPSD · 情感计算</p>
+<p style="font-size:10.5px;color:var(--text2);margin:0 0 6px;"><strong>核心洞察：</strong>使用前沿模型生成的推理依据（rationale）作为教师侧<strong>特权证据</strong>——而非学生模仿目标。学生在无特权条件下自采样，教师用 rationale 提供密集监督。</p>
+<p style="font-size:10.5px;color:var(--text2);margin:0 0 6px;"><strong>效果：</strong>MER-UniBench SOTA 84.19</p>
+<p style="font-size:10.5px;color:var(--text2);margin:0;"><strong>意义：</strong>将 OPSD 扩展到情感计算——需要细粒度跨模态理解但对标签高度敏感的领域。</p>
+</div>
+</div>
+<div class="struct-content" style="margin-top:10px;"><p style="text-align:center;color:var(--nova);">💡 四条路径的共同脉搏：<strong>OPD 不再只是「让学生说对的话」，而是在塑造模型内部如何感知、如何关注、如何预判。</strong></p></div></section>
+
 </div></div>
 <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.js"></script>
 <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
