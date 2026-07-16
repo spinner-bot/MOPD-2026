@@ -24,6 +24,89 @@
 <!-- ═══════ 标题页 ═══════ -->
 <section data-transition="zoom"><div class="core-card fragment fade-up"><p class="cite">MODULE 3 · PART 4</p><h1 class="hero-title">音频/语音域：跨模态 OPD</h1><p style="font-size:20px;color:var(--text2);">数据稀缺模态的突围 · 文本→音频 · 视觉→音频</p><div class="core-bar"></div><p style="font-size:13px;color:var(--text3);">X-OPD · CORD · Ark-ASR · SightSound-R1 · Nemotron Audex</p></div></section>
 
+
+<!-- ═══════ DAG 知识图谱 ═══════ -->
+<section data-transition="slide"><h2 style="font-size:24px;font-weight:700;color:var(--core);margin-bottom:8px;">Part 4 知识结构图</h2>
+<svg viewBox="0 0 960 440" xmlns="http://www.w3.org/2000/svg" style="max-width:960px;">
+<defs><marker id="a" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><path d="M0,0 L7,2.5 L0,5 Z" fill="rgba(255,255,255,0.2)"/></marker></defs>
+<rect x="330" y="5" width="300" height="30" rx="15" fill="rgba(124,92,231,0.08)" stroke="rgba(124,92,231,0.2)"/>
+<text x="480" y="25" text-anchor="middle" fill="#fff" font-size="13" font-weight="700" font-family="sans-serif">Part 4: 音频/语音域 — 跨模态 OPD</text>
+
+<!-- 演进脉络标签 -->
+<rect x="30" y="50" width="900" height="32" rx="8" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.06)"/>
+<text x="480" y="71" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="10" font-family="sans-serif">核心驱动：音频标注数据极度稀缺 → 跨模态蒸馏成为唯一经济可行的路径</text>
+
+<!-- 第1层：数据稀缺根基 -->
+<rect x="30" y="95" width="900" height="42" rx="10" fill="rgba(225,112,85,0.05)" stroke="rgba(225,112,85,0.15)"/>
+<text x="480" y="113" text-anchor="middle" fill="var(--flare)" font-size="12" font-weight="700" font-family="sans-serif">⚠️ 数据稀缺五维度：信息密度 · 采集壁垒 · 类别失衡 · 应用生态 · 标注效率</text>
+<text x="480" y="130" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="9" font-family="sans-serif">图像是空间的瞬间切片 → 音频是时间的流体 → 标注成本悬殊数十倍</text>
+
+<path d="M480,137 L480,160" marker-end="url(#a)" stroke="rgba(255,255,255,0.12)" stroke-width="1.5"/>
+
+<!-- 第2层：范式2 — 跨模态蒸馏 -->
+<rect x="220" y="165" width="520" height="38" rx="10" fill="rgba(0,206,201,0.05)" stroke="rgba(0,206,201,0.18)"/>
+<text x="480" y="181" text-anchor="middle" fill="var(--nova)" font-size="12" font-weight="700" font-family="sans-serif">💡 范式 2：跨模态教师蒸馏 — 数据富足模态 → 数据稀缺模态</text>
+<text x="480" y="197" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="9" font-family="sans-serif">文本LLM → 语音LLM · VLM → 音频LM · 搭桥哲学</text>
+
+<path d="M350,203 L350,230" marker-end="url(#a)" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+<path d="M610,203 L610,230" marker-end="url(#a)" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+
+<!-- 第3层：五大论文 -->
+<rect x="30" y="235" width="280" height="52" rx="8" fill="rgba(124,92,231,0.05)" stroke="rgba(124,92,231,0.15)"/>
+<text x="170" y="256" text-anchor="middle" fill="var(--core)" font-size="11" font-weight="700" font-family="sans-serif">X-OPD (Tencent 2026.03)</text>
+<text x="170" y="274" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="9" font-family="sans-serif">文本→语音·跨模态能力对齐</text>
+<text x="170" y="286" text-anchor="middle" fill="var(--nova)" font-size="8" font-family="sans-serif">差距 11.29%→3.43%</text>
+
+<rect x="340" y="235" width="280" height="52" rx="8" fill="rgba(0,206,201,0.05)" stroke="rgba(0,206,201,0.15)"/>
+<text x="480" y="256" text-anchor="middle" fill="var(--nova)" font-size="11" font-weight="700" font-family="sans-serif">CORD (2026.01)</text>
+<text x="480" y="274" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="9" font-family="sans-serif">加权on-policy·内部文本教师</text>
+<text x="480" y="286" text-anchor="middle" fill="var(--nova)" font-size="8" font-family="sans-serif">仅需80k合成样本</text>
+
+<rect x="650" y="235" width="280" height="52" rx="8" fill="rgba(9,132,227,0.05)" stroke="rgba(9,132,227,0.15)"/>
+<text x="790" y="256" text-anchor="middle" fill="var(--wave)" font-size="11" font-weight="700" font-family="sans-serif">Ark-ASR OPD (2025/2026)</text>
+<text x="790" y="274" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="9" font-family="sans-serif">数据高效ASR·工业验证</text>
+<text x="790" y="286" text-anchor="middle" fill="var(--nova)" font-size="8" font-family="sans-serif">100k hrs 超越 20M hrs</text>
+
+<path d="M170,287 L170,312" marker-end="url(#a)" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+<path d="M480,287 L480,312" marker-end="url(#a)" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+<path d="M790,287 L790,312" marker-end="url(#a)" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+
+<!-- 第4层：推理迁移+工业 -->
+<rect x="160" y="317" width="310" height="52" rx="8" fill="rgba(253,203,110,0.05)" stroke="rgba(253,203,110,0.15)"/>
+<text x="315" y="338" text-anchor="middle" fill="var(--beam)" font-size="11" font-weight="700" font-family="sans-serif">SightSound-R1 (ICASSP 2026)</text>
+<text x="315" y="356" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="9" font-family="sans-serif">视觉→音频·CoT蒸馏·AGFV验证</text>
+<text x="315" y="368" text-anchor="middle" fill="var(--nova)" font-size="8" font-family="sans-serif">MMAU Sound 66.1%</text>
+
+<rect x="500" y="317" width="310" height="52" rx="8" fill="rgba(168,85,247,0.05)" stroke="rgba(168,85,247,0.15)"/>
+<text x="655" y="338" text-anchor="middle" fill="var(--fuse)" font-size="11" font-weight="700" font-family="sans-serif">Nemotron Audex (NVIDIA 2026.07)</text>
+<text x="655" y="356" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="9" font-family="sans-serif">30B MoE·多域OPD·统一音频智能</text>
+<text x="655" y="368" text-anchor="middle" fill="var(--nova)" font-size="8" font-family="sans-serif">文本推理不退化·工业级验证</text>
+
+<!-- 底部结论 -->
+<rect x="200" y="385" width="560" height="32" rx="12" fill="rgba(124,92,231,0.04)" stroke="rgba(124,92,231,0.1)"/>
+<text x="480" y="407" text-anchor="middle" fill="var(--text2)" font-size="9.5" font-family="sans-serif">🎯 核心规律：数据越稀缺的模态，越依赖跨模态蒸馏搭桥 — 音频是最极端的案例</text>
+</svg></section>
+
+
+<!-- ═══════ 音频域特殊性：数据稀缺 ═══════ -->
+<section data-transition="slide"><div class="core-card fragment fade-up"><p class="page-badge">音频域特殊性</p><h2 style="font-size:28px;font-weight:700;color:var(--flare);margin:8px 0;">⚠️ 为什么音频标注数据比图像稀缺得多？</h2><div class="core-bar"></div>
+<div class="struct-content"><p>这个问题的答案触及了<strong>多模态数据生态的底层差异</strong>。音频标注数据比图像稀缺得多，背后是采集成本、标注效率、数据特性、应用生态四个维度的<strong>系统性落差</strong>。</p></div>
+<div class="tri-grid" style="max-width:960px;margin-top:10px;">
+<div class="concept-block fragment fade-up" style="border-left:3px solid var(--flare);"><h4>🔴 信息密度与标注效率</h4><p><strong>图像是瞬间信息</strong>——看一眼毫秒级理解。<strong>音频是时序信息</strong>——必须完整听完才能判断发生了什么。标注一段30秒的音频至少花30秒听+写描述+切时间段，成本是图像的<strong>数十倍</strong>。</p></div>
+<div class="concept-block fragment fade-up" style="border-left:3px solid var(--core);"><h4>🟣 采集与获取的自然壁垒</h4><p><strong>互联网天生是视觉的</strong>——CLIP用4亿图文对直接从网上爬取。音频受<strong>隐私限制</strong>（对话含敏感信息）、<strong>环境控制</strong>（信噪比难保证）、<strong>缺乏"音频Instagram"</strong>——不存在大规模附带精细描述的音源平台。</p></div>
+<div class="concept-block fragment fade-up" style="border-left:3px solid var(--nova);"><h4>🟢 类别体系与应用生态</h4><p>图像有ImageNet（2万类/1400万张）、COCO等积累了十多年。音频主要数据集AudioSet虽有200万段，但<strong>标签是弱标注</strong>（视频级，无时间定位）。下游应用生态的<strong>马太效应</strong>：CV有自动驾驶/安防/医疗驱动，通用音频理解商业应用一直较窄。</p></div>
+</div></div></section>
+
+
+<!-- ═══════ 数据稀缺对OPD的影响 ═══════ -->
+<section data-transition="slide"><div class="core-card fragment fade-up"><p class="page-badge">范式2在音频域</p><h2 style="font-size:26px;font-weight:700;color:var(--nova);margin:8px 0;">💡 范式2：跨模态蒸馏在音频域的关键地位</h2><div class="core-bar"></div>
+<div class="green-box"><div class="label">核心逻辑：搭桥哲学</div><div class="content">视觉或文本模型（数据丰富模态）→ 音频模型（数据稀缺模态）的在线蒸馏，几乎是<strong>唯一经济可行的路径</strong>。强大的VLM教师（看了海量图文）已经拥有世界知识，通过蒸馏可将语义理解迁移到音频学生模型上——仅凭少量音频数据就学会将声音与事件对应。</div></div>
+<div class="two-col" style="max-width:900px;margin-top:12px;">
+<div style="background:rgba(9,132,227,0.05);border:1px solid rgba(9,132,227,0.18);border-radius:8px;padding:14px;text-align:left;"><p style="font-size:12px;font-weight:700;color:var(--wave);margin:0 0 6px;">📡 三条跨模态蒸馏路径</p><p style="font-size:10.5px;color:var(--text2);margin:2px 0;"><strong>文本LLM → 语音LLM：</strong>X-OPD<br/>推理能力迁移，弥合11.29%差距</p><p style="font-size:10.5px;color:var(--text2);margin:2px 0;"><strong>文本模态 → 音频模态（模型内）：</strong>CORD<br/>内部教师，80k合成样本即可</p><p style="font-size:10.5px;color:var(--text2);margin:2px 0;"><strong>VLM → 音频LM：</strong>SightSound-R1<br/>视觉推理链蒸馏到音频域</p></div>
+<div style="background:rgba(225,112,85,0.05);border:1px solid rgba(225,112,85,0.18);border-radius:8px;padding:14px;text-align:left;"><p style="font-size:12px;font-weight:700;color:var(--flare);margin:0 0 6px;">⚠️ 为什么范式1（跨上下文）不够？</p><p style="font-size:10.5px;color:var(--text2);margin:0;">视觉域可以用"crop vs full"自蒸馏——因为视觉数据本身丰富。音频域连基础的标注数据都匮乏，<strong>没有足够的"全视图"教师可以依赖</strong>。必须从外部富足模态引入知识——范式2（跨模态蒸馏）成为<strong>必选项而非可选项</strong>。</p></div>
+</div>
+<div class="struct-content" style="margin-top:8px;"><p style="text-align:center;color:var(--nova);">💡 音频域验证了一个设计哲学：<strong>数据稀缺的模态可以通过"搭桥"，从数据富足的模态中汲取能力。</strong></p></div></div></section>
+
 </div></div>
 <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.js"></script>
 <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>

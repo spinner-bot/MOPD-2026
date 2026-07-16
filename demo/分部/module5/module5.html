@@ -40,6 +40,27 @@
 <p style="font-size:12px;color:var(--text3);margin-top:12px;">组会报告 · 2026/07</p></div></section>
 
 
+<!-- ═══════ 12. PRISM 对抗式OPD的minimax博弈（左右布局） ═══════ -->
+<section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--prism);margin-bottom:6px;">🎮 PRISM 对抗式 OPD：Minimax 博弈</h2>
+<div class="paper-split fragment fade-up">
+<div class="paper-left">
+<p style="font-size:11px;color:var(--text3);margin-bottom:6px;">📄 论文原文 · Sec 3.3 Adversarial Alignment</p>
+<p><span class="hl-g">Minimax Objective:</span></p>
+<p style="font-size:13px;">$$\min_\theta \max_\phi \mathbb{E}_{(x,y^+)\sim\mathcal{T}, y^-\sim G_\theta} \left[r_\phi(x, y^+) - r_\phi(x, y^-)\right]$$</p>
+<p style="margin-top:10px;"><strong>Discriminator:</strong> 学习最大化监督数据 \(y^+\) 与策略rollout \(y^-\) 之间的reward gap → 区分"好的"和"生成的"</p>
+<p><strong>Policy (Student):</strong> 学习最小化这个gap → 让自己的rollout变得<strong>越来越像监督数据</strong></p>
+<p style="margin-top:10px;color:rgba(251,191,36,0.85);"><span class="hl-g">关键设计选择：</span></p>
+<p>🔸 <strong>去掉 KL 正则化</strong>（KL coefficient = 0）：标准 RLHF/RLVR 用 KL 防止偏离 SFT 初始化。但 PRISM 的对齐目标恰恰是<strong>修正 SFT 引入的漂移</strong>——策略需要向监督分布移动，KL 锚定会与此目标直接矛盾。</p>
+<p>🔸 <strong>黑盒设计</strong>：不需要教师 logits，只需监督 pool 中的 demonstration 样本。判别器替代了传统 OPD 中教师的角色。</p>
+</div>
+<div class="paper-right">
+<div class="section-label">🔍 白话解读</div>
+<div class="comment"><strong>想象一个警察与小偷的游戏：</strong><br/>🔹 <span style="color:var(--prism);">判别器 = 警察</span>：不断学习如何区分"真钞（监督数据）"和"假钞（学生生成的）"<br/>🔹 <span style="color:var(--uniopd);">策略 = 小偷</span>：不断学习制造更逼真的"假钞"<br/>🔹 最终，当小偷制造的假钞警察也分不出来时，学生的rollout就已经和监督数据<strong>分布对齐</strong>了。</div>
+<div class="insight">💡 <strong>为什么去掉KL是合理的？</strong>传统RL中KL是"锚"——防止策略漂太远。但PRISM中策略<strong>本来就该漂</strong>（向监督分布漂）——加KL就像让一个要搬家的人绑在旧房子上。</div>
+<div class="warn" style="margin-top:8px;">⚠️ <strong>对抗训练的挑战：</strong>PRISM仅训练500步就停止。论文讨论了稳定性措施：判别器和策略都需要预热初始化，否则模式坍塌。训练动力学图显示推理专家的reward gap先震荡后收敛——这是GAN训练的经典问题，论文未尝试Wasserstein GAN等更稳定的方法。</div>
+</div>
+</div></section>
+
 <!-- ═══════ 11. PRISM MoE判别器设计（左右布局·核心贡献） ═══════ -->
 <section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--gold);margin-bottom:6px;">⚡ PRISM 核心技术：MoE 判别器设计</h2>
 <div class="paper-split fragment fade-up">
