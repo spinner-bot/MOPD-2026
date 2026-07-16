@@ -39,6 +39,62 @@
 <div class="tag-row fragment fade-up"><span class="tag tag-b">PRISM · arXiv 2604.28123</span><span class="tag tag-r">Uni-OPD · arXiv 2605.03677</span></div>
 <p style="font-size:12px;color:var(--text3);margin-top:12px;">组会报告 · 2026/07</p></div></section>
 
+
+<!-- ═══════ 2. DAG 知识结构图 ═══════ -->
+<section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--prism);margin-bottom:6px;">报告知识结构图</h2><p style="font-size:11px;color:var(--text3);margin:0 0 8px;">DAG · 4大板块 · 30页精讲</p>
+<svg viewBox="0 0 960 460" xmlns="http://www.w3.org/2000/svg" style="max-width:960px;">
+<defs><marker id="a" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><path d="M0,0 L7,2.5 L0,5 Z" fill="rgba(255,255,255,0.18)"/></marker></defs>
+<rect x="280" y="8" width="400" height="34" rx="17" fill="rgba(56,189,248,0.06)" stroke="rgba(56,189,248,0.18)"/>
+<text x="480" y="30" text-anchor="middle" fill="#fff" font-size="14" font-weight="700" font-family="sans-serif">Module 5: PRISM & Uni-OPD 论文精讲</text>
+
+<!-- Part 1: 背景与动机 -->
+<rect x="50" y="65" width="210" height="100" rx="10" fill="rgba(56,189,248,0.04)" stroke="rgba(56,189,248,0.2)"/>
+<text x="155" y="90" text-anchor="middle" fill="var(--prism)" font-size="11" font-weight="700" font-family="sans-serif">📋 Part 1 · 背景与动机</text>
+<text x="155" y="110" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="9" font-family="sans-serif">SFT→RLVR 范式缺陷</text>
+<text x="155" y="126" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="9" font-family="sans-serif">OPD 核心公式与原理</text>
+<text x="155" y="142" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="9" font-family="sans-serif">两篇论文定位对比</text>
+
+<!-- Part 2: PRISM -->
+<rect x="310" y="65" width="210" height="100" rx="10" fill="rgba(56,189,248,0.06)" stroke="rgba(56,189,248,0.3)"/>
+<text x="415" y="90" text-anchor="middle" fill="var(--prism)" font-size="11" font-weight="700" font-family="sans-serif">🔷 Part 2 · PRISM 深度解析</text>
+<text x="415" y="110" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="9" font-family="sans-serif">分布漂移 → MoE判别器</text>
+<text x="415" y="126" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="9" font-family="sans-serif">三阶段管道 · 对抗式OPD</text>
+<text x="415" y="142" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="9" font-family="sans-serif">实验 · 消融 · 动力学</text>
+
+<!-- Part 3: Uni-OPD -->
+<rect x="570" y="65" width="210" height="100" rx="10" fill="rgba(251,113,133,0.05)" stroke="rgba(251,113,133,0.25)"/>
+<text x="675" y="90" text-anchor="middle" fill="var(--uniopd)" font-size="11" font-weight="700" font-family="sans-serif">🔶 Part 3 · Uni-OPD 深度解析</text>
+<text x="675" y="110" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="9" font-family="sans-serif">双视角优化 · 数据平衡</text>
+<text x="675" y="126" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="9" font-family="sans-serif">Order Consistency</text>
+<text x="675" y="142" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="9" font-family="sans-serif">四种蒸馏场景 · 消融</text>
+
+<!-- Arrows part1→part2, part2→part3 -->
+<path d="M260,115 L300,115" marker-end="url(#a)" stroke="rgba(56,189,248,0.22)" stroke-width="1.5"/>
+<path d="M520,115 L560,115" marker-end="url(#a)" stroke="rgba(251,113,133,0.22)" stroke-width="1.5"/>
+
+<!-- Part 4: 对比与展望 -->
+<rect x="180" y="200" width="600" height="55" rx="10" fill="rgba(251,191,36,0.04)" stroke="rgba(251,191,36,0.18)"/>
+<text x="480" y="225" text-anchor="middle" fill="var(--gold)" font-size="12" font-weight="700" font-family="sans-serif">⭐ Part 4 · 对比与展望</text>
+<text x="480" y="244" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="9" font-family="sans-serif">12维对比 · 互补关系 · 结合可能性 · OPD研究启示 · 未来方向</text>
+
+<!-- Arrows from three parts down to part4 -->
+<path d="M155,165 L155,192 L480,192 L480,192" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+<path d="M415,165 L415,190 L480,190" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+<path d="M675,165 L675,192 L480,192" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+<path d="M480,192 L480,192" marker-end="url(#a)" stroke="rgba(251,191,36,0.2)" stroke-width="1.5"/>
+
+<!-- 关键技术标签 -->
+<rect x="180" y="280" width="600" height="85" rx="8" fill="rgba(8,4,20,0.5)" stroke="rgba(255,255,255,0.06)"/>
+<text x="480" y="300" text-anchor="middle" fill="rgba(255,255,255,0.45)" font-size="9" font-weight="700" font-family="sans-serif">🔑 关键技术标签</text>
+<text x="480" y="320" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="8.5" font-family="sans-serif">On-Policy Distillation · Reverse KL · MoE Discriminator · Adversarial Alignment · Order Consistency · Margin Calibration</text>
+<text x="480" y="338" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="8.5" font-family="sans-serif">Data Balancing · Black-box Distillation · Multi-Teacher · Cross-Modal · GRPO · Bradley-Terry · Outcome Reward</text>
+<text x="480" y="356" text-anchor="middle" fill="rgba(255,255,255,0.2)" font-size="8" font-family="sans-serif">PRISM (HKUST+THU+NTU) · Uni-OPD (ZJU+Tencent) · Qwen3 系列 · 2026.04–07</text>
+
+<!-- 底部连接线 -->
+<rect x="280" y="390" width="400" height="30" rx="15" fill="rgba(56,189,248,0.04)" stroke="rgba(56,189,248,0.1)"/>
+<text x="480" y="410" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="10" font-family="sans-serif">⬇ 从背景开始，逐步深入两篇论文的核心设计 ⬇</text>
+</svg></section>
+
 </div></div>
 <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.js"></script>
 <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>

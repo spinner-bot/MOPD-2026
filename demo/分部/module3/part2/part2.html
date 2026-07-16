@@ -214,6 +214,18 @@
 </tbody></table>
 <div class="struct-content" style="margin-top:10px;"><p style="text-align:center;color:var(--nova);">💡 合在一起 = <strong>从「教什么」到「怎么学」的完整方案</strong>：信号层面防止文本捷径污染 + 梯度层面防止视觉学习被淹没。</p></div></section>
 
+
+<!-- ═══════ Part 2 小结 ═══════ -->
+<section data-transition="slide"><div class="core-card fragment fade-up"><p class="page-badge">Part 2 小结</p><h2 style="font-size:28px;font-weight:700;color:var(--core);margin:8px 0;">🎯 VLM OPD：从奠基到解耦</h2><div class="core-bar"></div>
+<div class="struct-content">
+<p>视觉域是多模态 OPD 中<strong>论文最密集（15+）、方法论最成熟</strong>的子领域。过去 9 个月完成了三个阶段的演进：</p>
+<p style="margin-left:16px;">🏛️ <strong>奠基</strong>：VOLD 首次证明文本→VLM 的 on-policy 推理迁移可行——冷启动 SFT 是铁律<br/>🟣 <strong>自蒸馏</strong>：Vision-OPD（crop→full）与 Visual-OPSD（VT→no-VT）实现零外部依赖，后者学生<strong>超越教师</strong><br/>⚠️ <strong>防 Shortcut</strong>：ViGOS（PALR 诊断+三教师）、ViCuR（可恢复特权）、V-Zero（零标签）三路并进</p>
+<p>外加两条解耦路线形成完整闭环：</p>
+<p style="margin-left:16px;">🔹 <strong>PeRL-VL</strong>：门控奖励 → 教什么（信号层面防污染）<br/>🔹 <strong>Decomposed OPD (VGS)</strong>：梯度重定向 → 怎么学（更新层面防淹没）</p>
+<p style="font-size:14px;color:var(--nova);text-align:center;margin-top:10px;">核心规律：<strong>视觉域 OPD 的一切问题最终都指向感知-推理的解耦。</strong></p>
+<p style="text-align:center;margin-top:16px;color:var(--nova);font-size:14px;">✦ 接下来：Part 3 — 视频域：时序 OPD ✦</p>
+</div></div></section>
+
 </div></div>
 <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.js"></script>
 <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
