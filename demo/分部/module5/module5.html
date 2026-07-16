@@ -40,6 +40,27 @@
 <p style="font-size:12px;color:var(--text3);margin-top:12px;">组会报告 · 2026/07</p></div></section>
 
 
+<!-- ═══════ 17. Uni-OPD 核心动机：OPD的两个基础瓶颈（左右布局） ═══════ -->
+<section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--uniopd);margin-bottom:6px;">🔶 Uni-OPD 核心动机：OPD 为什么有时有效、有时失效？</h2>
+<div class="paper-split fragment fade-up">
+<div class="paper-left">
+<p style="font-size:11px;color:var(--text3);margin-bottom:6px;">📄 论文原文 · Sec 1 Introduction (paraphrased)</p>
+<p>Uni-OPD decomposes the success conditions of OPD from <span class="hl-g">first principles</span> into two role perspectives:</p>
+<p style="margin-top:8px;"><strong>1. Student Perspective（学生视角）</strong> — The student must sufficiently explore <span class="hl-b">informative states</span>: self-generated trajectories that are diverse and have moderate difficulty.</p>
+<p><strong>2. Teacher Perspective（教师视角）</strong> — The teacher's token-level supervision on student rollouts must remain <span class="hl-r">reliable</span>.</p>
+<p style="margin-top:10px;color:rgba(251,191,36,0.85);"><span class="hl-g">When these two conditions fail:</span></p>
+<p>🔸 <strong>Insufficient exploration</strong> → student only sees narrow state distribution → OPD degenerates to SFT-like behavior</p>
+<p>🔸 <strong>Unreliable supervision</strong> → teacher gives wrong token-level signals → student learns noise, not knowledge</p>
+<p style="margin-top:8px;color:var(--uniopd);"><strong>Three failure modes of teacher supervision:</strong><br/>1. OOD degradation · 2. Over-estimation of incorrect trajectories · 3. Under-estimation of correct trajectories</p>
+</div>
+<div class="paper-right uniopd-theme">
+<div class="section-label">🔍 核心解读</div>
+<div class="comment" style="border-left-color:var(--uniopd);"><strong>Uni-OPD 问了一个更根本的问题：</strong>PRISM 关注的是"OPD 放在管道的哪里"，而 Uni-OPD 关注的是"<strong>OPD 本身的训练过程为什么不稳定</strong>"——它从第一性原理出发，将 OPD 的成功条件拆成了两个必须同时满足的要素。</div>
+<div class="insight">💡 <strong>学生视角 vs 教师视角的张力：</strong>学生需要<strong>多样性</strong>来充分探索——但越多样，轨迹越可能进入教师的 OOD 区域，导致监督<strong>不可靠</strong>。这是一个根本性的 trade-off——Uni-OPD 的双视角优化策略正是为了解决这个张力。</div>
+<div class="warn" style="margin-top:8px;">⚠️ <strong>三种教师监督失败模式：</strong><br/>① <strong>OOD退化</strong>：学生rollout进入教师没见过的区域→logits变噪声<br/>② <strong>高估错误轨迹</strong>：错误但碰巧局部token匹配教师模式→得高分<br/>③ <strong>低估正确轨迹</strong>：正确但路径与教师不同→被异常低分</div>
+</div>
+</div></section>
+
 <!-- ═══════ 16. Uni-OPD 标题页 ═══════ -->
 <section data-transition="zoom"><div class="star-card fragment fade-up" style="border-color:rgba(251,113,133,0.25);"><p class="page-badge-r">Part 3 · Uni-OPD</p><h2 style="font-size:36px;font-weight:800;color:var(--uniopd);margin:8px 0;">Uni-OPD</h2><p style="font-size:18px;color:var(--text);">Unifying On-Policy Distillation with a Dual-Perspective Recipe</p><div class="star-bar"></div>
 <div class="struct-content" style="text-align:center;margin-top:8px;">
