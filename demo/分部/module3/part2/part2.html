@@ -200,6 +200,20 @@
 <div class="green-box"><div class="label">VGS（Visual Gradient Steering）— 三步操作</div><div class="content">① 检测当前梯度方向是否<strong>偏向语言子空间</strong> → ② 若偏向语言，<strong>放大 g_vis 范数</strong>或将总梯度向视觉子空间旋转 → ③ 视觉模块获得不成比例的高质量梯度 → <strong>从梯度流动的最底层纠正多模态蒸馏的不平衡</strong>。</div></div>
 <div class="struct-content" style="margin-top:4px;"><p style="text-align:center;color:var(--nova);">💡 相当于训练时不断「提醒」模型：<strong>你的视觉部分还很弱，别老在语言上自我陶醉，多练练看图！</strong></p></div></div></section>
 
+
+<!-- ═══════ PeRL-VL vs Decomposed OPD 对比 ═══════ -->
+<section data-transition="slide"><h2 style="font-size:24px;font-weight:700;color:var(--fuse);margin-bottom:10px;">📊 PeRL-VL vs Decomposed OPD</h2><p style="font-size:12px;color:var(--text2);margin:-4px 0 12px;">从「教什么」到「怎么学」的完整解耦方案</p>
+<table class="summary-table fragment fade-up"><thead><tr><th>维度</th><th>🟡 PeRL-VL</th><th>🟣 Decomposed OPD</th></tr></thead>
+<tbody>
+<tr><td class="pc">解决层面</td><td>奖励信号设计</td><td class="hl">梯度更新方向</td></tr>
+<tr><td class="pc">如何解耦</td><td>显式定义感知奖励 + 推理奖励</td><td class="hl">数学分解梯度为语言/视觉分量</td></tr>
+<tr><td class="pc">核心机制</td><td>门控动态组合两种奖励</td><td class="hl">动态重定向梯度优先更新视觉子空间</td></tr>
+<tr><td class="pc">对抗什么</td><td class="wd">奖励黑客（纯文本蒙混）</td><td class="wd">梯度淹没（语言分量压倒视觉）</td></tr>
+<tr><td class="pc">优点</td><td>易于实现 · 模块化</td><td class="hl">从根本上改变学习动态</td></tr>
+<tr><td class="pc">互补关系</td><td colspan="2" style="text-align:center;color:var(--nova);">PeRL-VL 在<strong>目标函数</strong>层面保证信号来源正确 · Decomposed OPD 在<strong>参数更新</strong>层面保证信号正确利用</td></tr>
+</tbody></table>
+<div class="struct-content" style="margin-top:10px;"><p style="text-align:center;color:var(--nova);">💡 合在一起 = <strong>从「教什么」到「怎么学」的完整方案</strong>：信号层面防止文本捷径污染 + 梯度层面防止视觉学习被淹没。</p></div></section>
+
 </div></div>
 <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.js"></script>
 <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
