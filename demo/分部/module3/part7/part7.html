@@ -183,6 +183,20 @@
 <div class="fragment fade-up"><div class="green-box" style="max-width:820px;margin-top:12px;"><div class="label">💡 定位 — OPD 作为「实时化」引擎</div><div class="content">若说 D-OPSD 展示了 OPSD 在<strong>图像定制</strong>上的优雅，LiveTalk 则展示了 OPD 在<strong>视频落地</strong>上的工程价值：on-policy 蒸馏是把生成大模型压进实时预算的关键路径，而非单纯的加速 trick——一致性优势正来自「在学生自己的生成轨迹上学」。</div></div></div>
 </section>
 
+<!-- ═══════ Part 7 总结 ═══════ -->
+<section data-transition="slide"><p class="page-badge">PART 7 总结</p><h2 style="font-size:24px;font-weight:700;color:#fff;margin:8px 0;">扩散与生成：本章速览</h2><div class="core-bar"></div>
+<table class="summary-table fragment fade-up" style="margin-top:6px;">
+<thead><tr><th>论文</th><th>域</th><th>教师的特权信息</th><th>蒸馏目标</th><th>关键收益</th></tr></thead>
+<tbody>
+<tr><td class="pc">D-OPSD<br><span style="font-size:9px;color:var(--text3);">2605.05204 · 2026.05</span></td><td>图像扩散<br>（步蒸馏模型持续调优）</td><td>目标图像的多模态特征<br><span class="hl">免训练获得（in-context 继承）</span></td><td>on-policy 轨迹上的<br><span class="hl">速度场 MSE 对齐</span></td><td>零分布偏移 · 无需奖励模型<br>学新不忘旧</td></tr>
+<tr><td class="pc">LiveTalk<br><span style="font-size:9px;color:var(--text3);">2512.23576 · 2025.12</span></td><td>视频扩散<br>（实时多模态交互）</td><td>多步教师的完整采样能力</td><td>改进 OPD<br><span class="hl">消除多模态条件视觉伪影</span></td><td><span class="wd">20× 加速</span> · 多轮一致性<br>超 Sora2 / Veo3</td></tr>
+</tbody></table>
+<div class="two-col" style="margin-top:14px;max-width:880px;">
+<div class="fragment fade-up"><div class="def-box" style="max-width:none;height:100%;box-sizing:border-box;"><div class="label">🧭 与 Part 0 三大主线的映射</div><div class="content">① <strong>稀疏奖励</strong> → 扩散域连奖励都难以定义，D-OPSD 干脆免掉奖励模型；<br>② <strong>分布漂移</strong> → on-policy rollout 从根源消除训练-推理偏移；<br>③ <strong>遗忘</strong> → 持续调优不破坏少步能力，学新不忘旧。</div></div></div>
+<div class="fragment fade-up"><div class="green-box" style="max-width:none;height:100%;box-sizing:border-box;"><div class="label">🌌 一句话收束</div><div class="content">本章是全模块的「边界证明」：<strong>OPSD 的适用域 = 存在信息不对称的一切分布匹配问题</strong>。判别与生成、离散与连续、图像与视频，都只是同一范式的不同投影——这为 Part 8 的新兴方向（多教师、注意力蒸馏、世界模型）铺平了想象空间。</div></div></div>
+</div>
+</section>
+
 </div></div>
 <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.js"></script>
 <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
