@@ -164,6 +164,24 @@
 <div class="def-box"><div class="label">核心思想</div><div class="content">教师虽然没有正确答案，但它有一个特权——<strong>同时看到两种版本的图像</strong>：① 正视图（目标区域裁剪放大）② 负视图（目标被替换/模糊）。如果学生的回答在正视图下概率高、负视图下概率低 → 视觉基础强 → 值得蒸馏；反之 → 可能是蒙的 → 抑制蒸馏。</div></div>
 <div class="struct-content" style="margin-top:6px;"><p style="text-align:center;"><strong>效果：</strong>Qwen3.5-4B +3.1 平均分 &nbsp;|&nbsp; 训练速度 <strong>5× 快于 SFT、10× 快于 RL 基线</strong></p><p style="text-align:center;color:var(--nova);">💡 意义：如果 V-Zero 范式被广泛验证，训练强视觉推理模型只需<strong>海量图文对</strong>——互联网上到处都是——完全不需要人工标注答案。</p></div></div></section>
 
+
+<!-- ═══════ V-Zero 机制详解 ═══════ -->
+<section data-transition="slide"><div class="core-card fragment fade-up"><p class="page-badge">V-Zero 机制</p><h2 style="font-size:22px;font-weight:700;color:var(--nova);margin:8px 0;">🔍 V-Zero：对比证据门 · 逐轨迹选择性蒸馏</h2><div class="core-bar"></div>
+<div class="struct-content"><p style="text-align:center;color:var(--beam);">五步流程</p></div>
+<div class="step-flow" style="max-width:960px;">
+<div class="step"><div class="sn">Step 1</div><div class="st">构造双视图</div><div class="sd">正视图：目标区域裁剪<br/>负视图：无关区域/模糊</div></div>
+<div class="step-arrow">→</div>
+<div class="step"><div class="sn">Step 2</div><div class="st">学生采样</div><div class="sd">只看原始图像<br/>生成回答轨迹</div></div>
+<div class="step-arrow">→</div>
+<div class="step"><div class="sn">Step 3</div><div class="st">教师重放</div><div class="sd">在正/负视图下分别<br/>计算 log-prob</div></div>
+<div class="step-arrow">→</div>
+<div class="step"><div class="sn">Step 4</div><div class="st">对比证据门</div><div class="sd">w(g) = 正视图prob − 负视图prob<br/>差异大→视觉基础强</div></div>
+<div class="step-arrow">→</div>
+<div class="step"><div class="sn">Step 5</div><div class="st">门控蒸馏</div><div class="sd">视觉基础好→放大权重<br/>视觉基础差→抑制/跳过</div></div>
+</div>
+<div class="warn-box" style="margin-top:12px;"><div class="label">技术细节：「无负样本的停梯度对齐」</div><div class="content"><strong>停梯度（stop-gradient）：</strong>教师侧分布作为目标不计算梯度，只更新学生。<strong>无负样本：</strong>不使用对比学习中特意构造的「错误回答」，直接用余弦相似度匹配教师-学生分布。这避免了负样本选择偏差，训练更简洁稳定。</div></div>
+<div class="struct-content" style="margin-top:6px;"><p style="text-align:center;color:var(--nova);">💡 本质：教师说「你刚才的回答如果跟我看到的正确区域匹配，我就好好教你；匹配不上，你这回答估计是蒙的，我不教。」</p></div></div></section>
+
 </div></div>
 <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.js"></script>
 <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
