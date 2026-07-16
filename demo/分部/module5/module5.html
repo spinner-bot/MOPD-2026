@@ -40,6 +40,14 @@
 <p style="font-size:12px;color:var(--text3);margin-top:12px;">组会报告 · 2026/07</p></div></section>
 
 
+<!-- ═══════ 10. PRISM Stage 1: 冷启动SFT ═══════ -->
+<section data-transition="slide"><div class="star-card fragment fade-up"><p class="page-badge">PRISM · Stage 1</p><h2 style="font-size:26px;font-weight:700;color:var(--prism);margin:8px 0;">🧊 Stage 1：冷启动 SFT</h2><p style="font-size:13px;color:var(--text2);">数据构建是PRISM的关键基础设施</p><div class="star-bar"></div>
+<div class="two-col" style="margin-top:10px;">
+<div class="def-box fragment fade-up"><div class="label">数据规模与来源</div><div class="content"><strong>113K</strong> Gemini 3 Flash 蒸馏数据 + <strong>1.26M</strong> 公开多模态数据 = <strong>1.37M</strong> 总样本。专门针对当前强模型零通过率的难题进行蒸馏，确保高难度和高信息量。</div></div>
+<div class="def-box fragment fade-up"><div class="label">结构化输出要求</div><div class="content">每个样本必须包含三部分：<br/>🔹 <code>&lt;caption&gt;</code> — 细粒度视觉描述<br/>🔹 <code>&lt;think&gt;</code> — 逐步推理链<br/>🔹 <code>&lt;answer&gt;</code> — 最终答案<br/><strong>这种结构化格式为Stage 2的MoE判别器提供了天然的专家分工基础。</strong></div></div>
+</div>
+<div class="struct-content fragment fade-up" style="margin-top:8px;"><p style="text-align:center;"><strong>SFT的目的：</strong>建立初始推理能力并<strong>缩小与监督分布的差距</strong>——如果跳过SFT直接对抗训练，策略离监督分布太远，判别器平凡区分两者并迅速饱和，梯度消失（-16.8 avg 的灾难性后果）。</p></div></div></section>
+
 <!-- ═══════ 9. PRISM 三阶段管道 ═══════ -->
 <section data-transition="slide"><div class="star-card fragment fade-up"><p class="page-badge">PRISM · 管道</p><h2 style="font-size:28px;font-weight:700;color:var(--prism);margin:8px 0;">三阶段管道：SFT → Alignment → RLVR</h2><p style="font-size:13px;color:var(--text2);">核心创新在 Stage 2——对抗式 OPD 分布对齐</p><div class="star-bar"></div>
 <div class="flow-diagram fragment fade-up" style="margin-top:12px;"><div class="flow-node fn-b" style="text-align:center;">Stage 1<div style="font-size:10px;font-weight:400;color:var(--text2);">冷启动 SFT</div><div style="font-size:9px;color:var(--text3);">1.37M 多模态数据</div></div><div class="flow-arrow">→</div><div class="flow-node" style="text-align:center;background:rgba(251,191,36,0.1);border:2px solid rgba(251,191,36,0.35);color:var(--gold);">Stage 2 ⚡<div style="font-size:10px;font-weight:400;color:var(--text2);">对抗式 OPD 对齐</div><div style="font-size:9px;color:var(--text3);">500步 · MoE判别器</div></div><div class="flow-arrow">→</div><div class="flow-node fn-r" style="text-align:center;">Stage 3<div style="font-size:10px;font-weight:400;color:var(--text2);">RLVR 优化</div><div style="font-size:9px;color:var(--text3);">2K 难度筛选样本</div></div></div>
