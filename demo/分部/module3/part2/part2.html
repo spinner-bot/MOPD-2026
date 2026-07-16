@@ -182,6 +182,16 @@
 <div class="warn-box" style="margin-top:12px;"><div class="label">技术细节：「无负样本的停梯度对齐」</div><div class="content"><strong>停梯度（stop-gradient）：</strong>教师侧分布作为目标不计算梯度，只更新学生。<strong>无负样本：</strong>不使用对比学习中特意构造的「错误回答」，直接用余弦相似度匹配教师-学生分布。这避免了负样本选择偏差，训练更简洁稳定。</div></div>
 <div class="struct-content" style="margin-top:6px;"><p style="text-align:center;color:var(--nova);">💡 本质：教师说「你刚才的回答如果跟我看到的正确区域匹配，我就好好教你；匹配不上，你这回答估计是蒙的，我不教。」</p></div></div></section>
 
+
+<!-- ═══════ PeRL-VL ═══════ -->
+<section data-transition="slide"><div class="core-card fragment fade-up"><p class="page-badge">解耦感知与推理</p><h2 style="font-size:24px;font-weight:700;color:var(--beam);margin:8px 0;">🟡 PeRL-VL：门控奖励解耦感知与推理 (2025.12)</h2><p style="font-size:11px;color:var(--nova);margin:2px 0;font-family:monospace;">Yoon 等 · arXiv:2512.12487</p><div class="core-bar"></div>
+<div class="def-box" style="border-left-color:var(--beam);"><div class="label" style="color:var(--beam);">核心问题</div><div class="content">RLVR 能让模型学会推理，但存在<strong>奖励黑客（Reward Hacking）</strong>：模型用语法正确但无视觉依据的回答蒙混过关——验证器只看答案对错，不检查视觉依据。</div></div>
+<div class="two-col" style="max-width:900px;margin-top:10px;">
+<div style="background:rgba(124,92,231,0.05);border:1px solid rgba(124,92,231,0.18);border-radius:8px;padding:14px;text-align:left;"><p style="font-size:12px;font-weight:700;color:var(--core);margin:0 0 6px;">📝 两个教师角色</p><p style="font-size:10.5px;color:var(--text2);margin:0 0 4px;"><strong>推理教师：</strong>冻结 VLM，保持文本推理能力</p><p style="font-size:10.5px;color:var(--text2);margin:0;"><strong>描述评判：</strong>评分模块，对视觉描述打两个维度——<strong>忠实性</strong>（无幻觉？）+ <strong>充分性</strong>（信息够不够？）</p></div>
+<div style="background:rgba(253,203,110,0.05);border:1px solid rgba(253,203,110,0.18);border-radius:8px;padding:14px;text-align:left;"><p style="font-size:12px;font-weight:700;color:var(--beam);margin:0 0 6px;">🔑 门控奖励组合</p><p style="font-size:10.5px;color:var(--text2);margin:0;">不是简单相加！<strong>动态调节权重：</strong>视觉描述占比高→描述奖励权重↑；纯文本推理→推理奖励权重↑。这<strong>直接抑制了纯文本 reward hacking 捷径</strong>。</p></div>
+</div>
+<div class="struct-content" style="margin-top:6px;"><p style="text-align:center;"><strong>效果：</strong>Qwen2.5-VL-7B 从 63.3% → 68.8% Pass@1 &nbsp;|&nbsp; 验证了<strong>分解+门控 > 单一奖励+简单聚合</strong></p></div></div></section>
+
 </div></div>
 <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.js"></script>
 <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
