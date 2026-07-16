@@ -23,6 +23,12 @@
 <section data-transition="zoom"><div class="core-card fragment fade-up"><p class="cite">MODULE 3 · PART 3</p><h1 class="hero-title">视频域：时序 OPD</h1><p style="font-size:20px;color:var(--text2);">从稀疏奖励到密集监督 · 从当前帧到特权未来</p><div class="core-bar"></div><p style="font-size:13px;color:var(--text3);">Video-OPD · PF-OPSD — 将 OPD 范式扩展到时间维度</p></div></section>
 
 
+<!-- ═══════ 核心挑战：稀疏序列级奖励 ═══════ -->
+<section data-transition="slide"><div class="core-card fragment fade-up"><p class="page-badge">核心挑战</p><h2 style="font-size:26px;font-weight:700;color:var(--rose);margin:8px 0;">🔴 稀疏序列级奖励 → 信用分配失败</h2><div class="core-bar"></div>
+<div class="def-box" style="border-left-color:var(--rose);"><div class="label" style="color:var(--rose);">什么是「稀疏序列级奖励」？</div><div class="content">在视频多模态任务中，奖励只在<strong>整个视频回答序列生成完后</strong>才给一次。比如看一段 10 分钟的做饭视频，问"他放了几勺盐？"，只有最终答案完全正确才给 +1，否则 0。在这条包含几百上千 token 的长推理链中，<strong>中间没有任何奖励信号</strong>。</div></div>
+<div class="warn-box"><div class="label">什么是「信用分配」（Credit Assignment）问题？</div><div class="content">当一个序列结束得到最终奖励时，<strong>怎么知道序列里哪一步做对了、哪一步做错了</strong>？在视频中，错误可能发生在：① 视觉识别阶段（勺子→叉子）② 时序关联阶段（第二次放盐误判为第一次）③ 推理阶段（识别都对但计算错了）。从稀疏奖励中，模型<strong>完全不知道</strong>哪一步导致了失败——就像考试错了却不知道哪道题错了一样。</div></div>
+<div class="struct-content" style="margin-top:8px;"><p style="text-align:center;color:var(--flare);font-size:14px;">⚡ 这就是 OPD 被引入视频任务的根本动因：<strong>将稀疏信用分配变成密集信用分配。</strong></p></div></div></section>
+
 <!-- ═══════ DAG 知识图谱 ═══════ -->
 <section data-transition="slide"><h2 style="font-size:24px;font-weight:700;color:var(--core);margin-bottom:8px;">Part 3 知识结构图</h2>
 <svg viewBox="0 0 960 440" xmlns="http://www.w3.org/2000/svg" style="max-width:960px;">
