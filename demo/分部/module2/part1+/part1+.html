@@ -62,3 +62,23 @@
 <!-- 节点2-2a: 概念平衡 -->
 <section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--vlm);margin-bottom:6px;">2-2a. 什么是概念平衡？</h2>
 <div class="two-col fragment fade-up"><div class="concept-block" style="border-left:3px solid var(--vid);"><h4>⚖️ 概念平衡采样的含义</h4><p style="font-size:11px;">不按<strong style="color:var(--vid);">数据出现频率</strong>采样，而是按<strong style="color:var(--vid);">概念多样性</strong>采样。每个概念（来自 Wikidata 的数万个条目）获得大致相等的样本配额。这避免了模型被高频概念主导，强制学习长尾知识。</p></div><div class="concept-block" style="border-left:3px solid var(--aud);"><h4>📊 三个核心结论 (2-2rs)</h4><p style="font-size:11px;">① <strong style="color:var(--aud);">概念平衡显著提升零样本迁移</strong>——尤其对稀有类别<br>② <strong style="color:var(--aud);">数据量不是越多越好</strong>——平衡的4亿样本超越不平衡的10亿<br>③ <strong style="color:var(--aud);">元数据策展成本极低</strong>——Wikidata/WordNet 是免费知识库</p></div></div></section>
+
+<!-- 2-2b MetaCLIP精讲 -->
+<section data-transition="slide"><h2 style="font-size:20px;font-weight:700;color:var(--vid);margin-bottom:4px;">2-2b. MetaCLIP 核心方法精讲</h2>
+<div class="fragment fade-up struct-content"><strong style="color:var(--vid);">三步管线：</strong>① 从 Wikidata/WordNet 获取<strong style="color:#fff;">数十万概念词条</strong>作为查询 → ② 对每个概念查询网络数据，<strong style="color:#fff;">按配额采样</strong>（每概念约5000样本）→ ③ 用平衡后的数据集训练 CLIP。<br><br><strong style="color:var(--vid);">关键洞察：</strong>OpenAI 的"4亿图文对"并非随机网络爬取——MetaCLIP 通过逆向工程发现，其优越性来自<strong style="color:#fff;">隐式的概念平衡策展</strong>。这解释了为什么简单扩大网络爬取数据（如 LAION-5B）并不能线性提升性能。</div></section>
+
+<!-- 3 SigLIP -->
+<section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--gen);margin-bottom:6px;">3. SigLIP — sigmoid 替代 softmax</h2>
+<div class="fragment fade-up struct-content"><strong style="color:var(--gen);">核心创新：</strong>将 CLIP 的对比损失从<strong style="color:#fff;">softmax（全局归一化）</strong>替换为<strong style="color:#fff;">sigmoid（逐对独立）</strong>。<br><br>CLIP: 对每个样本，计算它与批次中所有其他样本的 softmax 概率（需全局归一化，batch size 敏感）。<br>SigLIP: 对每个图文对 (i,j)，独立判断它们是否匹配——一个<strong style="color:var(--gen);">二分类问题</strong>（0=不匹配, 1=匹配），不再需要 batch 内全局归一化。</div></section>
+
+<!-- 3pre softmax vs sigmoid -->
+<section data-transition="slide"><h2 style="font-size:20px;font-weight:700;color:var(--vis);margin-bottom:6px;">3pre. softmax vs sigmoid</h2>
+<div class="two-col fragment fade-up"><div class="concept-block" style="border-left:3px solid var(--gen);"><h4>softmax (CLIP)</h4><p style="font-size:11px;">$$\mathcal{L}=-\frac{1}{N}\sum_i\log\frac{\exp(s_{ii})}{\sum_j\exp(s_{ij})}$$所有 N 个候选竞争一个"正确"位置。需要大 batch，且 batch size 直接影响性能。</p></div>
+<div class="concept-block" style="border-left:3px solid var(--aud);"><h4>sigmoid (SigLIP)</h4><p style="font-size:11px;">$$\mathcal{L}=-\frac{1}{B^2}\sum_{i,j}[y_{ij}\log\sigma(s_{ij})+(1-y_{ij})\log(1-\sigma(s_{ij}))]$$每个 (i,j) 对独立二分类。本质：将对比学习<strong style="color:var(--aud);">解耦为 B² 个独立的二分类问题</strong>。</p></div></div></section>
+
+<!-- 4 EVA-CLIP -->
+<section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--aud);margin-bottom:6px;">4. EVA-CLIP 与缩放定律</h2>
+<div class="fragment fade-up struct-content"><strong style="color:var(--aud);">EVA-CLIP 的核心工作：</strong>系统研究 CLIP 训练的<strong style="color:#fff;">缩放行为</strong>——模型大小、数据量、训练计算量三者如何影响最终性能。<br><br><strong style="color:var(--aud);">精讲要点 (4-1 → 4-2 → 4-9)：</strong><br>• <strong>4-1：</strong>在给定计算预算下，<strong style="color:#fff;">更大的模型 + 更少的 epoch</strong>优于小模型多轮训练<br>• <strong>4-2：</strong>数据质量和多样性比数据量更重要——呼应 MetaCLIP 的发现<br>• <strong>4-9 核心洞察：</strong>CLIP 训练的<strong style="color:#fff;">最优数据量随模型规模呈幂律增长</strong></div></section>
+
+<!-- 5 小结 -->
+<section data-transition="slide"><div class="ac-card fragment fade-up" style="text-align:center;"><h2 style="font-size:24px;font-weight:700;color:var(--vlm);margin-bottom:10px;">5. CLIP 生态全景 · 小结</h2><div class="ac-bar"></div><p style="font-size:13px;color:var(--text2);line-height:2;">CLIP未公开管线 → DataComp建立基准 → MetaCLIP逆向概念平衡 → SigLIP用sigmoid解耦 → EVA-CLIP量化缩放定律。<br><strong style="color:var(--vid);">核心主线：数据质量 > 模型架构 > 训练技巧。</strong>CLIP 的真正秘密不在于双塔对比学习，而在于其未公开的数据策展——开源社区用三年时间不仅复现，更超越了它。</p></div></section>
