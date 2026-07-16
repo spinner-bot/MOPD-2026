@@ -87,6 +87,28 @@
 <text x="480" y="321" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="9.5" font-family="sans-serif">OPD 作为 RL 的预对齐阶段或辅助损失 —— 从独立范式走向深度集成</text>
 </svg></section>
 
+
+<!-- ═══════ 为什么需要混合 ═══════ -->
+<section data-transition="slide"><div class="core-card fragment fade-up"><p class="page-badge">协同本质</p><h2 style="font-size:26px;font-weight:700;color:var(--beam);margin:8px 0;">🤝 为什么需要 OPD + RLVR 混合？</h2><div class="core-bar"></div>
+<div class="two-col" style="max-width:900px;">
+<div style="background:rgba(225,112,85,0.06);border:1px solid rgba(225,112,85,0.2);border-radius:10px;padding:16px;">
+<p style="font-size:14px;font-weight:700;color:var(--flare);margin:0 0 8px;">🔴 纯 RLVR 的困境</p>
+<p style="font-size:11px;color:var(--text2);margin:0 0 4px;">• 奖励仅在序列终点出现</p>
+<p style="font-size:11px;color:var(--text2);margin:0 0 4px;">• 长序列梯度在时间轴上弥散</p>
+<p style="font-size:11px;color:var(--text2);margin:0 0 4px;">• 信用分配完全失效</p>
+<p style="font-size:11px;color:var(--text2);margin:0;">• 前期探索纯随机 → 低效</p>
+</div>
+<div style="background:rgba(0,206,201,0.06);border:1px solid rgba(0,206,201,0.2);border-radius:10px;padding:16px;">
+<p style="font-size:14px;font-weight:700;color:var(--nova);margin:0 0 8px;">🟢 纯 OPD 的局限</p>
+<p style="font-size:11px;color:var(--text2);margin:0 0 4px;">• 缺乏客观终极目标</p>
+<p style="font-size:11px;color:var(--text2);margin:0 0 4px;">• 教师可能有偏/能力上限</p>
+<p style="font-size:11px;color:var(--text2);margin:0 0 4px;">• 特权幻觉风险</p>
+<p style="font-size:11px;color:var(--text2);margin:0;">• 学生永远超不过教师</p>
+</div>
+</div>
+<div class="green-box" style="margin-top:14px;"><div class="label">✨ 混合后的效果</div><div class="content">OPD 提供<strong>逐 token 的软约束（KL 散度）</strong>——不是 "这一步奖励 +1"，而是 "你这一步输出的分布应该是这样"。RLVR 提供<strong>终点的客观判决</strong>——答案对错、测试通过与否。→ <strong>全程有教师轻声提示，终点有裁判一锤定音。</strong></div></div>
+<div class="struct-content" style="margin-top:6px;"><p style="text-align:center;color:var(--nova);">💡 这是 2026 年最重要的工程趋势——OPD 不再作为独立范式，而是与 RLVR 深度集成。</p></div></div></section>
+
 </div></div>
 <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.js"></script>
 <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
