@@ -40,6 +40,23 @@
 <p style="font-size:12px;color:var(--text3);margin-top:12px;">组会报告 · 2026/07</p></div></section>
 
 
+<!-- ═══════ 14. PRISM 消融实验 + 训练动力学 ═══════ -->
+<section data-transition="slide"><div class="star-card fragment fade-up"><p class="page-badge">PRISM · 消融</p><h2 style="font-size:26px;font-weight:700;color:var(--prism);margin:8px 0;">🔬 消融实验与训练动力学</h2><div class="star-bar"></div>
+<div class="two-col" style="margin-top:10px;">
+<div style="text-align:left;">
+<p style="font-size:14px;font-weight:700;color:var(--gold);margin-bottom:8px;">消融实验关键结论</p>
+<div class="concept-block fragment fade-up" style="margin-bottom:6px;"><h4>1. MoE > 密集判别器 (-3.4 avg)</h4><p>单一判别器折叠感知和推理为单一标量 → 梯度含噪。MoE让每个专家专精一个维度，提供<strong>解耦的矫正信号</strong>。WeMath上密集判别器比MoE差6个点。</p></div>
+<div class="concept-block fragment fade-up" style="margin-bottom:6px;"><h4>2. 三阶段缺一不可</h4><p>去掉对齐→<strong>-4.4 avg</strong>；去掉SFT→<strong>-16.8 avg</strong>（差距太大，对抗训练失败，判别器平凡区分→策略退化）</p></div>
+<div class="concept-block fragment fade-up" style="margin-bottom:6px;"><h4>3. 视觉-语言判别器 > 纯文本判别器</h4><p>纯文本判别器只能捕捉文本表层模式（"鹦鹉对齐"），无法验证视觉描述是否忠实于图像。</p></div>
+<div class="concept-block fragment fade-up"><h4>4. 更多SFT数据帮助对齐</h4><p>仅107K→-3.7 avg。SFT与对齐是<strong>互补的</strong>——更多SFT数据→策略离监督分布更近→对抗训练更有效。</p></div>
+</div>
+<div style="text-align:left;">
+<p style="font-size:14px;font-weight:700;color:var(--gold);margin-bottom:8px;">训练动力学分析</p>
+<div class="concept-block fragment fade-up" style="border-color:rgba(251,191,36,0.25);"><h4 style="color:var(--gold);">异步收敛验证MoE必要性</h4><p>🔹 <strong>感知专家收敛早且快</strong>——视觉对齐（描述准确性）相对简单，判别器很快学会区分好的和差的视觉描述<br/>🔹 <strong>推理专家上升缓慢且有震荡</strong>——推理对齐涉及更复杂的逻辑链分布修正<br/>🔹 两者最终收敛到相似的平衡水平<br/>🔹 这种异步收敛进一步验证了：<strong>单一判别器无法同时处理两种不同速度的对齐过程</strong></p></div>
+<div class="def-box fragment fade-up" style="margin-top:6px;"><div class="label">⚠️ 潜在局限</div><div class="content">论文仅训练500步就停止，暗示更长训练可能导致退化。未系统讨论GAN训练的经典问题（mode collapse、non-convergence），也未尝试Wasserstein GAN等更稳定的对抗方法。MoE设计依赖结构化输出格式（&lt;caption&gt;+&lt;think&gt;+&lt;answer&gt;），对非结构化任务适用性有限。</div></div>
+</div>
+</div></div></section>
+
 <!-- ═══════ 13. PRISM 主要实验结果 ═══════ -->
 <section data-transition="slide"><div class="star-card fragment fade-up"><p class="page-badge">PRISM · 实验</p><h2 style="font-size:26px;font-weight:700;color:var(--prism);margin:8px 0;">📊 PRISM 关键实验结果</h2><p style="font-size:13px;color:var(--text2);">多模态benchmark平均准确率 · Qwen3-VL系列</p><div class="star-bar"></div>
 <table class="summary-table fragment fade-up"><thead><tr><th>配置</th><th>4B Avg</th><th>8B Avg</th><th>关键发现</th></tr></thead>
