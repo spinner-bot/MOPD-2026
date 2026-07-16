@@ -23,6 +23,16 @@
 <section data-transition="zoom"><div class="core-card fragment fade-up"><p class="cite">MODULE 3 · PART 3</p><h1 class="hero-title">视频域：时序 OPD</h1><p style="font-size:20px;color:var(--text2);">从稀疏奖励到密集监督 · 从当前帧到特权未来</p><div class="core-bar"></div><p style="font-size:13px;color:var(--text3);">Video-OPD · PF-OPSD — 将 OPD 范式扩展到时间维度</p></div></section>
 
 
+<!-- ═══════ 为什么视频特别严重 ═══════ -->
+<section data-transition="slide"><div class="core-card fragment fade-up"><p class="page-badge">视频的特殊性</p><h2 style="font-size:26px;font-weight:700;color:var(--flare);margin:8px 0;">⚠️ 为什么视频场景特别严重？</h2><div class="core-bar"></div>
+<div class="tri-grid" style="max-width:940px;margin-top:12px;">
+<div class="concept-block fragment fade-up" style="border-left:3px solid var(--flare);"><h4>📏 ① 视频序列极长</h4><p>视频天然包含<strong>几十上百帧</strong>，每一步分析都依赖前面累积的理解。信用分配的延迟被<strong>几十倍放大</strong>——文本推理可能只需回溯几十 token，视频推理需回溯数百帧的视觉理解。</p></div>
+<div class="concept-block fragment fade-up" style="border-left:3px solid var(--rose);"><h4>🔗 ② 错误累积效应</h4><p>早期的一个<strong>视觉误判</strong>（比如没看清手里拿的什么）会在后续几十步推理中被当成事实，最终导致离谱的结论。但最终奖励<strong>只会告诉你结论错了</strong>，不会指出那个最初的小错误。</p></div>
+<div class="concept-block fragment fade-up" style="border-left:3px solid var(--beam);"><h4>🎲 ③ 纯 RL 探索无效</h4><p>模型尝试修正自己，但因为<strong>不知道哪里错了</strong>，只能随机乱改。在海量 token 空间中，几乎<strong>不可能偶然碰对</strong>正确答案——RL 训练毫无进展。</p></div>
+</div>
+<div class="warn-box" style="margin-top:12px;"><div class="label">对比文本域</div><div class="content">文本推理的信用分配虽然也有延迟，但至少 token 本身就是离散符号，错误模式相对可诊断。视频中视觉表征是连续高维向量，<strong>错误不仅难以定位，甚至难以定义</strong>——"看错了"本身就是一个模糊的概念。</div></div>
+<div class="struct-content" style="margin-top:6px;"><p style="text-align:center;color:var(--nova);">💡 结论：<strong>视频任务需要细粒度的时间理解，纯 RL 的稀疏反馈无法胜任。</strong></p></div></div></section>
+
 <!-- ═══════ 核心挑战：稀疏序列级奖励 ═══════ -->
 <section data-transition="slide"><div class="core-card fragment fade-up"><p class="page-badge">核心挑战</p><h2 style="font-size:26px;font-weight:700;color:var(--rose);margin:8px 0;">🔴 稀疏序列级奖励 → 信用分配失败</h2><div class="core-bar"></div>
 <div class="def-box" style="border-left-color:var(--rose);"><div class="label" style="color:var(--rose);">什么是「稀疏序列级奖励」？</div><div class="content">在视频多模态任务中，奖励只在<strong>整个视频回答序列生成完后</strong>才给一次。比如看一段 10 分钟的做饭视频，问"他放了几勺盐？"，只有最终答案完全正确才给 +1，否则 0。在这条包含几百上千 token 的长推理链中，<strong>中间没有任何奖励信号</strong>。</div></div>
