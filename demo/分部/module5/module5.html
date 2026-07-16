@@ -40,6 +40,26 @@
 <p style="font-size:12px;color:var(--text3);margin-top:12px;">组会报告 · 2026/07</p></div></section>
 
 
+<!-- ═══════ 15. PRISM 小结 ═══════ -->
+<section data-transition="slide"><div class="star-card fragment fade-up" style="border-color:rgba(56,189,248,0.25);"><p class="page-badge">PRISM · 小结</p><h2 style="font-size:28px;font-weight:700;color:var(--prism);margin:8px 0;">🔷 PRISM 总结</h2><div class="star-bar"></div>
+<div class="two-col" style="margin-top:10px;">
+<div style="text-align:left;"><p style="font-size:14px;font-weight:700;color:var(--accent-g);">✅ 贡献</p>
+<div class="concept-block g fragment fade-up" style="margin-bottom:4px;"><p>✅ 发现SFT在多模态场景下的<strong>异质分布漂移</strong>——感知和推理的漂移模式不同</p></div>
+<div class="concept-block g fragment fade-up" style="margin-bottom:4px;"><p>✅ 提出<strong>三阶段管道</strong>——在SFT和RLVR之间插入对抗式OPD对齐</p></div>
+<div class="concept-block g fragment fade-up" style="margin-bottom:4px;"><p>✅ <strong>MoE判别器</strong>——感知专家+推理专家提供解耦矫正信号</p></div>
+<div class="concept-block g fragment fade-up" style="margin-bottom:4px;"><p>✅ <strong>黑盒设计</strong>——不需要教师logits，仅需demonstration pool</p></div>
+<div class="concept-block g fragment fade-up"><p>✅ <strong>4B +4.4 / 8B +6.0</strong>——显著的实验提升</p></div>
+</div>
+<div style="text-align:left;"><p style="font-size:14px;font-weight:700;color:var(--uniopd);">⚠️ 局限</p>
+<div class="concept-block r fragment fade-up" style="margin-bottom:4px;"><p>⚠️ MoE设计依赖<strong>结构化输出</strong>（caption+think+answer）</p></div>
+<div class="concept-block r fragment fade-up" style="margin-bottom:4px;"><p>⚠️ 对抗训练<strong>仅500步</strong>，未系统解决GAN稳定性问题</p></div>
+<div class="concept-block r fragment fade-up" style="margin-bottom:4px;"><p>⚠️ 需要<strong>大量SFT数据</strong>（1.37M）和高质量蒸馏</p></div>
+<div class="concept-block r fragment fade-up" style="margin-bottom:4px;"><p>⚠️ 判别器<strong>预热要求高</strong>——需在偏好对上预训练</p></div>
+<div class="concept-block r fragment fade-up"><p>⚠️ OPD仅为过渡阶段——<strong>不独立产生</strong>最终模型</p></div>
+</div>
+</div>
+<p style="text-align:center;margin-top:12px;color:var(--uniopd);font-size:15px;">✦ 接下来：Part 3 — Uni-OPD：双视角统一 OPD 框架 ✦</p></div></section>
+
 <!-- ═══════ 14. PRISM 消融实验 + 训练动力学 ═══════ -->
 <section data-transition="slide"><div class="star-card fragment fade-up"><p class="page-badge">PRISM · 消融</p><h2 style="font-size:26px;font-weight:700;color:var(--prism);margin:8px 0;">🔬 消融实验与训练动力学</h2><div class="star-bar"></div>
 <div class="two-col" style="margin-top:10px;">
