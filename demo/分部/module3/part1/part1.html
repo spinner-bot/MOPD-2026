@@ -118,6 +118,18 @@
 🔸 最终模型在 benchmark 上分数不降 → 但视觉注意力已悄然发散 → 幻觉、错误绑定随之而来</p>
 <p>这是 Part 0 中「感知-推理耦合退化」的<strong>精确量化</strong>：RL/OPD 优化机制本身就会系统性地偏向文本捷径。</p></div></div></section>
 
+
+<!-- ═══════ Forward KL 视觉灾难 ═══════ -->
+<section data-transition="slide"><div class="core-card fragment fade-up"><p class="page-badge">KL 散度战场</p><h2 style="font-size:26px;font-weight:700;color:var(--flare);margin:8px 0;">🔥 Forward KL：在视觉 token 上的灾难</h2><div class="core-bar"></div>
+<div class="def-box"><div class="label">Forward KL 的本质：Mode-Covering（模式覆盖）</div><div class="content">$$\min_{\pi_S} D_{KL}(\pi_T \|\pi_S) = \min_{\pi_S} \sum \pi_T \log \frac{\pi_T}{\pi_S}$$ 学生必须<strong>覆盖教师的所有高概率区域</strong>——只要教师有概率的地方学生给不够，惩罚就爆炸。学生被迫保留所有可能性。</div></div>
+<div class="struct-content" style="margin-top:8px;">
+<p><strong>为什么视觉 token 上尤为严重？</strong></p>
+<p style="margin-left:16px;">🔸 视觉 token 天然<strong>高熵、多义</strong>——同一图像块可能对应多种合理描述，教师分布平滑、无锐利峰值<br/>
+🔸 文本 token 有明显峰值（某个词往往是唯一正确），但视觉是宽泛的「语义场」<br/>
+🔸 Forward KL 强制学生去<strong>匹配这个宽泛的支持集</strong> → 学生把概率质量撒在极大空间上</p>
+<p style="font-size:15px;color:var(--beam);text-align:center;margin:10px 0;">📊 结果：<strong>熵爆炸</strong>——学生输出的视觉分布熵极高，丧失判别力，注意力发散</p>
+<p><strong>直观比喻：</strong>考试制度被恶意利用——学生发现把所有选项涂一点（全均值分布）就能在 Forward KL 下得「不错」的分数，于是心安理得地停在模糊状态，永远学不会精确的视觉辨别。</p></div></div></section>
+
 </div></div>
 <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.js"></script>
 <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
