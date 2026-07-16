@@ -192,6 +192,14 @@
 </div>
 <div class="struct-content" style="margin-top:6px;"><p style="text-align:center;"><strong>效果：</strong>Qwen2.5-VL-7B 从 63.3% → 68.8% Pass@1 &nbsp;|&nbsp; 验证了<strong>分解+门控 > 单一奖励+简单聚合</strong></p></div></div></section>
 
+
+<!-- ═══════ Decomposed OPD ═══════ -->
+<section data-transition="slide"><div class="core-card fragment fade-up"><p class="page-badge">解耦感知与推理</p><h2 style="font-size:24px;font-weight:700;color:var(--fuse);margin:8px 0;">🟣 Decomposed OPD：VGS 梯度重定向 (2026)</h2><p style="font-size:11px;color:var(--nova);margin:2px 0;font-family:monospace;">Yoon 等 · Semantic Scholar (2026)</p><div class="core-bar"></div>
+<div class="def-box" style="border-left-color:var(--fuse);"><div class="label" style="color:var(--fuse);">核心问题</div><div class="content">标准在线蒸馏损失（KL 散度）整体计算，<strong>无法区分梯度中「语言先验成分」和「视觉基础成分」</strong>——视觉学习的梯度被语言部分淹没，模型在语言上自我陶醉、忽视看图。</div></div>
+<div class="formula-box"><div class="math-block">$$\nabla_\theta \mathcal{L} = g_{\text{lang}} + g_{\text{vis}}$$</div><p style="font-size:10px;color:var(--text2);margin:4px 0 0;">g_lang：语言模块（LLM注意力、FFN）的梯度分量 · g_vis：视觉模块（编码器、跨模态注意力）的梯度分量</p></div>
+<div class="green-box"><div class="label">VGS（Visual Gradient Steering）— 三步操作</div><div class="content">① 检测当前梯度方向是否<strong>偏向语言子空间</strong> → ② 若偏向语言，<strong>放大 g_vis 范数</strong>或将总梯度向视觉子空间旋转 → ③ 视觉模块获得不成比例的高质量梯度 → <strong>从梯度流动的最底层纠正多模态蒸馏的不平衡</strong>。</div></div>
+<div class="struct-content" style="margin-top:4px;"><p style="text-align:center;color:var(--nova);">💡 相当于训练时不断「提醒」模型：<strong>你的视觉部分还很弱，别老在语言上自我陶醉，多练练看图！</strong></p></div></div></section>
+
 </div></div>
 <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.js"></script>
 <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
