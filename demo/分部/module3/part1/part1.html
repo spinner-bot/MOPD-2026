@@ -140,6 +140,60 @@
 </div>
 <div class="struct-content" style="margin-top:10px;"><p style="text-align:center;">💡 <strong>一句话：</strong>Forward KL = "覆盖所有可能"（被恶意利用→全均值） → Reverse KL = "精准命中峰值"（模型被迫学会真正的视觉辨别） → <strong>JSD / Top-K 是进一步的保险</strong></p></div></div></section>
 
+
+<!-- ═══════ 四大范式总览 ═══════ -->
+<section data-transition="slide"><h2 style="font-size:26px;font-weight:700;color:var(--fuse);margin-bottom:10px;">🗺️ 多模态 OPD 四大范式 · 四象限</h2>
+<p style="font-size:12px;color:var(--text2);margin:-4px 0 10px;">横轴：教师-学生关系 &nbsp;|&nbsp; 纵轴：蒸馏目标类型</p>
+<svg viewBox="0 0 700 480" xmlns="http://www.w3.org/2000/svg" style="max-width:700px;">
+<!-- 十字轴 -->
+<line x1="350" y1="20" x2="350" y2="460" stroke="rgba(255,255,255,0.12)" stroke-width="1.5"/>
+<line x1="50" y1="240" x2="650" y2="240" stroke="rgba(255,255,255,0.12)" stroke-width="1.5"/>
+<text x="350" y="12" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="9" font-family="sans-serif">连续生成</text>
+<text x="350" y="472" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="9" font-family="sans-serif">离散分布</text>
+<text x="40" y="236" text-anchor="end" fill="rgba(255,255,255,0.4)" font-size="9" font-family="sans-serif">同模型</text>
+<text x="660" y="236" text-anchor="start" fill="rgba(255,255,255,0.4)" font-size="9" font-family="sans-serif">跨模态</text>
+
+<!-- Q1: 左上 — 生成式OPD -->
+<rect x="55" y="35" width="270" height="185" rx="10" fill="rgba(0,206,201,0.05)" stroke="rgba(0,206,201,0.2)"/>
+<text x="190" y="60" text-anchor="middle" fill="var(--nova)" font-size="12" font-weight="700" font-family="sans-serif">④ 生成式 OPD</text>
+<text x="190" y="80" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="9" font-family="sans-serif">D-OPSD · LiveTalk · OmniOPSD</text>
+<text x="190" y="102" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="8.5" font-family="sans-serif">扩散模型 · 连续速度场</text>
+<text x="190" y="122" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="8.5" font-family="sans-serif">MSE/余弦相似度替代 KL</text>
+<text x="190" y="148" text-anchor="middle" fill="rgba(255,255,255,0.22)" font-size="8" font-family="sans-serif">学生采样噪声轨迹</text>
+<text x="190" y="166" text-anchor="middle" fill="rgba(255,255,255,0.22)" font-size="8" font-family="sans-serif">教师提供更优去噪方向</text>
+<text x="190" y="192" text-anchor="middle" fill="rgba(255,255,255,0.18)" font-size="7.5" font-family="sans-serif">核心挑战：连续空间在线采样效率</text>
+
+<!-- Q2: 右上 — 跨模态蒸馏 -->
+<rect x="355" y="35" width="290" height="185" rx="10" fill="rgba(225,112,85,0.05)" stroke="rgba(225,112,85,0.2)"/>
+<text x="500" y="60" text-anchor="middle" fill="var(--flare)" font-size="12" font-weight="700" font-family="sans-serif">② 跨模态教师蒸馏</text>
+<text x="500" y="80" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="9" font-family="sans-serif">VOLD · X-OPD · CORD · SightSound-R1</text>
+<text x="500" y="102" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="8.5" font-family="sans-serif">Text LLM → VLM → Audio LM</text>
+<text x="500" y="122" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="8.5" font-family="sans-serif">轨迹评价 + 分布对齐</text>
+<text x="500" y="148" text-anchor="middle" fill="rgba(255,255,255,0.22)" font-size="8" font-family="sans-serif">需冷启动 SFT 对齐</text>
+<text x="500" y="166" text-anchor="middle" fill="rgba(255,255,255,0.22)" font-size="8" font-family="sans-serif">模态鸿沟是首要障碍</text>
+<text x="500" y="192" text-anchor="middle" fill="rgba(255,255,255,0.18)" font-size="7.5" font-family="sans-serif">核心挑战：输入/输出空间完全不同</text>
+
+<!-- Q3: 左下 — 跨上下文 OPSD -->
+<rect x="55" y="255" width="270" height="185" rx="10" fill="rgba(124,92,231,0.05)" stroke="rgba(124,92,231,0.2)"/>
+<text x="190" y="280" text-anchor="middle" fill="var(--core)" font-size="12" font-weight="700" font-family="sans-serif">① 同模型跨上下文 OPSD</text>
+<text x="190" y="300" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="9" font-family="sans-serif">Vision-OPD · Visual-OPSD · ViGOS · ViCuR</text>
+<text x="190" y="322" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="8.5" font-family="sans-serif">同一模型 · 不同视觉上下文</text>
+<text x="190" y="342" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="8.5" font-family="sans-serif">crop vs full · VT vs no-VT</text>
+<text x="190" y="368" text-anchor="middle" fill="rgba(255,255,255,0.22)" font-size="8" font-family="sans-serif">✅ 零外部依赖 · 只需图文对</text>
+<text x="190" y="386" text-anchor="middle" fill="rgba(255,255,255,0.22)" font-size="8" font-family="sans-serif">输出分布 KL 散度</text>
+<text x="190" y="412" text-anchor="middle" fill="rgba(255,255,255,0.18)" font-size="7.5" font-family="sans-serif">核心挑战：构建有效上下文差异</text>
+
+<!-- Q4: 右下 — OPD+RL混合 -->
+<rect x="355" y="255" width="290" height="185" rx="10" fill="rgba(253,203,110,0.05)" stroke="rgba(253,203,110,0.2)"/>
+<text x="500" y="280" text-anchor="middle" fill="var(--beam)" font-size="12" font-weight="700" font-family="sans-serif">③ OPD + RL 混合</text>
+<text x="500" y="300" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="9" font-family="sans-serif">PRISM · PTD-PO · Distill-R1</text>
+<text x="500" y="322" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="8.5" font-family="sans-serif">密集辅助 + 稀疏奖励</text>
+<text x="500" y="342" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="8.5" font-family="sans-serif">ℒ = ℒ_RL + λ · ℒ_OPD</text>
+<text x="500" y="368" text-anchor="middle" fill="rgba(255,255,255,0.22)" font-size="8" font-family="sans-serif">预对齐 / 软护栏</text>
+<text x="500" y="386" text-anchor="middle" fill="rgba(255,255,255,0.22)" font-size="8" font-family="sans-serif">逐 token KL + 序列级稀疏奖励</text>
+<text x="500" y="412" text-anchor="middle" fill="rgba(255,255,255,0.18)" font-size="7.5" font-family="sans-serif">核心挑战：信号权重平衡</text>
+</svg></section>
+
 </div></div>
 <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.js"></script>
 <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
