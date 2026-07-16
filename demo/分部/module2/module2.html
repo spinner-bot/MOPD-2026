@@ -4,3 +4,79 @@
 
 <!-- ═══════════ 目录页 ═══════════ -->
 <section data-transition="slide"><div class="glass-card fragment fade-up" style="max-width:820px;"><h2 style="font-size:28px;font-weight:700;color:var(--text);margin-bottom:16px;">📋 模块目录</h2><div class="glow-bar"></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px 30px;text-align:left;font-size:13px;color:var(--text2);line-height:2.2;"><div><strong style="color:var(--vlm);">Part 1</strong> · 奠基与探索期 <span style="color:var(--text3);font-size:11px;">2020–2022</span></div><div><strong style="color:var(--vis);">Part 1+</strong> · CLIP 生态全景</div><div><strong style="color:var(--vid);">Part 2</strong> · VLM 崛起 <span style="color:var(--text3);font-size:11px;">2023</span></div><div><strong style="color:var(--aud);">Part 2+</strong> · 深度补充 II</div><div><strong style="color:var(--gen);">Part 2++</strong> · 训练策略与基准</div><div><strong style="color:var(--vis);">Part 3</strong> · 视频·音频·3D</div><div style="grid-column:1/-1;"><strong style="color:var(--vlm);">Part 4</strong> · 统一生成·Agent·缩放·安全</div></div></div></section>
+
+<!-- ═══════════ Module 级 DAG 知识图谱 (DAG-m2) ═══════════ -->
+<section data-transition="slide"><h2 style="font-size:24px;font-weight:700;color:var(--vlm);margin-bottom:8px;">Module 2 整体知识图谱</h2><p style="font-size:11px;color:var(--text3);margin:0 0 8px;">7 个 Part 之间的演进关系 · 多模态技术发展全景</p>
+<svg viewBox="0 0 1000 420" xmlns="http://www.w3.org/2000/svg" style="max-width:1000px;">
+<defs><marker id="am" markerWidth="6" markerHeight="4" refX="6" refY="2" orient="auto"><path d="M0,0 L6,2 L0,4 Z" fill="rgba(255,255,255,0.25)"/></marker></defs>
+<!-- 顶层标题 -->
+<rect x="300" y="5" width="400" height="28" rx="14" fill="rgba(183,148,244,0.06)" stroke="rgba(183,148,244,0.15)"/>
+<text x="500" y="24" text-anchor="middle" fill="#fff" font-size="12" font-weight="700" font-family="sans-serif">多模态技术演进 · 2020 → 2026</text>
+
+<!-- Part 1 奠基 -->
+<g><rect x="40" y="52" width="160" height="62" rx="10" fill="rgba(183,148,244,0.08)" stroke="rgba(183,148,244,0.3)"/>
+<text x="120" y="78" text-anchor="middle" fill="#b794f4" font-size="14" font-weight="700" font-family="sans-serif">Part 1 奠基与探索</text>
+<text x="120" y="98" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="9" font-family="sans-serif">ViT·CLIP·DALL·E·SD</text>
+<text x="120" y="110" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="8" font-family="sans-serif">2020–2022</text></g>
+
+<!-- Part 1+ -->
+<path d="M200,83 L240,83" marker-end="url(#am)" stroke="rgba(255,255,255,0.2)" stroke-width="1.2" fill="none"/>
+<g><rect x="250" y="52" width="150" height="62" rx="10" fill="rgba(96,165,250,0.08)" stroke="rgba(96,165,250,0.3)"/>
+<text x="325" y="78" text-anchor="middle" fill="#60a5fa" font-size="14" font-weight="700" font-family="sans-serif">Part 1+ CLIP生态</text>
+<text x="325" y="98" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="9" font-family="sans-serif">DataComp·SigLIP·EVA</text>
+<text x="325" y="110" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="8" font-family="sans-serif">数据>架构</text></g>
+
+<!-- Part 2 -->
+<path d="M400,83 L440,83" marker-end="url(#am)" stroke="rgba(255,255,255,0.2)" stroke-width="1.2" fill="none"/>
+<g><rect x="450" y="52" width="150" height="62" rx="10" fill="rgba(251,191,36,0.08)" stroke="rgba(251,191,36,0.3)"/>
+<text x="525" y="78" text-anchor="middle" fill="#facc15" font-size="14" font-weight="700" font-family="sans-serif">Part 2 VLM崛起</text>
+<text x="525" y="98" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="9" font-family="sans-serif">GPT-4V·LLaVA·Gemini</text>
+<text x="525" y="110" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="8" font-family="sans-serif">2023</text></g>
+
+<!-- Part 2+ -->
+<path d="M600,83 L640,83" marker-end="url(#am)" stroke="rgba(255,255,255,0.2)" stroke-width="1.2" fill="none"/>
+<g><rect x="650" y="52" width="140" height="62" rx="10" fill="rgba(74,222,128,0.08)" stroke="rgba(74,222,128,0.3)"/>
+<text x="720" y="78" text-anchor="middle" fill="#4ade80" font-size="14" font-weight="700" font-family="sans-serif">Part 2+ 补充II</text>
+<text x="720" y="98" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="9" font-family="sans-serif">编码器·架构·多模态</text>
+<text x="720" y="110" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="8" font-family="sans-serif">Ch2-12全景</text></g>
+
+<!-- Arrows from row 1 to row 2 -->
+<path d="M120,114 L120,145 L250,145 L250,165" marker-end="url(#am)" stroke="rgba(255,255,255,0.1)" stroke-width="1" fill="none"/>
+<path d="M325,114 L325,135 L720,135 L720,165" marker-end="url(#am)" stroke="rgba(255,255,255,0.1)" stroke-width="1" fill="none"/>
+<path d="M525,114 L525,145 L860,145 L860,165" marker-end="url(#am)" stroke="rgba(255,255,255,0.1)" stroke-width="1" fill="none"/>
+
+<!-- Part 2++ -->
+<g><rect x="40" y="172" width="160" height="62" rx="10" fill="rgba(251,114,133,0.08)" stroke="rgba(251,114,133,0.3)"/>
+<text x="120" y="195" text-anchor="middle" fill="#fb7185" font-size="13" font-weight="700" font-family="sans-serif">Part 2++ 训练与基准</text>
+<text x="120" y="215" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="9" font-family="sans-serif">5-6阶段Pipeline·MM1</text>
+<text x="120" y="228" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="8" font-family="sans-serif">基准全景</text></g>
+
+<!-- Part 3 -->
+<path d="M200,203 L250,203" marker-end="url(#am)" stroke="rgba(255,255,255,0.2)" stroke-width="1.2" fill="none"/>
+<g><rect x="260" y="172" width="160" height="62" rx="10" fill="rgba(96,165,250,0.08)" stroke="rgba(96,165,250,0.3)"/>
+<text x="340" y="195" text-anchor="middle" fill="#60a5fa" font-size="14" font-weight="700" font-family="sans-serif">Part 3 视频·音频·3D</text>
+<text x="340" y="215" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="9" font-family="sans-serif">四大时序·全双工·点云</text>
+<text x="340" y="228" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="8" font-family="sans-serif">Ch6-8深度</text></g>
+
+<!-- Part 4 -->
+<path d="M420,203 L470,203" marker-end="url(#am)" stroke="rgba(255,255,255,0.2)" stroke-width="1.2" fill="none"/>
+<g><rect x="480" y="172" width="220" height="62" rx="10" fill="rgba(183,148,244,0.08)" stroke="rgba(183,148,244,0.3)"/>
+<text x="590" y="195" text-anchor="middle" fill="#b794f4" font-size="14" font-weight="700" font-family="sans-serif">Part 4 统一·Agent·缩放·安全</text>
+<text x="590" y="215" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="9" font-family="sans-serif">Any-to-Any·GUI控制·幻觉</text>
+<text x="590" y="228" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="8" font-family="sans-serif">Ch9-12总结</text></g>
+
+<!-- 底部总结 -->
+<path d="M120,234 L120,275 L500,275 L500,288" marker-end="url(#am)" stroke="rgba(255,255,255,0.08)" stroke-width="1" fill="none"/>
+<path d="M340,234 L340,260 L500,260" stroke="rgba(255,255,255,0.08)" stroke-width="1" fill="none"/>
+<path d="M590,234 L590,260 L510,260" stroke="rgba(255,255,255,0.08)" stroke-width="1" fill="none"/>
+<rect x="340" y="295" width="320" height="32" rx="16" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.1)"/>
+<text x="500" y="316" text-anchor="middle" fill="#fff" font-size="12" font-weight="700" font-family="sans-serif">📋 从ViT到Any-to-Any：六年多模态技术全景</text>
+
+<!-- 时间轴 -->
+<line x1="40" y1="380" x2="960" y2="380" stroke="rgba(255,255,255,0.1)" stroke-width="2"/>
+<text x="40" y="405" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="9" font-family="sans-serif">2020</text>
+<text x="280" y="405" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="9" font-family="sans-serif">2021</text>
+<text x="520" y="405" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="9" font-family="sans-serif">2022</text>
+<text x="720" y="405" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="9" font-family="sans-serif">2023-2024</text>
+<text x="900" y="405" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="9" font-family="sans-serif">2025-2026</text>
+</svg></section>
