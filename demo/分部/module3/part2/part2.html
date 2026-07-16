@@ -157,6 +157,13 @@
 </div>
 <div class="struct-content" style="margin-top:6px;"><p style="text-align:center;color:var(--nova);">💡 ViCuR 重新定义了多模态 OPD 的特权设计原则：<strong>特权应该是学生「可能学会自己找到的东西」——而非永远无法企及的外部答案。</strong></p></div></div></section>
 
+
+<!-- ═══════ V-Zero ═══════ -->
+<section data-transition="slide"><div class="core-card fragment fade-up"><p class="page-badge">防 Shortcut · 激进者</p><h2 style="font-size:24px;font-weight:700;color:var(--nova);margin:8px 0;">🟢 V-Zero：不需要答案标签的 OPD (2026.06)</h2><p style="font-size:11px;color:var(--nova);margin:2px 0;font-family:monospace;">Haoxiang Sun 等（川大·北大·TeleAI）· arXiv:2606.25319</p><div class="core-bar"></div>
+<div class="green-box"><div class="label">核心突破</div><div class="content"><strong>完全不需要文本答案标签的 OPD</strong>——只需图文对（问题和图像），无需答案、无需奖励函数。这是多模态 OPD 最激进的范式：连答案都不需要，怎么知道对错？→ <strong>让教师评价学生回答的「视觉基础」强弱。</strong></div></div>
+<div class="def-box"><div class="label">核心思想</div><div class="content">教师虽然没有正确答案，但它有一个特权——<strong>同时看到两种版本的图像</strong>：① 正视图（目标区域裁剪放大）② 负视图（目标被替换/模糊）。如果学生的回答在正视图下概率高、负视图下概率低 → 视觉基础强 → 值得蒸馏；反之 → 可能是蒙的 → 抑制蒸馏。</div></div>
+<div class="struct-content" style="margin-top:6px;"><p style="text-align:center;"><strong>效果：</strong>Qwen3.5-4B +3.1 平均分 &nbsp;|&nbsp; 训练速度 <strong>5× 快于 SFT、10× 快于 RL 基线</strong></p><p style="text-align:center;color:var(--nova);">💡 意义：如果 V-Zero 范式被广泛验证，训练强视觉推理模型只需<strong>海量图文对</strong>——互联网上到处都是——完全不需要人工标注答案。</p></div></div></section>
+
 </div></div>
 <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.js"></script>
 <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
