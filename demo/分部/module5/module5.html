@@ -40,6 +40,24 @@
 <p style="font-size:12px;color:var(--text3);margin-top:12px;">组会报告 · 2026/07</p></div></section>
 
 
+<!-- ═══════ 18. Uni-OPD 双视角优化框架 ═══════ -->
+<section data-transition="slide"><div class="star-card fragment fade-up"><p class="page-badge-r">Uni-OPD · 框架</p><h2 style="font-size:28px;font-weight:700;color:var(--uniopd);margin:8px 0;">🔶 双视角优化策略</h2><p style="font-size:14px;color:var(--text2);">学生视角：数据平衡 &nbsp;|&nbsp; 教师视角：边距校准</p><div class="star-bar"></div>
+<div class="two-col fragment fade-up" style="margin-top:12px;">
+<div style="text-align:left;background:rgba(56,189,248,0.03);border:1px solid rgba(56,189,248,0.12);border-radius:10px;padding:18px;">
+<p style="font-size:15px;font-weight:700;color:var(--prism);margin-bottom:8px;">👨‍🎓 学生视角：充分探索 Informative States</p>
+<p style="font-size:12px;color:var(--text2);line-height:1.9;"><strong>问题：</strong>小模型的训练数据常呈现<strong>镜像J形或U形分布</strong>——大多数样本集中在极难或极易两端。直接过滤会大幅减少数据多样性。</p>
+<p style="font-size:12px;color:var(--text2);line-height:1.9;margin-top:6px;"><strong>方案① 离线难度感知数据平衡：</strong>对中等难度样本（多次rollout中部分正确）进行<strong>上采样</strong>，reshape成更均匀的分布——保留多样性和难度谱。</p>
+<p style="font-size:12px;color:var(--text2);line-height:1.9;margin-top:6px;"><strong>方案② 在线正确率感知数据平衡：</strong>每个rollout组内强制保持<strong>正确和错误轨迹的平衡组合</strong>（最佳比例≈0.75-1.0），防止组内全对或全错的退化情况。</p>
+</div>
+<div style="text-align:left;background:rgba(251,113,133,0.03);border:1px solid rgba(251,113,133,0.12);border-radius:10px;padding:18px;">
+<p style="font-size:15px;font-weight:700;color:var(--uniopd);margin-bottom:8px;">👩‍🏫 教师视角：保证监督可靠性</p>
+<p style="font-size:12px;color:var(--text2);line-height:1.9;"><strong>问题：</strong>教师的token级评分在轨迹级聚合后可能出现排序错误——<strong>错误轨迹因局部匹配获得比正确轨迹更高的总分</strong>。</p>
+<p style="font-size:12px;color:var(--text2);line-height:1.9;margin-top:6px;"><strong>核心概念：Order Consistency</strong>——正确轨迹的蒸馏回报 \(G_{OPD}(\tau^+)\) 必须高于错误轨迹 \(G_{OPD}(\tau^-)\)。</p>
+<p style="font-size:12px;color:var(--text2);line-height:1.9;margin-top:6px;"><strong>方案① Margin Mask：</strong>只保留满足 order consistency 的prompt组，丢弃违反的组。</p>
+<p style="font-size:12px;color:var(--text2);line-height:1.9;margin-top:6px;"><strong>方案② Margin Shift（✅ 采用）：</strong>对违反的组施加最小修正量 \(\Delta(q) = \delta - m(q)\)，恢复顺序一致性——保留所有训练数据。</p>
+</div>
+</div></div></section>
+
 <!-- ═══════ 17. Uni-OPD 核心动机：OPD的两个基础瓶颈（左右布局） ═══════ -->
 <section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--uniopd);margin-bottom:6px;">🔶 Uni-OPD 核心动机：OPD 为什么有时有效、有时失效？</h2>
 <div class="paper-split fragment fade-up">
