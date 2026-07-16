@@ -49,6 +49,30 @@
 <div class="struct-content fragment fade-up" style="margin-top:8px;"><p style="text-align:center;">💡 离线 + 在线双重平衡：<strong>离线确保数据的难度谱完整</strong>，<strong>在线确保每个训练步的梯度有信息量</strong>——两者互补，缺一不可。</p></div>
 </div></section>
 
+<!-- ═══════ 23. Uni-OPD 实验结果 + 消融 ═══════ -->
+<section data-transition="slide"><div class="star-card fragment fade-up"><p class="page-badge-r">Uni-OPD · 结果</p><h2 style="font-size:26px;font-weight:700;color:var(--uniopd);margin:8px 0;">📊 关键实验结果与消融</h2><div class="star-bar"></div>
+<div class="two-col fragment fade-up" style="margin-top:10px;">
+<div style="text-align:left;">
+<p style="font-size:13px;font-weight:700;color:var(--gold);margin-bottom:6px;">单教师蒸馏 (LLM · Qwen3-4B)</p>
+<table class="summary-table" style="font-size:10px;"><thead><tr><th>场景</th><th>OPD基线</th><th>Uni-OPD</th><th>Δ</th></tr></thead>
+<tbody>
+<tr><td>Math Avg</td><td>44.6</td><td class="hl">48.7</td><td class="wr">+4.1</td></tr>
+<tr><td>Code Avg</td><td>60.2</td><td class="hl">63.2</td><td class="wr">+3.0</td></tr>
+<tr><td>多教师 Math</td><td>46.6</td><td class="hl">48.5</td><td class="wr">+1.9</td></tr>
+<tr><td>多教师 Code</td><td>60.5</td><td class="hl">63.6</td><td class="wr">+3.1</td></tr>
+</tbody></table>
+<p style="font-size:12px;color:var(--text2);margin-top:6px;"><strong>强到弱 (30B→4B):</strong> Math +1.7, Code +1.8<br/><strong>跨模态 (MLLM学生):</strong> Code +1.5, Math +1.2</p>
+</div>
+<div style="text-align:left;">
+<p style="font-size:13px;font-weight:700;color:var(--gold);margin-bottom:6px;">消融实验</p>
+<div class="concept-block fragment fade-up" style="margin-bottom:4px;"><h4 style="color:var(--uniopd);">1. 离线数据平衡（去掉→性能下降）</h4><p>验证了保留难度多样性的必要性——过滤会丢失informative states。</p></div>
+<div class="concept-block fragment fade-up" style="margin-bottom:4px;"><h4 style="color:var(--uniopd);">2. 在线数据平衡（去掉→性能下降）</h4><p>验证了组内正负样本平衡对梯度信息量的重要性。</p></div>
+<div class="concept-block fragment fade-up" style="margin-bottom:4px;"><h4 style="color:var(--uniopd);">3. 边距校准（去掉→下降最明显）</h4><p>验证了教师监督可靠性是OPD的<strong>关键瓶颈</strong>。</p></div>
+<div class="concept-block fragment fade-up"><h4 style="color:var(--uniopd);">4. Margin Shift > Margin Mask</h4><p>两者都优于基线，Shift略好于Mask——保留更多训练信号。</p></div>
+</div>
+</div>
+<div class="struct-content fragment fade-up" style="margin-top:4px;"><p style="text-align:center;font-size:12px;color:var(--uniopd);"><strong>核心结论：</strong>Uni-OPD的收敛速度比RL快得多（更少优化步数达到更好性能）。OPD蒸馏推理是模态无关的能力——文本和多模态数据联合训练下，per-token信号携带的推理模式独立于模态。</p></div></div></section>
+
 <!-- ═══════ 22. Uni-OPD 实验设计全景 ═══════ -->
 <section data-transition="slide"><div class="star-card fragment fade-up"><p class="page-badge-r">Uni-OPD · 实验</p><h2 style="font-size:26px;font-weight:700;color:var(--uniopd);margin:8px 0;">🧪 实验设计全景：四种蒸馏场景</h2><p style="font-size:13px;color:var(--text2);">5个能力域 · 16个benchmark · Qwen3系列</p><div class="star-bar"></div>
 <table class="summary-table fragment fade-up" style="margin-top:10px;"><thead><tr><th>蒸馏场景</th><th>描述</th><th>示例配置</th></tr></thead>
