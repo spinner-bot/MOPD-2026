@@ -717,3 +717,193 @@
 <div class="concept-block fragment fade-up" style="border-left:3px solid var(--gen);"><h4>Ch12: 安全与幻觉</h4><p><strong>视觉幻觉</strong>/越狱攻击/偏见放大。缓解：RLHF/DPO+对抗训练。</p></div></div></section>
 
 <section data-transition="zoom"><div class="ac-card"><span style="font-size:50px;">🌐</span><h2 style="font-size:24px;font-weight:700;color:var(--vlm);">Part 2+ 完结</h2><div class="ac-bar"></div><p style="font-size:14px;color:var(--text2);">视觉编码器→VLM架构→训练→基准→视频/音频/3D→统一生成→Agent→缩放定律→安全</p></div></section>
+
+<!-- ═══════════ Part 2++: DAG-m2 高亮 ═══════════ -->
+<section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--gen);margin-bottom:6px;">📍 Part 2++ · 训练策略与基准</h2><p style="font-size:11px;color:var(--text3);margin:0 0 6px;">Pipeline深度 · 基准全景 · 行业进展</p>
+<svg viewBox="0 0 1000 250" xmlns="http://www.w3.org/2000/svg" style="max-width:1000px;">
+<defs><marker id="am2pp" markerWidth="6" markerHeight="4" refX="6" refY="2" orient="auto"><path d="M0,0 L6,2 L0,4 Z" fill="rgba(255,255,255,0.25)"/></marker></defs>
+<g opacity="0.3"><rect x="20" y="40" width="110" height="50" rx="10" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.1)"/><text x="75" y="62" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="10" font-weight="700" font-family="sans-serif">P1/1+/2 ✓</text><text x="75" y="78" text-anchor="middle" fill="rgba(255,255,255,0.25)" font-size="8" font-family="sans-serif">奠基·生态·崛起</text></g>
+<g opacity="0.35"><rect x="150" y="40" width="120" height="50" rx="10" fill="rgba(74,222,128,0.06)" stroke="rgba(74,222,128,0.15)"/><text x="210" y="62" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="10" font-weight="700" font-family="sans-serif">P2+ ✓</text><text x="210" y="78" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="8" font-family="sans-serif">深度补充II</text></g>
+<g><rect x="290" y="30" width="200" height="68" rx="12" fill="rgba(251,114,133,0.2)" stroke="rgba(251,114,133,0.7)" stroke-width="2.5"/>
+<text x="390" y="56" text-anchor="middle" fill="#fff" font-size="15" font-weight="800" font-family="sans-serif">✦ Part 2++ ✦</text>
+<text x="390" y="76" text-anchor="middle" fill="rgba(255,255,255,0.8)" font-size="10" font-family="sans-serif">训练策略与基准</text></g>
+<g opacity="0.3"><rect x="520" y="40" width="130" height="50" rx="10" fill="rgba(96,165,250,0.06)" stroke="rgba(96,165,250,0.2)"/>
+<text x="585" y="62" text-anchor="middle" fill="#60a5fa" font-size="12" font-weight="700" font-family="sans-serif">Part 3</text><text x="585" y="78" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="9" font-family="sans-serif">视频·音频·3D</text></g>
+<g opacity="0.3"><rect x="670" y="40" width="160" height="50" rx="10" fill="rgba(183,148,244,0.06)" stroke="rgba(183,148,244,0.2)"/>
+<text x="750" y="62" text-anchor="middle" fill="#b794f4" font-size="12" font-weight="700" font-family="sans-serif">Part 4</text><text x="750" y="78" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="9" font-family="sans-serif">统一·Agent·安全</text></g>
+<text x="500" y="160" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="11" font-family="sans-serif">当前：Part 2++ 训练策略与基准 → Pipeline深度·基准全景·行业进展</text>
+</svg></section>
+
+<!-- ═══════ Part 2++ 内容 (原封不动) ═══════ -->
+<!-- 标题 -->
+<section data-transition="zoom"><div class="ac-card"><p class="cite">MODULE 2 · PART 2++</p><h1 class="hero-title">训练策略与基准</h1><p style="font-size:20px;color:var(--text2);">Pipeline 深度 · 基准全景 · 行业进展</p><div class="ac-bar"></div></div></section>
+
+<!-- ═══════════ 重点A: 训练Pipeline ═══════════ -->
+<section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--aud);margin-bottom:6px;">训练 Pipeline 演化：LLaVA 2阶段 → 现代5-6阶段</h2>
+<table class="summary-table fragment fade-up"><thead><tr><th>阶段</th><th>LLaVA (2023)</th><th>Kwai Keye-VL 1.5 (2025)</th></tr></thead>
+<tbody>
+<tr><td class="pc">0</td><td>—</td><td><strong style="color:var(--aud);">编码器对比学习</strong>（SigLIP风格）</td></tr>
+<tr><td class="pc">1</td><td>对齐预训练（仅训MLP）</td><td>跨模态对齐（仅训MLP）</td></tr>
+<tr><td class="pc">2</td><td>指令微调（全参数）</td><td><strong style="color:var(--vid);">多任务预训练</strong>（全参数，多类型数据）</td></tr>
+<tr><td class="pc">3</td><td>—</td><td><strong style="color:var(--gen);">退火</strong>（高质量数据精调）</td></tr>
+<tr><td class="pc">4</td><td>—</td><td><strong style="color:var(--vlm);">SFT → MPO</strong>（混合偏好优化）</td></tr>
+<tr><td class="pc">5</td><td>—</td><td><strong style="color:var(--vis);">LongCoT → GRPO → Alignment RL</strong></td></tr></tbody></table></section>
+
+<!-- 步骤0: 编码器对比学习 -->
+<section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--aud);margin-bottom:6px;">步骤0：编码器对比学习</h2>
+<div class="two-col"><div class="concept-block fragment fade-up" style="border-left:3px solid var(--aud);"><h4>🔧 如何做</h4><p style="font-size:11px;">在图文对上用<strong style="color:var(--aud);">SigLIP 风格</strong>的对比损失训练视觉编码器。图文匹配的为正样本，不匹配的为负样本——sigmoid 独立判断每对是否匹配。</p></div>
+<div class="concept-block fragment fade-up" style="border-left:3px solid var(--vid);"><h4>💡 为什么需要</h4><p style="font-size:11px;">CLIP 的预训练数据与VLM实际场景存在<strong style="color:var(--vid);">分布差异</strong>。用目标数据重新训练可让编码器更好适配后续VLM任务。</p></div></div></section>
+
+<!-- 名词: SigLIP风格 + 分布差异 -->
+<section data-transition="concave"><h2 style="font-size:22px;font-weight:700;color:var(--vlm);margin-bottom:6px;">名词解释</h2>
+<div class="two-col"><div class="concept-block fragment fade-up" style="border-left:3px solid var(--aud);"><h4>SigLIP 风格</h4><p style="font-size:11px;"><strong>SigLIP</strong> 用 <strong style="color:var(--aud);">sigmoid</strong> 替代 CLIP 的 softmax。CLIP: 每个样本与批次中所有其他样本竞争→需全局归一化。SigLIP: 对每个图文对<strong style="color:var(--aud);">独立判断匹配</strong>(0/1二分类)，不再依赖 batch size。更高效，更适合大规模训练。</p></div>
+<div class="concept-block fragment fade-up" style="border-left:3px solid var(--vid);"><h4>分布差异</h4><p style="font-size:11px;">CLIP 在<strong style="color:var(--vid);">互联网图文对</strong>上训练（alt-text, caption），但 VLM 实际面对的是<strong style="color:var(--vid);">用户提问+多轮对话</strong>。训练数据分布 ≠ 使用场景分布→直接使用会产生性能损失。需要在目标分布上重新对齐。</p></div></div></section>
+
+<!-- 步骤1: 跨模态对齐 -->
+<section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--vlm);margin-bottom:6px;">步骤1：跨模态对齐（仅训练连接器）</h2>
+<div class="two-col"><div class="concept-block fragment fade-up" style="border-left:3px solid var(--vlm);"><h4>🔧 如何做</h4><p style="font-size:11px;"><strong style="color:var(--vlm);">冻结</strong>视觉编码器和LLM，<strong style="color:var(--vlm);">仅训练</strong>中间的MLP投影层。用图文caption数据训练——让投影层学会将视觉特征"翻译"到LLM能理解的嵌入空间。</p></div>
+<div class="concept-block fragment fade-up" style="border-left:3px solid var(--vis);"><h4>💡 为什么需要</h4><p style="font-size:11px;">视觉编码器输出的是视觉特征空间，LLM期待文本嵌入空间。这步是"翻译层"的训练——<strong style="color:var(--vis);">对齐两个原本不相通的表示空间</strong>。冻结大模型保证了不破坏已有能力。</p></div></div></section>
+
+<!-- 名词: MLP投影层 + caption -->
+<section data-transition="concave"><h2 style="font-size:22px;font-weight:700;color:var(--vlm);margin-bottom:6px;">名词解释</h2>
+<div class="two-col"><div class="concept-block fragment fade-up" style="border-left:3px solid var(--vlm);"><h4>MLP 投影层</h4><p style="font-size:11px;"><strong>MLP</strong> = 多层感知机 = 若干全连接层+激活函数。在 LLaVA 中，MLP 将视觉 token 的维度（如 ViT 输出的 1024 维）<strong style="color:var(--vlm);">线性映射</strong>到 LLM 嵌入空间（如 4096 维）。是最简单的连接器——仅做维度变换，不引入复杂结构。</p></div>
+<div class="concept-block fragment fade-up" style="border-left:3px solid var(--aud);"><h4>Caption 数据</h4><p style="font-size:11px;">Caption = <strong style="color:var(--aud);">图像的文字描述</strong>。如"一只橘猫坐在窗台上晒太阳"。用于训练模型看图说话的基本能力。来源：人工标注 / 大模型自动生成（如 ShareGPT4V）。</p></div></div></section>
+
+<!-- 步骤2: 多任务预训练 -->
+<section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--vid);margin-bottom:6px;">步骤2：多任务预训练（全参数）</h2>
+<div class="struct-content fragment fade-up"><strong style="color:var(--vid);">🔧 如何做：</strong>解冻<strong style="color:#fff;">所有参数</strong>（视觉编码器+连接器+LLM），在<strong style="color:#fff;">多种类型数据</strong>上联合训练——caption、VQA、OCR、grounding、交错图文。<br><br><strong style="color:var(--vid);">💡 为什么需要：</strong>步骤1只训练了连接器，视觉和语言模块之间还是"陌生"的。全参数训练让两个模块<strong style="color:#fff;">真正学会协同工作</strong>——视觉编码器学会提取LLM需要的特征，LLM学会利用视觉信息。</div></section>
+
+<!-- 名词: VQA/OCR/grounding -->
+<section data-transition="concave"><h2 style="font-size:22px;font-weight:700;color:var(--vlm);margin-bottom:6px;">名词解释：VQA · OCR · Grounding</h2>
+<div class="tri-grid"><div class="concept-block fragment fade-up" style="border-top:2px solid var(--vis);"><h4>VQA (视觉问答)</h4><p style="font-size:10px;">给一张图+一个问题→模型回答。如"图中有几个人？"→需要<strong style="color:var(--vis);">看图理解+推理</strong>。训练数据：(图, 问题, 答案)三元组。</p></div>
+<div class="concept-block fragment fade-up" style="border-top:2px solid var(--vid);"><h4>OCR (光学字符识别)</h4><p style="font-size:10px;">识别图像中的<strong style="color:var(--vid);">文字</strong>——场景文字(路牌)、文档文字(PDF)、手写文字。VLM 必须"会读"才能理解图表/文档。</p></div>
+<div class="concept-block fragment fade-up" style="border-top:2px solid var(--gen);"><h4>Grounding (视觉定位)</h4><p style="font-size:10px;">根据文字描述在图中<strong style="color:var(--gen);">定位具体区域</strong>——"那个红色的球在哪里？"→输出边界框坐标。让模型学会"指哪看哪"。</p></div></div></section>
+
+<!-- 步骤3: 退火 -->
+<section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--gen);margin-bottom:6px;">步骤3：退火（高质量数据精调）</h2>
+<div class="struct-content fragment fade-up"><strong style="color:var(--gen);">🔧 如何做：</strong>用<strong style="color:#fff;">精选的高质量数据</strong>（通常10-100倍少于预训练数据）以<strong style="color:#fff;">更小的学习率</strong>继续训练。数据严格筛选：答案正确性、格式规范性、任务多样性。<br><br><strong style="color:var(--gen);">💡 为什么需要：</strong>大规模预训练数据中不可避免地包含噪声、错误标注、低质量样本。退火阶段用<strong style="color:#fff;">"纯净"数据</strong>修正模型在被噪声污染后产生的偏差，让模型在关键能力维度上做最后的精细调整。类比冶金：高温锻造后缓慢冷却以消除内应力。</div></section>
+
+<!-- 步骤4-5: 后训练 -->
+<section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--vlm);margin-bottom:6px;">步骤4-5：后训练（SFT→MPO→GRPO→RL）</h2>
+<div class="two-col"><div class="concept-block fragment fade-up" style="border-left:3px solid var(--vlm);"><h4>步骤4: SFT → MPO</h4><p style="font-size:11px;"><strong>SFT：</strong>在高质量指令数据上监督微调。<strong>MPO (混合偏好优化)：</strong>结合多种偏好信号（人类偏好+自动评分+对比信号），让模型学会更符合人类期望的回答。</p></div>
+<div class="concept-block fragment fade-up" style="border-left:3px solid var(--vis);"><h4>步骤5: GRPO → Alignment RL</h4><p style="font-size:11px;"><strong>LongCoT冷启动→GRPO迭代→最终对齐。</strong>整个过程让模型的推理和指令遵循能力螺旋上升。</p></div></div></section>
+
+<!-- 名词: 偏好信号专题 -->
+<section data-transition="concave"><h2 style="font-size:22px;font-weight:700;color:var(--vlm);margin-bottom:6px;">偏好信号专题</h2>
+<div class="tri-grid"><div class="concept-block fragment fade-up" style="border-top:2px solid var(--gen);"><h4>👤 人类偏好</h4><p style="font-size:10px;">让人类标注员<strong style="color:var(--gen);">比较两个回答</strong>，选出更好的一个。数据格式：(图, 问题, 好回答, 差回答)。最可靠但也最昂贵——用于训练奖励模型(RM)或直接DPO优化。</p></div>
+<div class="concept-block fragment fade-up" style="border-top:2px solid var(--vis);"><h4>🤖 自动评分</h4><p style="font-size:10px;">用<strong style="color:var(--vis);">规则/模型</strong>自动打分——如答案正确性(数学题)、格式规范性、与参考答案的相似度。便宜可规模化，但可能被"钻空子"(reward hacking)。</p></div>
+<div class="concept-block fragment fade-up" style="border-top:2px solid var(--vid);"><h4>⚖️ 对比信号</h4><p style="font-size:10px;">不需要绝对评分，只需<strong style="color:var(--vid);">比较两个输出的相对好坏</strong>。DPO/MPO都基于对比信号。优势：相对判断比绝对打分更容易、更一致(人擅长比较，不擅长打分)。</p></div></div></section>
+
+<!-- 名词: 长推理链+ SFT -->
+<section data-transition="concave"><h2 style="font-size:22px;font-weight:700;color:var(--vlm);margin-bottom:6px;">名词解释：LongCoT · SFT</h2>
+<div class="two-col"><div class="concept-block fragment fade-up" style="border-left:3px solid var(--vis);"><h4>LongCoT (长推理链)</h4><p style="font-size:11px;">Chain-of-Thought = 不仅给出答案，还给出<strong style="color:var(--vis);">中间推理步骤</strong>。LongCoT = 很长的推理链(数百token)。如："先分析条件→列方程→逐步求解→验证→最终答案"。用LongCoT数据做SFT可以让模型学会<strong style="color:#fff;">"慢思考"</strong>。</p></div>
+<div class="concept-block fragment fade-up" style="border-left:3px solid var(--aud);"><h4>SFT (监督微调)</h4><p style="font-size:11px;">Supervised Fine-Tuning = 在<strong style="color:var(--aud);">带标签的高质量数据</strong>上训练模型。给定输入，让模型输出尽可能接近标签。损失函数通常是交叉熵。简单、稳定，是RL之前的标准"热身"步骤。</p></div></div></section>
+
+<!-- Step4 精讲: SFT→MPO -->
+<section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--gen);margin-bottom:6px;">步骤4 精讲：SFT → MPO</h2>
+<div class="struct-content fragment fade-up"><strong style="color:var(--gen);">阶段一 SFT (监督微调)：</strong><br>在<strong style="color:#fff;">高质量指令数据</strong>上训练模型。数据包含各种任务类型——VQA、caption、OCR、推理——每种都有明确的输入-输出对。目标是让模型学会<strong style="color:#fff;">理解并遵循</strong>图文指令。损失函数=交叉熵——最大化正确输出的概率。<br><br><strong style="color:var(--gen);">阶段二 MPO (混合偏好优化)：</strong><br>SFT 只教模型"正确回答"，但没教它"什么回答更好"。MPO 引入<strong style="color:#fff;">多种偏好信号</strong>：人类偏好(更好vs更差)、自动评分(正确性/格式)、对比信号(相对好坏)。将这些信号混合加权，训练模型<strong style="color:#fff;">不仅正确，还要符合人类期望</strong>。</div></section>
+
+<!-- Step5 精讲: LongCoT→GRPO→Alignment RL -->
+<section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--vis);margin-bottom:6px;">步骤5 精讲 (上)：LongCoT 冷启动</h2>
+<div class="struct-content fragment fade-up"><strong style="color:var(--vis);">LongCoT 冷启动是什么？</strong><br>用<strong style="color:#fff;">包含长推理链</strong>的高质量数据对模型做 SFT。这些数据中，每个答案都包含<strong style="color:#fff;">完整的推理过程</strong>——"先分析→列步骤→逐步求解→验证"。<br><br><strong style="color:var(--vis);">为什么叫"冷启动"？</strong><br>RL 训练需要一个<strong style="color:#fff;">合理的初始策略</strong>。如果模型完全不会推理，RL 在稀疏奖励下几乎无法起步(与 Module 1 中"梯度场不存在"同理)。先用 LongCoT SFT 让模型获得<strong style="color:#fff;">基本的推理能力</strong>——这就是"冷启动"——然后再用 RL 进一步强化。</div></section>
+
+<section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--vis);margin-bottom:6px;">步骤5 精讲 (下)：GRPO → Alignment RL</h2>
+<div class="struct-content fragment fade-up"><strong style="color:var(--vis);">GRPO (组内相对策略优化)：</strong><br>对同一个问题，模型<strong style="color:#fff;">生成多条回答</strong>(如 8 条)→根据奖励函数(正确性+格式)给每条打分→<strong style="color:#fff;">组内标准化</strong>(减去组内均值，除以组内标准差)→优势高的回答被强化，低的被抑制。不需要单独的 Critic 网络。<br><br><strong style="color:var(--vis);">最终 Alignment RL：</strong><br>在 GRPO 强化推理能力后，用<strong style="color:#fff;">安全/有用性/指令遵循</strong>的奖励函数做最后对齐——确保模型不仅推理强，而且安全可靠、遵循人类意图。</div></section>
+
+<!-- Apple MM1 -->
+<section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--vid);margin-bottom:6px;">Apple MM1：VLM 最系统性的消融实验</h2>
+<div class="struct-content fragment fade-up"><strong style="color:var(--vid);">Apple 2024.03 · 五大核心发现（按重要性排序）：</strong><br><br>① <strong style="color:#fff;">图像分辨率最重要</strong>——增大分辨率带来的增益远超增大编码器或LLM<br>② <strong style="color:#fff;">视觉token数量与分辨率同等重要</strong>——不能靠压缩token来节约成本<br>③ <strong style="color:#fff;">视觉编码器的预训练损失 > 参数量</strong>——好的预训练比更大的模型更重要<br>④ <strong style="color:#fff;">连接器设计影响不大</strong>——MLP ≈ Q-Former ≈ 交叉注意力，数据量大时差异消失<br>⑤ <strong style="color:#fff;">数据混合策略非常关键</strong>——合成caption+交错图文+纯文本按5:3:2最优</div></section>
+
+<!-- 名词: 消融实验 + 预训练 -->
+<section data-transition="concave"><h2 style="font-size:22px;font-weight:700;color:var(--vlm);margin-bottom:6px;">名词解释</h2>
+<div class="two-col"><div class="concept-block fragment fade-up" style="border-left:3px solid var(--vid);"><h4>消融实验 (Ablation)</h4><p style="font-size:11px;">系统性地<strong style="color:var(--vid);">移除或改变一个组件</strong>，观察性能变化。如"去掉OCR数据会怎样？""把分辨率从224换成448？"Apple MM1 用这个方法逐一测试每个设计选择的影响——是最严谨的<strong style="color:#fff;">因果验证</strong>方法。</p></div>
+<div class="concept-block fragment fade-up" style="border-left:3px solid var(--aud);"><h4>视觉编码器的预训练损失</h4><p style="font-size:11px;"><strong>预训练损失越低</strong> = 编码器从原始数据中提取特征的能力越强。MM1 发现：在相同的参数量下，<strong style="color:var(--aud);">预训练更充分</strong>的编码器对下游VLM的贡献远超参数量更大但预训练不足的编码器。</p></div></div></section>
+
+<!-- 连接器+数据混合解释 -->
+<section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--vlm);margin-bottom:6px;">为什么连接器不重要？数据混合为什么关键？</h2>
+<div class="two-col"><div class="concept-block fragment fade-up" style="border-left:3px solid var(--vis);"><h4>🔌 连接器设计影响不大</h4><p style="font-size:11px;">MLP/Q-Former/交叉注意力——三者在<strong style="color:var(--vis);">数据量足够大</strong>时差异消失。因为大量数据让模型有足够的<strong style="color:#fff;">学习机会</strong>去弥补连接器表达力的不足。简单MLP在充足数据下也能学会复杂的跨模态映射。这意味着<strong style="color:var(--vis);">数据 > 架构</strong>。</p></div>
+<div class="concept-block fragment fade-up" style="border-left:3px solid var(--vid);"><h4>📊 数据混合非常关键</h4><p style="font-size:11px;">不同类型数据训练<strong style="color:var(--vid);">不同能力</strong>：caption→看图说话，交错图文→多步推理，纯文本→保持语言能力。配比失衡会导致某些能力过强而另一些退化。<strong style="color:#fff;">5:3:2 是 Apple 消融找到的最优平衡点</strong>。</p></div></div></section>
+
+<!-- 数据混合 -->
+<section data-transition="slide"><h2 style="font-size:20px;font-weight:700;color:var(--aud);margin-bottom:4px;">数据混合与配比</h2>
+<table class="summary-table fragment fade-up"><thead><tr><th>数据类型</th><th>作用</th><th>配比</th><th>代表来源</th></tr></thead>
+<tbody>
+<tr><td class="pc">合成 Caption</td><td>教模型"看图说话"</td><td>45-50%</td><td>VeCap, ShareGPT4V</td></tr>
+<tr><td class="pc">交错图文文档</td><td>多图+文字间推理</td><td>25-30%</td><td>MMC4, OBELICS</td></tr>
+<tr><td class="pc">纯文本数据</td><td>保持LLM文本能力（防遗忘）</td><td>15-20%</td><td>LLM原有训练数据</td></tr>
+<tr><td class="pc">定位数据 (Grounding)</td><td>教模型"指哪看哪"</td><td>5-10%</td><td>RefCOCO, GRIT</td></tr>
+<tr><td class="pc">OCR 数据</td><td>教模型读文字</td><td>3-5%</td><td>OCR-VQA, TextOCR</td></tr></tbody></table></section>
+
+<!-- ═══════════ 重点B: 基准 ═══════════ -->
+<section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--vid);margin-bottom:6px;">基准家族全景：7大能力维度</h2>
+<table class="summary-table fragment fade-up"><thead><tr><th>能力维度</th><th>核心基准</th><th>SOTA (7B级)</th></tr></thead>
+<tbody>
+<tr><td class="pc">通用VQA</td><td>MMBench, MME, MMStar</td><td>83-88 / 55-65</td></tr>
+<tr><td class="pc">跨学科知识</td><td>MMMU (30学科)</td><td>50-60 (7B)</td></tr>
+<tr><td class="pc">OCR/文档</td><td>OCRBench, DocVQA</td><td>78-87</td></tr>
+<tr><td class="pc">视觉数学推理</td><td>MathVista, MathVision</td><td>65-75 / 35-50</td></tr>
+<tr><td class="pc">幻觉检测</td><td>HallusionBench, POPE</td><td>50-60</td></tr>
+<tr><td class="pc">图表理解</td><td>ChartQA, AI2D</td><td>80-88 / 85-92</td></tr>
+<tr><td class="pc">空间推理</td><td>MME-RealWorld</td><td>60-70</td></tr></tbody></table></section>
+
+<!-- 关键新基准 -->
+<section data-transition="slide"><h2 style="font-size:20px;font-weight:700;color:var(--vlm);margin-bottom:4px;">关键新基准详解</h2>
+<div class="two-col"><div class="concept-block fragment fade-up" style="border-left:3px solid var(--vid);"><h4>MMMU：大学水平多学科</h4><p style="font-size:10px;">覆盖<strong>30个学科</strong>（艺术到工程），包含图表/公式/显微镜图像。要求<strong>专家级视觉理解+学科知识</strong>。最能区分"真懂"和"背答案"。</p></div>
+<div class="concept-block fragment fade-up" style="border-left:3px solid var(--gen);"><h4>HallusionBench：幻觉检测</h4><p style="font-size:10px;"><strong>精心设计</strong>的视觉问答——图像中<strong>不存在</strong>所问的东西。衡量模型是否"编造"视觉内容。高分=诚实，而非聪明。</p></div></div></section>
+
+<section data-transition="slide"><h2 style="font-size:20px;font-weight:700;color:var(--vid);margin-bottom:6px;">代表性模型排行榜 (2025-2026)</h2>
+<table class="summary-table fragment fade-up"><thead><tr><th>模型</th><th>MMBench</th><th>MMStar</th><th>MMMU</th><th>MathVista</th><th>OCRBench</th></tr></thead>
+<tbody>
+<tr><td class="pc">InternVL3.5-241B</td><td>91.3</td><td>78.8</td><td>76.4</td><td>81.8</td><td>91.2</td></tr>
+<tr><td class="pc">GLM-4.6V</td><td>88.8</td><td>75.9</td><td>76.0</td><td>85.2</td><td>86.5</td></tr>
+<tr><td class="pc">Qwen2.5-VL-72B</td><td>87.8</td><td>71.1</td><td>67.9</td><td>75.2</td><td>88.1</td></tr>
+<tr><td class="pc">GPT-5</td><td>—</td><td>—</td><td>~75</td><td>—</td><td>—</td></tr></tbody></table></section>
+
+<!-- ═══════════ 非重点C: 行业进展 ═══════════ -->
+<section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--vis);margin-bottom:6px;">行业进展：2024年关键时刻</h2>
+<div class="struct-content"><strong style="color:var(--vis);">2024.05 GPT-4o：</strong>端到端全模态——文本/视觉/音频统一处理，实时语音对话。<br><strong style="color:var(--vid);">2024.02 Sora：</strong>视频生成"ChatGPT时刻"——扩散Transformer+时空patch。<br><strong style="color:var(--gen);">2024.02 Gemini 1.5：</strong>100万token上下文窗口，原生多模态。<br><strong style="color:var(--vlm);">2024 Qwen2.5-VL：</strong>阿里巴巴开源系列，72B达到商业闭源水平。</div></section>
+
+<section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--vid);margin-bottom:6px;">行业进展：2025-2026巅峰</h2>
+<div class="struct-content"><strong style="color:var(--vid);">InternVL3.5-241B：</strong>开源登顶 MMBench 91.3 · <strong style="color:var(--vlm);">GLM-4.6V：</strong>MathVista 85.2 · <strong style="color:var(--gen);">GPT-5：</strong>Any-to-Any MMMU~75 · <strong style="color:var(--vis);">DeepSeek-V4：</strong>OPD替代RL</div></section>
+
+<!-- Any-to-Any 2025关键里程碑 -->
+<section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--vid);margin-bottom:6px;">Any-to-Any：2025 关键里程碑</h2>
+<table class="summary-table fragment fade-up"><thead><tr><th>时间</th><th>模型</th><th>核心贡献</th></tr></thead>
+<tbody>
+<tr><td class="pc">2025.01</td><td><strong>DeepSeek-Janus-Pro</strong></td><td><strong>解耦设计</strong>：理解路径和生成路径分离</td></tr>
+<tr><td class="pc">2025.02</td><td>Qwen3.5 (Alibaba)</td><td>单Transformer从零训练万亿多模态token</td></tr>
+<tr><td class="pc">2025.03</td><td>Gemma 3 (Google)</td><td>128K上下文，140+语言</td></tr>
+<tr><td class="pc">2025.05</td><td><strong>GPT-5</strong> (OpenAI)</td><td>深度融合多模态 + Agent工作流</td></tr>
+<tr><td class="pc">2025.05</td><td><strong>BAGEL</strong> (ByteDance)</td><td>单模型图文视频生成——早期统一I/O</td></tr>
+<tr><td class="pc">2025.06</td><td>Gemini 2.5 Pro (Google)</td><td>200万token上下文，多模态推理</td></tr></tbody></table></section>
+
+<!-- Any-to-Any 2026旗舰 -->
+<section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--gen);margin-bottom:6px;">2026 旗舰模型</h2>
+<table class="summary-table fragment fade-up"><thead><tr><th>模型</th><th>架构</th><th>特征</th></tr></thead>
+<tbody>
+<tr><td class="pc">GPT-5.4</td><td>Native Early Fusion</td><td>从训练开始多模态融合</td></tr>
+<tr><td class="pc">Gemini 3</td><td>Unified Model</td><td>下一代表现飞跃</td></tr>
+<tr><td class="pc">Claude Opus 4.6</td><td>Early Fusion + Agent</td><td>多模态+代理深度结合</td></tr>
+<tr><td class="pc">Qwen3.5-Omni</td><td>Thinker-Talker</td><td>Any-to-Any(文本+图像+音频+视频)</td></tr></tbody></table></section>
+
+<!-- Janus-Pro 解耦设计 -->
+<section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--vlm);margin-bottom:6px;">Janus-Pro：理解与生成的解耦</h2>
+<div class="struct-content fragment fade-up"><strong style="color:var(--vlm);">DeepSeek Janus-Pro 的核心洞察：</strong><br>理解（看图说话）和生成（文生图）的视觉需求<strong style="color:#fff;">完全不同</strong>。<br>• 理解需要<strong style="color:var(--vis);">语义特征</strong>（CLIP式的——关注"这是什么"）<br>• 生成需要<strong style="color:var(--vid);">细节特征</strong>（VQ-VAE式的——关注"像素长什么样"）<br><br>强行用一个视觉编码器同时做两件事 = <strong style="color:#fff;">两件事都做不到最优</strong>。<br>Janus-Pro 用<strong style="color:var(--gen);">两套视觉路径</strong>各自优化——然后统一整合。</div></section>
+
+<!-- ═══════════ 新部分: 架构演进总览 ═══════════ -->
+<section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--aud);margin-bottom:6px;">四大架构时代总览</h2>
+<div class="tri-grid"><div class="concept-block fragment fade-up" style="border-top:2px solid var(--vis);"><h4>Era 1: 双塔对比学习</h4><p style="font-size:10px;">2021-2022 · CLIP/BLIP/Flamingo<br>冻结视觉+冻结文本+可学习桥<br><strong>局限：</strong>只能输出文本</p></div>
+<div class="concept-block fragment fade-up" style="border-top:2px solid var(--vlm);"><h4>Era 2: LLM Bolt-On</h4><p style="font-size:10px;">2023-2024 · LLaVA/GPT-4V<br>LLM做主干，MLP/Q-Former投影视觉<br><strong>突破：</strong>视觉指令微调</p></div>
+<div class="concept-block fragment fade-up" style="border-top:2px solid var(--vid);"><h4>Era 3a: 原生Text-Out</h4><p style="font-size:10px;">2025-2026 · Qwen3.5/Gemini 3<br>单Transformer从零训练混合模态<br><strong>局限：</strong>仍只能输出文本</p></div></div>
+<div style="margin-top:12px;" class="fragment fade-up"><div class="concept-block" style="border-top:2px solid var(--gen);max-width:600px;margin:0 auto;"><h4>Era 3b: 全模态统一 I/O</h4><p style="font-size:10px;">2025-2026 · BAGEL/Qwen3.5-Omni/Janus-Pro · <strong style="color:var(--gen);">真正的 Any-to-Any</strong>——融合主干+专用解码器头，原生生成文本+图像+语音</p></div></div></section>
+
+<section data-transition="slide"><h2 style="font-size:20px;font-weight:700;color:var(--vlm);margin-bottom:6px;">研究趋势 (基于26,000篇论文调查)</h2>
+<table class="summary-table fragment fade-up"><thead><tr><th>指标</th><th>2023</th><th>2024</th><th>2025</th></tr></thead>
+<tbody>
+<tr><td class="pc">VLM/LLM 论文占比</td><td>~16%</td><td>~30%</td><td>~40%</td></tr>
+<tr><td class="pc">扩散模型论文占比</td><td>~8%</td><td>~15%</td><td>~19%</td></tr>
+<tr><td class="pc">LLaVA 被提及率</td><td>0.1%</td><td>1.2%</td><td>2.7%</td></tr></tbody></table>
+<div class="struct-content fragment fade-up" style="margin-top:10px;"><strong style="color:var(--vid);">关键洞察：</strong>训练方法 > 编码器大小。SigLIP 2 (400M) 在大多数 VLM 基准上超过 InternViT-6B (5.9B)。</div></section>
+
+<!-- 完结 -->
+<section data-transition="zoom"><div class="ac-card"><span style="font-size:50px;">📊</span><h2 style="font-size:24px;font-weight:700;color:var(--vlm);">Part 2++ 完结</h2><div class="ac-bar"></div><p style="font-size:14px;color:var(--text2);">训练Pipeline深度 · 基准全景 · 行业进展</p></div></section>
