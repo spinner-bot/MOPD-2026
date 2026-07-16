@@ -71,3 +71,23 @@
 <text x="450" y="152" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="10">Phase 1: 特征对齐——冻结ViT+LLM，仅训练投影层 | Phase 2: 指令微调——解冻LLM，图文指令数据微调</text>
 <text x="450" y="172" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="9">数据：GPT-4 基于图像描述+检测标签生成的"提问-回答"对</text>
 </svg></section>
+
+<!-- Gemini 1.0 -->
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">Gemini 1.0 · 2023.12</span></div>
+<div class="paper-card fragment fade-up"><div class="cite">Google DeepMind · 2023.12 · 首个原生多模态模型</div><div class="title" style="font-size:16px;font-weight:700;color:#fff;">Gemini 1.0 — 原生多模态架构</div><div class="desc" style="font-size:12px;color:var(--text2);line-height:1.7;margin-top:6px;"><strong style="color:var(--vid);">核心创新：</strong>从<strong style="color:#fff;">一开始就设计为统一的多模态模型</strong>——文本、图像、音频、视频在同一个 Transformer 中平等处理，没有独立的视觉编码器和语言模型之分。Ultra 版本在 MMLU 上首次超越人类专家。</div></div></section>
+
+<!-- 原生 vs 非原生 -->
+<section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--vid);margin-bottom:6px;">原生 vs 非原生：两种架构哲学</h2>
+<table class="summary-table fragment fade-up"><thead><tr><th>维度</th><th>非原生 (LLaVA/BLIP-2)</th><th>原生 (Gemini)</th></tr></thead>
+<tbody>
+<tr><td class="pc">训练</td><td>分阶段：视觉预训练→LLM预训练→对齐微调</td><td class="hl">单阶段：从头联合多模态预训练</td></tr>
+<tr><td class="pc">信息流</td><td>图像→桥接层→LLM，单向，有信息瓶颈</td><td class="hl">所有模态token每层双向交互</td></tr>
+<tr><td class="pc">表示空间</td><td>两个不同空间，靠桥接层翻译</td><td class="hl">统一的表示空间，图文token处于同一流形</td></tr>
+<tr><td class="pc">优势</td><td>快速复用已有LLM能力·工程成熟·成本低</td><td class="hl">细粒度理解强·信息保真·原生多模态思维</td></tr>
+<tr><td class="pc">代价</td><td>信息瓶颈·模态割裂·易产生幻觉</td><td class="hl">训练成本极高·文本能力可能略弱</td></tr></tbody></table></section>
+
+<section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--vlm);margin-bottom:6px;">一句总结</h2>
+<div class="def-box fragment fade-up"><div class="label">💡 两种架构哲学</div><div class="content"><strong style="color:var(--vlm);">非原生</strong> = 把视觉模块"外挂"到语言模型上，中间加个翻译器。<br><strong style="color:var(--vid);">原生</strong> = 把所有模态从一开始就当成同一种"语言"，让一个模型从零学会它们的共同语法。<br><br>就像：非原生是把翻译器接到只会中文的人耳边；原生是让这个人从小在多语言环境长大，直接用每种语言思考。</div></div></section>
+
+<!-- 过渡 -->
+<section data-transition="zoom"><div class="ac-card fragment fade-up"><span style="font-size:50px;">🔭</span><h2 style="font-size:24px;font-weight:700;color:var(--vlm);">→ 原生多模态 (2024)</h2><div class="ac-bar"></div><p style="font-size:14px;color:var(--text2);">GPT-4o · Sora · Gemini 1.5——端到端全模态</p></div></section>
