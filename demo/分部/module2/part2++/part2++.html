@@ -9,7 +9,9 @@
 .two-col{display:flex;gap:20px;flex-wrap:wrap;max-width:940px}.two-col>div{flex:1;min-width:260px}.tri-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;max-width:940px}
 .concept-block{background:rgba(20,18,30,0.5);border:1px solid var(--border);border-radius:10px;padding:14px 12px;text-align:left;margin-bottom:6px}.concept-block h4{font-size:12px;color:var(--vlm);margin:0 0 4px}.concept-block p{font-size:10px;color:var(--text2);line-height:1.6;margin:0}
 .page-badge{display:inline-flex;padding:4px 14px;border-radius:14px;font-size:10px;font-weight:700;background:rgba(183,148,244,0.08);color:var(--vlm);border:1px solid rgba(183,148,244,0.2)}
-.summary-table{width:100%;max-width:820px;border-collapse:collapse;font-size:10px;border-radius:10px;overflow:hidden}.summary-table thead{background:linear-gradient(135deg,rgba(183,148,244,0.2),rgba(96,165,250,0.1))}.summary-table th{padding:8px 10px;font-weight:700;color:#fff;font-size:9px}.summary-table td{padding:7px 10px;border-bottom:1px solid var(--border);color:var(--text2)}.summary-table tbody tr{background:rgba(20,18,30,0.4)}.summary-table .pc{font-weight:700;color:#fff}
+.summary-table{width:100%;max-width:880px;border-collapse:collapse;font-size:12px;border-radius:10px;overflow:hidden}.summary-table thead{background:linear-gradient(135deg,rgba(183,148,244,0.2),rgba(96,165,250,0.1))}.summary-table th{padding:11px 14px;font-weight:700;color:#fff;font-size:11px}.summary-table td{padding:10px 14px;border-bottom:1px solid var(--border);color:var(--text2)}.summary-table tbody tr{background:rgba(20,18,30,0.4)}.summary-table .pc{font-weight:700;color:#fff}
+.struct-content{font-size:14px;line-height:2.2;max-width:820px}
+.concept-block{padding:16px 14px}.concept-block h4{font-size:13px}.concept-block p{font-size:11px}
 .reveal .slides section .fragment.fade-up{opacity:0;transform:translateY(30px);transition:all 0.7s}.reveal .slides section .fragment.fade-up.visible{opacity:1;transform:translateY(0)}
 @media(max-width:768px){.hero-title{font-size:28px}.tri-grid{grid-template-columns:1fr}.two-col{flex-direction:column}}
 </style></head><body><canvas id="bg-canvas"></canvas><div id="page-indicator"></div><div class="reveal"><div class="slides">
@@ -92,6 +94,16 @@
 <!-- Apple MM1 -->
 <section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--vid);margin-bottom:6px;">Apple MM1：VLM 最系统性的消融实验</h2>
 <div class="struct-content fragment fade-up"><strong style="color:var(--vid);">Apple 2024.03 · 五大核心发现（按重要性排序）：</strong><br><br>① <strong style="color:#fff;">图像分辨率最重要</strong>——增大分辨率带来的增益远超增大编码器或LLM<br>② <strong style="color:#fff;">视觉token数量与分辨率同等重要</strong>——不能靠压缩token来节约成本<br>③ <strong style="color:#fff;">视觉编码器的预训练损失 > 参数量</strong>——好的预训练比更大的模型更重要<br>④ <strong style="color:#fff;">连接器设计影响不大</strong>——MLP ≈ Q-Former ≈ 交叉注意力，数据量大时差异消失<br>⑤ <strong style="color:#fff;">数据混合策略非常关键</strong>——合成caption+交错图文+纯文本按5:3:2最优</div></section>
+
+<!-- 名词: 消融实验 + 预训练 -->
+<section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--vlm);margin-bottom:6px;">名词解释</h2>
+<div class="two-col"><div class="concept-block fragment fade-up" style="border-left:3px solid var(--vid);"><h4>消融实验 (Ablation)</h4><p style="font-size:11px;">系统性地<strong style="color:var(--vid);">移除或改变一个组件</strong>，观察性能变化。如"去掉OCR数据会怎样？""把分辨率从224换成448？"Apple MM1 用这个方法逐一测试每个设计选择的影响——是最严谨的<strong style="color:#fff;">因果验证</strong>方法。</p></div>
+<div class="concept-block fragment fade-up" style="border-left:3px solid var(--aud);"><h4>视觉编码器的预训练损失</h4><p style="font-size:11px;"><strong>预训练损失越低</strong> = 编码器从原始数据中提取特征的能力越强。MM1 发现：在相同的参数量下，<strong style="color:var(--aud);">预训练更充分</strong>的编码器对下游VLM的贡献远超参数量更大但预训练不足的编码器。</p></div></div></section>
+
+<!-- 连接器+数据混合解释 -->
+<section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--vlm);margin-bottom:6px;">为什么连接器不重要？数据混合为什么关键？</h2>
+<div class="two-col"><div class="concept-block fragment fade-up" style="border-left:3px solid var(--vis);"><h4>🔌 连接器设计影响不大</h4><p style="font-size:11px;">MLP/Q-Former/交叉注意力——三者在<strong style="color:var(--vis);">数据量足够大</strong>时差异消失。因为大量数据让模型有足够的<strong style="color:#fff;">学习机会</strong>去弥补连接器表达力的不足。简单MLP在充足数据下也能学会复杂的跨模态映射。这意味着<strong style="color:var(--vis);">数据 > 架构</strong>。</p></div>
+<div class="concept-block fragment fade-up" style="border-left:3px solid var(--vid);"><h4>📊 数据混合非常关键</h4><p style="font-size:11px;">不同类型数据训练<strong style="color:var(--vid);">不同能力</strong>：caption→看图说话，交错图文→多步推理，纯文本→保持语言能力。配比失衡会导致某些能力过强而另一些退化。<strong style="color:#fff;">5:3:2 是 Apple 消融找到的最优平衡点</strong>。</p></div></div></section>
 
 <!-- 数据混合 -->
 <section data-transition="slide"><h2 style="font-size:20px;font-weight:700;color:var(--aud);margin-bottom:4px;">数据混合与配比</h2>
