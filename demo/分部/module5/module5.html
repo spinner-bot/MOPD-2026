@@ -40,6 +40,24 @@
 <p style="font-size:12px;color:var(--text3);margin-top:12px;">组会报告 · 2026/07</p></div></section>
 
 
+<!-- ═══════ 8. PRISM 核心动机：SFT分布漂移（左右布局） ═══════ -->
+<section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--prism);margin-bottom:6px;">🔷 PRISM 核心动机：SFT 引入的分布漂移</h2>
+<div class="paper-split fragment fade-up">
+<div class="paper-left">
+<p style="font-size:11px;color:var(--text3);margin-bottom:6px;">📄 论文原文摘录 (Sec 1 · Introduction, paraphrased)</p>
+<p>SFT injects foundational reasoning capabilities into the model, but it simultaneously <span class="hl-g">pushes the model away from its original distribution</span>. This <span class="hl-b">distributional drift</span> is particularly severe in multimodal scenarios, manifesting as two <span class="hl-r">heterogeneous</span> forms:</p>
+<p style="margin-top:8px;"><strong>1. Perception Drift（感知漂移）</strong> — visual descriptions lose accuracy; the model "sees" less precisely after SFT.</p>
+<p><strong>2. Reasoning Drift（推理漂移）</strong> — reasoning chains deviate from correct logical paths; the model "thinks" less faithfully.</p>
+<p style="margin-top:8px;color:rgba(251,191,36,0.8);"><strong>Key Finding:</strong> The stronger the model, the <em>more</em> it suffers from SFT drift — because strong models already have good reasoning distributions that SFT may disrupt.</p>
+</div>
+<div class="paper-right">
+<div class="section-label">🔍 核心解读</div>
+<div class="comment"><strong>SFT 不是免费的午餐。</strong>虽然它为模型注入了基础推理能力，但它强制模型模仿一个外部 demonstration policy 的轨迹分布——这会破坏模型原生的推理分布。多模态场景比纯文本更严重，因为"看"和"想"是两种不同的能力，它们的漂移模式也不同。</div>
+<div class="insight">💡 <strong>为什么8B比4B受SFT漂移影响更大？</strong>因为8B的原生推理能力更强(63.3 vs 59.7 avg)，SFT强行覆盖其原生分布时破坏也更大。越强的模型，SFT越要谨慎。</div>
+<div class="warn" style="margin-top:8px;">⚠️ <strong>关键洞察：</strong>感知漂移和推理漂移是<strong>异质的(heterogeneous)</strong>——单一矫正信号无法同时修复两种漂移。这正是PRISM设计MoE判别器的根本动机。</div>
+</div>
+</div></section>
+
 <!-- ═══════ 7. PRISM 标题页 ═══════ -->
 <section data-transition="zoom"><div class="star-card fragment fade-up" style="border-color:rgba(56,189,248,0.25);"><p class="page-badge">Part 2 · PRISM</p><h2 style="font-size:36px;font-weight:800;color:var(--prism);margin:8px 0;">PRISM</h2><p style="font-size:18px;color:var(--text);">Pre-alignment via Black-box On-policy Distillation<br/>for Multimodal Reinforcement Learning</p><div class="star-bar"></div>
 <div class="struct-content" style="text-align:center;margin-top:8px;">
