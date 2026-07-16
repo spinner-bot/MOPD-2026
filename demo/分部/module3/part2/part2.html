@@ -102,6 +102,16 @@
 <div class="warn-box"><div class="label">⚠️ 关键发现</div><div class="content"><strong>冷启动 SFT 对齐是必不可少的</strong>——没有它，文本教师的分布与 VLM 学生的采样分布差距过大（模态鸿沟），蒸馏<strong>完全失败</strong>。这是跨模态蒸馏的铁律。</div></div>
 <div class="struct-content" style="margin-top:4px;"><p><strong>基准：</strong>MMMU-Pro · MathVision · MathVista · LogicVista &nbsp;|&nbsp; <strong>意义：</strong>被 CVPR 2026 收录，成为后续所有 VLM OPD 工作的<strong>核心参考点</strong>。</p></div></div></section>
 
+
+<!-- ═══════ Vision-OPD ═══════ -->
+<section data-transition="slide"><div class="core-card fragment fade-up"><p class="page-badge">自蒸馏 · 范式①典范</p><h2 style="font-size:24px;font-weight:700;color:var(--core);margin:8px 0;">🔬 Vision-OPD：区域→全局的自蒸馏 (2026.05)</h2><p style="font-size:11px;color:var(--nova);margin:2px 0;font-family:monospace;">Qianhao Yuan 等 · arXiv:2605.18740</p><div class="core-bar"></div>
+<div class="green-box"><div class="label">核心发现：区域到全局的感知差距</div><div class="content">MLLM 在<strong>证据中心裁剪（crop）</strong>上回答细粒度问题的准确率显著高于全图条件。这意味着模型<strong>具备「看细节」的能力，但不具备在全图上下文中调用该能力的策略</strong>——就像有显微镜但不知道往哪看。</div></div>
+<div class="two-col" style="max-width:900px;margin-top:8px;">
+<div style="background:rgba(124,92,231,0.05);border:1px solid rgba(124,92,231,0.18);border-radius:10px;padding:14px 16px;text-align:left;"><p style="font-size:12px;font-weight:700;color:var(--core);margin:0 0 6px;">👨‍🏫 教师（冻结副本）</p><p style="font-size:11px;color:var(--text2);margin:0;">条件为<strong>裁剪后的证据区域</strong>（privileged crop）——细节清晰可见</p></div>
+<div style="background:rgba(0,206,201,0.05);border:1px solid rgba(0,206,201,0.18);border-radius:10px;padding:14px 16px;text-align:left;"><p style="font-size:12px;font-weight:700;color:var(--nova);margin:0 0 6px;">🎓 学生（训练副本）</p><p style="font-size:11px;color:var(--text2);margin:0;">条件为<strong>完整图像</strong>（标准推理条件）——视野广但细节模糊</p></div>
+</div>
+<div class="struct-content" style="margin-top:6px;"><p style="text-align:center;"><strong>损失：</strong>token 级 KL 散度 · <strong>零外部依赖：</strong>无需外部教师、无需 GT 标签、无需奖励验证器、无需推理时工具</p><p style="text-align:center;color:var(--nova);">💡 证明「视觉放大」能力可通过自蒸馏<strong>内化</strong>到模型中——而非依赖推理时外部工具调用</p></div></div></section>
+
 </div></div>
 <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.js"></script>
 <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
