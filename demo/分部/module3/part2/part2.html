@@ -147,6 +147,16 @@
 </div>
 <div class="struct-content" style="margin-top:6px;"><p style="text-align:center;color:var(--nova);">💡 核心哲学：<strong>让视觉描述由视觉监督，让推理由推理监督</strong>——将 OPSD 的监督信号按来源解耦。</p></div></div></section>
 
+
+<!-- ═══════ ViCuR ═══════ -->
+<section data-transition="slide"><div class="core-card fragment fade-up"><p class="page-badge">防 Shortcut · 重构者</p><h2 style="font-size:24px;font-weight:700;color:var(--fuse);margin:8px 0;">🟣 ViCuR：可恢复特权 — 不告答案，只告「看哪里」(2026.06)</h2><p style="font-size:11px;color:var(--nova);margin:2px 0;font-family:monospace;">Kanghui Tian 等 · arXiv:2606.05718</p><div class="core-bar"></div>
+<div class="green-box"><div class="label">核心洞察</div><div class="content">在多模态 OPD 中，<strong>教师特权的设计与教师强度同等重要</strong>。如果特权信息在推理时不可获得（如参考答案），学生永远无法真正学会在没有特权时表现好。→ <strong>「可恢复特权」优于「不可恢复特权」</strong>。</div></div>
+<div class="two-col" style="max-width:900px;margin-top:10px;">
+<div style="background:rgba(225,112,85,0.06);border:1px solid rgba(225,112,85,0.2);border-radius:8px;padding:14px;text-align:left;"><p style="font-size:12px;font-weight:700;color:var(--flare);margin:0 0 5px;">❌ 旧范式：答案侧特权</p><p style="font-size:10.5px;color:var(--text2);margin:0;">教师看到参考答案/推理链 → 学生无法自己恢复 → 训练-推理不一致 → 特权幻觉</p></div>
+<div style="background:rgba(0,206,201,0.06);border:1px solid rgba(0,206,201,0.2);border-radius:8px;padding:14px;text-align:left;"><p style="font-size:12px;font-weight:700;color:var(--nova);margin:0 0 5px;">✅ 新范式：视觉线索特权</p><p style="font-size:10.5px;color:var(--text2);margin:0;">教师看到图像证据区域（如高亮/边界框）→ 学生通过提升视觉注意力<strong>有可能自己恢复</strong> → 训练-推理一致</p></div>
+</div>
+<div class="struct-content" style="margin-top:6px;"><p style="text-align:center;color:var(--nova);">💡 ViCuR 重新定义了多模态 OPD 的特权设计原则：<strong>特权应该是学生「可能学会自己找到的东西」——而非永远无法企及的外部答案。</strong></p></div></div></section>
+
 </div></div>
 <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.js"></script>
 <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
