@@ -49,6 +49,19 @@
 <div class="struct-content fragment fade-up" style="margin-top:8px;"><p style="text-align:center;">💡 离线 + 在线双重平衡：<strong>离线确保数据的难度谱完整</strong>，<strong>在线确保每个训练步的梯度有信息量</strong>——两者互补，缺一不可。</p></div>
 </div></section>
 
+<!-- ═══════ 22. Uni-OPD 实验设计全景 ═══════ -->
+<section data-transition="slide"><div class="star-card fragment fade-up"><p class="page-badge-r">Uni-OPD · 实验</p><h2 style="font-size:26px;font-weight:700;color:var(--uniopd);margin:8px 0;">🧪 实验设计全景：四种蒸馏场景</h2><p style="font-size:13px;color:var(--text2);">5个能力域 · 16个benchmark · Qwen3系列</p><div class="star-bar"></div>
+<table class="summary-table fragment fade-up" style="margin-top:10px;"><thead><tr><th>蒸馏场景</th><th>描述</th><th>示例配置</th></tr></thead>
+<tbody>
+<tr><td class="pc">单教师蒸馏 (LLM)</td><td>一个领域专家教师蒸馏到学生</td><td>Math teacher → Qwen3-4B (Math+Code)</td></tr>
+<tr><td class="pc">单教师蒸馏 (MLLM)</td><td>多模态教师蒸馏到多模态学生</td><td>MLLM teacher → Qwen3-VL-4B (Math/Logic/Doc)</td></tr>
+<tr><td class="pc">多教师蒸馏</td><td>合并多个领域专家的能力</td><td>Math + Code + Logic teachers → 单一学生</td></tr>
+<tr><td class="pc">强到弱蒸馏</td><td>大教师 → 小学生，能力差距大</td><td>30B teacher → 4B / 1.7B student</td></tr>
+<tr><td class="pc">跨模态蒸馏</td><td>文本+多模态教师联合训练MLLM学生</td><td>Text LLM + MLLM teachers → MLLM student</td></tr>
+</tbody></table>
+<div class="struct-content fragment fade-up" style="margin-top:8px;"><p style="text-align:center;font-size:13px;">模型：Qwen3-4B/1.7B（文本）、Qwen3-VL-4B/2B（多模态） &nbsp;|&nbsp; 基准覆盖：MATH · CODE · LOGIC · DOC · 多模态推理</p>
+<p style="text-align:center;color:var(--uniopd);">💡 Uni-OPD 的实验设计是<strong>目前OPD领域最全面的</strong>——从LLM到MLLM、从单教师到多教师、从同规模到强到弱</p></div></div></section>
+
 <!-- ═══════ 21. Uni-OPD Order Consistency 边距校准（左右布局） ═══════ -->
 <section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--gold);margin-bottom:4px;">👩‍🏫 教师视角：Order Consistency 与边距校准</h2><p style="font-size:11px;color:var(--text3);margin-bottom:8px;">Outcome-Guided Margin Calibration</p>
 <div class="paper-split fragment fade-up">
