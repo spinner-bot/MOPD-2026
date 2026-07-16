@@ -649,3 +649,71 @@
 
 <!-- 过渡 -->
 <section data-transition="zoom"><div class="ac-card fragment fade-up"><span style="font-size:50px;">🔭</span><h2 style="font-size:24px;font-weight:700;color:var(--vlm);">→ 原生多模态 (2024)</h2><div class="ac-bar"></div><p style="font-size:14px;color:var(--text2);">GPT-4o · Sora · Gemini 1.5——端到端全模态</p></div></section>
+
+<!-- ═══════════ Part 2+: DAG-m2 高亮 ═══════════ -->
+<section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--aud);margin-bottom:6px;">📍 Part 2+ · 深度补充 II</h2><p style="font-size:11px;color:var(--text3);margin:0 0 6px;">视觉编码器 · VLM架构 · 训练 · 基准 · 多模态 · 安全 — Ch2-12全景</p>
+<svg viewBox="0 0 1000 250" xmlns="http://www.w3.org/2000/svg" style="max-width:1000px;">
+<defs><marker id="am2p" markerWidth="6" markerHeight="4" refX="6" refY="2" orient="auto"><path d="M0,0 L6,2 L0,4 Z" fill="rgba(255,255,255,0.25)"/></marker></defs>
+<g opacity="0.35"><rect x="20" y="40" width="120" height="50" rx="10" fill="rgba(183,148,244,0.06)" stroke="rgba(183,148,244,0.15)"/><text x="80" y="62" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="11" font-weight="700" font-family="sans-serif">P1 ✓</text><text x="80" y="78" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="8" font-family="sans-serif">奠基</text></g>
+<g opacity="0.35"><rect x="160" y="40" width="120" height="50" rx="10" fill="rgba(96,165,250,0.06)" stroke="rgba(96,165,250,0.15)"/><text x="220" y="62" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="11" font-weight="700" font-family="sans-serif">P1+ ✓</text><text x="220" y="78" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="8" font-family="sans-serif">CLIP生态</text></g>
+<g opacity="0.35"><rect x="300" y="40" width="120" height="50" rx="10" fill="rgba(251,191,36,0.06)" stroke="rgba(251,191,36,0.15)"/><text x="360" y="62" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="11" font-weight="700" font-family="sans-serif">P2 ✓</text><text x="360" y="78" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="8" font-family="sans-serif">VLM崛起</text></g>
+<g><rect x="440" y="30" width="180" height="68" rx="12" fill="rgba(74,222,128,0.2)" stroke="rgba(74,222,128,0.7)" stroke-width="2.5"/>
+<text x="530" y="56" text-anchor="middle" fill="#fff" font-size="15" font-weight="800" font-family="sans-serif">✦ Part 2+ ✦</text>
+<text x="530" y="76" text-anchor="middle" fill="rgba(255,255,255,0.8)" font-size="10" font-family="sans-serif">深度补充 II</text></g>
+<g opacity="0.3"><rect x="640" y="40" width="130" height="50" rx="10" fill="rgba(251,114,133,0.06)" stroke="rgba(251,114,133,0.2)"/>
+<text x="705" y="62" text-anchor="middle" fill="#fb7185" font-size="12" font-weight="700" font-family="sans-serif">Part 2++</text><text x="705" y="78" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="9" font-family="sans-serif">训练基准</text></g>
+<g opacity="0.3"><rect x="440" y="115" width="160" height="50" rx="10" fill="rgba(96,165,250,0.06)" stroke="rgba(96,165,250,0.2)"/>
+<text x="520" y="137" text-anchor="middle" fill="#60a5fa" font-size="12" font-weight="700" font-family="sans-serif">Part 3</text><text x="520" y="153" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="9" font-family="sans-serif">视频·音频·3D</text></g>
+<g opacity="0.3"><rect x="630" y="115" width="160" height="50" rx="10" fill="rgba(183,148,244,0.06)" stroke="rgba(183,148,244,0.2)"/>
+<text x="710" y="137" text-anchor="middle" fill="#b794f4" font-size="12" font-weight="700" font-family="sans-serif">Part 4</text><text x="710" y="153" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="9" font-family="sans-serif">统一·Agent·安全</text></g>
+<text x="500" y="210" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="11" font-family="sans-serif">当前：Part 2+ 深度补充II → 编码器·架构·训练·基准全景</text>
+</svg></section>
+
+<!-- ═══════ Part 2+ 内容 (原封不动) ═══════ -->
+<section data-transition="zoom"><div class="ac-card"><p class="cite">MODULE 2 · PART 2+</p><h1 class="hero-title">深度补充 II</h1><p style="font-size:20px;color:var(--text2);">视觉编码器 · VLM架构 · 训练 · 基准 · 多模态 · 安全</p><div class="ac-bar"></div></div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">Ch2 · 视觉编码器演进</span></div><h2 style="font-size:22px;font-weight:700;color:var(--vis);margin-bottom:6px;">从 ViT 到多尺度巨人</h2><div class="struct-content">ViT 之后，视觉编码器沿<strong style="color:#fff;">三条路径</strong>演化：① <strong style="color:var(--vis);">层级化</strong>(Swin/ConvNeXt) ② <strong style="color:var(--aud);">自监督</strong>(DINOv2) ③ <strong style="color:var(--vid);">分辨率扩展</strong>(AnyRes/DynamicRes)。</div></section>
+
+<section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--vis);margin-bottom:6px;">路径一：层级化 (Swin / ConvNeXt)</h2>
+<div class="two-col"><div class="concept-block fragment fade-up" style="border-left:3px solid var(--vis);"><h4>🔑 核心思想</h4><p style="font-size:11px;">标准 ViT 所有层使用<strong style="color:var(--vis);">相同的空间分辨率</strong>（14x14 patch）。层级化引入<strong style="color:var(--vis);">金字塔结构</strong>——早期层高分辨率，后期层低分辨率，不同层输出不同尺度的特征图。</p></div>
+<div class="concept-block fragment fade-up" style="border-left:3px solid var(--aud);"><h4>📊 代表模型</h4><p style="font-size:11px;"><strong>Swin Transformer</strong>：窗口注意力+patch合并→层级特征。<strong>ConvNeXt</strong>：卷积风格的ViT。VLM中多尺度特征使模型能同时看清细节和把握全局。</p></div></div></section>
+
+<section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--aud);margin-bottom:6px;">路径二：自监督 (DINOv2)</h2>
+<div class="two-col"><div class="concept-block fragment fade-up" style="border-left:3px solid var(--aud);"><h4>🔑 核心思想</h4><p style="font-size:11px;">不需要图文对，<strong style="color:var(--aud);">纯视觉数据</strong>即可训练。DINOv2 使用<strong style="color:var(--aud);">自蒸馏</strong>：教师网络(EMA更新)指导学生网络。学到的特征<strong style="color:#fff;">语义连续性极强</strong>——相似物体在特征空间自然聚集。</p></div>
+<div class="concept-block fragment fade-up" style="border-left:3px solid var(--vis);"><h4>📊 VLM 中的价值</h4><p style="font-size:11px;"><strong style="color:var(--vis);">低资源场景</strong>：先在大量无标注图像上预训练→少量图文对微调→接近甚至超越CLIP效果。</p></div></div></section>
+
+<section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--vid);margin-bottom:6px;">路径三：分辨率扩展</h2>
+<div class="two-col"><div class="concept-block fragment fade-up" style="border-left:3px solid var(--vid);"><h4>🔑 核心思想</h4><p style="font-size:11px;">CLIP/ViT 最初固定 224x224。AnyRes 将高分辨率图切成多个子图分别编码→拼接送入LLM→<strong style="color:var(--vid);">动态分辨率</strong>支持。</p></div>
+<div class="concept-block fragment fade-up" style="border-left:3px solid var(--gen);"><h4>📊 关键发现 (Apple MM1)</h4><p style="font-size:11px;"><strong style="color:var(--gen);">图像分辨率是VLM性能最重要的单一变量</strong>——超过模型大小、连接器设计。直接提升OCR、文档理解。</p></div></div></section>
+
+<section data-transition="slide"><h2 style="font-size:20px;font-weight:700;color:var(--vis);margin-bottom:4px;">视觉编码器选择决策树 (2026)</h2><div class="struct-content"><strong>通用VLM：</strong>SigLIP-SO400M (性价比最优) 或 EVA-CLIP-18B (性能最强)<br><strong>高分辨率需求：</strong>AnyRes + 层级化编码器<br><strong>3D/视频：</strong>VideoViT / 3D 点云专用编码器<br><strong>低资源：</strong>DINOv2 自监督预训练 + 少量图文对微调</div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">Ch3 · VLM 架构</span></div><h2 style="font-size:22px;font-weight:700;color:var(--vlm);margin-bottom:6px;">VLM 架构：三大连接器家族</h2>
+<div class="tri-grid"><div class="concept-block fragment fade-up"><h4>① 交叉注意力 (Flamingo)</h4><p>在LLM层间插入交叉注意力，视觉特征作K/V。最强表达力，训练成本最高。</p></div>
+<div class="concept-block fragment fade-up"><h4>② Q-Former (BLIP-2)</h4><p>轻量Transformer压缩视觉token→软提示。平衡效果与效率。</p></div>
+<div class="concept-block fragment fade-up"><h4>③ 线性投影 (LLaVA)</h4><p>最简单的MLP映射。视觉token→LLM嵌入空间。最易训练，效果意外地好。</p></div></div></section>
+
+<section data-transition="slide"><h2 style="font-size:20px;font-weight:700;color:var(--vlm);margin-bottom:4px;">LLaVA 家族演化树</h2><div class="struct-content">LLaVA 1.0 → 1.5 → 1.6 → NeXT → OneVision → LLaVA-CoT。<strong style="color:var(--vlm);">核心趋势：分辨率↑，模态融合↑，推理能力↑。</strong></div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">Ch4 · 训练策略</span></div><h2 style="font-size:22px;font-weight:700;color:var(--aud);margin-bottom:6px;">训练 Pipeline 与关键发现</h2>
+<div class="two-col"><div class="concept-block fragment fade-up"><h4>LLaVA 两阶段</h4><p>① 预训练对齐：冻结视觉+LLM，只训练连接器<br>② 指令微调：解冻LLM，多模态指令数据微调</p></div>
+<div class="concept-block fragment fade-up"><h4>Apple MM1 消融发现</h4><p>① 图像分辨率是最重要变量<br>② 视觉token数量 > 连接器设计<br>③ 数据配比：45%+45%+10%</p></div></div></section>
+
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">Ch5 · 基准全景</span></div><h2 style="font-size:22px;font-weight:700;color:var(--vid);margin-bottom:6px;">VLM 评估的完整地图</h2>
+<div class="two-col"><div class="concept-block fragment fade-up"><h4>📊 核心基准</h4><p>MMBench/MME/MMMU/MathVista/OCRBench/VideoMME</p></div>
+<div class="concept-block fragment fade-up"><h4>🔑 2025-2026趋势</h4><p>多维度雷达图·交互式Agent评测·多语言·幻觉独立评测</p></div></div></section>
+
+<section data-transition="slide"><h2 style="font-size:20px;font-weight:700;color:var(--vis);margin-bottom:4px;">Ch6-8: 视频 · 音频 · 3D</h2>
+<div class="tri-grid"><div class="concept-block fragment fade-up" style="border-top:2px solid var(--vid);"><h4>Ch6: 视频理解</h4><p>核心：<strong>时序建模</strong>。四大路线：帧采样/时序Transformer/3D卷积/Memory Bank。</p></div>
+<div class="concept-block fragment fade-up" style="border-top:2px solid var(--gen);"><h4>Ch7: 音频/语音</h4><p>Whisper/SALMONN。<strong>全双工</strong>是圣杯：同时听和说。</p></div>
+<div class="concept-block fragment fade-up" style="border-top:2px solid var(--vlm);"><h4>Ch8: 3D多模态</h4><p>PointLLM→3D-LLM。三条路线：点云/多视图/隐式场。</p></div></div></section>
+
+<section data-transition="slide"><h2 style="font-size:20px;font-weight:700;color:var(--aud);margin-bottom:4px;">Ch9-10: 统一生成 · Agent</h2>
+<div class="two-col"><div class="concept-block fragment fade-up" style="border-left:3px solid var(--vid);"><h4>Ch9: Any-to-Any 统一</h4><p>五大路线：token化/扩散/MoT/解耦(Janus-Pro)/大一统。Bagel开创MoT范式。</p></div>
+<div class="concept-block fragment fade-up" style="border-left:3px solid var(--gen);"><h4>Ch10: 多模态 Agent</h4><p>纯视觉GUI控制。截图→操作指令、动作空间离散化、自我纠错循环。</p></div></div></section>
+
+<section data-transition="slide"><h2 style="font-size:20px;font-weight:700;color:var(--vlm);margin-bottom:4px;">Ch11-12: 缩放定律 · 安全与幻觉</h2>
+<div class="two-col"><div class="concept-block fragment fade-up" style="border-left:3px solid var(--vis);"><h4>Ch11: VLM缩放定律</h4><p>视觉编码器规模>LLM规模。最优数据量幂律增长。<strong>"涌现分辨率"</strong>现象。</p></div>
+<div class="concept-block fragment fade-up" style="border-left:3px solid var(--gen);"><h4>Ch12: 安全与幻觉</h4><p><strong>视觉幻觉</strong>/越狱攻击/偏见放大。缓解：RLHF/DPO+对抗训练。</p></div></div></section>
+
+<section data-transition="zoom"><div class="ac-card"><span style="font-size:50px;">🌐</span><h2 style="font-size:24px;font-weight:700;color:var(--vlm);">Part 2+ 完结</h2><div class="ac-bar"></div><p style="font-size:14px;color:var(--text2);">视觉编码器→VLM架构→训练→基准→视频/音频/3D→统一生成→Agent→缩放定律→安全</p></div></section>
