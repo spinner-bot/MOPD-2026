@@ -1,0 +1,91 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><title>Module 2 · Part 2+: 视觉编码器→安全</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/black.min.css">
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]}};</script>
+<style>
+:root{--bg:#030206;--surface:rgba(20,18,30,0.7);--border:rgba(120,100,180,0.15);--text:#e0dce8;--text2:rgba(210,200,230,0.7);--text3:rgba(160,145,190,0.45);--vlm:#b794f4;--vis:#60a5fa;--aud:#4ade80;--vid:#facc15;--gen:#fb7185}
+#bg-canvas{position:fixed;inset:0;z-index:0;pointer-events:none}.reveal{background:transparent}.reveal .slides section{padding:28px 48px;display:flex!important;flex-direction:column;align-items:center;justify-content:center}.reveal .controls{right:12px!important;bottom:12px!important}#page-indicator{position:fixed;left:24px;bottom:20px;z-index:100;font-size:13px;color:rgba(180,160,210,0.4);font-family:'JetBrains Mono',monospace}
+.ac-card{z-index:2;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:36px 46px;max-width:860px;box-shadow:0 8px 32px rgba(0,0,0,0.6)}.hero-title{font-size:46px;font-weight:800;background:linear-gradient(135deg,var(--vlm),var(--vis),var(--aud),var(--vid),var(--gen));background-size:300%300%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:shift 6s ease infinite}@keyframes shift{0%,100%{background-position:0%50%}25%{background-position:100%0%}50%{background-position:100%100%}75%{background-position:0%100%}}.ac-bar{width:100px;height:2px;background:linear-gradient(90deg,transparent,var(--vlm),var(--vis),var(--aud),var(--vid),transparent);margin:14px auto}
+.struct-content{font-size:13px;color:var(--text2);line-height:2;text-align:left;max-width:780px}.struct-content strong{color:#fff}
+.concept-block{background:rgba(20,18,30,0.5);border:1px solid var(--border);border-radius:10px;padding:14px 12px;text-align:left;margin-bottom:6px}.concept-block h4{font-size:12px;color:var(--vlm);margin:0 0 4px}.concept-block p{font-size:10px;color:var(--text2);line-height:1.6;margin:0}
+.def-box{background:rgba(120,100,180,0.06);border:1px solid rgba(120,100,180,0.2);border-left:3px solid var(--vlm);border-radius:0 10px 10px 0;padding:14px 20px;text-align:left;max-width:750px;margin:8px 0}.def-box .label{font-size:11px;color:var(--vlm);font-weight:700;margin-bottom:4px}.def-box .content{font-size:12px;color:var(--text);line-height:1.8}
+.page-badge{display:inline-flex;padding:4px 14px;border-radius:14px;font-size:10px;font-weight:700;background:rgba(183,148,244,0.08);color:var(--vlm);border:1px solid rgba(183,148,244,0.2)}.cite{font-size:10px;color:var(--vlm);font-family:monospace}
+.reveal .slides section .fragment.fade-up{opacity:0;transform:translateY(30px);transition:all 0.7s}.reveal .slides section .fragment.fade-up.visible{opacity:1;transform:translateY(0)}
+/* 横向滚屏容器 */
+.dag-scroll{width:100%;text-align:center}
+.dag-scroll svg{max-width:100%;height:auto}
+.dag-hl{width:100%;overflow:hidden;position:relative}
+.dag-hl svg{transition:transform 0.6s ease}
+@media(max-width:768px){.hero-title{font-size:28px}}
+</style></head><body><canvas id="bg-canvas"></canvas><div id="page-indicator"></div><div class="reveal"><div class="slides">
+
+<!-- 标题 -->
+<section data-transition="zoom"><div class="ac-card fragment fade-up"><p class="cite">MODULE 2 · PART 1+</p><h1 class="hero-title">深度补充 II</h1><p style="font-size:20px;color:var(--text2);">视觉编码器 · VLM架构 · 训练 · 基准 · 多模态 · 安全</p><div class="ac-bar"></div></div></section>
+
+<!-- DAG全景(横向滚屏) -->
+<!-- Part 2+ content from note06 Ch2-12 -->
+<!-- ═══════════ Ch2: 视觉编码器演进 ═══════════ -->
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">Ch2 · 视觉编码器演进</span></div><h2 style="font-size:22px;font-weight:700;color:var(--vis);margin-bottom:6px;">从 ViT 到多尺度巨人</h2>
+<div class="fragment fade-up struct-content">ViT 之后，视觉编码器沿<strong style="color:#fff;">三条路径</strong>演化：① <strong style="color:var(--vis);">层级化</strong>(Swin/ConvNeXt——多尺度特征) ② <strong style="color:var(--aud);">自监督</strong>(DINOv2——无需标注的视觉理解) ③ <strong style="color:var(--vid);">分辨率扩展</strong>(支持任意分辨率输入)。</div></section>
+
+<section data-transition="slide"><h2 style="font-size:20px;font-weight:700;color:var(--vis);margin-bottom:4px;">2.1 三条演化路径</h2>
+<div class="tri-grid fragment fade-up">
+<div class="concept-block"><h4>层级化 (Swin/ConvNeXt)</h4><p>引入<strong style="color:var(--vis);">多尺度金字塔</strong>结构，不同层输出不同分辨率特征→VLM可利用多尺度视觉信息。</p></div>
+<div class="concept-block"><h4>自监督 (DINOv2)</h4><p>纯视觉自监督训练，无需图文对。学到的特征<strong style="color:var(--aud);">语义连续性极强</strong>——相似物体在特征空间自然聚集。</p></div>
+<div class="concept-block"><h4>分辨率扩展</h4><p>支持<strong style="color:var(--vid);">动态分辨率</strong>输入(非固定224²)。AnyRes/DynamicRes等方案使VLM能看清细节。</p></div></div></section>
+
+<section data-transition="slide"><h2 style="font-size:20px;font-weight:700;color:var(--vis);margin-bottom:4px;">2.4 视觉编码器选择决策树 (2026)</h2>
+<div class="fragment fade-up struct-content"><strong>通用VLM：</strong>SigLIP-SO400M (性价比最优) 或 EVA-CLIP-18B (性能最强)<br><strong>高分辨率需求(文档/图表)：</strong>AnyRes + 层级化编码器<br><strong>3D/视频：</strong>VideoViT / 3D 点云专用编码器<br><strong>低资源：</strong>DINOv2 自监督预训练 + 少量图文对微调</div></section>
+
+<!-- Ch3: VLM架构深度 -->
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">Ch3 · VLM 架构</span></div><h2 style="font-size:22px;font-weight:700;color:var(--vlm);margin-bottom:6px;">VLM 架构：三大连接器家族</h2>
+<div class="tri-grid fragment fade-up">
+<div class="concept-block"><h4>① 交叉注意力 (Flamingo)</h4><p>在LLM层间插入交叉注意力，视觉特征作K/V。最强表达能力，训练成本最高。</p></div>
+<div class="concept-block"><h4>② Q-Former (BLIP-2)</h4><p>轻量Transformer压缩视觉token→作为软提示。平衡效果与效率。</p></div>
+<div class="concept-block"><h4>③ 线性投影 (LLaVA)</h4><p>最简单的MLP映射。视觉token→LLM嵌入空间。最易训练，效果意外地好。</p></div></div></section>
+
+<section data-transition="slide"><h2 style="font-size:20px;font-weight:700;color:var(--vlm);margin-bottom:4px;">LLaVA 家族演化树</h2>
+<div class="fragment fade-up struct-content">LLaVA 1.0 (2023.04) → 1.5 (2023.09, MLP+更高分辨率) → 1.6 (2024.01, 动态分辨率) → NeXT (2024.05, 任意分辨率) → OneVision (2024.08, 统一单图/多图/视频) → LLaVA-CoT (2024.11, 推理链)。<strong style="color:var(--vlm);">核心趋势：分辨率不断提升，模态不断融合，推理能力不断增强。</strong></div></section>
+
+<!-- Ch4: 训练策略 -->
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">Ch4 · 训练策略</span></div><h2 style="font-size:22px;font-weight:700;color:var(--aud);margin-bottom:6px;">训练 Pipeline 与关键发现</h2>
+<div class="two-col fragment fade-up">
+<div class="concept-block"><h4>LLaVA 两阶段</h4><p>① <strong>预训练对齐</strong>：冻结视觉编码器+LLM，只训练连接器→视觉特征对齐到语言空间<br>② <strong>指令微调</strong>：解冻LLM，多模态指令数据微调→模型学会看图回答问题</p></div>
+<div class="concept-block"><h4>Apple MM1 消融发现</h4><p>① <strong>图像分辨率</strong>是最重要的单一变量<br>② 视觉token数量>连接器设计<br>③ 数据混合配比：45% caption + 45% 交错图文 + 10% 纯文本</p></div></div></section>
+
+<!-- Ch5: 基准全景 -->
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">Ch5 · 基准全景</span></div><h2 style="font-size:22px;font-weight:700;color:var(--vid);margin-bottom:6px;">VLM 评估的完整地图</h2>
+<div class="two-col fragment fade-up">
+<div class="concept-block"><h4>📊 核心基准</h4><p>• <strong>MMBench/MME</strong>：通用多模态理解<br>• <strong>MMMU</strong>：大学水平多学科推理<br>• <strong>MathVista</strong>：数学可视化推理<br>• <strong>OCRBench</strong>：文字识别<br>• <strong>VideoMME</strong>：视频理解</p></div>
+<div class="concept-block"><h4>🔑 2025-2026新趋势</h4><p>• 从单一指标→<strong>多维度能力雷达图</strong><br>• 从静态评测→<strong>交互式Agent评测</strong><br>• 从英文→<strong>多语言多文化</strong><br>• 幻觉/安全性<strong>独立评测维度</strong></p></div></div></section>
+
+<!-- Ch6-8: 视频/音频/3D -->
+<section data-transition="slide"><h2 style="font-size:20px;font-weight:700;color:var(--vis);margin-bottom:4px;">Ch6-8: 视频 · 音频 · 3D</h2>
+<div class="tri-grid fragment fade-up">
+<div class="concept-block" style="border-top:2px solid var(--vid);"><h4>Ch6: 视频理解</h4><p>核心挑战：<strong>时序建模</strong>——如何从几十帧中提取运动信息。四大路线：帧采样+平均池化/时序Transformer/3D卷积/Memory Bank。</p></div>
+<div class="concept-block" style="border-top:2px solid var(--gen);"><h4>Ch7: 音频/语音</h4><p>Whisper/SALMONN/Qwen-Audio→语音理解+生成。<strong>全双工</strong>是圣杯：同时听和说，像人类对话一样自然。</p></div>
+<div class="concept-block" style="border-top:2px solid var(--vlm);"><h4>Ch8: 3D多模态</h4><p>Point-BERT→PointLLM→3D-LLM。三条路线：点云→文本/多视图投影/隐式场表示。</p></div></div></section>
+
+<!-- Ch9-10: 统一生成+Agent -->
+<section data-transition="slide"><h2 style="font-size:20px;font-weight:700;color:var(--aud);margin-bottom:4px;">Ch9-10: 统一生成 · Agent</h2>
+<div class="two-col fragment fade-up">
+<div class="concept-block" style="border-left:3px solid var(--vid);"><h4>Ch9: Any-to-Any 统一</h4><p>五大路线：① 多模态token化(将所有模态离散化) ② 扩散统一 ③ MoT混合 ④ 解耦设计(Janus-Pro) ⑤ 大一统Transformer。Bagel (ByteDance 2025) 开创MoT范式。</p></div>
+<div class="concept-block" style="border-left:3px solid var(--gen);"><h4>Ch10: 多模态 Agent</h4><p>从"看懂"到"会用"——纯视觉GUI控制(OS-Atlas/CogAgent)。关键技术：截图→操作指令、动作空间离散化、自我纠错循环。</p></div></div></section>
+
+<!-- Ch11-12: 缩放定律+安全 -->
+<section data-transition="slide"><h2 style="font-size:20px;font-weight:700;color:var(--vlm);margin-bottom:4px;">Ch11-12: 缩放定律 · 安全与幻觉</h2>
+<div class="two-col fragment fade-up">
+<div class="concept-block" style="border-left:3px solid var(--vis);"><h4>Ch11: VLM缩放定律</h4><p>三大发现：① 视觉编码器规模比LLM规模更重要 ② 最优数据量随模型规模幂律增长 ③ 多模态训练存在<strong>"涌现分辨率"</strong>——低于阈值时性能停滞。</p></div>
+<div class="concept-block" style="border-left:3px solid var(--gen);"><h4>Ch12: 安全与幻觉</h4><p>多模态特有风险：① <strong>视觉幻觉</strong>(描述图中不存在的内容) ② <strong>越狱攻击</strong>(通过图像绕过文本安全过滤) ③ <strong>偏见放大</strong>(视觉刻板印象)。缓解方案：RLHF/DPO+对抗训练+检索增强。</p></div></div></section>
+
+<!-- 终章 -->
+<section data-transition="zoom"><div class="ac-card fragment fade-up"><span style="font-size:50px;">🌐</span><h2 style="font-size:24px;font-weight:700;color:var(--vlm);">Part 1+ 完结</h2><div class="ac-bar"></div><p style="font-size:14px;color:var(--text2);">CLIP生态→视觉编码器→VLM架构→训练→基准→视频/音频/3D→统一生成→Agent→缩放定律→安全。<br><strong style="color:var(--vid);">12章 · 笔记06深度补充 · 全部完成。</strong></p></div></section>
+
+</div></div>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.js"></script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<script>(function(){const c=document.getElementById('bg-canvas'),x=c.getContext('2d');let W,H,ribbons=[],frame=0;function rs(){W=c.width=window.innerWidth;H=c.height=window.innerHeight}window.addEventListener('resize',rs);rs();class Ribbon{constructor(){this.reset()}reset(){this.points=[];this.y=H*0.3+Math.random()*H*0.7;this.speed=(Math.random()-0.5)*0.25;this.hue=Math.floor(Math.random()*360);this.light=Math.floor(Math.random()*16+20);this.hueDrift=Math.random()*0.35+0.15;this.lightDrift=(Math.random()-0.5)*0.04;this.yDrift=(Math.random()-0.5)*0.15;const a=Math.random()*0.07+0.05;this.alpha=a;this.alphaStr=a*30;for(let i=0;i<=20;i++)this.points.push({x:i*W/20,y:Math.random()*70-35})}update(){this.y+=this.speed+this.yDrift;this.speed+=(Math.random()-0.5)*0.003;if(this.y<H*0.2||this.y>H+80)this.reset();this.hue+=this.hueDrift;if(this.hue<0)this.hue+=360;if(this.hue>=360)this.hue-=360;this.light+=this.lightDrift;if(this.light<20)this.lightDrift=0.05;if(this.light>35)this.lightDrift=-0.05;for(let p of this.points)p.y+=(Math.random()-0.5)*0.6}draw(ctx){const col=`hsla(${Math.floor(this.hue)},100%,${Math.floor(this.light)}%,`;ctx.save();ctx.globalAlpha=this.alpha;ctx.shadowColor=col+'0.35)';ctx.shadowBlur=20;ctx.beginPath();ctx.moveTo(0,this.y);for(let i=0;i<this.points.length;i++){const px=this.points[i].x,py=this.y+this.points[i].y;if(i<this.points.length-1){const nx=this.points[i+1].x,ny=this.y+this.points[i+1].y;ctx.quadraticCurveTo(px,py,(px+nx)/2,(py+ny)/2)}}ctx.lineTo(W,H);ctx.lineTo(0,H);ctx.closePath();ctx.fillStyle=col+this.alphaStr+')';ctx.fill();ctx.shadowBlur=0;ctx.restore()}}ribbons=Array.from({length:8},()=>new Ribbon());function lp(){x.clearRect(0,0,W,H);const grad=x.createRadialGradient(W/2,H/2,0,W/2,H/2,Math.max(W,H)*0.8);grad.addColorStop(0,'rgba(20,12,30,0.35)');grad.addColorStop(0.5,'rgba(8,5,12,0.12)');grad.addColorStop(1,'rgba(2,1,4,0)');x.fillStyle=grad;x.fillRect(0,0,W,H);const bloom=x.createRadialGradient(W/2+Math.sin(frame*0.003)*W*0.08,H/2+Math.cos(frame*0.004)*H*0.06,Math.min(W,H)*0.03,W/2,H/2,Math.min(W,H)*0.45);bloom.addColorStop(0,'rgba(140,110,200,0.05)');bloom.addColorStop(0.4,'rgba(100,140,200,0.02)');bloom.addColorStop(1,'rgba(0,0,0,0)');x.fillStyle=bloom;x.fillRect(0,0,W,H);ribbons.forEach(r=>{r.update();r.draw(x)});frame++;requestAnimationFrame(lp)}lp()})();</script>
+<script>Reveal.initialize({hash:true,center:true,transition:'slide',transitionSpeed:'slow',backgroundTransition:'zoom',slideNumber:false,progress:false,controls:true,controlsLayout:'bottom-right',navigationMode:'linear',width:1200,height:700,margin:0,minScale:0.2,maxScale:2.0});(function(){const e=document.getElementById('page-indicator');function u(){const t=Reveal.getTotalSlides(),c=Reveal.getSlidePastCount()+1;e.textContent=c+' / '+t}Reveal.on('ready',u);Reveal.on('slidechanged',u)})();</script></body></html>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.js"></script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<script>(function(){const c=document.getElementById('bg-canvas'),x=c.getContext('2d');let W,H,ribbons=[],frame=0;function rs(){W=c.width=window.innerWidth;H=c.height=window.innerHeight}window.addEventListener('resize',rs);rs();class Ribbon{constructor(){this.reset()}reset(){this.points=[];this.y=H*0.3+Math.random()*H*0.7;this.speed=(Math.random()-0.5)*0.25;this.hue=Math.floor(Math.random()*360);this.light=Math.floor(Math.random()*16+20);this.hueDrift=Math.random()*0.35+0.15;this.lightDrift=(Math.random()-0.5)*0.04;this.yDrift=(Math.random()-0.5)*0.15;const a=Math.random()*0.07+0.05;this.alpha=a;this.alphaStr=a*30;for(let i=0;i<=20;i++)this.points.push({x:i*W/20,y:Math.random()*70-35})}update(){this.y+=this.speed+this.yDrift;this.speed+=(Math.random()-0.5)*0.003;if(this.y<H*0.2||this.y>H+80)this.reset();this.hue+=this.hueDrift;if(this.hue<0)this.hue+=360;if(this.hue>=360)this.hue-=360;this.light+=this.lightDrift;if(this.light<20)this.lightDrift=0.05;if(this.light>35)this.lightDrift=-0.05;for(let p of this.points)p.y+=(Math.random()-0.5)*0.6}draw(ctx){const col=`hsla(${Math.floor(this.hue)},100%,${Math.floor(this.light)}%,`;ctx.save();ctx.globalAlpha=this.alpha;ctx.shadowColor=col+'0.35)';ctx.shadowBlur=20;ctx.beginPath();ctx.moveTo(0,this.y);for(let i=0;i<this.points.length;i++){const px=this.points[i].x,py=this.y+this.points[i].y;if(i<this.points.length-1){const nx=this.points[i+1].x,ny=this.y+this.points[i+1].y;ctx.quadraticCurveTo(px,py,(px+nx)/2,(py+ny)/2)}}ctx.lineTo(W,H);ctx.lineTo(0,H);ctx.closePath();ctx.fillStyle=col+this.alphaStr+')';ctx.fill();ctx.shadowBlur=0;ctx.restore()}}ribbons=Array.from({length:8},()=>new Ribbon());function lp(){x.clearRect(0,0,W,H);const grad=x.createRadialGradient(W/2,H/2,0,W/2,H/2,Math.max(W,H)*0.8);grad.addColorStop(0,'rgba(20,12,30,0.35)');grad.addColorStop(0.5,'rgba(8,5,12,0.12)');grad.addColorStop(1,'rgba(2,1,4,0)');x.fillStyle=grad;x.fillRect(0,0,W,H);const bloom=x.createRadialGradient(W/2+Math.sin(frame*0.003)*W*0.08,H/2+Math.cos(frame*0.004)*H*0.06,Math.min(W,H)*0.03,W/2,H/2,Math.min(W,H)*0.45);bloom.addColorStop(0,'rgba(140,110,200,0.05)');bloom.addColorStop(0.4,'rgba(100,140,200,0.02)');bloom.addColorStop(1,'rgba(0,0,0,0)');x.fillStyle=bloom;x.fillRect(0,0,W,H);ribbons.forEach(r=>{r.update();r.draw(x)});frame++;requestAnimationFrame(lp)}lp()})();</script>
+<script>Reveal.initialize({hash:true,center:true,transition:'slide',transitionSpeed:'slow',backgroundTransition:'zoom',slideNumber:false,progress:false,controls:true,controlsLayout:'bottom-right',navigationMode:'linear',width:1200,height:700,margin:0,minScale:0.2,maxScale:2.0});(function(){const e=document.getElementById('page-indicator');function u(){const t=Reveal.getTotalSlides(),c=Reveal.getSlidePastCount()+1;e.textContent=c+' / '+t}Reveal.on('ready',u);Reveal.on('slidechanged',u)})();</script></body></html>
