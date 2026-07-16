@@ -23,6 +23,66 @@
 <!-- ═══════ 标题页 ═══════ -->
 <section data-transition="zoom"><div class="core-card fragment fade-up"><p class="cite">MODULE 3 · PART 2</p><h1 class="hero-title">视觉域：VLM 的 OPD/OPSD</h1><p style="font-size:20px;color:var(--text2);">从奠基到防 Shortcut · 15+ 篇论文的系统演进</p><div class="core-bar"></div><p style="font-size:13px;color:var(--text3);">多模态 OPD 中论文最密集、方法论最成熟的子领域</p></div></section>
 
+
+<!-- ═══════ DAG 知识图谱 ═══════ -->
+<section data-transition="slide"><h2 style="font-size:24px;font-weight:700;color:var(--core);margin-bottom:8px;">Part 2 知识结构图</h2>
+<svg viewBox="0 0 960 440" xmlns="http://www.w3.org/2000/svg" style="max-width:960px;">
+<defs><marker id="a" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><path d="M0,0 L7,2.5 L0,5 Z" fill="rgba(255,255,255,0.2)"/></marker></defs>
+<rect x="330" y="5" width="300" height="30" rx="15" fill="rgba(124,92,231,0.08)" stroke="rgba(124,92,231,0.2)"/>
+<text x="480" y="25" text-anchor="middle" fill="#fff" font-size="13" font-weight="700" font-family="sans-serif">Part 2: 视觉域 — VLM 的 OPD/OPSD</text>
+
+<!-- 演进脉络标签 -->
+<rect x="30" y="50" width="900" height="32" rx="8" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.06)"/>
+<text x="480" y="71" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="10" font-family="sans-serif">演进脉络：奠基 → 自蒸馏 → 防 Shortcut → 解耦感知与推理</text>
+
+<!-- 第1层：奠基 -->
+<rect x="350" y="95" width="260" height="48" rx="10" fill="rgba(253,203,110,0.06)" stroke="rgba(253,203,110,0.2)"/>
+<text x="480" y="116" text-anchor="middle" fill="var(--beam)" font-size="12" font-weight="700" font-family="sans-serif">🏛️ 奠基：VOLD (CVPR 2026)</text>
+<text x="480" y="134" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="9" font-family="sans-serif">首次将 on-policy distillation 引入 VLM</text>
+
+<path d="M480,143 L480,165" marker-end="url(#a)" stroke="rgba(255,255,255,0.12)" stroke-width="1.5"/>
+
+<!-- 第2层：自蒸馏双星 -->
+<rect x="80" y="170" width="360" height="50" rx="10" fill="rgba(124,92,231,0.05)" stroke="rgba(124,92,231,0.18)"/>
+<text x="260" y="192" text-anchor="middle" fill="var(--core)" font-size="11" font-weight="700" font-family="sans-serif">Vision-OPD (2026.05)</text>
+<text x="260" y="210" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="9" font-family="sans-serif">区域→全局 · 视觉放大内化 · 零外部依赖</text>
+
+<rect x="520" y="170" width="360" height="50" rx="10" fill="rgba(0,206,201,0.05)" stroke="rgba(0,206,201,0.18)"/>
+<text x="700" y="192" text-anchor="middle" fill="var(--nova)" font-size="11" font-weight="700" font-family="sans-serif">Visual-OPSD (2026.06)</text>
+<text x="700" y="210" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="9" font-family="sans-serif">视觉思维特权 · 14.3×加速 · 学生超越教师</text>
+
+<path d="M350,143 L180,143 L180,165" marker-end="url(#a)" stroke="rgba(255,255,255,0.1)" stroke-width="1" fill="none"/>
+<path d="M610,143 L780,143 L780,165" marker-end="url(#a)" stroke="rgba(255,255,255,0.1)" stroke-width="1" fill="none"/>
+
+<path d="M260,220 L260,245" marker-end="url(#a)" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+<path d="M700,220 L700,245" marker-end="url(#a)" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+
+<!-- 第3层：防Shortcut三连 -->
+<rect x="30" y="250" width="900" height="28" rx="10" fill="rgba(225,112,85,0.04)" stroke="rgba(225,112,85,0.12)"/>
+<text x="480" y="269" text-anchor="middle" fill="var(--flare)" font-size="10" font-weight="700" font-family="sans-serif">⚠️ 防 Shortcut 三连 (2026.06 同期)：教师特权可能引导学生走"文本捷径"</text>
+
+<rect x="30" y="288" width="280" height="46" rx="8" fill="rgba(225,112,85,0.05)" stroke="rgba(225,112,85,0.15)"/>
+<text x="170" y="308" text-anchor="middle" fill="var(--flare)" font-size="10" font-weight="700" font-family="sans-serif">ViGOS</text>
+<text x="170" y="324" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="8.5" font-family="sans-serif">PALR 诊断 · 三教师解耦</text>
+
+<rect x="340" y="288" width="280" height="46" rx="8" fill="rgba(168,85,247,0.05)" stroke="rgba(168,85,247,0.15)"/>
+<text x="480" y="308" text-anchor="middle" fill="var(--fuse)" font-size="10" font-weight="700" font-family="sans-serif">ViCuR</text>
+<text x="480" y="324" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="8.5" font-family="sans-serif">可恢复特权 · 视觉线索替代答案</text>
+
+<rect x="650" y="288" width="280" height="46" rx="8" fill="rgba(0,206,201,0.05)" stroke="rgba(0,206,201,0.15)"/>
+<text x="790" y="308" text-anchor="middle" fill="var(--nova)" font-size="10" font-weight="700" font-family="sans-serif">V-Zero</text>
+<text x="790" y="324" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="8.5" font-family="sans-serif">零答案标签 · 对比证据门</text>
+
+<path d="M170,334 L170,358" marker-end="url(#a)" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+<path d="M480,334 L480,358" marker-end="url(#a)" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+<path d="M790,334 L790,358" marker-end="url(#a)" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+
+<!-- 第4层：解耦感知与推理 -->
+<rect x="180" y="363" width="600" height="38" rx="10" fill="rgba(168,85,247,0.04)" stroke="rgba(168,85,247,0.12)"/>
+<text x="480" y="380" text-anchor="middle" fill="var(--fuse)" font-size="10" font-weight="700" font-family="sans-serif">🔬 解耦感知与推理：PeRL-VL (门控奖励) + Decomposed OPD (VGS 梯度重定向)</text>
+<text x="480" y="396" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="8" font-family="sans-serif">从「教什么」到「怎么学」的完整方案</text>
+</svg></section>
+
 </div></div>
 <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.js"></script>
 <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
