@@ -158,6 +158,16 @@
 <p style="font-size:10.5px;color:var(--text3);margin:2px 0 6px;">与 LLM-OPD 的逐 token KL 同构：期望在学生自己的轨迹上取，监督来自更强条件下的同款模型</p></div>
 </section>
 
+<!-- ═══════ D-OPSD 三大优势与深层意义 ═══════ -->
+<section data-transition="slide"><p class="page-badge">论文 ① · 优势与意义</p><h2 style="font-size:24px;font-weight:700;color:#fff;margin:8px 0;">D-OPSD：三大关键优势</h2><div class="core-bar"></div>
+<div class="tri-grid" style="margin-top:6px;">
+<div class="concept-block fragment fade-up" style="border-color:rgba(0,206,201,0.25);"><h4 style="color:var(--nova);">✅ 在线策略 · 零分布偏移</h4><p>始终在<strong style="color:#fff;">学生自身的 rollout</strong> 上优化——训练时看到的状态就是推理时会遇到的状态，从根源上消除训练-推理分布偏移。这正是 Part 0 三大瓶颈中「分布漂移」的扩散域解法。</p></div>
+<div class="concept-block fragment fade-up" style="border-color:rgba(253,203,110,0.25);"><h4 style="color:var(--beam);">✅ 无需奖励模型</h4><p>仅需<strong style="color:#fff;">图文对</strong>即可训练：不需要偏好数据、不需要 reward function、不需要人工标注。对比 RLHF/DPO 式的生成模型对齐，数据门槛大幅降低。</p></div>
+<div class="concept-block fragment fade-up" style="border-color:rgba(168,85,247,0.25);"><h4 style="color:var(--fuse);">✅ 学新不忘旧</h4><p><strong style="color:#fff;">LoRA 定制与全量微调</strong>两种方式下，均保留原始的少步生成能力——持续加入新概念 / 新风格而不牺牲步蒸馏成果，与具身域（Part 5）的抗遗忘结论互相印证。</p></div>
+</div>
+<div class="fragment fade-up"><div class="green-box" style="max-width:860px;margin-top:14px;"><div class="label">🌌 深层意义 — OPSD 是通用的分布匹配范式</div><div class="content">D-OPSD 证明 OPSD <strong>不是 LLM 特化的技巧</strong>。它的成立条件只有一条：存在「教师有更多上下文 → 更强预测」的<strong>信息不对称</strong>。策略分布、速度场、生成分布——任何可采样、可对齐的分布，都能套用「学生 on-policy 采样 + 特权教师逐步监督」这一模板。OPD 的边界由此从判别模型正式扩展到<strong>整个生成式建模</strong>。</div></div></div>
+</section>
+
 </div></div>
 <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.js"></script>
 <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
