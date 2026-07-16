@@ -109,6 +109,80 @@
 <div class="green-box" style="margin-top:14px;"><div class="label">✨ 混合后的效果</div><div class="content">OPD 提供<strong>逐 token 的软约束（KL 散度）</strong>——不是 "这一步奖励 +1"，而是 "你这一步输出的分布应该是这样"。RLVR 提供<strong>终点的客观判决</strong>——答案对错、测试通过与否。→ <strong>全程有教师轻声提示，终点有裁判一锤定音。</strong></div></div>
 <div class="struct-content" style="margin-top:6px;"><p style="text-align:center;color:var(--nova);">💡 这是 2026 年最重要的工程趋势——OPD 不再作为独立范式，而是与 RLVR 深度集成。</p></div></div></section>
 
+
+<!-- ═══════ 适用域分析 ═══════ -->
+<section data-transition="slide"><div class="core-card fragment fade-up"><p class="page-badge">适用域分析</p><h2 style="font-size:24px;font-weight:700;color:var(--nova);margin:8px 0;">🎯 "正向容易 · 逆向困难"：OPD+RLVR 的黄金地带</h2><div class="core-bar"></div>
+<div class="def-box" style="border-left-color:var(--nova);"><div class="label" style="color:var(--nova);">核心洞察</div><div class="content">RLVR 适用的前提条件：<strong>存在一个客观的、可自动计算的单向验证函数</strong>。正向判别廉价且无歧义（给你结果 → 瞬间判断对错），逆向生成搜索空间巨大（给你需求 → 生成正确结果极难）。这正是 OPD+RLVR 量身定做的场景。</div></div>
+<div class="two-col" style="max-width:920px;margin-top:10px;">
+<div style="background:rgba(0,206,201,0.05);border:1px solid rgba(0,206,201,0.15);border-radius:8px;padding:14px;text-align:left;">
+<p style="font-size:12px;font-weight:700;color:var(--nova);margin:0 0 6px;">✅ 正向判别容易</p>
+<p style="font-size:10.5px;color:var(--text2);margin:0;">• 代码 → 运行测试（毫秒级）</p>
+<p style="font-size:10.5px;color:var(--text2);margin:0;">• 数学表达式 → 代入验证</p>
+<p style="font-size:10.5px;color:var(--text2);margin:0;">• 动作序列 → 物理引擎仿真</p>
+<p style="font-size:10.5px;color:var(--text2);margin:0;">• 棋局 → 终局胜负规则</p>
+<p style="font-size:10.5px;color:var(--text2);margin:0;">• SQL → 返回结果集比对</p>
+<p style="font-size:10.5px;color:var(--text2);margin:0;">• 化学合成路线 → 产物验证</p>
+</div>
+<div style="background:rgba(225,112,85,0.05);border:1px solid rgba(225,112,85,0.15);border-radius:8px;padding:14px;text-align:left;">
+<p style="font-size:12px;font-weight:700;color:var(--flare);margin:0 0 6px;">❌ 逆向生成困难</p>
+<p style="font-size:10.5px;color:var(--text2);margin:0;">• 需求 → 正确代码（空间巨大）</p>
+<p style="font-size:10.5px;color:var(--text2);margin:0;">• 问题 → 完整推理链</p>
+<p style="font-size:10.5px;color:var(--text2);margin:0;">• 目标 → 最优动作序列</p>
+<p style="font-size:10.5px;color:var(--text2);margin:0;">• 初始状态 → 获胜策略</p>
+<p style="font-size:10.5px;color:var(--text2);margin:0;">• 自然语言 → 精确查询</p>
+<p style="font-size:10.5px;color:var(--text2);margin:0;">• 目标分子 → 合成路径</p>
+</div>
+</div>
+<div class="struct-content" style="margin-top:10px;"><p style="text-align:center;color:var(--beam);"><strong>"单项"不是指简单，而是指存在可自动计算的单向验证函数。</strong>只要这个条件成立，RLVR 提供无偏终极信号，OPD 提供过程护航。</p></div></div></section>
+
+
+<!-- ═══════ PRISM ═══════ -->
+<section data-transition="slide"><div class="core-card fragment fade-up"><p class="page-badge">核心论文</p><h2 style="font-size:24px;font-weight:700;color:var(--core);margin:8px 0;">🟣 PRISM：SFT→OPD预对齐→RLVR 三阶段 (2026.04)</h2><p style="font-size:11px;color:var(--nova);margin:2px 0;font-family:monospace;">Sudong Wang 等（HKUST·清华·NTU·人大·中科大）· arXiv:2604.28123</p><div class="core-bar"></div>
+<div class="warn-box"><div class="label">核心问题</div><div class="content">SFT → RLVR 标准 pipeline 中，SFT 引入的分布漂移在 RL 阶段<strong>复合放大</strong>——感知错误和推理失败互相强化，导致训练崩溃。</div></div>
+<div class="step-flow" style="margin-top:12px;">
+<div class="step" style="border-color:rgba(124,92,231,0.3);"><div class="sn">Stage 1</div><div class="st">SFT 冷启动</div><div class="sd">1.37M 演示数据<br/>Gemini 公开+精选</div></div>
+<div class="step-arrow">→</div>
+<div class="step" style="border-color:rgba(253,203,110,0.4);"><div class="sn" style="color:var(--beam);">Stage 2 · PRISM</div><div class="st">OPD 预对齐</div><div class="sd">MoE判别器<br/>感知专家+推理专家</div></div>
+<div class="step-arrow">→</div>
+<div class="step" style="border-color:rgba(225,112,85,0.3);"><div class="sn" style="color:var(--flare);">Stage 3</div><div class="st">RLVR 优化</div><div class="sd">GRPO/DAPO/GSPO<br/>在已对齐策略上</div></div>
+</div>
+<div class="def-box" style="margin-top:10px;"><div class="label">PRISM 的 MoE 判别器</div><div class="content"><strong>黑盒对抗游戏：</strong>感知专家 \(D_v\) 评估视觉基础 + 推理专家 \(D_r\) 评估逻辑一致性 → 判别分数 \(r(x,y) = \alpha \cdot D_v + (1-\alpha) \cdot D_r\)。<strong>无需教师 logits，支持黑盒 API 模型。</strong></div></div>
+<div class="struct-content" style="margin-top:4px;"><p style="text-align:center;"><strong>效果：</strong>Qwen3-VL 4B +4.4 / 8B +6.0 · 增益跨 RL 算法泛化 · <strong>首次证明 OPD 预对齐是 SFT→RLVR 的必要中间步骤</strong></p></div></div></section>
+
+
+<!-- ═══════ PTD-PO ═══════ -->
+<section data-transition="slide"><div class="core-card fragment fade-up"><p class="page-badge">核心论文</p><h2 style="font-size:24px;font-weight:700;color:var(--fuse);margin:8px 0;">🟣 PTD-PO：教方法不教答案 (2026.06)</h2><p style="font-size:11px;color:var(--nova);margin:2px 0;font-family:monospace;">Shizhe Xiang 等（天大·北理工·新加坡管理大学·小米）· arXiv:2606.07000</p><div class="core-bar"></div>
+<div class="def-box" style="border-left-color:var(--fuse);"><div class="label" style="color:var(--fuse);">核心哲学</div><div class="content">传统 OPD 的特权包含参考答案 → 导致 shortcut。<strong>PTD-PO 构造不暴露答案的特权提示</strong>（空间注意力引导 + 中间推理步骤），教师通过 in-context learning 利用这些提示生成逐步 token 分布监督。</div></div>
+<div class="two-col" style="max-width:900px;margin-top:10px;">
+<div style="background:rgba(225,112,85,0.05);border:1px solid rgba(225,112,85,0.15);border-radius:8px;padding:14px;text-align:left;"><p style="font-size:12px;font-weight:700;color:var(--flare);margin:0 0 6px;">❌ 传统 OPD 特权</p><p style="font-size:10.5px;color:var(--text2);margin:0;">包含<strong>完整参考答案</strong> → 学生学到 "如何映射到答案分布" 而非 "如何看图理解" → 特权幻觉</p></div>
+<div style="background:rgba(0,206,201,0.05);border:1px solid rgba(0,206,201,0.15);border-radius:8px;padding:14px;text-align:left;"><p style="font-size:12px;font-weight:700;color:var(--nova);margin:0 0 6px;">✅ PTD-PO 特权</p><p style="font-size:10.5px;color:var(--text2);margin:0;"><strong>不暴露答案</strong>——只提供空间注意力引导 + 中间推理步骤提示 → 学生仍需自己得出答案</p></div>
+</div>
+<div class="green-box"><div class="label">关键技术：Top-K JSD 稳定化</div><div class="content">在引导/非引导上下文的分布偏移下，聚焦<strong>信息量最高的 token 概率</strong>——既防止 Forward KL 的熵爆炸，又防止 Hard CE 的熵坍塌。</div></div>
+<div class="struct-content" style="margin-top:4px;"><p style="text-align:center;"><strong>效果：</strong>2B–8B LVLM 持续超越 RLVR 和蒸馏基线 · 有效缓解熵坍塌 &nbsp;|&nbsp; <strong>代码：</strong>github.com/XszNeverSleep/PTD-PO</p></div></div></section>
+
+
+<!-- ═══════ HDPO + Distill-R1 ═══════ -->
+<section data-transition="slide"><div class="core-card fragment fade-up"><p class="page-badge">理论 + 工程</p><h2 style="font-size:24px;font-weight:700;color:var(--beam);margin:8px 0;">🟡 HDPO 理论保证 + Distill-R1 开源框架</h2><div class="core-bar"></div>
+<div class="two-col" style="max-width:920px;">
+<div style="background:rgba(225,112,85,0.04);border:1px solid rgba(225,112,85,0.15);border-radius:10px;padding:18px;text-align:left;"><p style="font-size:13px;font-weight:700;color:var(--flare);margin:0 0 8px;">🔴 HDPO (2026.03)</p><p style="font-size:10.5px;color:var(--text2);margin:0 0 4px;">Ke Ding 等 · arXiv:2603.23871</p><p style="font-size:11px;color:var(--text2);margin:0 0 6px;"><strong>核心贡献：理论保证</strong></p><p style="font-size:10.5px;color:var(--text2);margin:0;">过滤后的特权生成在硬阈值极限下<strong>精确恢复最优 KL 正则化 RL 策略</strong>。这为 OPD+RL 混合方法首次提供了坚实的理论根基——不再是工程直觉，而是有数学保证。</p></div>
+<div style="background:rgba(0,206,201,0.04);border:1px solid rgba(0,206,201,0.15);border-radius:10px;padding:18px;text-align:left;"><p style="font-size:13px;font-weight:700;color:var(--nova);margin:0 0 8px;">🟢 Distill-R1 (2026.03)</p><p style="font-size:10.5px;color:var(--text2);margin:0 0 4px;">ByungKwan Lee 等 · github.com/ByungKwanLee/Distill-R1</p><p style="font-size:11px;color:var(--text2);margin:0 0 6px;"><strong>核心贡献：工程标准化</strong></p><p style="font-size:10.5px;color:var(--text2);margin:0;">首个<strong>开源 VLM RL+在线师生蒸馏框架</strong>。支持 Qwen2-VL / 2.5-VL / 3-VL，兼容 GRPO / DAPO / REINFORCE++ / RLOO / GSPO / CISPO / SAPO 七种 RL 算法。标准化了 VLM OPD+RL 的实验基准。</p></div>
+</div>
+<div class="struct-content" style="margin-top:10px;"><p style="text-align:center;color:var(--nova);">💡 HDPO 给理论、Distill-R1 给工具——两者共同标志着<strong>OPD+RL 混合范式从实验走向成熟</strong>。</p></div></div></section>
+
+
+<!-- ═══════ 对比表 ═══════ -->
+<section data-transition="slide"><h2 style="font-size:24px;font-weight:700;color:var(--beam);margin-bottom:10px;">📊 RL+OPD 混合系统对比</h2>
+<table class="summary-table fragment fade-up"><thead><tr><th>维度</th><th>🟣 PRISM</th><th>🟣 PTD-PO</th><th>🔴 HDPO</th><th>🟢 Distill-R1</th></tr></thead>
+<tbody>
+<tr><td class="pc">时间</td><td>2026.04</td><td>2026.06</td><td>2026.03</td><td>2026.03</td></tr>
+<tr><td class="pc">OPD 角色</td><td>独立预对齐阶段</td><td>特权辅导辅助损失</td><td>隐式 KL 正则化</td><td>在线师生蒸馏框架</td></tr>
+<tr><td class="pc">教师类型</td><td class="hl">黑盒 MoE 判别器</td><td>特权提示 ICL 教师</td><td>过滤生成式教师</td><td>冻结 VLM 副本</td></tr>
+<tr><td class="pc">核心创新</td><td>SFT→OPD→RLVR<br/>三阶段流水线</td><td class="hl">不暴露答案的特权<br/>Top-K JSD 稳定化</td><td>理论保证<br/>等价最优 KL-RL</td><td>首个开源框架<br/>兼容7种RL算法</td></tr>
+<tr><td class="pc">主要贡献</td><td>首次证明 OPD 预对齐<br/>是必要中间步骤</td><td class="hl">重新定义特权设计<br/>有效缓解熵坍塌</td><td>为混合方法<br/>提供理论根基</td><td>标准化实验基准<br/>降低工程门槛</td></tr>
+<tr><td class="pc">代表效果</td><td>4B +4.4 / 8B +6.0</td><td>2B–8B 持续超越基线</td><td>理论收敛保证</td><td>7种RL算法兼容</td></tr>
+</tbody></table>
+<div class="struct-content" style="margin-top:10px;"><p style="text-align:center;color:var(--nova);">💡 从<strong>理论保证</strong>（HDPO）到<strong>工程落地</strong>（Distill-R1），再到<strong>系统化方案</strong>（PRISM）和<strong>特权设计革新</strong>（PTD-PO）——四篇论文完整覆盖了 OPD+RL 混合的全栈。</p></div></section>
+
 </div></div>
 <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.js"></script>
 <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
