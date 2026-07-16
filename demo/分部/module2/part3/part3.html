@@ -82,7 +82,28 @@
 </svg></section>
 
 <!-- TPO -->
-<section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--vid);margin-bottom:6px;">TPO：时序偏好优化</h2>
+<!-- 四大路线精讲 A -->
+<section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--vis);margin-bottom:6px;">路线A精讲：位置编码增强 (M-RoPE)</h2>
+<div class="two-col"><div class="concept-card fragment fade-up" style="border-left:3px solid var(--vis);"><h4>🔑 核心思想</h4><p style="font-size:11px;">将传统 1D 位置编码扩展为<strong style="color:var(--vis);">三维独立编码</strong>：时间维度(T)、高度(H)、宽度(W)。每个维度有自己的旋转频率——模型学会区分"同一位置但不同时间"和"同一时间但不同位置"。</p></div>
+<div class="concept-card fragment fade-up" style="border-left:3px solid var(--aud);"><h4>📊 效果</h4><p style="font-size:11px;">代表：<strong>Qwen2-VL</strong>。M-RoPE 使模型能同时理解<strong style="color:var(--aud);">空间关系</strong>（上下左右）和<strong style="color:var(--aud);">时序关系</strong>（前后帧），无需额外时序模块。</p></div></div></section>
+
+<!-- 四大路线精讲 B -->
+<section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--vid);margin-bottom:6px;">路线B精讲：专用时序编码器 (Mamba/3D Conv)</h2>
+<div class="two-col"><div class="concept-card fragment fade-up" style="border-left:3px solid var(--vid);"><h4>🔑 核心思想</h4><p style="font-size:11px;">在 ViT 提取每帧特征<strong style="color:var(--vid);">之后</strong>，插入一个专门处理<strong style="color:var(--vid);">时间维度</strong>的模块。STORM 用 Mamba（状态空间模型）处理帧序列；VideoLLaMA2 用 3D 卷积同时聚合时空信息。</p></div>
+<div class="concept-card fragment fade-up" style="border-left:3px solid var(--gen);"><h4>📊 Mamba 优势</h4><p style="font-size:11px;">Mamba 的选择性状态空间机制：<strong style="color:var(--gen);">根据输入内容自动决定记住什么、遗忘什么</strong>——比 Transformer 更高效处理长序列。STORM 因此实现 <strong style="color:#fff;">8× 计算降低</strong>。</p></div></div></section>
+
+<!-- 四大路线精讲 C -->
+<section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--aud);margin-bottom:6px;">路线C精讲：循环/记忆机制 (VideoLLaMB)</h2>
+<div class="struct-content fragment fade-up">将长视频分成多个<strong style="color:var(--aud);">片段 (segment)</strong>逐段处理。每个片段提取特征后，通过<strong style="color:#fff;">循环记忆桥 (Recurrent Memory Bridge)</strong>将前一段的语义信息传递给下一段——记忆 token 跨越片段边界传递上下文。<br><br><strong style="color:var(--aud);">关键优势：</strong>支持<strong style="color:#fff;">流式处理</strong>——可以处理无限长的视频流，不需要一次性装入所有帧。内存消耗恒定，不随视频长度增长。在 Video-MME 上提升 <strong style="color:#fff;">+4.2pt</strong>。</div></section>
+
+<!-- 四大路线精讲 D -->
+<section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--gen);margin-bottom:6px;">路线D精讲：Token 筛选/压缩 (FlexSelect)</h2>
+<div class="struct-content fragment fade-up"><strong style="color:var(--gen);">核心问题：</strong>视频中大多数帧是冗余的——相邻帧几乎相同。为什么要给每一帧都计算 token？<br><br><strong style="color:var(--gen);">FlexSelect 方案：</strong>通过<strong style="color:#fff;">跨模态注意力</strong>自动评估每一帧与文本查询的相关性——只选择<strong style="color:#fff;">最关键的帧</strong>送入 LLM。NeurIPS 2025 上的结果显示 <strong style="color:#fff;">9× 加速</strong>——去掉 90% 的帧，性能几乎不降。<br><br><strong style="color:var(--gen);">核心洞察：</strong>"看"不需要"看清每一帧"——人类看视频时也在不断跳跃注意力。</div></section>
+
+<!-- TPO展开 -->
+<section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--vid);margin-bottom:6px;">TPO：时序偏好优化 — 深入讲解</h2>
+<div class="two-col"><div class="concept-card fragment fade-up" style="border-left:3px solid var(--vid);"><h4>🔑 偏好对如何生成</h4><p style="font-size:11px;">不需要人工标注！通过对<strong style="color:var(--vid);">视频输入做手脚</strong>自动构造：<br>① <strong>正样本</strong>：给模型看<strong style="color:#fff;">完整视频</strong>→生成回答<br>② <strong>负样本A</strong>：给模型看<strong style="color:#fff;">不相关帧</strong>（随机打乱帧顺序）<br>③ <strong>负样本B</strong>：给模型看<strong style="color:#fff;">不完整帧</strong>（删除部分关键帧）<br>因此偏好信号=完整视频 > 打乱帧 ≈ 缺帧。</p></div>
+<div class="concept-card fragment fade-up" style="border-left:3px solid var(--aud);"><h4>📊 DPO 训练过程</h4><p style="font-size:11px;">用生成的 (正样本, 负样本) 偏好对，通过 DPO 训练模型——最大化完整视频回答的概率，最小化残缺/打乱视频回答的概率。LLaVA-Video-TPO 借此从 <strong style="color:var(--aud);">63.3% → 71.5%</strong>。关键在于<strong style="color:#fff;">不需要昂贵的人工标注</strong>。</p></div></div></section>
 <div class="two-col"><div class="concept-card fragment fade-up" style="border-left:3px solid var(--vid);"><h4>🔑 核心创新</h4><p style="font-size:11px;">不依赖人工标注——通过<strong style="color:var(--vid);">操纵视频输入</strong>自动生成偏好对。给模型看 (a) 不相关帧 (b) 不完整帧 作为"负样本"，完整视频作为"正样本"，用 DPO 训练。</p></div>
 <div class="concept-card fragment fade-up" style="border-left:3px solid var(--aud);"><h4>📊 效果</h4><p style="font-size:11px;">LLaVA-Video-TPO 在 Video-MME 上从 <strong style="color:#fff;">63.3% → 71.5%</strong> (+8.2)，成为 7B 视频 VLM 的 <strong style="color:var(--aud);">SOTA</strong>。通过偏好信号替代昂贵的人工标注。</p></div></div></section>
 
