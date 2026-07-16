@@ -95,3 +95,47 @@
 
 <section data-transition="slide"><h2 style="font-size:20px;font-weight:700;color:var(--vis);margin-bottom:4px;">2.4 视觉编码器选择决策树 (2026)</h2>
 <div class="fragment fade-up struct-content"><strong>通用VLM：</strong>SigLIP-SO400M (性价比最优) 或 EVA-CLIP-18B (性能最强)<br><strong>高分辨率需求(文档/图表)：</strong>AnyRes + 层级化编码器<br><strong>3D/视频：</strong>VideoViT / 3D 点云专用编码器<br><strong>低资源：</strong>DINOv2 自监督预训练 + 少量图文对微调</div></section>
+
+<!-- Ch3: VLM架构深度 -->
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">Ch3 · VLM 架构</span></div><h2 style="font-size:22px;font-weight:700;color:var(--vlm);margin-bottom:6px;">VLM 架构：三大连接器家族</h2>
+<div class="tri-grid fragment fade-up">
+<div class="concept-block"><h4>① 交叉注意力 (Flamingo)</h4><p>在LLM层间插入交叉注意力，视觉特征作K/V。最强表达能力，训练成本最高。</p></div>
+<div class="concept-block"><h4>② Q-Former (BLIP-2)</h4><p>轻量Transformer压缩视觉token→作为软提示。平衡效果与效率。</p></div>
+<div class="concept-block"><h4>③ 线性投影 (LLaVA)</h4><p>最简单的MLP映射。视觉token→LLM嵌入空间。最易训练，效果意外地好。</p></div></div></section>
+
+<section data-transition="slide"><h2 style="font-size:20px;font-weight:700;color:var(--vlm);margin-bottom:4px;">LLaVA 家族演化树</h2>
+<div class="fragment fade-up struct-content">LLaVA 1.0 (2023.04) → 1.5 (2023.09, MLP+更高分辨率) → 1.6 (2024.01, 动态分辨率) → NeXT (2024.05, 任意分辨率) → OneVision (2024.08, 统一单图/多图/视频) → LLaVA-CoT (2024.11, 推理链)。<strong style="color:var(--vlm);">核心趋势：分辨率不断提升，模态不断融合，推理能力不断增强。</strong></div></section>
+
+<!-- Ch4: 训练策略 -->
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">Ch4 · 训练策略</span></div><h2 style="font-size:22px;font-weight:700;color:var(--aud);margin-bottom:6px;">训练 Pipeline 与关键发现</h2>
+<div class="two-col fragment fade-up">
+<div class="concept-block"><h4>LLaVA 两阶段</h4><p>① <strong>预训练对齐</strong>：冻结视觉编码器+LLM，只训练连接器→视觉特征对齐到语言空间<br>② <strong>指令微调</strong>：解冻LLM，多模态指令数据微调→模型学会看图回答问题</p></div>
+<div class="concept-block"><h4>Apple MM1 消融发现</h4><p>① <strong>图像分辨率</strong>是最重要的单一变量<br>② 视觉token数量>连接器设计<br>③ 数据混合配比：45% caption + 45% 交错图文 + 10% 纯文本</p></div></div></section>
+
+<!-- Ch5: 基准全景 -->
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">Ch5 · 基准全景</span></div><h2 style="font-size:22px;font-weight:700;color:var(--vid);margin-bottom:6px;">VLM 评估的完整地图</h2>
+<div class="two-col fragment fade-up">
+<div class="concept-block"><h4>📊 核心基准</h4><p>• <strong>MMBench/MME</strong>：通用多模态理解<br>• <strong>MMMU</strong>：大学水平多学科推理<br>• <strong>MathVista</strong>：数学可视化推理<br>• <strong>OCRBench</strong>：文字识别<br>• <strong>VideoMME</strong>：视频理解</p></div>
+<div class="concept-block"><h4>🔑 2025-2026新趋势</h4><p>• 从单一指标→<strong>多维度能力雷达图</strong><br>• 从静态评测→<strong>交互式Agent评测</strong><br>• 从英文→<strong>多语言多文化</strong><br>• 幻觉/安全性<strong>独立评测维度</strong></p></div></div></section>
+
+<!-- Ch6-8: 视频/音频/3D -->
+<section data-transition="slide"><h2 style="font-size:20px;font-weight:700;color:var(--vis);margin-bottom:4px;">Ch6-8: 视频 · 音频 · 3D</h2>
+<div class="tri-grid fragment fade-up">
+<div class="concept-block" style="border-top:2px solid var(--vid);"><h4>Ch6: 视频理解</h4><p>核心挑战：<strong>时序建模</strong>——如何从几十帧中提取运动信息。四大路线：帧采样+平均池化/时序Transformer/3D卷积/Memory Bank。</p></div>
+<div class="concept-block" style="border-top:2px solid var(--gen);"><h4>Ch7: 音频/语音</h4><p>Whisper/SALMONN/Qwen-Audio→语音理解+生成。<strong>全双工</strong>是圣杯：同时听和说，像人类对话一样自然。</p></div>
+<div class="concept-block" style="border-top:2px solid var(--vlm);"><h4>Ch8: 3D多模态</h4><p>Point-BERT→PointLLM→3D-LLM。三条路线：点云→文本/多视图投影/隐式场表示。</p></div></div></section>
+
+<!-- Ch9-10: 统一生成+Agent -->
+<section data-transition="slide"><h2 style="font-size:20px;font-weight:700;color:var(--aud);margin-bottom:4px;">Ch9-10: 统一生成 · Agent</h2>
+<div class="two-col fragment fade-up">
+<div class="concept-block" style="border-left:3px solid var(--vid);"><h4>Ch9: Any-to-Any 统一</h4><p>五大路线：① 多模态token化(将所有模态离散化) ② 扩散统一 ③ MoT混合 ④ 解耦设计(Janus-Pro) ⑤ 大一统Transformer。Bagel (ByteDance 2025) 开创MoT范式。</p></div>
+<div class="concept-block" style="border-left:3px solid var(--gen);"><h4>Ch10: 多模态 Agent</h4><p>从"看懂"到"会用"——纯视觉GUI控制(OS-Atlas/CogAgent)。关键技术：截图→操作指令、动作空间离散化、自我纠错循环。</p></div></div></section>
+
+<!-- Ch11-12: 缩放定律+安全 -->
+<section data-transition="slide"><h2 style="font-size:20px;font-weight:700;color:var(--vlm);margin-bottom:4px;">Ch11-12: 缩放定律 · 安全与幻觉</h2>
+<div class="two-col fragment fade-up">
+<div class="concept-block" style="border-left:3px solid var(--vis);"><h4>Ch11: VLM缩放定律</h4><p>三大发现：① 视觉编码器规模比LLM规模更重要 ② 最优数据量随模型规模幂律增长 ③ 多模态训练存在<strong>"涌现分辨率"</strong>——低于阈值时性能停滞。</p></div>
+<div class="concept-block" style="border-left:3px solid var(--gen);"><h4>Ch12: 安全与幻觉</h4><p>多模态特有风险：① <strong>视觉幻觉</strong>(描述图中不存在的内容) ② <strong>越狱攻击</strong>(通过图像绕过文本安全过滤) ③ <strong>偏见放大</strong>(视觉刻板印象)。缓解方案：RLHF/DPO+对抗训练+检索增强。</p></div></div></section>
+
+<!-- 终章 -->
+<section data-transition="zoom"><div class="ac-card fragment fade-up"><span style="font-size:50px;">🌐</span><h2 style="font-size:24px;font-weight:700;color:var(--vlm);">Part 1+ 完结</h2><div class="ac-bar"></div><p style="font-size:14px;color:var(--text2);">CLIP生态→视觉编码器→VLM架构→训练→基准→视频/音频/3D→统一生成→Agent→缩放定律→安全。<br><strong style="color:var(--vid);">12章 · 笔记06深度补充 · 全部完成。</strong></p></div></section>
