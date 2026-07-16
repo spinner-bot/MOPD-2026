@@ -168,6 +168,21 @@
 <div class="fragment fade-up"><div class="green-box" style="max-width:860px;margin-top:14px;"><div class="label">🌌 深层意义 — OPSD 是通用的分布匹配范式</div><div class="content">D-OPSD 证明 OPSD <strong>不是 LLM 特化的技巧</strong>。它的成立条件只有一条：存在「教师有更多上下文 → 更强预测」的<strong>信息不对称</strong>。策略分布、速度场、生成分布——任何可采样、可对齐的分布，都能套用「学生 on-policy 采样 + 特权教师逐步监督」这一模板。OPD 的边界由此从判别模型正式扩展到<strong>整个生成式建模</strong>。</div></div></div>
 </section>
 
+<!-- ═══════ LiveTalk ═══════ -->
+<section data-transition="slide"><p class="page-badge">论文 ② · 视频扩散</p><h2 style="font-size:24px;font-weight:700;color:#fff;margin:8px 0;">LiveTalk：实时交互视频生成的改进 OPD</h2>
+<p class="cite">Real-Time Multimodal Interactive Video Diffusion via Improved On-Policy Distillation</p>
+<p style="font-size:11px;color:var(--text3);">arXiv 2512.23576（2025.12）</p><div class="core-bar"></div>
+<div class="two-col" style="margin-top:4px;">
+<div class="fragment fade-up"><div class="def-box" style="max-width:none;height:100%;box-sizing:border-box;"><div class="label">🎬 任务场景</div><div class="content"><strong>实时多模态交互式视频生成</strong>：文本、图像、音频多路条件同时驱动，面向实时化身（avatar）系统——多轮对话中形象与动作必须保持一致。</div></div></div>
+<div class="fragment fade-up"><div class="warn-box" style="max-width:none;height:100%;box-sizing:border-box;"><div class="label">⚠️ 核心挑战</div><div class="content">视频扩散模型的多步采样太慢，无法实时；而朴素的少步蒸馏在<strong>多模态条件</strong>下会产生<strong>视觉伪影</strong>——LiveTalk 通过<strong>改进的 on-policy distillation</strong> 专门解决这一问题。</div></div></div>
+</div>
+<div class="two-col fragment fade-up" style="margin-top:12px;max-width:820px;">
+<div style="background:rgba(20,18,30,0.55);border:1px solid rgba(253,203,110,0.25);border-radius:12px;padding:18px;"><p style="font-size:40px;font-weight:800;margin:0;background:linear-gradient(135deg,var(--beam),var(--flare));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">20×</p><p style="font-size:11.5px;color:var(--text2);margin:4px 0 0;">推理加速<br><span style="color:var(--text3);font-size:10.5px;">质量保持匹配 · 视频扩散实时化</span></p></div>
+<div style="background:rgba(20,18,30,0.55);border:1px solid rgba(0,206,201,0.25);border-radius:12px;padding:18px;"><p style="font-size:26px;font-weight:800;margin:6px 0;background:linear-gradient(135deg,var(--nova),var(--core));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">超越 Sora2 / Veo3</p><p style="font-size:11.5px;color:var(--text2);margin:4px 0 0;">实时化身系统的<strong style="color:#fff;">多轮一致性</strong><br><span style="color:var(--text3);font-size:10.5px;">以蒸馏后的小快模型胜过旗舰大模型</span></p></div>
+</div>
+<div class="fragment fade-up"><div class="green-box" style="max-width:820px;margin-top:12px;"><div class="label">💡 定位 — OPD 作为「实时化」引擎</div><div class="content">若说 D-OPSD 展示了 OPSD 在<strong>图像定制</strong>上的优雅，LiveTalk 则展示了 OPD 在<strong>视频落地</strong>上的工程价值：on-policy 蒸馏是把生成大模型压进实时预算的关键路径，而非单纯的加速 trick——一致性优势正来自「在学生自己的生成轨迹上学」。</div></div></div>
+</section>
+
 </div></div>
 <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.js"></script>
 <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
