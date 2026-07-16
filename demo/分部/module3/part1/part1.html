@@ -107,6 +107,17 @@
 </tbody></table>
 <div class="struct-content" style="margin-top:10px;"><p style="text-align:center;color:var(--nova);">💡 多模态 OPD 不仅继承了文本 OPD 的 on-policy 框架，还引入了<strong>全新的挑战维度</strong>——特权信息不再只是文本，KL 散度的选择也不再是默认选项。</p></div></div></section>
 
+
+<!-- ═══════ 多模态Shortcut ═══════ -->
+<section data-transition="slide"><div class="core-card fragment fade-up"><p class="page-badge">核心风险</p><h2 style="font-size:26px;font-weight:700;color:var(--flare);margin:8px 0;">⚠️ 多模态 Shortcut：文本捷径的隐秘侵蚀</h2><div class="core-bar"></div>
+<div class="warn-box"><div class="label">PALR 诊断 (Privileged Answer Leakage Rate) — ViGOS (2026.06)</div><div class="content">跨三个基准的测量显示：<strong>17–26% 的 token 级监督来源于文本参考而非图像内容</strong>。教师传递的信号中，近四分之一是「答案驱动」而非「图像驱动」——学生被悄悄教会了「蒙答案」。</div></div>
+<div class="struct-content" style="margin-top:10px;">
+<p><strong>这意味着什么？</strong></p>
+<p style="margin-left:16px;">🔸 教师（冻结副本）给学生（训练副本）的监督信号中，<strong>有相当比例来自语言的统计相关性</strong>，而非视觉证据<br/>
+🔸 学生在 OPD 过程中发展不均：<strong>文本推理能力飞速提升，视觉基础能力原地踏步</strong><br/>
+🔸 最终模型在 benchmark 上分数不降 → 但视觉注意力已悄然发散 → 幻觉、错误绑定随之而来</p>
+<p>这是 Part 0 中「感知-推理耦合退化」的<strong>精确量化</strong>：RL/OPD 优化机制本身就会系统性地偏向文本捷径。</p></div></div></section>
+
 </div></div>
 <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.js"></script>
 <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
