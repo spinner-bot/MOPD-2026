@@ -22,6 +22,60 @@
 <!-- ═══════ 标题页 ═══════ -->
 <section data-transition="zoom"><div class="core-card fragment fade-up"><p class="cite">MODULE 3 · PART 3</p><h1 class="hero-title">视频域：时序 OPD</h1><p style="font-size:20px;color:var(--text2);">从稀疏奖励到密集监督 · 从当前帧到特权未来</p><div class="core-bar"></div><p style="font-size:13px;color:var(--text3);">Video-OPD · PF-OPSD — 将 OPD 范式扩展到时间维度</p></div></section>
 
+
+<!-- ═══════ DAG 知识图谱 ═══════ -->
+<section data-transition="slide"><h2 style="font-size:24px;font-weight:700;color:var(--core);margin-bottom:8px;">Part 3 知识结构图</h2>
+<svg viewBox="0 0 960 440" xmlns="http://www.w3.org/2000/svg" style="max-width:960px;">
+<defs><marker id="a" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><path d="M0,0 L7,2.5 L0,5 Z" fill="rgba(255,255,255,0.2)"/></marker></defs>
+<rect x="330" y="5" width="300" height="30" rx="15" fill="rgba(124,92,231,0.08)" stroke="rgba(124,92,231,0.2)"/>
+<text x="480" y="25" text-anchor="middle" fill="#fff" font-size="13" font-weight="700" font-family="sans-serif">Part 3: 视频域 — 时序 OPD</text>
+
+<rect x="30" y="50" width="900" height="32" rx="8" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.06)"/>
+<text x="480" y="71" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="10" font-family="sans-serif">核心线索：稀疏奖励 → 信用分配失败 → OPD 密集监督 → 时间维度的特权扩展</text>
+
+<!-- 第1层：核心问题 -->
+<rect x="280" y="95" width="400" height="48" rx="10" fill="rgba(244,63,94,0.06)" stroke="rgba(244,63,94,0.2)"/>
+<text x="480" y="116" text-anchor="middle" fill="var(--rose)" font-size="12" font-weight="700" font-family="sans-serif">🔴 核心痛点：稀疏序列级奖励</text>
+<text x="480" y="134" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="9" font-family="sans-serif">长视频中无法对中间错误进行信用分配 · 多 rollout 计算灾难</text>
+
+<path d="M480,143 L480,165" marker-end="url(#a)" stroke="rgba(255,255,255,0.12)" stroke-width="1.5"/>
+
+<!-- 第2层：双解法 -->
+<rect x="50" y="170" width="410" height="52" rx="10" fill="rgba(124,92,231,0.05)" stroke="rgba(124,92,231,0.18)"/>
+<text x="255" y="192" text-anchor="middle" fill="var(--core)" font-size="11" font-weight="700" font-family="sans-serif">Video-OPD (2026.02/06)</text>
+<text x="255" y="212" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="9" font-family="sans-serif">Reverse KL 替代稀疏奖励 · TVDF 课程策略 · 时序定位</text>
+
+<rect x="500" y="170" width="410" height="52" rx="10" fill="rgba(0,206,201,0.05)" stroke="rgba(0,206,201,0.18)"/>
+<text x="705" y="192" text-anchor="middle" fill="var(--nova)" font-size="11" font-weight="700" font-family="sans-serif">PF-OPSD (2026.06)</text>
+<text x="705" y="212" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="9" font-family="sans-serif">世界模型 + 特权未来帧 · 时序预测 · 学生仅见当前帧</text>
+
+<path d="M400,143 L180,143 L180,165" marker-end="url(#a)" stroke="rgba(255,255,255,0.1)" stroke-width="1" fill="none"/>
+<path d="M560,143 L780,143 L780,165" marker-end="url(#a)" stroke="rgba(255,255,255,0.1)" stroke-width="1" fill="none"/>
+
+<path d="M255,222 L255,248" marker-end="url(#a)" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+<path d="M705,222 L705,248" marker-end="url(#a)" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+
+<!-- 第3层：核心机制对比 -->
+<rect x="30" y="253" width="410" height="30" rx="10" fill="rgba(253,203,110,0.04)" stroke="rgba(253,203,110,0.12)"/>
+<text x="235" y="273" text-anchor="middle" fill="var(--beam)" font-size="10" font-weight="700" font-family="sans-serif">🔑 Reverse KL + TVDF：逐 token 密集监督</text>
+
+<rect x="520" y="253" width="410" height="30" rx="10" fill="rgba(0,206,201,0.04)" stroke="rgba(0,206,201,0.12)"/>
+<text x="725" y="273" text-anchor="middle" fill="var(--nova)" font-size="10" font-weight="700" font-family="sans-serif">🔮 特权 = 未来知识：超越"更好视觉"的范式</text>
+
+<path d="M235,283 L235,308" marker-end="url(#a)" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+<path d="M725,283 L725,308" marker-end="url(#a)" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+
+<!-- 第4层：统一主题 -->
+<rect x="200" y="313" width="560" height="38" rx="10" fill="rgba(168,85,247,0.04)" stroke="rgba(168,85,247,0.12)"/>
+<text x="480" y="330" text-anchor="middle" fill="var(--fuse)" font-size="10" font-weight="700" font-family="sans-serif">🎯 统一主题：将 OPD 从「空间维度」（更好的视觉）扩展到「时间维度」（更好的时序理解）</text>
+<text x="480" y="346" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="8" font-family="sans-serif">稀疏奖励 → 密集 token 级监督 · 当前观测 → 特权未来信息</text>
+
+<!-- 底部标注 -->
+<rect x="30" y="370" width="900" height="38" rx="8" fill="rgba(255,255,255,0.01)" stroke="rgba(255,255,255,0.04)"/>
+<text x="480" y="386" text-anchor="middle" fill="rgba(255,255,255,0.25)" font-size="9" font-family="sans-serif">Benchmarks: Charades-TimeLens · ActivityNet-TimeLens · QVHighlights-TimeLens · VRQABench · OpenWorldQA</text>
+<text x="480" y="400" text-anchor="middle" fill="rgba(255,255,255,0.2)" font-size="8" font-family="sans-serif">论文: Video-OPD (arXiv:2602.02994) · PF-OPSD (arXiv:2606.03603)</text>
+</svg></section>
+
 </div></div>
 <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.js"></script>
 <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
