@@ -145,7 +145,46 @@
 <div class="struct-content"><strong style="color:var(--vis);">2024.05 GPT-4o：</strong>端到端全模态——文本/视觉/音频统一处理，实时语音对话。<br><strong style="color:var(--vid);">2024.02 Sora：</strong>视频生成"ChatGPT时刻"——扩散Transformer+时空patch。<br><strong style="color:var(--gen);">2024.02 Gemini 1.5：</strong>100万token上下文窗口，原生多模态。<br><strong style="color:var(--vlm);">2024 Qwen2.5-VL：</strong>阿里巴巴开源系列，72B达到商业闭源水平。</div></section>
 
 <section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--vid);margin-bottom:6px;">行业进展：2025-2026巅峰</h2>
-<div class="struct-content"><strong style="color:var(--vid);">2025 InternVL3.5-241B：</strong>开源登顶，MMBench 91.3。<br><strong style="color:var(--vlm);">2025 GLM-4.6V：</strong>智谱，MathVista 85.2 领跑。<br><strong style="color:var(--gen);">2025 GPT-5：</strong>Any-to-Any世界模型，MMMU ~75。<br><strong style="color:var(--vis);">2026 DeepSeek-V4：</strong>多教师OPD替代RL整合阶段。</div></section>
+<div class="struct-content"><strong style="color:var(--vid);">InternVL3.5-241B：</strong>开源登顶 MMBench 91.3 · <strong style="color:var(--vlm);">GLM-4.6V：</strong>MathVista 85.2 · <strong style="color:var(--gen);">GPT-5：</strong>Any-to-Any MMMU~75 · <strong style="color:var(--vis);">DeepSeek-V4：</strong>OPD替代RL</div></section>
+
+<!-- Any-to-Any 2025关键里程碑 -->
+<section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--vid);margin-bottom:6px;">Any-to-Any：2025 关键里程碑</h2>
+<table class="summary-table fragment fade-up"><thead><tr><th>时间</th><th>模型</th><th>核心贡献</th></tr></thead>
+<tbody>
+<tr><td class="pc">2025.01</td><td><strong>DeepSeek-Janus-Pro</strong></td><td><strong>解耦设计</strong>：理解路径和生成路径分离</td></tr>
+<tr><td class="pc">2025.02</td><td>Qwen3.5 (Alibaba)</td><td>单Transformer从零训练万亿多模态token</td></tr>
+<tr><td class="pc">2025.03</td><td>Gemma 3 (Google)</td><td>128K上下文，140+语言</td></tr>
+<tr><td class="pc">2025.05</td><td><strong>GPT-5</strong> (OpenAI)</td><td>深度融合多模态 + Agent工作流</td></tr>
+<tr><td class="pc">2025.05</td><td><strong>BAGEL</strong> (ByteDance)</td><td>单模型图文视频生成——早期统一I/O</td></tr>
+<tr><td class="pc">2025.06</td><td>Gemini 2.5 Pro (Google)</td><td>200万token上下文，多模态推理</td></tr></tbody></table></section>
+
+<!-- Any-to-Any 2026旗舰 -->
+<section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--gen);margin-bottom:6px;">2026 旗舰模型</h2>
+<table class="summary-table fragment fade-up"><thead><tr><th>模型</th><th>架构</th><th>特征</th></tr></thead>
+<tbody>
+<tr><td class="pc">GPT-5.4</td><td>Native Early Fusion</td><td>从训练开始多模态融合</td></tr>
+<tr><td class="pc">Gemini 3</td><td>Unified Model</td><td>下一代表现飞跃</td></tr>
+<tr><td class="pc">Claude Opus 4.6</td><td>Early Fusion + Agent</td><td>多模态+代理深度结合</td></tr>
+<tr><td class="pc">Qwen3.5-Omni</td><td>Thinker-Talker</td><td>Any-to-Any(文本+图像+音频+视频)</td></tr></tbody></table></section>
+
+<!-- Janus-Pro 解耦设计 -->
+<section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--vlm);margin-bottom:6px;">Janus-Pro：理解与生成的解耦</h2>
+<div class="struct-content fragment fade-up"><strong style="color:var(--vlm);">DeepSeek Janus-Pro 的核心洞察：</strong><br>理解（看图说话）和生成（文生图）的视觉需求<strong style="color:#fff;">完全不同</strong>。<br>• 理解需要<strong style="color:var(--vis);">语义特征</strong>（CLIP式的——关注"这是什么"）<br>• 生成需要<strong style="color:var(--vid);">细节特征</strong>（VQ-VAE式的——关注"像素长什么样"）<br><br>强行用一个视觉编码器同时做两件事 = <strong style="color:#fff;">两件事都做不到最优</strong>。<br>Janus-Pro 用<strong style="color:var(--gen);">两套视觉路径</strong>各自优化——然后统一整合。</div></section>
+
+<!-- ═══════════ 新部分: 架构演进总览 ═══════════ -->
+<section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--aud);margin-bottom:6px;">四大架构时代总览</h2>
+<div class="tri-grid"><div class="concept-block fragment fade-up" style="border-top:2px solid var(--vis);"><h4>Era 1: 双塔对比学习</h4><p style="font-size:10px;">2021-2022 · CLIP/BLIP/Flamingo<br>冻结视觉+冻结文本+可学习桥<br><strong>局限：</strong>只能输出文本</p></div>
+<div class="concept-block fragment fade-up" style="border-top:2px solid var(--vlm);"><h4>Era 2: LLM Bolt-On</h4><p style="font-size:10px;">2023-2024 · LLaVA/GPT-4V<br>LLM做主干，MLP/Q-Former投影视觉<br><strong>突破：</strong>视觉指令微调</p></div>
+<div class="concept-block fragment fade-up" style="border-top:2px solid var(--vid);"><h4>Era 3a: 原生Text-Out</h4><p style="font-size:10px;">2025-2026 · Qwen3.5/Gemini 3<br>单Transformer从零训练混合模态<br><strong>局限：</strong>仍只能输出文本</p></div></div>
+<div style="margin-top:12px;" class="fragment fade-up"><div class="concept-block" style="border-top:2px solid var(--gen);max-width:600px;margin:0 auto;"><h4>Era 3b: 全模态统一 I/O</h4><p style="font-size:10px;">2025-2026 · BAGEL/Qwen3.5-Omni/Janus-Pro · <strong style="color:var(--gen);">真正的 Any-to-Any</strong>——融合主干+专用解码器头，原生生成文本+图像+语音</p></div></div></section>
+
+<section data-transition="slide"><h2 style="font-size:20px;font-weight:700;color:var(--vlm);margin-bottom:6px;">研究趋势 (基于26,000篇论文调查)</h2>
+<table class="summary-table fragment fade-up"><thead><tr><th>指标</th><th>2023</th><th>2024</th><th>2025</th></tr></thead>
+<tbody>
+<tr><td class="pc">VLM/LLM 论文占比</td><td>~16%</td><td>~30%</td><td>~40%</td></tr>
+<tr><td class="pc">扩散模型论文占比</td><td>~8%</td><td>~15%</td><td>~19%</td></tr>
+<tr><td class="pc">LLaVA 被提及率</td><td>0.1%</td><td>1.2%</td><td>2.7%</td></tr></tbody></table>
+<div class="struct-content fragment fade-up" style="margin-top:10px;"><strong style="color:var(--vid);">关键洞察：</strong>训练方法 > 编码器大小。SigLIP 2 (400M) 在大多数 VLM 基准上超过 InternViT-6B (5.9B)。</div></section>
 
 <!-- 完结 -->
 <section data-transition="zoom"><div class="ac-card"><span style="font-size:50px;">📊</span><h2 style="font-size:24px;font-weight:700;color:var(--vlm);">Part 2++ 完结</h2><div class="ac-bar"></div><p style="font-size:14px;color:var(--text2);">训练Pipeline深度 · 基准全景 · 行业进展</p></div></section>
