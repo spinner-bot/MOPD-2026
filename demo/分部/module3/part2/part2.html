@@ -124,6 +124,17 @@
 <p style="font-size:15px;color:var(--beam);text-align:center;margin:4px 0;">🎯 <strong>+3.40pp 超越生成式教师</strong> · 14.3× 推理加速 · VSP 基准 +63.83pp</p>
 <p style="text-align:center;">深层启示：多模态推理中，<strong>关键信息比显式像素承载的多得多</strong>——蒸馏可以提取出比教师更强的推理能力。</p></div></div></section>
 
+
+<!-- ═══════ 防Shortcut三连总览 ═══════ -->
+<section data-transition="slide"><div class="core-card fragment fade-up"><p class="page-badge">第三波浪潮</p><h2 style="font-size:26px;font-weight:700;color:var(--flare);margin:8px 0;">⚠️ 防 Shortcut 三连：2026.06 的同频共振</h2><div class="core-bar"></div>
+<div class="struct-content"><p>2026 年 6 月，三篇独立论文<strong>几乎同时</strong>指出多模态 OPSD 的核心风险——<strong>教师特权信息可能引导学生走「文本捷径」而非利用视觉证据</strong>——并各自提出不同方案：</p></div>
+<div class="tri-grid" style="max-width:960px;margin-top:10px;">
+<div class="concept-block fragment fade-up" style="border-left:3px solid var(--flare);"><h4>🔴 ViGOS · 诊断者</h4><p>提出 <strong>PALR 指标</strong>首次量化 Shortcut 严重程度（17–26%），用<strong>三教师解耦</strong>：图像感知教师+特权推理教师+参考教师，让视觉由视觉监督、推理由推理监督。</p></div>
+<div class="concept-block fragment fade-up" style="border-left:3px solid var(--fuse);"><h4>🟣 ViCuR · 重构者</h4><p>重新定义特权设计原则：<strong>「可恢复特权」优于「不可恢复特权」</strong>。将教师特权从「答案侧」替换为「视觉线索」（证据区域标注），建立训练-推理一致性。</p></div>
+<div class="concept-block fragment fade-up" style="border-left:3px solid var(--nova);"><h4>🟢 V-Zero · 激进者</h4><p><strong>完全不需要文本答案标签</strong>——只需图文对。用正/负视觉证据视图的对比差异判断学生回答的视觉基础，门控调节蒸馏强度。5× 快于 SFT、10× 快于 RL。</p></div>
+</div>
+<div class="struct-content" style="margin-top:8px;"><p style="text-align:center;color:var(--nova);">💡 三篇同期论文，三种不同哲学——分别从<strong>诊断、重构、抛弃</strong>三个角度解决了同一个核心问题。</p></div></div></section>
+
 </div></div>
 <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.js"></script>
 <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
