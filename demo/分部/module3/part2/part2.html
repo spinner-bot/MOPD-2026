@@ -94,6 +94,14 @@
 </div>
 <div class="struct-content" style="margin-top:10px;"><p style="text-align:center;color:var(--nova);">💡 外加 <strong>PeRL-VL</strong> 与 <strong>Decomposed OPD</strong> 从奖励机制和梯度层面解耦感知与推理——形成从「教什么」到「怎么学」的完整方案。</p></div></div></section>
 
+
+<!-- ═══════ VOLD 奠基之作 ═══════ -->
+<section data-transition="slide"><div class="core-card fragment fade-up"><p class="page-badge">奠基之作</p><h2 style="font-size:24px;font-weight:700;color:var(--beam);margin:8px 0;">🏛️ VOLD：文本 → VLM 的推理迁移 (CVPR 2026)</h2><p style="font-size:11px;color:var(--nova);margin:2px 0;font-family:monospace;">Walid Bousselham, Hilde Kuehne, Cordelia Schmid · arXiv:2510.23497</p><div class="core-bar"></div>
+<div class="def-box" style="border-left-color:var(--beam);"><div class="label" style="color:var(--beam);">核心问题</div><div class="content">多模态推理数据<strong>极度稀缺</strong>（图文+推理链标注成本极高），但纯文本推理数据丰富——能否将文本 LLM 的推理能力蒸馏到 VLM？</div></div>
+<div class="def-box"><div class="label">方法：GRPO + On-Policy Distillation</div><div class="content">VLM 学生自采样轨迹 → 文本 LLM 教师在<strong>相同轨迹</strong>上提供 token 级分布监督 → 学生模仿教师的推理分布。关键在于：教师和学生看到的是<strong>同一问题</strong>，但教师只有文本输入、学生有图文输入。</div></div>
+<div class="warn-box"><div class="label">⚠️ 关键发现</div><div class="content"><strong>冷启动 SFT 对齐是必不可少的</strong>——没有它，文本教师的分布与 VLM 学生的采样分布差距过大（模态鸿沟），蒸馏<strong>完全失败</strong>。这是跨模态蒸馏的铁律。</div></div>
+<div class="struct-content" style="margin-top:4px;"><p><strong>基准：</strong>MMMU-Pro · MathVision · MathVista · LogicVista &nbsp;|&nbsp; <strong>意义：</strong>被 CVPR 2026 收录，成为后续所有 VLM OPD 工作的<strong>核心参考点</strong>。</p></div></div></section>
+
 </div></div>
 <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.js"></script>
 <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
