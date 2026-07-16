@@ -40,6 +40,15 @@
 <p style="font-size:12px;color:var(--text3);margin-top:12px;">组会报告 · 2026/07</p></div></section>
 
 
+<!-- ═══════ 3. SFT→RLVR 标准范式及问题 ═══════ -->
+<section data-transition="slide"><div class="star-card fragment fade-up"><p class="page-badge">背景</p><h2 style="font-size:28px;font-weight:700;color:#fff;margin:8px 0;">LLM/MLLM 后训练的标准范式</h2><p style="font-size:14px;color:var(--text2);">SFT → RLVR：两阶段管道的隐藏缺陷</p><div class="star-bar"></div>
+<div class="flow-diagram fragment fade-up"><div class="flow-node fn-b">Stage 1<div style="font-size:10px;font-weight:400;color:var(--text2);">SFT · 监督微调</div></div><div class="flow-arrow">→</div><div class="flow-node fn-r">Stage 2<div style="font-size:10px;font-weight:400;color:var(--text2);">RLVR · 可验证奖励RL</div></div></div>
+<div class="two-col" style="margin-top:12px;">
+<div class="warn-box fragment fade-up"><div class="label">⚠️ SFT 的 Exposure Bias</div><div class="content">在<strong>静态数据集</strong>上做 token-level 模仿学习。训练和推理时的数据分布不一致——模型在推理时可能进入训练时没见过的错误状态，导致<strong>错误级联放大</strong>。尤其多模态场景：视觉描述与推理链的漂移模式是<strong>异质的</strong>。</div></div>
+<div class="warn-box fragment fade-up"><div class="label">⚠️ RLVR 的稀疏奖励困境</div><div class="content">只能给出<strong>序列级别</strong>的奖励信号（答案对/错、格式合规）。无法提供细粒度的<strong>token级别归因</strong>——哪个token导致了错误？哪一步推理偏离了方向？RLVR 完全不知道。纯RL探索在巨大搜索空间中极其低效。</div></div>
+</div>
+<div class="struct-content fragment fade-up" style="margin-top:4px;text-align:center;"><p style="color:var(--gold);">💡 两篇论文的共识：SFT → RLVR 之间存在一个<strong>被忽视的"空白地带"</strong>——需要一种既能提供 token 级监督、又能让学生在自己轨迹上学习的机制。</p></div></div></section>
+
 <!-- ═══════ 2. DAG 知识结构图 ═══════ -->
 <section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--prism);margin-bottom:6px;">报告知识结构图</h2><p style="font-size:11px;color:var(--text3);margin:0 0 8px;">DAG · 4大板块 · 30页精讲</p>
 <svg viewBox="0 0 960 460" xmlns="http://www.w3.org/2000/svg" style="max-width:960px;">
