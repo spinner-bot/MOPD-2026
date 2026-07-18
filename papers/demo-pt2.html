@@ -102,6 +102,14 @@
 </div>
 </div></section>
 
+<!-- ═══════ 8. 组件3：动态响应预算控制器 ═══════ -->
+<section data-transition="slide"><div class="star-card fragment fade-up"><p class="page-badge">Prune-OPD · 组件3</p><h2 style="font-size:26px;font-weight:700;color:var(--prune);margin:8px 0;">🎯 组件 3：动态响应预算控制器</h2><p style="font-size:13px;color:var(--text2);">Dynamic Response Budget Controller — M<sub>max</sub> 2048→12288</p><div class="star-bar"></div>
+<div class="two-col fragment fade-up" style="margin-top:10px;">
+<div class="def-box"><div class="label">M<sub>max</sub> 自适应机制</div><div class="content"><strong>范围：</strong>2048（保守）~ 12288（激进）。<br/><strong>自适应策略：</strong>根据当前 batch 的<strong>命中率</strong>（成功解决问题的比例）动态调整——命中率高 → 逐步扩展 M<sub>max</sub>，让模型探索更长推理链；命中率下降 → 收缩 M<sub>max</sub>，保护计算资源。<br/><strong>保护机制：</strong>与组件2耦合——已触发漂移截断的 prompt 自动释放预算给其他 prompt。</div></div>
+<div class="def-box r"><div class="label">为什么固定预算不够？</div><div class="content">固定长度的 OPD 对所有 prompt 一视同仁——简单 prompt 不需要长链但也分配了相同预算（浪费），困难 prompt 需要深度推理但被截断（不足）。<strong>动态预算 = "好钢用在刀刃上"</strong>——把计算资源集中分配给最有希望、最需要长链的 prompt。</div></div>
+</div>
+<div class="struct-content fragment fade-up" style="margin-top:8px;text-align:center;"><p style="color:var(--gold);">💡 组件 3 是"全局调度器"——组件 1 发现个体漂移，组件 2 决定个体信任度，组件 3 <strong>在 batch 层面</strong>将这些个体决策转化为全局资源最优分配。</p></div></div></section>
+
 </div></div>
 <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.js"></script>
 <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
