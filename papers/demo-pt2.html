@@ -177,6 +177,24 @@
 <div class="concept-block g"><h4>🧠 理论突破：Flow-KL</h4><p>证明了连续流匹配 OPD 中 KL 散度<strong>简化为向量场之间的加权 L2 距离</strong>——D<sub>KL</sub> = E<sub>t</sub>[w(t)·||v<sub>stu</sub>−v<sub>tea</sub>||²]。<strong>无策略梯度方差</strong>，训练极其稳定。</p></div>
 </div></div></section>
 
+<!-- ═══════ 14. Stage 1：领域专精教师 ═══════ -->
+<section data-transition="slide"><div class="star-card fragment fade-up"><p class="page-badge-r">Flow-OPD · Stage 1</p><h2 style="font-size:26px;font-weight:700;color:var(--flow);margin:8px 0;">🎯 Stage 1：单奖励 GRPO 训练领域专精教师</h2><p style="font-size:13px;color:var(--text2);">Domain-Specialized Teachers via Single-Reward GRPO</p><div class="star-bar"></div>
+<div class="tri-grid fragment fade-up" style="margin-top:10px;">
+<div class="concept-block r"><h4>📐 GenEval 教师</h4><p>专攻<strong>文本-图像对齐</strong>：对象存在性、属性绑定、空间关系、颜色准确性。单奖励：GenEval score。对文字描述的忠实度达到领域天花板。</p></div>
+<div class="concept-block r"><h4>🔤 OCR 教师</h4><p>专攻<strong>图像中文字渲染</strong>：文字清晰度、拼写正确性、排版质量。单奖励：OCR 准确率。解决"图中文字模糊/错误"问题。</p></div>
+<div class="concept-block r"><h4>🎨 美学 + 质量教师</h4><p>专攻<strong>视觉吸引力</strong>与<strong>整体质量</strong>：DeQA（美学评分）、PickScore（通用质量）。单奖励：各自的标量分数。</p></div>
+</div>
+<div class="struct-content fragment fade-up" style="margin-top:8px;text-align:center;"><p>所有教师共享<strong> SD3.5 Medium</strong> 底座——"说同一种语言，各有专长"。这保证了后续多教师融合时<strong>参数空间兼容</strong>——权重可以直接插值（模型合并）或输出可以直接聚合（SFT 合并）。</p>
+<p style="color:var(--gold);">💡 单奖励训练确保每个教师在其领域<strong>无干扰地达到性能天花板</strong>——不存在跷跷板效应，因为只有一个目标。</p></div></div></section>
+
+<!-- ═══════ 15. Stage 2：多教师 OPD + 冷启动 ═══════ -->
+<section data-transition="slide"><div class="star-card fragment fade-up"><p class="page-badge-r">Flow-OPD · Stage 2</p><h2 style="font-size:26px;font-weight:700;color:var(--flow);margin:8px 0;">🔀 Stage 2：多教师 OPD 融合</h2><p style="font-size:13px;color:var(--text2);">Cold-Start → On-Policy Sampling → Task Routing → Dense Supervision</p><div class="star-bar"></div>
+<div class="two-col fragment fade-up" style="margin-top:10px;">
+<div class="def-box r"><div class="label">🧊 冷启动策略</div><div class="content"><strong>方案 A（SFT 合并）：</strong>聚合各领域教师的最佳生成输出，在学生上做监督微调。<br/><strong>方案 B（模型合并）：</strong>对各教师 checkpoint 做权重插值——直接融合参数空间的专业知识。<br/><strong>目的：</strong>"从一个融合点出发，而非从零开始"——冷启动确保 on-policy OPD 循环的初始分布不会离任何教师太远。</div></div>
+<div class="def-box r"><div class="label">🔄 On-Policy OPD 循环</div><div class="content"><strong>①</strong> 学生执行完整去噪轨迹（确定性 ODE → 注入随机噪声 → 随机 SDE 探索）<br/><strong>②</strong> 任务路由 token 自动将每一步定向到对应的领域专家教师<br/><strong>③</strong> 每位教师沿<strong>整条轨迹</strong>（而非仅最终图像）提供密集向量场监督<br/><strong>④</strong> 总损失 = L<sub>Flow-OPD</sub> + MAR KL 正则化</div></div>
+</div>
+<div class="struct-content fragment fade-up" style="margin-top:8px;"><p style="text-align:center;color:var(--gold);">💡 任务路由 token 是关键设计——让学生知道"这一步该听哪位老师的话"，避免多个教师互相矛盾时学生无所适从。</p></div></div></section>
+
 </div></div>
 <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.js"></script>
 <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
