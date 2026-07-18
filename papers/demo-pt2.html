@@ -215,6 +215,14 @@
 </div>
 </div></section>
 
+<!-- ═══════ 17. MAR 多教师反退化 ═══════ -->
+<section data-transition="slide"><div class="star-card fragment fade-up"><p class="page-badge-r">Flow-OPD · MAR</p><h2 style="font-size:26px;font-weight:700;color:var(--flow);margin:8px 0;">⚓ MAR：多教师反退化正则化</h2><p style="font-size:13px;color:var(--text2);">Manifold Anchor Regularization — 防止多任务优化中的美学崩塌</p><div class="star-bar"></div>
+<div class="two-col fragment fade-up" style="margin-top:10px;">
+<div class="def-box r"><div class="label">MAR 机制</div><div class="content">一个<strong>冻结的、任务无关的教师模型</strong>提供全数据 KL 正则化：<br/>$$\mathcal{L}_{\text{MAR}} = D_{KL}(\pi_\theta \| \pi_{\text{anchor}})$$<br/>领域教师推动学生向各自的<strong>专精轴</strong>优化（GenEval、OCR、美学…），而冻结锚定教师确保学生<strong>不偏离通用图像质量流形</strong>——相当于在多目标拉锯中设置了一个"安全边界"。</div></div>
+<div class="def-box r"><div class="label">为什么 MAR 必不可少？</div><div class="content"><strong>无 MAR：</strong>学生为提升 OCR 准确率可能生成"白底黑字的教科书扫描页"——OCR 分数很高，但完全失去了美学和多样性（reward hacking）。<br/><strong>有 MAR：</strong>学生优化 OCR 的同时必须保持锚定教师认为合理的生成——被迫寻找<strong>既能读清文字又好看的图像</strong>。MAR = 一个温和的约束："你可以专精，但不要变成怪物"。</div></div>
+</div>
+<div class="struct-content fragment fade-up" style="margin-top:8px;"><p style="text-align:center;color:var(--gold);">💡 MAR 的角色类似 PRISM 中"用原 Instruct 模型做隐式锚点"——两者都不是主动推动，而是防止退化。Flow-OPD 将这一思想<strong>显式化</strong>为 KL 正则项。</p></div></div></section>
+
 </div></div>
 <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.js"></script>
 <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
