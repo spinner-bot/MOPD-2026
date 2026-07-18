@@ -195,6 +195,26 @@
 </div>
 <div class="struct-content fragment fade-up" style="margin-top:8px;"><p style="text-align:center;color:var(--gold);">💡 任务路由 token 是关键设计——让学生知道"这一步该听哪位老师的话"，避免多个教师互相矛盾时学生无所适从。</p></div></div></section>
 
+<!-- ═══════ 16. Flow-KL 定理 ═══════ -->
+<section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--gold);margin-bottom:4px;">🧠 Flow-KL 定理：从 KL 散度到加权 L2 距离</h2><p style="font-size:11px;color:var(--text3);margin-bottom:8px;">Flow-OPD 最重要的理论贡献</p>
+<div class="paper-split fragment fade-up">
+<div class="paper-left">
+<p style="font-size:11px;color:var(--text3);margin-bottom:4px;">📄 定理（论文 Sec 4 · 公式 15）</p>
+<p><span class="hl-g">Flow-OPD 的核心推导：</span></p>
+<p style="font-size:13px;">对于连续时间流匹配模型，学生和教师策略之间的 KL 散度具有<strong>解析闭式解</strong>：</p>
+<p style="font-size:14px;text-align:center;">$$D_{KL}(\pi_\theta \| \pi_T) = \mathbb{E}_{t \sim [0,1], x_t \sim \pi_\theta} \left[ w(t) \cdot \|v_\theta(x_t, t) - v_T(x_t, t)\|^2 \right]$$</p>
+<p style="margin-top:6px;">其中 v<sub>θ</sub> 和 v<sub>T</sub> 分别是学生和教师的<strong>向量场</strong>（velocity field），w(t) 是时间权重函数。</p>
+<p style="margin-top:8px;"><span class="hl-b">这意味着：</span>学生只需通过标准 MSE 回归直接拟合教师的向量场——<strong>完全不需要策略梯度估计</strong>。</p>
+</div>
+<div class="paper-right flow-theme">
+<div class="section-label">🔍 为什么这是突破性的？</div>
+<div class="comment" style="border-left-color:var(--flow);"><strong>文本 LLM 的 OPD：</strong>KL 散度通过 token 级对数比来估计 → 依赖于学生 on-policy 采样 → 需要<strong>策略梯度</strong>方法来传播信号 → 高方差 + 不稳定。</div>
+<div class="comment" style="border-left-color:var(--flow);"><strong>Flow-OPD：</strong>KL 散度有<strong>闭式解析解</strong> → 等价于两个向量场之间的加权 L2 距离 → 直接用 MSE 回归优化 → <strong>零方差</strong> + 极稳定。</div>
+<div class="insight">💡 <strong>深层含义：</strong>流匹配 OPD 比文本 OPD 在理论上<strong>更优雅</strong>——它天生避免了 RL 中最大的痛点（方差）。这不是工程优化，而是<strong>数学结构决定的优势</strong>。</div>
+<div class="warn" style="margin-top:8px;">⚠️ <strong>前提假设：</strong>该推导基于连续时间流匹配 SDE/ODE 框架。对离散时间扩散模型（DDPM 等）不完全适用——Flow-OPD 的优雅性依赖于<strong>流匹配的数学结构</strong>。</div>
+</div>
+</div></section>
+
 </div></div>
 <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.js"></script>
 <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
