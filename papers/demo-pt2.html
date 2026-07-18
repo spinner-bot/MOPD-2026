@@ -39,6 +39,50 @@
 <div class="tag-row fragment fade-up"><span class="tag tag-b">Prune-OPD · arXiv 2605.07804</span><span class="tag tag-r">Flow-OPD · arXiv 2605.08063</span></div>
 <p style="font-size:12px;color:var(--text3);margin-top:12px;">组会报告 · 2026/07</p></div></section>
 
+<!-- ═══════ 2. DAG 知识结构图 ═══════ -->
+<section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--prune);margin-bottom:6px;">PT.2 知识结构图</h2><p style="font-size:11px;color:var(--text3);margin:0 0 8px;">DAG · 2 篇论文 · 3 大板块 · 21 页精讲</p>
+<svg viewBox="0 0 960 480" xmlns="http://www.w3.org/2000/svg" style="max-width:960px;">
+<defs><marker id="a" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><path d="M0,0 L7,2.5 L0,5 Z" fill="rgba(255,255,255,0.18)"/></marker></defs>
+<rect x="230" y="8" width="500" height="34" rx="17" fill="rgba(52,211,153,0.06)" stroke="rgba(52,211,153,0.18)"/>
+<text x="480" y="30" text-anchor="middle" fill="#fff" font-size="14" font-weight="700" font-family="sans-serif">PT.2: Prune-OPD & Flow-OPD — OPD 前沿扩展</text>
+
+<!-- Part 1: Prune-OPD -->
+<rect x="50" y="65" width="420" height="120" rx="10" fill="rgba(52,211,153,0.04)" stroke="rgba(52,211,153,0.25)"/>
+<text x="260" y="90" text-anchor="middle" fill="var(--prune)" font-size="12" font-weight="700" font-family="sans-serif">🪓 Part 1 · Prune-OPD</text>
+<text x="260" y="110" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="9" font-family="sans-serif">长程推理 OPD · 可靠性感知框架</text>
+<text x="260" y="128" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="8.5" font-family="sans-serif">top-k 重叠率 → 单调权重衰减 → 动态截断 → 预算自适应</text>
+<text x="260" y="146" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="8.5" font-family="sans-serif">训练时间 −37.6%~68.0% · AMC+AIME+HMMT · 6模型5基准</text>
+<text x="260" y="164" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="8" font-family="sans-serif">DeepSeek-R1 · Qwen3 · Skywork-OR1 · HKUST(GZ)+MBZUAI+SYSU</text>
+
+<!-- Part 2: Flow-OPD -->
+<rect x="510" y="65" width="400" height="120" rx="10" fill="rgba(167,139,250,0.04)" stroke="rgba(167,139,250,0.25)"/>
+<text x="710" y="90" text-anchor="middle" fill="var(--flow)" font-size="12" font-weight="700" font-family="sans-serif">🌊 Part 2 · Flow-OPD</text>
+<text x="710" y="110" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="9" font-family="sans-serif">流匹配 T2I OPD · 多任务融合框架</text>
+<text x="710" y="128" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="8.5" font-family="sans-serif">Flow-KL 定理 · 两阶段对齐 · MAR 正则化</text>
+<text x="710" y="146" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="8.5" font-family="sans-serif">GenEval 0.63→0.93 · OCR 0.59→0.94 · +10pts超GRPO</text>
+<text x="710" y="164" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="8" font-family="sans-serif">SD3.5M · USTC+UCLA+CUHK+小红书 · 超教师效应</text>
+
+<!-- OPD Foundations (bottom) -->
+<rect x="180" y="220" width="600" height="55" rx="10" fill="rgba(251,191,36,0.03)" stroke="rgba(251,191,36,0.15)"/>
+<text x="480" y="242" text-anchor="middle" fill="var(--gold)" font-size="11" font-weight="700" font-family="sans-serif">🔗 OPD 研究基础</text>
+<text x="480" y="262" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="9" font-family="sans-serif">PRISM（黑盒对抗OPD·管道定位） · Uni-OPD（双视角统一·数据平衡+边距校准） · 前人工作</text>
+
+<!-- Arrows -->
+<path d="M260,185 L260,210 L480,210 L480,212" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+<path d="M710,185 L710,210 L480,210" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+<path d="M480,212 L480,212" marker-end="url(#a)" stroke="rgba(251,191,36,0.2)" stroke-width="1.5"/>
+
+<!-- Future Directions -->
+<rect x="180" y="310" width="600" height="70" rx="8" fill="rgba(8,4,20,0.5)" stroke="rgba(255,255,255,0.06)"/>
+<text x="480" y="332" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="10" font-weight="700" font-family="sans-serif">🔭 OPD 研究版图扩展</text>
+<text x="480" y="352" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="8.5" font-family="sans-serif">效率维度（Prune-OPD）：OPD 不浪费 &nbsp;|&nbsp; 范式维度（Flow-OPD）：OPD 跨模态</text>
+<text x="480" y="370" text-anchor="middle" fill="rgba(255,255,255,0.25)" font-size="8" font-family="sans-serif">未来：统一OPD框架 · 视频/音频/3D OPD · Self-play OPD · OPD理论收敛性分析</text>
+
+<!-- Bottom -->
+<rect x="280" y="410" width="400" height="30" rx="15" fill="rgba(52,211,153,0.04)" stroke="rgba(52,211,153,0.1)"/>
+<text x="480" y="430" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="10" font-family="sans-serif">⬇ 从 Prune-OPD 的效率革命开始 ⬇</text>
+</svg></section>
+
 <!-- ═══════ 3. Prune-OPD 标题页 ═══════ -->
 <section data-transition="zoom"><div class="star-card fragment fade-up" style="border-color:rgba(52,211,153,0.25);"><p class="page-badge">Part 1 · Prune-OPD</p><h2 style="font-size:36px;font-weight:800;color:var(--prune);margin:8px 0;">Prune-OPD</h2><p style="font-size:18px;color:var(--text);">Efficient and Reliable On-Policy Distillation for Long-Horizon Reasoning</p><div class="star-bar"></div>
 <div class="struct-content" style="text-align:center;margin-top:8px;">
@@ -274,6 +318,15 @@
 <tr><td class="pc">关键指标</td><td class="hl">训练 FLOPs −37.6%~68.0%</td><td class="wr">多任务平均 +10 pts 超越 GRPO</td><td>—</td></tr>
 </tbody></table>
 <div class="struct-content fragment fade-up" style="margin-top:8px;"><p style="text-align:center;font-size:14px;">💡 <strong>两个维度，一个方向：</strong>Prune-OPD 解决<strong style="color:var(--prune);">OPD 自身的效率问题</strong>（"怎么做 OPD 才不浪费"），Flow-OPD 解决<strong style="color:var(--flow);">OPD 的范式扩展问题</strong>（"OPD 能不能用在生成模型上"）。两者<strong>互补而非竞争</strong>，共同推进 OPD 研究版图。</p></div></section>
+
+<!-- ═══════ 21. 致谢/结束页 ═══════ -->
+<section data-transition="zoom"><div class="star-card fragment fade-up"><p class="page-badge">Thanks</p><h1 class="hero-title">谢谢！</h1><p style="font-size:18px;color:var(--text2);">Prune-OPD & Flow-OPD 论文精讲 · 组会报告</p><div class="star-bar"></div>
+<div class="two-col fragment fade-up" style="margin-top:8px;max-width:900px;">
+<div style="text-align:left;font-size:11px;color:var(--text2);line-height:1.8;"><p style="color:var(--prune);font-weight:700;font-size:13px;">🪓 Prune-OPD 关键公式</p><p>OverlapRate: |TopK(学生)∩TopK(教师)| / k<br/>Reliability: R = clip(1−w<sub>drop</sub>·C, 0, 1)<br/>Budget: M<sub>max</sub> 2048→12288, batch-adaptive</p></div>
+<div style="text-align:left;font-size:11px;color:var(--text2);line-height:1.8;"><p style="color:var(--flow);font-weight:700;font-size:13px;">🌊 Flow-OPD 关键公式</p><p>Flow-KL: D<sub>KL</sub> = E<sub>t</sub>[w(t)·||v<sub>θ</sub>−v<sub>T</sub>||²]<br/>MAR: L<sub>MAR</sub> = D<sub>KL</sub>(π<sub>θ</sub> || π<sub>anchor</sub>)<br/>Total: L = L<sub>Flow-OPD</sub> + MAR 正则化</p></div>
+</div>
+<div class="tag-row fragment fade-up" style="margin-top:10px;"><span class="tag tag-b">Prune-OPD · arXiv 2605.07804</span><span class="tag tag-r">Flow-OPD · arXiv 2605.08063</span><span class="tag tag-g">OPD = 设计空间</span></div>
+<p style="font-size:12px;color:var(--text3);margin-top:8px;">论文来源：arXiv:2605.07804v3 (Prune-OPD) · arXiv:2605.08063v5 (Flow-OPD) &nbsp;|&nbsp; 报告生成：2026/07/18</p></div></section>
 
 </div></div>
 <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.js"></script>
