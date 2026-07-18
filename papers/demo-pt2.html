@@ -73,6 +73,15 @@
 </div>
 <div class="struct-content fragment fade-up" style="margin-top:8px;text-align:center;"><p style="color:var(--gold);">💡 三个组件是"<strong>检测 → 决策 → 资源调度</strong>"的级联：先发现漂移，再决定信任度，最后动态分配计算预算。</p></div></div></section>
 
+<!-- ═══════ 6. 组件1：Top-k 重叠率 ═══════ -->
+<section data-transition="slide"><div class="star-card fragment fade-up"><p class="page-badge">Prune-OPD · 组件1</p><h2 style="font-size:26px;font-weight:700;color:var(--prune);margin:8px 0;">🔍 组件 1：逐位 Top-k 重叠率</h2><p style="font-size:13px;color:var(--text2);">Per-Position Compatibility Monitoring</p><div class="star-bar"></div>
+<div class="two-col fragment fade-up" style="margin-top:10px;">
+<div class="def-box"><div class="label">核心定义</div><div class="content">在每个生成位置 t，计算学生 top-k 预测与教师 top-k 预测的<strong>交集比例</strong>：<br/>$$\text{OverlapRate}(t) = \frac{|\text{TopK}(\pi_\theta, t) \cap \text{TopK}(\pi_T, t)|}{k}$$<br/>k 默认 20，阈值默认 0.7。重叠率低于阈值 → 记录一次前缀漂移事件。</div></div>
+<div class="def-box r"><div class="label">为什么是 Top-k 而非 Top-1？</div><div class="content">Top-1 只看最优选择可能过于敏感——偶尔一次 token 分歧不代表"思维分叉"。Top-k 捕获的是<strong>候选集层面的语义对齐</strong>：如果学生的 top-20 候选和教师的 top-20 候选大部分重叠，说明<strong>思考方向仍然一致</strong>。</div></div>
+</div>
+<div class="formula-box fragment fade-up"><div class="math-block">$$C(t) = \sum_{i=1}^{t} \mathbf{1}[\text{OverlapRate}(i) < \tau]$$</div></div>
+<div class="struct-content fragment fade-up"><p style="text-align:center;">C(t) = 累积漂移计数——<strong>单调递增</strong>，每次低于阈值 τ 就 +1。C(t) 越大，说明前缀已经偏离越远，后续所有位置的 OPD 奖励可信度越低。</p></div></div></section>
+
 </div></div>
 <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.js"></script>
 <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
