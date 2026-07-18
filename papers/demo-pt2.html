@@ -110,6 +110,19 @@
 </div>
 <div class="struct-content fragment fade-up" style="margin-top:8px;text-align:center;"><p style="color:var(--gold);">💡 组件 3 是"全局调度器"——组件 1 发现个体漂移，组件 2 决定个体信任度，组件 3 <strong>在 batch 层面</strong>将这些个体决策转化为全局资源最优分配。</p></div></div></section>
 
+<!-- ═══════ 9. Prune-OPD 关键结果 ═══════ -->
+<section data-transition="slide"><div class="star-card fragment fade-up"><p class="page-badge">Prune-OPD · 结果</p><h2 style="font-size:26px;font-weight:700;color:var(--prune);margin:8px 0;">📊 Prune-OPD 关键实验结果</h2><p style="font-size:13px;color:var(--text2);">6 模型 × 5 基准 · 长程数学推理 OPD</p><div class="star-bar"></div>
+<table class="summary-table fragment fade-up"><thead><tr><th>指标</th><th>结果</th><th>说明</th></tr></thead>
+<tbody>
+<tr><td class="pc">训练时间缩减</td><td class="hl"><strong>37.6% – 68.0%</strong></td><td>低兼容度场景下（小模型 + 难任务）；高兼容度场景保持全上下文监督</td></tr>
+<tr><td class="pc">准确率</td><td class="hl"><strong>保持或略微提升</strong></td><td>AMC23 · AIME24 · AIME25 · HMMT24 · HMMT25 五个基准</td></tr>
+<tr><td class="pc">教师模型</td><td>DeepSeek-R1-Distill-Qwen</td><td>7B（主教师）· 1.5B（轻量教师）</td></tr>
+<tr><td class="pc">学生模型</td><td>多尺寸覆盖</td><td>DeepSeek-R1-Distill-Qwen-1.5B · JustRL-DeepSeek-1.5B · Qwen3-1.7B/4B-Base · Skywork-OR1-7B</td></tr>
+<tr><td class="pc">关键发现</td><td class="hl">链越长优势越大</td><td>长程场景下 drift 更严重→PRUNE-OPD 的可靠性感知截断收益更大</td></tr>
+<tr><td class="pc">对照实验</td><td>固定长度截断 vs PRUNE-OPD</td><td>PRUNE-OPD <strong>显著优于</strong>简单截断——证明收益来自<strong>可靠性感知决策</strong>而非单纯缩短</td></tr>
+</tbody></table>
+<div class="struct-content fragment fade-up" style="margin-top:8px;"><p style="text-align:center;color:var(--gold);">💡 PRUNE-OPD 的核心优势：不是"缩短所有 rollout"，而是"<strong>只截断不值得继续的 rollout</strong>"——在师生天然对齐时自动保留完整长上下文监督。</p></div></div></section>
+
 </div></div>
 <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.js"></script>
 <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
