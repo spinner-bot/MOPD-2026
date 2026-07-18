@@ -64,6 +64,15 @@
 </div>
 </div></section>
 
+<!-- ═══════ 5. Prune-OPD 框架总览 ═══════ -->
+<section data-transition="slide"><div class="star-card fragment fade-up"><p class="page-badge">Prune-OPD · 框架</p><h2 style="font-size:28px;font-weight:700;color:var(--prune);margin:8px 0;">🪓 可靠性感知框架：三组件协同</h2><p style="font-size:14px;color:var(--text2);">Reliability-Aware Framework — 实时监测 → 权重衰减 → 动态截断</p><div class="star-bar"></div>
+<div class="tri-grid fragment fade-up" style="margin-top:12px;">
+<div class="concept-block"><h4>🔍 组件 1：逐位兼容度监测</h4><p>在每个生成位置计算学生与教师的 <strong>top-k 重叠率</strong>：OverlapRate(t) = |TopK(学生,t) ∩ TopK(教师,t)| / k。默认 k=20，阈值 0.7。低于阈值→记录一次"前缀漂移事件"。</p></div>
+<div class="concept-block" style="border-color:rgba(251,191,36,0.25);"><h4 style="color:var(--gold);">⚡ 组件 2：单调可靠性权重</h4><p><strong>R = clip(1 − w<sub>drop</sub> × C, 0, 1)</strong>，w<sub>base</sub> = 0.5。C 为累计漂移事件数。R 单调递减且不可逆——一旦信任降低就永久降低。R→0 时触发动态 rollout 截断，停止生成。</p></div>
+<div class="concept-block r"><h4 style="color:var(--flow);">🎯 组件 3：动态响应预算</h4><p>M<sub>max</sub> 在 2048~12288 之间根据 <strong>batch 命中率</strong>自适应调整。高命中率→预算扩展（探索更长链）；低命中率→预算收缩（保护计算资源）。好钢用在刀刃上。</p></div>
+</div>
+<div class="struct-content fragment fade-up" style="margin-top:8px;text-align:center;"><p style="color:var(--gold);">💡 三个组件是"<strong>检测 → 决策 → 资源调度</strong>"的级联：先发现漂移，再决定信任度，最后动态分配计算预算。</p></div></div></section>
+
 </div></div>
 <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.js"></script>
 <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
