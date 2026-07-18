@@ -20,6 +20,109 @@
 <!-- ═══════ 标题页 ═══════ -->
 <section data-transition="zoom"><div class="core-card fragment fade-up"><p class="cite">MODULE 3 · PART 5</p><h1 class="hero-title">Agent 与具身智能</h1><p style="font-size:20px;color:var(--text2);">OPD 走向物理世界 · VLA · 终身学习 · 多任务策略</p><div class="core-bar"></div><p style="font-size:13px;color:var(--text3);">稀疏环境奖励 · 高采样成本 · 灾难性遗忘 — OPD 的独特解法</p></div></section>
 
+
+<!-- ═══════ DAG 知识图谱 ═══════ -->
+<section data-transition="slide"><h2 style="font-size:24px;font-weight:700;color:var(--flare);margin-bottom:8px;">Part 5 知识结构图</h2>
+<svg viewBox="0 0 960 420" xmlns="http://www.w3.org/2000/svg" style="max-width:960px;">
+<defs><marker id="a" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><path d="M0,0 L7,2.5 L0,5 Z" fill="rgba(255,255,255,0.2)"/></marker></defs>
+<rect x="330" y="5" width="300" height="30" rx="15" fill="rgba(225,112,85,0.08)" stroke="rgba(225,112,85,0.2)"/>
+<text x="480" y="25" text-anchor="middle" fill="var(--flare)" font-size="13" font-weight="700" font-family="sans-serif">Part 5: Agent与具身智能 — OPD走向物理世界</text>
+
+<!-- VLA 挑战 -->
+<rect x="60" y="55" width="840" height="36" rx="8" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.05)"/>
+<text x="480" y="78" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="10" font-family="sans-serif">VLA面临比VLM更严峻的挑战：稀疏环境奖励 · 高采样成本 · 分布漂移→灾难性遗忘</text>
+
+<!-- 三篇论文 -->
+<rect x="30" y="110" width="280" height="100" rx="10" fill="rgba(225,112,85,0.05)" stroke="rgba(225,112,85,0.2)"/>
+<text x="170" y="135" text-anchor="middle" fill="var(--flare)" font-size="12" font-weight="700" font-family="sans-serif">🔴 VLA-OPD (2026.03)</text>
+<text x="170" y="155" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="9" font-family="sans-serif">Reverse-KL目标</text>
+<text x="170" y="173" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="8.5" font-family="sans-serif">Forward KL→熵爆炸·动作随机</text>
+<text x="170" y="190" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="8.5" font-family="sans-serif">Hard CE→熵坍塌·丧失探索</text>
+<text x="170" y="206" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="8.5" font-family="sans-serif">Reverse KL→最优平衡</text>
+
+<rect x="340" y="110" width="280" height="100" rx="10" fill="rgba(124,92,231,0.05)" stroke="rgba(124,92,231,0.18)"/>
+<text x="480" y="135" text-anchor="middle" fill="var(--core)" font-size="12" font-weight="700" font-family="sans-serif">🟣 M2Distill (ICRA 2025)</text>
+<text x="480" y="155" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="9" font-family="sans-serif">终身模仿学习</text>
+<text x="480" y="173" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="8.5" font-family="sans-serif">多模态蒸馏保持</text>
+<text x="480" y="190" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="8.5" font-family="sans-serif">视觉·语言·动作</text>
+<text x="480" y="206" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="8.5" font-family="sans-serif">一致的潜在空间</text>
+
+<rect x="650" y="110" width="280" height="100" rx="10" fill="rgba(0,206,201,0.05)" stroke="rgba(0,206,201,0.18)"/>
+<text x="790" y="135" text-anchor="middle" fill="var(--nova)" font-size="12" font-weight="700" font-family="sans-serif">🟢 ACGD (2025)</text>
+<text x="790" y="155" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="9" font-family="sans-serif">非对称评论家引导蒸馏</text>
+<text x="790" y="173" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="8.5" font-family="sans-serif">单任务专家→多任务学生</text>
+<text x="790" y="190" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="8.5" font-family="sans-serif">特权状态信息</text>
+<text x="790" y="206" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="8.5" font-family="sans-serif">灵巧操作+10-15%</text>
+
+<!-- 汇聚 -->
+<path d="M170,210 L170,240 L480,240 L480,258" marker-end="url(#a)" stroke="rgba(255,255,255,0.08)" stroke-width="1" fill="none"/>
+<path d="M480,210 L480,258" marker-end="url(#a)" stroke="rgba(255,255,255,0.08)" stroke-width="1" fill="none"/>
+<path d="M790,210 L790,240 L480,240" stroke="rgba(255,255,255,0.08)" stroke-width="1" fill="none"/>
+
+<rect x="200" y="263" width="560" height="44" rx="12" fill="rgba(8,6,15,0.7)" stroke="rgba(225,112,85,0.15)"/>
+<text x="480" y="281" text-anchor="middle" fill="var(--flare)" font-size="11" font-weight="700" font-family="sans-serif">🤖 核心洞察：在物理世界中，OPD 展现出超越 RL 和 SFT 的独特优势</text>
+<text x="480" y="299" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="9" font-family="sans-serif">Reverse KL在连续动作空间中的效果 · 终身学习中的灾难性遗忘缓解 · 多任务统一</text>
+</svg></section>
+
+<!-- ═══════ Agent OPD 概览 ═══════ -->
+<section data-transition="slide"><div class="core-card fragment fade-up"><p class="page-badge">领域概览</p><h2 style="font-size:26px;font-weight:700;color:#fff;margin:8px 0;">🤖 VLA 为什么需要 OPD？</h2><div class="core-bar"></div>
+<div class="warn-box"><div class="label">VLA 模型面临比 VLM 更严峻的三重挑战</div><div class="content"><strong>① 稀疏环境奖励：</strong>机器人只在任务完成/失败时获得信号，中间动作序列可能有数百步——信用分配完全失效。<br/><strong>② 高采样成本：</strong>真实机器人采样昂贵且危险，仿真到真实的 sim2real gap 难以弥合。<br/><strong>③ 灾难性遗忘：</strong>SFT→RL 的分布漂移在连续动作空间中更为剧烈——策略一旦偏离，之前学到的技能全部丢失。</div></div>
+<div class="two-col" style="max-width:900px;margin-top:12px;">
+<div style="background:rgba(225,112,85,0.05);border:1px solid rgba(225,112,85,0.15);border-radius:8px;padding:14px;text-align:left;"><p style="font-size:12px;font-weight:700;color:var(--flare);margin:0 0 6px;">❌ 纯 RL 在 VLA 上的问题</p><p style="font-size:10.5px;color:var(--text2);margin:0;">• 从零探索在物理世界不可行<br/>• 稀疏奖励导致训练无法收敛<br/>• 动作空间连续 → 探索空间爆炸</p></div>
+<div style="background:rgba(0,206,201,0.05);border:1px solid rgba(0,206,201,0.15);border-radius:8px;padding:14px;text-align:left;"><p style="font-size:12px;font-weight:700;color:var(--nova);margin:0 0 6px;">✅ OPD 在 VLA 上的优势</p><p style="font-size:10.5px;color:var(--text2);margin:0;">• 逐 token 密集监督引导探索<br/>• Reverse KL 在连续动作空间中稳定训练<br/>• 缓解分布漂移→防止遗忘</p></div>
+</div>
+<div class="struct-content" style="margin-top:8px;"><p style="text-align:center;color:var(--nova);">💡 OPD 在 Agent/具身领域的独特价值：<strong>它是少数能同时替代 RL 的稀疏奖励和 SFT 的分布漂移的方法。</strong></p></div></div></section>
+
+
+<!-- ═══════ VLA-OPD ═══════ -->
+<section data-transition="slide"><div class="core-card fragment fade-up"><p class="page-badge">核心论文</p><h2 style="font-size:24px;font-weight:700;color:var(--flare);margin:8px 0;">🔴 VLA-OPD：Reverse KL 在连续动作空间 (2026.03)</h2><p style="font-size:11px;color:var(--nova);margin:2px 0;font-family:monospace;">Zhide Zhong 等 · arXiv:2603.26666</p><div class="core-bar"></div>
+<div class="green-box"><div class="label">核心创新：三项 KL 目标的系统对比</div><div class="content">VLA-OPD 首次在 VLA 模型后训练中系统比较了三种蒸馏目标，确立了<strong>Reverse KL 在连续动作空间中的优势</strong>。</div></div>
+<table class="summary-table fragment fade-up" style="margin-top:10px;max-width:800px;"><thead><tr><th>目标</th><th>数学行为</th><th>VLA 中的后果</th></tr></thead>
+<tbody>
+<tr><td class="pc">Forward KL</td><td>Mode-covering（覆盖所有教师模式）</td><td class="wd">熵爆炸 → 动作过于随机 → 机器人抖动</td></tr>
+<tr><td class="pc">Hard CE</td><td>确定性模仿（只学argmax）</td><td class="wd">熵坍塌 → 丧失探索 → 无法适应新环境</td></tr>
+<tr><td class="pc" style="color:var(--nova);">Reverse KL</td><td class="hl">Mode-seeking（追寻教师高概率模式）</td><td class="hl">过滤认知不确定性 · 保持动作多样性 · 最优平衡</td></tr>
+</tbody></table>
+<div class="struct-content" style="margin-top:6px;"><p style="text-align:center;"><strong>效果：</strong>LIBERO · RoboTwin2.0 上显著提升采样效率（vs RL）和鲁棒性（vs SFT），有效缓解灾难性遗忘。<br/><strong>意义：</strong>首次将 OPD 范式<strong>系统性引入 VLA 模型后训练</strong>。</p></div></div></section>
+
+<!-- ═══════ M2Distill ═══════ -->
+<section data-transition="slide"><div class="core-card fragment fade-up"><p class="page-badge">终身学习</p><h2 style="font-size:24px;font-weight:700;color:var(--core);margin:8px 0;">🟣 M2Distill：终身模仿学习的多模态蒸馏 (ICRA 2025)</h2><p style="font-size:11px;color:var(--nova);margin:2px 0;font-family:monospace;">Kaushik Roy 等 · ICRA 2025 · arXiv:2410.00064</p><div class="core-bar"></div>
+<div class="def-box"><div class="label">核心场景</div><div class="content"><strong>终身/持续模仿学习</strong>——机器人需要不断增加新技能而不遗忘旧技能。每学一个新任务，之前所有任务的表现不能退化。这是比标准 SFT→RL 更难的设定。</div></div>
+<div class="green-box"><div class="label">方法：多模态蒸馏保持一致的潜在空间</div><div class="content">通过多模态蒸馏保持<strong>视觉、语言、动作分布之间一致的潜在空间</strong>。核心机制：<strong>规范化增量步骤间的潜在表示漂移</strong>和<strong>GMM 策略差异</strong>——当学习新技能时，旧技能的潜在表示被蒸馏约束锁定，防止灾难性遗忘。</div></div>
+<div class="struct-content" style="margin-top:6px;"><p style="text-align:center;color:var(--nova);">💡 关键区别：M2Distill 的 "在线" 不在于 trajectory 采样，而在于<strong>技能增量学习的时序</strong>——每个新技能都是 on-policy 于当前已学技能集合。</p></div></div></section>
+
+
+<!-- ═══════ ACGD ═══════ -->
+<section data-transition="slide"><div class="core-card fragment fade-up"><p class="page-badge">多任务策略</p><h2 style="font-size:24px;font-weight:700;color:var(--nova);margin:8px 0;">🟢 ACGD：非对称评论家引导的多任务蒸馏 (2025)</h2><p style="font-size:11px;color:var(--nova);margin:2px 0;font-family:monospace;">Srinivasan 等（NVIDIA · Stanford · Georgia Tech）</p><div class="core-bar"></div>
+<div class="def-box" style="border-left-color:var(--nova);"><div class="label" style="color:var(--nova);">核心思想</div><div class="content"><strong>单任务专家策略 + 特权评论家 → 统一多任务学生。</strong>每个任务训练一个专家策略（效果极好但只能做一个任务），同时训练一个<strong>评论家（critic）</strong>拥有特权状态信息（如物体真实位姿）。蒸馏阶段：评论家引导学生（VQ-VAE + Transformer 架构）在多个任务间找到统一的表示。</div></div>
+<div class="two-col" style="max-width:900px;margin-top:10px;">
+<div style="background:rgba(225,112,85,0.05);border:1px solid rgba(225,112,85,0.15);border-radius:8px;padding:14px;text-align:left;"><p style="font-size:12px;font-weight:700;color:var(--flare);margin:0 0 6px;">👨‍🏫 教师侧</p><p style="font-size:10.5px;color:var(--text2);margin:0;">• 多个单任务专家策略（各精一项）<br/>• 评论家拥有<strong>特权状态信息</strong><br/>• 提供高质量逐状态评估信号</p></div>
+<div style="background:rgba(0,206,201,0.05);border:1px solid rgba(0,206,201,0.15);border-radius:8px;padding:14px;text-align:left;"><p style="font-size:12px;font-weight:700;color:var(--nova);margin:0 0 6px;">🎓 学生侧</p><p style="font-size:10.5px;color:var(--text2);margin:0;">• 统一 VQ-VAE + Transformer<br/>• 无特权信息（纯观测）<br/>• 一个模型执行所有任务</p></div>
+</div>
+<div class="struct-content" style="margin-top:6px;"><p style="text-align:center;"><strong>效果：</strong>灵巧操作基准提升 <strong>10–15%</strong> &nbsp;|&nbsp; 意义：证明了<strong>「非对称」教师-学生架构</strong>（教师拥有学生无法获取的状态信息）在机器人多任务学习中的有效性。</p></div></div></section>
+
+<!-- ═══════ 三篇论文对比 ═══════ -->
+<section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--flare);margin-bottom:10px;">📊 Agent/具身 OPD 三篇对比</h2>
+<table class="summary-table fragment fade-up"><thead><tr><th>维度</th><th>🔴 VLA-OPD</th><th>🟣 M2Distill</th><th>🟢 ACGD</th></tr></thead>
+<tbody>
+<tr><td class="pc">时间/发表</td><td>2026.03 · arXiv</td><td>ICRA 2025</td><td>2025</td></tr>
+<tr><td class="pc">核心问题</td><td>SFT→RL 分布漂移<br/>连续动作空间优化</td><td>终身学习中的<br/>灾难性遗忘</td><td>多任务策略统一<br/>特权信息利用</td></tr>
+<tr><td class="pc">OPD 角色</td><td class="hl">Reverse KL 蒸馏<br/>替代稀疏RL奖励</td><td>多模态潜在空间<br/>蒸馏约束</td><td>评论家引导的<br/>非对称蒸馏</td></tr>
+<tr><td class="pc">关键创新</td><td class="hl">系统对比三种KL目标<br/>确立Reverse KL优势</td><td>增量学习中的<br/>表示漂移规范化</td><td>单任务专家+特权评论家<br/>→多任务学生</td></tr>
+<tr><td class="pc">代表基准</td><td>LIBERO · RoboTwin2.0</td><td>终身模仿学习基准</td><td>灵巧操作基准</td></tr>
+<tr><td class="pc">提升幅度</td><td>采样效率&鲁棒性<br/>显著提升</td><td>防止旧技能遗忘</td><td class="hl">+10–15%</td></tr>
+</tbody></table>
+<div class="struct-content" style="margin-top:8px;"><p style="text-align:center;color:var(--nova);">💡 三篇论文从<strong>优化稳定性、持续学习、多任务统一</strong>三个维度证明了 OPD 在物理世界中的独特价值。</p></div></section>
+
+<!-- ═══════ Part 5 小结 ═══════ -->
+<section data-transition="slide"><div class="core-card fragment fade-up"><p class="page-badge">Part 5 小结</p><h2 style="font-size:28px;font-weight:700;color:var(--flare);margin:8px 0;">🎯 Agent/具身 OPD：物理世界的蒸馏</h2><div class="core-bar"></div>
+<div class="struct-content">
+<p>Agent/具身智能是 OPD 从<strong>数字世界走向物理世界</strong>的关键领域，三篇论文各自解决了一个核心维度：</p>
+<p style="margin-left:16px;">🔹 <strong>VLA-OPD</strong>：确立 Reverse KL 在连续动作空间中的最优性 — Forward KL→熵爆炸（抖动）、Hard CE→熵坍塌（不会探索）、Reverse KL→最优平衡<br/>🔹 <strong>M2Distill</strong>：终身学习 — 用多模态蒸馏保持视觉·语言·动作潜在空间一致，防止增量学习中的灾难性遗忘<br/>🔹 <strong>ACGD</strong>：非对称蒸馏 — 特权评论家引导单任务专家→多任务统一学生，灵巧操作 +10–15%</p>
+<p style="font-size:14px;color:var(--nova);text-align:center;margin-top:8px;">核心规律：<strong>在物理世界中，OPD 是少数能同时解决稀疏奖励、高采样成本、灾难性遗忘的方法。</strong></p>
+<p style="text-align:center;margin-top:14px;color:var(--nova);font-size:14px;">✦ 接下来：Part 6 — RL+OPD 混合系统 ✦</p>
+</div></div></section>
+
 </div></div>
 <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.js"></script>
 <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
