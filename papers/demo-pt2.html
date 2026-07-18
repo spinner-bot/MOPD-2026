@@ -47,6 +47,23 @@
 <p style="color:var(--prune);margin-top:10px;"><strong>核心贡献：</strong>将 OPD 重新定义为<strong>可靠性分配问题</strong>——用逐位师生兼容度实时监测前缀漂移，单调衰减不可靠奖励，动态截断浪费的 rollout</p>
 </div></div></section>
 
+<!-- ═══════ 4. Prune-OPD 核心动机（左右布局） ═══════ -->
+<section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--prune);margin-bottom:6px;">🪓 Prune-OPD 核心动机：长程推理中的前缀漂移</h2>
+<div class="paper-split fragment fade-up">
+<div class="paper-left">
+<p style="font-size:11px;color:var(--text3);margin-bottom:6px;">📄 论文问题陈述</p>
+<p>On-Policy Distillation 在<strong>长程推理</strong>（数学证明、多步逻辑）中面临一个根本性矛盾：学生生成的推理前缀<strong>不可避免地偏离</strong>教师的思维过程。一旦前缀分叉，教师在该位置后的密集 token 级奖励就变得<span class="hl-r">局部不可利用</span>（locally unexploitable）——继续在这些发散轨迹上生成并监督，仅<strong>浪费大量计算</strong>且可能降低训练质量。</p>
+<p style="margin-top:8px;"><span class="hl-g">核心洞察：</span>不是所有的 OPD 奖励都同等有价值——在师生兼容的位置，奖励是"可兑现的"；在漂移后的位置，奖励是"空头支票"。</p>
+<p style="margin-top:8px;"><span class="hl-b">PRUNE-OPD 的定位：</span>将长程 OPD 重新定义为一个<span class="hl-g">可靠性分配问题</span>——动态将训练预算对准有质量监督的位置，截断无质量监督的尾部。</p>
+</div>
+<div class="paper-right">
+<div class="section-label">🔍 白话解读</div>
+<div class="comment"><strong>类比：老师批改作文，但学生从第一段就跑题了。</strong><br/>OPD = 老师逐句批改学生的推理过程。如果学生前几句已经偏离了正解方向，后面整段推理都歪了——老师继续逐句批改后面的内容<strong>毫无意义</strong>，只会浪费双方的时间（计算资源）。</div>
+<div class="insight">💡 <strong>PRUNE-OPD 的核心问题：</strong>如何在学生开始跑偏时<strong>及时止损</strong>？不是简单地缩短所有 rollout（那会丢失长上下文监督的机会），而是<strong>动态判断</strong>每个位置的师生兼容度，决定继续监督还是截断。</div>
+<div class="warn" style="margin-top:8px;">⚠️ <strong>关键挑战：</strong>在低兼容度场景下（小模型+难任务）漂移严重→OPD浪费最多；在高兼容度场景下师生天然对齐→PRUNE-OPD自动保留长上下文监督。难点在于<strong>不要冤枉好人</strong>（师生对齐时不要乱截断）。</div>
+</div>
+</div></section>
+
 </div></div>
 <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.js"></script>
 <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
