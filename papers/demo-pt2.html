@@ -168,6 +168,15 @@
 </div>
 </div></section>
 
+<!-- ═══════ 13. Flow-OPD 两阶段框架 ═══════ -->
+<section data-transition="slide"><div class="star-card fragment fade-up"><p class="page-badge-r">Flow-OPD · 框架</p><h2 style="font-size:28px;font-weight:700;color:var(--flow);margin:8px 0;">🌊 两阶段对齐策略</h2><p style="font-size:14px;color:var(--text2);">Stage 1：领域专精教师 &nbsp;→&nbsp; Stage 2：多教师 OPD 融合</p><div class="star-bar"></div>
+<div class="flow-diagram fragment fade-up" style="margin-top:12px;"><div class="flow-node fn-r" style="text-align:center;">Stage 1<div style="font-size:10px;font-weight:400;color:var(--text2);">单奖励 GRPO</div><div style="font-size:9px;color:var(--text3);">训练领域专精教师</div></div><div class="flow-arrow">→</div><div class="flow-node" style="text-align:center;background:rgba(251,191,36,0.1);border:2px solid rgba(251,191,36,0.35);color:var(--gold);">Stage 2 ⚡<div style="font-size:10px;font-weight:400;color:var(--text2);">多教师 OPD 融合</div><div style="font-size:9px;color:var(--text3);">冷启动 · 任务路由 · MAR</div></div><div class="flow-arrow">→</div><div class="flow-node fn-g" style="text-align:center;">Student<div style="font-size:10px;font-weight:400;color:var(--text2);">统一多任务模型</div><div style="font-size:9px;color:var(--text3);">超越单一教师</div></div></div>
+<div class="tri-grid fragment fade-up" style="margin-top:14px;">
+<div class="concept-block r"><h4>🎯 Stage 1：领域专精</h4><p>每位教师通过<strong>单奖励 GRPO</strong>在各自维度（GenEval、OCR、美学、PickScore）上训练到性能天花板。共享 SD3.5 Medium 底座——"说同一种语言，但各有专长"。</p></div>
+<div class="concept-block" style="border-color:rgba(251,191,36,0.25);"><h4 style="color:var(--gold);">🔀 Stage 2：多教师融合</h4><p>冷启动（SFT 或模型合并）→ on-policy 采样去噪轨迹 → <strong>任务路由 token</strong> 分配各教师 → 教师沿整条轨迹提供<strong>密集向量场监督</strong> → MAR 冻结教师锚定生成质量。</p></div>
+<div class="concept-block g"><h4>🧠 理论突破：Flow-KL</h4><p>证明了连续流匹配 OPD 中 KL 散度<strong>简化为向量场之间的加权 L2 距离</strong>——D<sub>KL</sub> = E<sub>t</sub>[w(t)·||v<sub>stu</sub>−v<sub>tea</sub>||²]。<strong>无策略梯度方差</strong>，训练极其稳定。</p></div>
+</div></div></section>
+
 </div></div>
 <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.js"></script>
 <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
