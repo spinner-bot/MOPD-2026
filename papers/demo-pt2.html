@@ -258,6 +258,23 @@
 </div>
 <p style="text-align:center;margin-top:12px;color:var(--gold);font-size:15px;">✦ 接下来：Prune-OPD vs Flow-OPD — OPD 研究的两条互补路线 ✦</p></div></section>
 
+<!-- ═══════ 20. 对比表 ═══════ -->
+<section data-transition="slide"><h2 style="font-size:24px;font-weight:700;color:var(--gold);margin-bottom:8px;">⭐ Prune-OPD vs Flow-OPD：10 维度全面对比</h2>
+<table class="summary-table fragment fade-up" style="font-size:10px;"><thead><tr><th style="width:14%">维度</th><th style="width:38%">Prune-OPD <span style="color:var(--prune);">🪓</span></th><th style="width:38%">Flow-OPD <span style="color:var(--flow);">🌊</span></th><th style="width:10%">互补</th></tr></thead>
+<tbody>
+<tr><td class="pc">领域</td><td class="hl">LLM 长程推理（数学）</td><td class="wr">Flow Matching T2I 生成</td><td class="hl">✅</td></tr>
+<tr><td class="pc">核心问题</td><td class="hl">师生前缀漂移 → 密集奖励失效</td><td class="wr">奖励稀疏 + 多任务梯度干扰</td><td class="hl">✅</td></tr>
+<tr><td class="pc">OPD 类型</td><td class="hl">文本自回归 token 级 OPD</td><td class="wr">连续向量场轨迹级 OPD</td><td class="hl">✅</td></tr>
+<tr><td class="pc">核心创新</td><td class="hl">可靠性感知权重 + 动态截断</td><td class="wr">Flow-KL 定理 + 多教师 MAR</td><td class="hl">✅</td></tr>
+<tr><td class="pc">效率机制</td><td class="hl">动态截断 + 预算自适应</td><td class="wr">闭式 KL（零策略梯度方差）</td><td class="hl">✅</td></tr>
+<tr><td class="pc">多任务</td><td>单任务（推理正确性）</td><td class="wr">多任务（美学+OCR+对齐+质量）</td><td class="hl">✅</td></tr>
+<tr><td class="pc">教师角色</td><td class="hl">单个密集教师 / rollout</td><td class="wr">多领域教师 + 冻结锚定教师</td><td class="hl">✅</td></tr>
+<tr><td class="pc">理论基础</td><td>经验启发式（top-k, w<sub>base</sub>）</td><td class="wr">强理论（Flow-KL 定理有闭式解）</td><td class="hl">✅</td></tr>
+<tr><td class="pc">模型规模</td><td class="hl">1.5B – 7B LLMs</td><td class="wr">2.5B 扩散模型（SD3.5M）</td><td>—</td></tr>
+<tr><td class="pc">关键指标</td><td class="hl">训练 FLOPs −37.6%~68.0%</td><td class="wr">多任务平均 +10 pts 超越 GRPO</td><td>—</td></tr>
+</tbody></table>
+<div class="struct-content fragment fade-up" style="margin-top:8px;"><p style="text-align:center;font-size:14px;">💡 <strong>两个维度，一个方向：</strong>Prune-OPD 解决<strong style="color:var(--prune);">OPD 自身的效率问题</strong>（"怎么做 OPD 才不浪费"），Flow-OPD 解决<strong style="color:var(--flow);">OPD 的范式扩展问题</strong>（"OPD 能不能用在生成模型上"）。两者<strong>互补而非竞争</strong>，共同推进 OPD 研究版图。</p></div></section>
+
 </div></div>
 <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.js"></script>
 <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
