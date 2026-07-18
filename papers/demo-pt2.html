@@ -82,6 +82,26 @@
 <div class="formula-box fragment fade-up"><div class="math-block">$$C(t) = \sum_{i=1}^{t} \mathbf{1}[\text{OverlapRate}(i) < \tau]$$</div></div>
 <div class="struct-content fragment fade-up"><p style="text-align:center;">C(t) = 累积漂移计数——<strong>单调递增</strong>，每次低于阈值 τ 就 +1。C(t) 越大，说明前缀已经偏离越远，后续所有位置的 OPD 奖励可信度越低。</p></div></div></section>
 
+<!-- ═══════ 7. 组件2：可靠性权重+动态截断 ═══════ -->
+<section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--gold);margin-bottom:6px;">⚡ 组件 2：单调可靠性权重与动态截断</h2>
+<div class="paper-split fragment fade-up">
+<div class="paper-left">
+<p style="font-size:11px;color:var(--text3);margin-bottom:6px;">📄 核心公式与机制</p>
+<p><span class="hl-g">可靠性权重：</span></p>
+<p style="font-size:14px;text-align:center;">$$R = \text{clip}(1 - w_{\text{drop}} \cdot C,\; 0,\; 1)$$</p>
+<p>其中 w<sub>drop</sub> 为衰减速率，C 为累计漂移事件数。权重从 1.0 开始，随着 C 增长逐渐衰减至 0。w<sub>base</sub> = 0.5 确保即使无漂移时也有基础信任。</p>
+<p style="margin-top:8px;"><span class="hl-g">动态截断触发：</span></p>
+<p>当 R → 0（累计漂移过多次），<strong>立即终止该 rollout</strong>——不再生成后续 token，将节省的计算资源重新分配给其他更有希望的 prompt。</p>
+<p style="margin-top:8px;"><span class="hl-b">单调不可逆属性：</span>R 只能下降不能上升——<strong>一旦信任降低就永久降低</strong>。这不是软注意力，而是硬决策。</p>
+</div>
+<div class="paper-right">
+<div class="section-label">🔍 设计哲学</div>
+<div class="comment"><strong>"及时止损优于强行续写。"</strong>传统 OPD 不管前缀是否偏离，都强制计算完整轨迹的教师 logits。PRUNE-OPD 的策略是：当发现学生的推理路径已偏离教师，<strong>立刻停止</strong>——后续的监督信号本身已不可用，计算它们就是浪费。</div>
+<div class="insight">💡 <strong>为什么 R 是单调不可逆的？</strong>因为前缀漂移是<strong>路径依赖</strong>的——一旦在位置 p 处学生选了与教师不同的方向，后续所有 token 都建在这个分叉之上。单个 token 的"重新对齐"无法消除前缀的分叉效应。所以信任一旦丢失，不存在恢复机制。</div>
+<div class="warn" style="margin-top:8px;">⚠️ <strong>权衡：</strong>w<sub>drop</sub> 和 w<sub>base</sub> 是启发式超参。w<sub>drop</sub> 太小→截断太慢，仍浪费计算；w<sub>drop</sub> 太大→截断太快，丢失有效监督。论文未进行这些超参的自动学习或自适应调整。</div>
+</div>
+</div></section>
+
 </div></div>
 <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.js"></script>
 <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
