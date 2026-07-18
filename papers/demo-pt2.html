@@ -123,6 +123,26 @@
 </tbody></table>
 <div class="struct-content fragment fade-up" style="margin-top:8px;"><p style="text-align:center;color:var(--gold);">💡 PRUNE-OPD 的核心优势：不是"缩短所有 rollout"，而是"<strong>只截断不值得继续的 rollout</strong>"——在师生天然对齐时自动保留完整长上下文监督。</p></div></div></section>
 
+<!-- ═══════ 10. Prune-OPD 小结 ═══════ -->
+<section data-transition="slide"><div class="star-card fragment fade-up" style="border-color:rgba(52,211,153,0.25);"><p class="page-badge">Prune-OPD · 小结</p><h2 style="font-size:28px;font-weight:700;color:var(--prune);margin:8px 0;">🪓 Prune-OPD 总结</h2><div class="star-bar"></div>
+<div class="two-col" style="margin-top:10px;">
+<div style="text-align:left;"><p style="font-size:14px;font-weight:700;color:var(--accent-g);">✅ 贡献</p>
+<div class="concept-block g fragment fade-up" style="margin-bottom:4px;"><p>✅ 首次<strong>量化</strong>师生在 OPD 中的<strong>位置级兼容度</strong>（top-k 重叠率）</p></div>
+<div class="concept-block g fragment fade-up" style="margin-bottom:4px;"><p>✅ <strong>可靠性感知权重</strong>——R = clip(1−w<sub>drop</sub>·C, 0, 1)，单调不可逆</p></div>
+<div class="concept-block g fragment fade-up" style="margin-bottom:4px;"><p>✅ <strong>动态截断</strong>替代固定长度——训练时间缩减 37.6%−68.0%</p></div>
+<div class="concept-block g fragment fade-up" style="margin-bottom:4px;"><p>✅ <strong>响应预算控制器</strong>——M<sub>max</sub> 2048→12288，自适应分配</p></div>
+<div class="concept-block g fragment fade-up"><p>✅ 6 模型 × 5 基准的<strong>稳健验证</strong>——链越长优势越大</p></div>
+</div>
+<div style="text-align:left;"><p style="font-size:14px;font-weight:700;color:var(--rose);">⚠️ 局限</p>
+<div class="concept-block r fragment fade-up" style="margin-bottom:4px;"><p>⚠️ w<sub>base</sub> = 0.5 是<strong>启发式</strong>，不是学出来的</p></div>
+<div class="concept-block r fragment fade-up" style="margin-bottom:4px;"><p>⚠️ Top-k 重叠率可能<strong>不捕获语义级</strong>发散（仅看词汇重叠）</p></div>
+<div class="concept-block r fragment fade-up" style="margin-bottom:4px;"><p>⚠️ 截断阈值为<strong>二值硬决策</strong>——可考虑软截断</p></div>
+<div class="concept-block r fragment fade-up" style="margin-bottom:4px;"><p>⚠️ 仅测试<strong>数学推理</strong>——代码、通用对话泛化性未知</p></div>
+<div class="concept-block r fragment fade-up"><p>⚠️ 需要<strong>白盒教师 logits</strong>——API-only 场景不适用</p></div>
+</div>
+</div>
+<p style="text-align:center;margin-top:12px;color:var(--flow);font-size:15px;">✦ 接下来：Part 2 — Flow-OPD：流匹配模型的 OPD 首秀 ✦</p></div></section>
+
 </div></div>
 <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.js"></script>
 <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
