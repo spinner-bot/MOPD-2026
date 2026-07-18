@@ -238,6 +238,26 @@
 <div class="def-box r"><div class="label">👑 超教师效应</div><div class="content">学生在 OCR 和 DeQA 上<strong>超越了各自的领域专精教师</strong>——多教师 OPD 不仅融合了能力，还产生了<strong>协同增益</strong>。一个领域的优化可能<strong>正向迁移</strong>到其他领域。</div></div>
 </div></div></section>
 
+<!-- ═══════ 19. Flow-OPD 小结 ═══════ -->
+<section data-transition="slide"><div class="star-card fragment fade-up" style="border-color:rgba(167,139,250,0.25);"><p class="page-badge-r">Flow-OPD · 小结</p><h2 style="font-size:28px;font-weight:700;color:var(--flow);margin:8px 0;">🌊 Flow-OPD 总结</h2><div class="star-bar"></div>
+<div class="two-col" style="margin-top:10px;">
+<div style="text-align:left;"><p style="font-size:14px;font-weight:700;color:var(--accent-g);">✅ 贡献</p>
+<div class="concept-block g fragment fade-up" style="margin-bottom:4px;"><p>✅ 首个流匹配模型的<strong>OPD 统一后训练框架</strong></p></div>
+<div class="concept-block g fragment fade-up" style="margin-bottom:4px;"><p>✅ <strong>Flow-KL 定理</strong>——KL = 加权 L2 距离，零方差</p></div>
+<div class="concept-block g fragment fade-up" style="margin-bottom:4px;"><p>✅ <strong>两阶段架构</strong>——领域专精 → 多教师融合</p></div>
+<div class="concept-block g fragment fade-up" style="margin-bottom:4px;"><p>✅ <strong>MAR 正则化</strong>——防止多任务美学崩塌</p></div>
+<div class="concept-block g fragment fade-up"><p>✅ <strong>超教师效应</strong>——多教师协同超越单任务天花板</p></div>
+</div>
+<div style="text-align:left;"><p style="font-size:14px;font-weight:700;color:var(--rose);">⚠️ 局限</p>
+<div class="concept-block r fragment fade-up" style="margin-bottom:4px;"><p>⚠️ 仅测试<strong> SD3.5 Medium</strong>——更大/更新架构未知</p></div>
+<div class="concept-block r fragment fade-up" style="margin-bottom:4px;"><p>⚠️ N 个教师 = <strong>N × GRPO 训练成本</strong></p></div>
+<div class="concept-block r fragment fade-up" style="margin-bottom:4px;"><p>⚠️ 任务路由 token <strong>手动设计</strong>，非学习式</p></div>
+<div class="concept-block r fragment fade-up" style="margin-bottom:4px;"><p>⚠️ 仅 4 个奖励维度——<strong>可扩展性</strong>（10+ 维）未知</p></div>
+<div class="concept-block r fragment fade-up"><p>⚠️ 对<strong>离散扩散模型</strong>不直接适用</p></div>
+</div>
+</div>
+<p style="text-align:center;margin-top:12px;color:var(--gold);font-size:15px;">✦ 接下来：Prune-OPD vs Flow-OPD — OPD 研究的两条互补路线 ✦</p></div></section>
+
 </div></div>
 <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.js"></script>
 <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
