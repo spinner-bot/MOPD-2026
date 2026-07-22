@@ -1,0 +1,1190 @@
+arXiv:2605.07804v3 [cs.LG] 1 Jun 2026      PRUNE-OPD: Efficient and Reliable On-Policy
+                                               Distillation for Long-Horizon Reasoning
+
+                                                  Zhicheng Yang1 Zhijiang Guo1,2 Yifan Song1 Minrui Xu1 Yongxin Wang3
+                                                                      Yiwei Wang4 Xiaodan Liang3,5 Jing Tang1,2
+
+                                                        1The Hong Kong University of Science and Technology (Guangzhou)
+                                                                 2The Hong Kong University of Science and Technology
+
+                                                       3MBZUAI, 4University of California, Merced, 5Sun Yat-sen University
+
+                                                            Project Repo: https://github.com/yangzhch6/Prune-OPD
+
+                                                                                   Abstract
+
+                                                 On-policy distillation (OPD) leverages dense teacher rewards to enhance reasoning
+                                                 models. However, scaling OPD to long-horizon tasks exposes a critical flaw: as the
+                                                 student's generated prefix inevitably diverges from the teacher's thought process,
+                                                 the teacher's dense reward loses local exploitability. Continuing to generate and
+                                                 evaluate tokens on these "drifted" trajectories not only degrades reward quality but
+                                                 also incurs massive computational waste. To address this, we introduce Prune-
+                                                 OPD, a framework that dynamically aligns training budgets with supervision
+                                                 quality. By continuously monitoring the local compatibility between student
+                                                 and teacher predictions (e.g., via top-k overlap), Prune-OPD detects prefix-drift
+                                                 events in real time. Upon detecting severe drift, it monotonically down-weights
+                                                 subsequent unreliable rewards and triggers dynamic rollout truncation. This allows
+                                                 the training process to halt futile generation and reallocate compute strictly to
+                                                 reliable teacher supervision. Across diverse teacher-student combinations, Prune-
+                                                 OPD consistently aligns computation with supervision reliability. When prefix drift
+                                                 makes dense teacher rewards unreliable, it reduces training time by 37.6%­68.0%
+                                                 while preserving, and often improving, performance on challenging benchmarks
+                                                 (AMC, AIME, HMMT). When student-teacher compatibility remains high, it
+                                                 automatically preserves long-context supervision by expanding the training window.
+                                                 These results suggest that Prune-OPD improves OPD not by blindly shortening
+                                                 rollouts, but by reallocating computation toward locally exploitable teacher rewards.
+
+                                       1 Introduction
+
+                                       On-policy distillation (OPD) has become a central technique for post-training large language models.
+                                       Recent systems like Qwen3 [36], MiMo [34], and GLM-5 [45] adopt OPD-style dense supervision
+                                       in post-training pipelines. Thinking Machines Lab [24] reports that an OPD recipe can reproduce
+                                       strong reasoning gains at substantially lower compute than outcome-reward RL. This makes OPD an
+                                       attractive complement to supervised fine-tuning and verifiable RL: it supplies a token-level learning
+                                       signal on long reasoning traces, rather than waiting for a sparse final-answer reward.
+
+                                       OPD's appeal lies in its on-policy nature. Off-policy distillation trains the student on fixed teacher-
+                                       generated sequences, which induces the exposure-bias problem: at inference time, the student must
+                                       act under prefixes that were not produced by the teacher or reference policy [2]. OPD instead samples
+                                       rollouts from the current student and evaluates the teacher on the same student-visited prefixes. This
+                                       design has also motivated recent self-distillation methods, where a model acts as its own teacher under
+                                       privileged information or feedback and improves from its own on-policy experience [14, 47, 30]. In
+                                       long-horizon mathematical reasoning, this distinction matters: a single solution can contain thousands
+                                       of tokens, so even small train-inference mismatches can compound across the trajectory.
+
+                                       Preprint.
+         1.0                               low-overlap                                        low-overlap event
+                                               event                                          student rollout token
+prune-opd 0.7                                           low-overlap                          truncated token (no need to gen)
+  weight               2 3 4 5                              event
+               0.4                                                                                       teacher top-k token
+                          teacher
+         0.1             mismatch                                    low-overlap  +1 +2 +3 +4 ... 
+                                                                         event
+
+student 0.0         1                                   ... -4 -3 -2 -1 
+rollout
+
+                                                                                  truncate rollout
+
+compute                Prune-OPD budget (<< 12k)
+budget                 Normal OPD budget (up to 12k)
+
+Figure 1: Conceptual overview of PRUNE-OPD. PRUNE-OPD monitors local student-teacher compatibility
+along the student rollout, monotonically attenuates OPD rewards after low-overlap drift events, and truncates the
+response once reliable teacher supervision is exhausted.
+
+However, the same on-policy design creates a new reliability problem. The teacher is queried not
+only on prefixes where its local distribution offers useful corrections, but also on prefixes that have
+already drifted away from the teacher's reasoning process. Recent OPD dynamics analysis points
+out that OPD success depends on local thinking-pattern compatibility and that reward quality can
+deteriorate with trajectory depth [22]. We take this diagnosis as a design constraint: long-horizon
+OPD should not treat every generated token as equally worth supervising.
+
+The missing piece is online reliability control. Current OPD recipes usually choose a rollout budget
+before generation and then apply dense teacher rewards uniformly along the sampled response. This
+creates a bad tradeoff. A short fixed budget can discard useful long reasoning, while a long fixed
+budget spends substantial compute generating and scoring suffixes whose teacher signal may no
+longer be locally exploitable. In practice, a single rollout can contain both regimes: an early prefix
+where student and teacher still share plausible next-token support, followed by a suffix where the
+student has committed to reasoning choices the teacher would not have taken. What OPD needs is
+therefore not simply more or less dense reward, but a way to decide where the dense reward is reliable
+enough to train on.
+
+We propose PRUNE-OPD, a reliability-aware modifier for long-horizon OPD that makes this decision
+during training. Rather than filtering whole responses or imposing a fixed response length, PRUNE-
+OPD asks a position-level question: under the same student prefix, do the student and teacher still
+share a high-probability candidate region? The primary signal is per-position top-k overlap ratio,
+with teacher top-p/top-k action acceptance as a stricter variant. When the selected compatibility
+metric falls below its threshold, PRUNE-OPD records a prefix-drift event. Cumulative drift events
+define a monotone reliability weight that attenuates later OPD rewards, and the same raw reliability
+signal defines an effective response length for dynamic rollout control. The intended shift is from
+fixed-budget OPD to reliability-budgeted OPD: dense supervision should be allocated where the
+teacher remains actionable on the student's trajectory.
+
+We conduct extensive experiments to evaluate whether reliability-aware pruning improves long-
+horizon OPD in practice. The results validate the effectiveness of PRUNE-OPD: it reduces training
+time by 37.6%­68.0% when dense supervision becomes unreliable, while preserving or improving
+downstream accuracy. Additional runs show that the controller keeps long-context supervision when
+the reliability signal remains high, supporting the claim that PRUNE-OPD reallocates computation
+rather than blindly shortening rollouts. In summary, our contributions are:
+
+  · We formulate long-horizon OPD as a reliability-allocation problem on student-visited prefixes,
+    connecting trajectory-depth degradation to local compatibility and reward exploitability.
+
+  · We propose PRUNE-OPD, which converts cumulative prefix drift into monotone OPD reward
+    attenuation and a dynamic response-length controller, without changing the baseline OPD path
+    when disabled.
+
+  · We provide pilot evidence that reliability-aware pruning can reduce OPD training time by 37.6%­
+    68.0% when prefix drift limits reliable supervision while preserving benchmark performance, and
+    we specify fixed-length pruning controls to test whether the gains come from reliability rather
+    than generic shortening.
+
+                                                        2
+2 Background and Problem Setup
+
+2.1 On-Policy Distillation
+
+Let x denote an input prompt and y = (y1, . . . , yT ) a response sampled autoregressively from a
+student policy . At position t, write y<t = (y1, . . . , yt-1) for the prefix and define the student and
+teacher next-token distributions as:
+
+                  pt(v)  (v | x, y<t), qt(v)  T(v | x, y<t),      (1)
+
+over vocabulary tokens v  V. OPD computes supervision on trajectories sampled from the current
+student, usually by minimizing a reverse-KL objective over student-generated trajectories [9, 1, 22]:
+
+                                              T
+
+                     LOPD() = Ex, y(·|x)           DKL(pt  qt) .  (2)
+
+                                              t=1
+
+This token-level decomposition drives OPD's sample efficiency: every position provides a dense
+teacher signal instead of waiting for a final-answer reward. It also exposes the central assumption: qt
+should be a useful local target on the student-visited state (x, y<t). In practice, we approximate this
+reward on the student's top-k candidate tokens and obtain a per-position reward vector rt,·. Because
+rewards are already localized by position, a reliability modifier can simply multiply all rewards at
+position t by a scalar weight before the policy loss. This is the interface used by PRUNE-OPD:
+
+reliable prefixes keep their OPD rewards, while drifted prefixes receive attenuated rewards.
+
+2.2 Dynamic Metrics
+
+Following the OPD mechanism analysis [22], let St(p) = TopK(pt, k) and St(q) = TopK(qt, k). The
+overlap ratio proposed in that work is
+
+                            Moverlap = Et     |St(p)  St(q)|  ,   (3)
+                                                    k
+
+which measures whether the student and teacher assign high probability to a shared candidate region.
+
+The entropy gap,
+
+                            Ht = |H(qt) - H(pt)|,                 (4)
+
+tracks whether the two models have similar uncertainty on the same visited state. These metrics are
+usually reported as diagnostics after training. PRUNE-OPD turns them into online control signals.
+The current primary metric is the per-position overlap ratio, which measures whether student and
+teacher still share a high-probability candidate region on the same student prefix. We also evaluate a
+stricter action-level variant that asks whether the sampled student token is accepted by the teacher's
+observable top-p/top-k region.
+
+2.3 Long-Horizon Reliability Problem
+
+The reward at position t depends on qt(v) = T(v | x, y<t), where the prefix y<t was produced
+by the student. As t grows, the prefix can drift away from trajectories the teacher would naturally
+generate. Prior OPD analysis reports suffix-to-prefix instability and decreasing teacher-continuation
+advantage as the student prefix depth increases [22]. Thus the same dense reward that helps on
+moderate traces can become unreliable on long traces. This motivates position-level reliability control.
+We estimate whether each student prefix remains teacher-compatible, then allocate dense supervision
+to reliable prefixes and attenuate rewards after prefix drift.
+
+3 PRUNE-OPD
+
+PRUNE-OPD converts local student-teacher compatibility into a position-wise weight on OPD
+rewards. The method is designed as a drop-in modifier for OPD: it does not alter how the teacher
+reward is computed, but changes how much each visited position should trust that reward. It has three
+parts: a per-position compatibility metric, a cumulative reliability weight, and an optional dynamic
+response-length controller.
+
+                                           3
+3.1 Compatibility Metric
+
+At position  , our goal is to decide whether the teacher still provides locally exploitable supervision
+on the student's current trajectory. The student and teacher are therefore evaluated on the same
+student-generated prefix s = (x, y< ).
+
+We first restrict the comparison to each model's high-confidence candidate tokens. Let
+
+KS = TopK((· | s ), k) , KT = TopK(T(· | s ), k)                                        (5)
+
+be the returned top-k candidate sets. The top-k size is an experimental hyperparameter. Then, we
+measure local compatibility with the overlap ratio
+
+                             O =               KS  KT .                                 (6)
+                                                   k
+
+Low overlap means that the teacher's dense reward is being computed under prefixes where its
+
+preferred next-token support has separated from the student's support. Accordingly, we define the
+
+prefix-drift event as
+
+                             B = 1 [O < ] ,                                             (7)
+
+where  is the compatibility threshold. These drift events are later accumulated to attenuate subsequent
+OPD rewards and define the effective response length for dynamic rollout control.
+
+This metric follows the OPD mechanism analysis directly: successful OPD is associated with
+increasing high-probability overlap, while failing runs show stagnant or unstable overlap on student-
+visited states [22]. It measures whether the student and teacher still share a plausible local action
+space. Low overlap means that the teacher's dense reward is being computed in a region where its
+preferred next-token support has separated from the student's support. We also design an alternative
+top-p action-acceptance metric, its definition is given in Appendix A.10.
+
+3.2 Cumulative Reliability and Loss Weighting
+
+Bad events are accumulated over the response:
+
+                                                   
+
+                                           C = Bi.                                      (8)
+
+                                                i=1
+
+The raw reliability weight is a clipped linear decay,
+
+                             R = clip(1 - wdropC , 0, 1),                               (9)
+
+where wdrop  0 controls the penalty per compatibility failure. The raw weight is monotone
+non-increasing along each valid response. Padding positions are forced to zero.
+
+The actual loss weight adds a base floor:
+
+                                           L = R + wbase                                (10)
+
+for valid response positions, and L = 0 for padding. The scaled OPD reward is
+
+                                           r,j = L · r,j .                              (11)
+
+The base weight has two practical roles. First, it prevents PRUNE-OPD from becoming a hard switch
+when R reaches zero. Second, it lets the method trade off denoising and retention of weak teacher
+signal. Concrete hyperparameter values are specified in the experimental setup.
+
+3.3 Dynamic Response Budget
+
+PRUNE-OPD can additionally adjust the rollout length during training. Define the effective response
+
+length of a sample as
+
+                                           T
+
+                             E = 1 [R > ] ,                                             (12)
+
+                                            =1
+
+for a small tolerance . This definition deliberately uses R , not L . Therefore a token with R = 0
+and wbase > 0 can still contribute a small OPD reward, but it is not counted as reliable length.
+
+                                                4
+Algorithm 1 PRUNE-OPD with reliability-aware reward scaling and dynamic response budget
+
+Require: prompt distribution D, student policy , teacher policy T, OPD reward routine, initial
+
+     response budget M1
+Ensure: updated student policy  and response budget sequence {Mt}
+
+ 1: for training step t = 1, 2, . . . do
+
+2: Sample prompts {x(b)}Bb=1  D and generate student rollouts {y1(b:T)b }bB=1 with maximum
+   length Mt.
+
+3: Compute raw OPD reward tensors r(b,j) on the student-visited prefixes.
+4: for each rollout b = 1, . . . , B do
+
+5:   Compute the overlap-ratio sequence on student-visited prefixes using Eq. (6).
+
+6:   Mark low-compatibility positions and form the cumulative reliability weights using
+
+     Eqs. (7)­(10).
+
+7:   Scale OPD rewards using Eq. (11) and compute the effective reliable length E(b) using
+
+     Eq. (12).
+
+8: end for
+9: Update  with the OPD objective using scaled rewards r(b,j).
+
+10:  ht  B-1         B    1[E(b)    Mt  -  m].
+                     b=1
+11: if ht   then
+
+12:  Mt+1  min(Mt + , Mmax) and reset the low-hit counter.
+
+13: else if ht <  for P consecutive steps then
+
+14:  Mt+1  max(Mt - , Mmin) and reset the low-hit counter.
+
+15: else
+
+16:  Mt+1  Mt.
+
+17: end if
+
+18: end for
+
+Let Mt be the maximum response length used for rollout generation at training step t. The controller
+monitors the batch hit ratio: the fraction of samples whose effective reliable length reaches the current
+limit up to a margin. If the hit ratio is large, the limit expands by a fixed step, capped by Mmax. If the
+hit ratio remains small for a patience window, the limit contracts by the same step, bounded below by
+Mmin. The initial limit, bounds, update step, margin, hit-ratio threshold, and patience are specified
+in the experimental setup. Algorithm 1 summarizes the full PRUNE-OPD procedure, including
+reliability-aware reward scaling and dynamic response-budget adaptation. To keep the training loop
+readable, the position-wise compatibility and weighting rules refer directly to the definitions above.
+
+4 Experiments
+
+We evaluate whether reliability-aware reward scaling can substantially reduce OPD training cost
+while preserving downstream reasoning accuracy. Beyond final benchmark accuracy and training
+time, we measure local student-teacher dynamics on student-visited states, including overlap ratio,
+top-p acceptance, and effective reliable length.
+
+4.1 Experimental Setup
+
+Training data. We train on DAPO-Math-17K [44], following the OPD setting used in recent
+reasoning experiments. Training prompts are shuffled before each run. The primary RL outcome
+reward is final-answer correctness. However, OPD supplies dense token-level distillation rewards.
+
+Models. We evaluate five teacher-student pairs to test the reliability signal across distinct OPD
+dynamics. DeepSeek-R1-Distill-Qwen-1.5B is distilled from DeepSeek-R1-Distill-Qwen-7B, a larger
+same-family reasoning model whose higher benchmark score may not imply locally exploitable token-
+level feedback [10]. The same student is also distilled from JustRL-DeepSeek-1.5B, a same-size
+RL-improved teacher obtained from DeepSeek-R1-Distill-Qwen-1.5B [11]. Qwen3-1.7B-Base and
+Qwen3-4B-Base are distilled from Qwen3-4B (Non-thinking), isolating how a thinking-mode shift
+interacts with student scale within the same model family [36]. Finally, DeepSeek-R1-Distill-Qwen-
+7B is distilled from Skywork-OR1-7B, providing a high-initial-overlap setting where PRUNE-OPD is
+
+                                                           5
+Table 1: Main results for PRUNE-OPD. Accuracy is reported in percent. Time reduction is relative to baseline
+OPD under the same student-teacher pair.
+
+Method             AMC23 AIME24 AIME25 HMMT24 HMMT25 Time Red.
+
+                   DeepSeek-R1-Distill-Qwen-1.5B / JustRL-DeepSeek-1.5B
+
+OPD                77.5   43.5  32.7    23.5                  18.1              6.9h 0%
+                                                                                4.8h 30.4%
+OPD (Truncate 4k)  77.8   43.1  31.0    22.7                  17.9              4.3h 37.7%
+                                                                                4.1h 40.6%
+PRUNE-OPD (top-p)  77.3   44.0  30.8    23.3                  19.8
+
+PRUNE-OPD (overlap) 78.4  45.2  33.5    22.7                  18.8
+
+                   DeepSeek-R1-Distill-Qwen-1.5B / DeepSeek-R1-Distill-Qwen-7B
+
+OPD                66.4   33.5  25.4    14.4                  15.0              12.5h    0%
+                                                                                6.6h   47.2%
+OPD (Truncate 4k)  66.3   31.7  25.8    14.2                  14.4              4.8h   61.6%
+                                                                                4.0h   68.0%
+PRUNE-OPD (top-p)  65.5   29.6  24.2    14.6                  14.0
+
+PRUNE-OPD (overlap) 65.9  33.3  25.8    14.6                  15.0
+
+                   Qwen3-1.7B-Base / Qwen3-4B (Non-thinking)
+
+OPD                28.0   7.3      2.9  2.1                   0.6               16.5h    0%
+                                                                                12.9h  21.8%
+OPD (Truncate 4k)  28.6   6.3      2.9  2.3                   1.0               11.5h  30.3%
+                                                                                10.3h  37.6%
+PRUNE-OPD (top-p)  28.4   5.6      2.9  1.9                   0.6
+
+PRUNE-OPD (overlap) 29.1  7.3      4.2  2.9                   1.0
+
+                   Qwen3-4B-Base / Qwen3-4B (Non-thinking)
+
+OPD                42.7   14.8  10.6    5.4                   2.9               28.5h    0%
+                                                                                22.3h  21.8%
+OPD (Truncate 4k)  41.9   15.2  13.5    4.8                   2.7               20.0h  29.8%
+                                                                                13.5h  52.6%
+PRUNE-OPD (top-p)  40.5   13.1  12.7    4.8                   4.0
+
+PRUNE-OPD (overlap) 42.7  16.3  14.6    6.7                   5.6
+
+expected to preserve long-context supervision rather than shorten the rollout. Together, these
+combinations test the same claim under different conditions: the controller reduces computation
+when reliability decays, while preserving dense supervision when compatibility remains high.
+
+Baselines. We compare baseline OPD, fixed-length truncation baselines, and PRUNE-OPD variants.
+Fixed-length OPD uses the same distillation objective as baseline OPD but clamps the maximum
+response length to a fixed budget. Random pruning matches either the retained token fraction or
+retained OPD reward mass of PRUNE-OPD while choosing pruned positions independently of
+student-teacher compatibility. These controls test whether the benefit comes from the student-teacher
+compatibility signal rather than from generic shorter rollouts or lower reward density. The main
+PRUNE-OPD configuration uses overlap ratio with threshold  = 0.7. We also report a teacher top-p
+action-acceptance variant with p = 0.95. Both variants use top-k = 16, wdrop = 0.01, wbase = 0.5,
+and dynamic-length hit ratio 0.1. Unless otherwise stated, dynamic response length uses initial 2048,
+min 1024, max 12288, update step 100, margin 100, and shrink patience 3.
+
+Evaluation. We evaluate on AMC23, AIME24, AIME25, HMMT24, and HMMT25. The primary
+metric is pass@1 accuracy under a fixed evaluation protocol. We also report relative training time
+reduction, response-length statistics, overlap ratio, top-p acceptance rate, and effective reliable length.
+Training time is measured relative to baseline OPD under the same student-teacher pair.
+
+4.2 Main Results
+
+The main result is a consistent efficiency gain without meaningful degradation in downstream accuracy.
+Across the main low-compatibility runs, the overlap-ratio variant reduces training time by 35.7%,
+68.0%, 37.6%, and 52.6%, while benchmark accuracy remains close to the corresponding OPD
+baseline. Accuracy differences are mixed across individual benchmarks and should be interpreted
+as secondary: PRUNE-OPD slightly improves several AIME/HMMT scores, but also decreases a
+few entries such as AIME24 under the DeepSeek-R1-Distill-Qwen-7B teacher and HMMT24 under
+the JustRL-DeepSeek-1.5B teacher. This pattern is consistent with the role of PRUNE-OPD as
+a reliability-aware efficiency mechanism rather than a standalone accuracy-improvement method.
+The top-p action-acceptance variant is generally more conservative and often weaker than overlap,
+
+                                6
+                                                                    DeepSeek-R1-Distill-Qwen-1.5B / JustRL-DeepSeek-1.5B
+
+                           AMC23                                          AIME24                                         AIME25                                        HMMT24                                         HMMT25
+
+                                                             48                                             35                                              25
+
+Accuracy (%)  80                               Accuracy (%)                                   Accuracy (%)                                    Accuracy (%)                                      Accuracy (%)  20
+
+                                                             40                                             30                                              20
+                                                                                                            25                                              15
+              72                 OPD                         32                 OPD                         20                    OPD                       10                  OPD                           16            OPD
+              64                 Prune-OPD                                      Prune-OPD                                         Prune-OPD                                     Prune-OPD                     12            Prune-OPD
+                                                             24                                                 0                                               0
+                  0     2     4         6                        0     2     4         6                              2        4      6                                2     4           6                        0   2  4         6
+
+                           Time (h)                                       Time (h)                                          Time (h)                                      Time (h)                                       Time (h)
+
+                                               DeepSeek-R1-Distill-Qwen-1.5B / DeepSeek-R1-Distill-Qwen-7B
+
+              70.0         AMC23                             35.0         AIME24                            27.5            AIME25                                     HMMT24                                         HMMT25
+              67.5
+Accuracy (%)  65.0                             Accuracy (%)  32.5                             Accuracy (%)  25.0                              Accuracy (%)  16                                  Accuracy (%)  16
+
+                                                             30.0                                           22.5                                            14                                                14
+
+              62.5               OPD                         27.5               OPD                         20.0                  OPD                       12                  OPD                           12            OPD
+              60.0               Prune-OPD                   25.0               Prune-OPD                   17.5                  Prune-OPD                                     Prune-OPD                                   Prune-OPD
+                                                                                                                                                            10                                                10
+                     0     4      8        12                       0     4     8         12                       0     4         8     12                     0      4        8           12                    0   4     8         12
+
+                              Time (h)                                       Time (h)                                       Time (h)                                      Time (h)                                       Time (h)
+
+                                                                             Qwen3-1.7B-Base / Qwen3-4B (Non-thinking)
+
+                              AMC23                                       AIME24                                          AIME25                                       HMMT24                                         HMMT25
+
+              30                                             10.0                                           6                                               6                OPD                              4.5                    OPD
+                                                              7.5                                                                                                                                                                    Prune-OPD
+Accuracy (%)  20                               Accuracy (%)   5.0                             Accuracy (%)                                    Accuracy (%)                   Prune-OPD          Accuracy (%)
+
+                                                                                                            4                                               4                                                 3.0
+
+              10              OPD                            2.5                OPD                         2                                               2                                                 1.5
+               0              Prune-OPD                      0.0
+                  0                                                             Prune-OPD                                      OPD
+                                                                  0
+                                                                                                                               Prune-OPD                                                                      0.0
+
+                        5     10        15                             5     10        15                   0         5        10     15                    0  0       5     10          15                        0  5  10        15
+                                                                                                              0
+                           Time (h)                                          Time (h)                                                                                                                                    Time (h)
+                                                                                                                         Time (h)                                         Time (h)
+
+                                                                             Qwen3-4B-Base / Qwen3-4B (Non-thinking)                                                                                                     HMMT25
+
+                              AMC23                          20           AIME24                                           AIME25                           10.0          HMMT24                                                        OPD
+                                                                                                                                                             7.5                                                                        Prune-OPD
+              45                                                                                            15                                                                      OPD         Accuracy (%)
+                                                                                                                                                                                    Prune-OPD
+Accuracy (%)  30                               Accuracy (%)  15                               Accuracy (%)                                    Accuracy (%)                                                    6
+
+                                                             10                                             10                                                 5.0                                            4
+
+              15                  OPD                        5                                             5                       OPD                         2.5                                            2
+               0                                                                 OPD                                               Prune-OPD                   0.0
+                  0               Prune-OPD                                      Prune-OPD
+                                                                                                                                                                    0
+                        8     16        24                   0     0   8     16        24                      0  0      8     16     24                                  8  16          24                   0
+
+                              Time (h)                                       Time (h)                                       Time (h)                                         Time (h)                              0  8  16        24
+
+                                                                                                                                                                                                                         Time (h)
+
+Figure 2: Accuracy over wall-clock time for the 4 DeepSeek student-teacher pairs. Each panel uses wall-clock
+
+time as the x-axis and benchmark accuracy as the y-axis, comparing OPD and PRUNE-OPD. A successful curve
+
+should match or exceed OPD accuracy while reaching comparable checkpoints earlier in time.
+
+suggesting that exact sampled-token acceptability can be too strict for reasoning traces, whereas
+candidate-space overlap better captures whether the teacher still supplies exploitable local supervision.
+
+4.3 Adaptive Behavior Under High Compatibility
+
+This setting tests whether PRUNE-OPD uniformly shortens every run. When the teacher and student
+have high top-k overlap, the effective-length hit ratio is quickly satisfied and the dynamic controller
+opens the training window to 12288 tokens. The resulting training time and accuracy are nearly
+unchanged from OPD. Figure 3 should show the corresponding mechanism from three views: the
+overlap ratio remains high, the dynamic response budget tracks the long reliable context rather than
+forcing early truncation, and the AMC23 learning curve compares whether PRUNE-OPD matches
+OPD-level accuracy while avoiding the rigidity of fixed truncation. This supports the intended
+interpretation that PRUNE-OPD is an adaptive reliability controller, not a hard length penalty.
+
+4.4 Training Dynamics
+
+Figure 4 examines whether PRUNE-OPD changes the learning dynamics or simply removes rollout
+computation. For the JustRL-DeepSeek-1.5B teacher, the benchmark-wise step-accuracy curves
+should show that PRUNE-OPD follows the same learning trajectory as OPD on AMC23, AIME24,
+AIME25, HMMT24, and HMMT25, rather than achieving speed by sacrificing accuracy. Figure 5
+explains where the saved computation comes from: the weight-by-position plot should show suffix
+reward attenuation after accumulated prefix drift, the effective-length plot should show the dynamic
+maximum OPD length adapting to the reliable supervision window, and the overlap-ratio curve should
+confirm that pruning is driven by the measured local compatibility signal.
+
+                                                                                                                            7
+Table 2: High-compatibility behavior. DeepSeek-R1-Distill-Qwen-7B and Skywork-OR1-7B start with overlap
+ratio around 0.94.
+
+Method                           AMC23 AIME24 AIME25 HMMT24 HMMT25 Time Red.
+
+                                 DeepSeek-R1-Distill-Qwen-7B / Skywork-OR1-7B
+
+OPD                              88.3            67.1        52.5              33.5                                                                                               32.1  17.5h 0%
+OPD (Truncate 4k)                                                                                                                                                                       11.3h 35.4%
+PRUNE-OPD (overlap)              87.2            66.0        48.8              31.0                                                                                               30.4  17.0h 2.9%
+
+                                 88.9            66.7        52.1              33.1                                                                                               31.5
+
+       Dynamic Response Budget                   Overlap Ratio vs. Step                                                                                                90.0             AMC23
+
+12K                                    0.96
+
+8KLength (tokens)                      0.88                                                                                                                            87.5
+                                                                           Overlap ratio
+4K                                                                                                                                                       Accuracy (%)0.8085.0
+  0
+    0             Max response length  0.72                                     = 0.7                                                                                  82.5                            OPD
+                  Effective length            0                                   200                                                                                          0                       OPD-Trunc
+                                                                                                                                                                                                       Prune-OPD
+
+        50   100            150   200                  50    100          150                                                                                                     50    100            150  200
+             Training step                                 Training step                                                                                                                Training step
+
+Figure 3: High-compatibility training dynamics for DeepSeek-R1-Distill-Qwen-7B / Skywork-OR1-7B. Left:
+effective response length and maximum OPD length versus training step. Middle: overlap ratio versus training
+step. Right: AMC23 accuracy over training, comparing OPD, OPD (Truncate 4k), and PRUNE-OPD.
+
+4.5 Wall-Clock Efficiency
+
+Figure 2 evaluates the core efficiency claim on the wall-clock axis: PRUNE-OPD should reduce
+elapsed training time without reducing accuracy, and in some cases can slightly improve it. If
+PRUNE-OPD is working as intended, its curves should lie to the left of OPD at comparable accuracy
+levels, or above OPD at the same wall-clock time. This presentation directly tests whether PRUNE-
+OPD reaches OPD-level, and occasionally better, accuracy with less elapsed training time across
+both DeepSeek teacher-student combinations. Together with the dynamics in Figures 4 and 5, these
+results show that: reliability-aware suffix down-weighting shortens unproductive rollout computation
+while preserving the useful prefix supervision that drives final performance.
+
+     Table 3: Overlap-threshold ablation on DeepSeek-R1-Distill-Qwen-1.5B / JustRL-DeepSeek-1.5B.
+            Threshold  AMC23 AIME24 AIME25 HMMT24 HMMT25 Time Red.
+
+        0.6                 78.9       45.4            33.1        22.0                18.8 4.8h 30.4%
+
+        0.7                 78.4       45.2            33.5        22.7                18.8 4.1h 40.6%
+
+        0.8                 77.8       44.5            31.5        21.9                18.0 3.1h 55.1%
+
+        0.9                 76.8       43.9            30.8        21.8                17.9 2.4h 65.2%
+
+4.6 Ablation Study
+
+OPD with simple truncation. We include OPD (Truncate 4k) as a fixed-budget baseline in Tables 1
+and 2. This baseline uses the same OPD objective but shortens every rollout uniformly, without
+observing student-teacher compatibility. Although simple truncation can reduce cost and may be
+effective for some teacher-student pairs, it is not a reliable substitute for PRUNE-OPD. In particular,
+for DeepSeek-R1-Distill-Qwen-1.5B / JustRL-DeepSeek-1.5B and DeepSeek-R1-Distill-Qwen-7B /
+Skywork-OR1-7B, truncating at a fixed 4K budget degrades performance because it discards useful
+long-prefix supervision. This failure mode highlights the limitation of a rigid length rule: it cannot
+distinguish drifted suffixes from long but still compatible reasoning trajectories.
+
+Pruning metric: overlap ratio vs. top-p acceptance. The metric ablation is reported in Table 1.
+Across the completed runs, overlap ratio is the stronger default: it gives equal or larger time reduction
+than top-p acceptance while generally preserving accuracy better. We attribute this to its support-level
+nature: it asks whether student and teacher still share high-probability candidate regions, rather
+than requiring the sampled student token to fall inside the teacher's visible nucleus. This makes
+overlap ratio a smoother reliability signal for long reasoning traces, where multiple locally plausible
+continuations may remain valid.
+
+Prune-OPD threshold ablation. We ablate the overlap-ratio threshold in Table 3 on DeepSeek-
+R1-Distill-Qwen-1.5B / JustRL-DeepSeek-1.5B. The completed  = 0.7 setting gives a strong
+
+                                                           8
+        AMC23                                     AIME24                                     AIME25                                                            HMMT24                                                                    HMMT25
+
+                                              48                                         35                                         25                                                                 20                                                OPD
+                                                                                                                                                                                                                                                         Prune-OPD
+80Accuracy (%)                       40                                        30                                         20                                                                                                           50 100 150 200
+72                                                  Accuracy (%)                                                                                                                                                                        Training step
+64                                                                                                      Accuracy (%)                                                                                                           16
+                                                                                                                                                             Accuracy (%)
+     0                                                                                                                                                                                                           Accuracy (%)3225
+                          OPD                                       OPD        20                              OPD        15                              OPD                                                                  12
+                          Prune-OPD  24                             Prune-OPD                                  Prune-OPD  10                              Prune-OPD                                                                 0
+                                          0                                         0
+        50 100 150 200                            50 100 150 200                             50 100 150 200                    0        50 100 150 200
+         Training step                             Training step                              Training step                              Training step
+
+Figure 4: Training-step accuracy dynamics for DeepSeek-R1-Distill-Qwen-1.5B distilled from JustRL-
+DeepSeek-1.5B. The five panels report benchmark accuracy over training steps on AMC23, AIME24, AIME25,
+HMMT24, and HMMT25, comparing OPD and PRUNE-OPD.
+
+        Weight vs. Token Position                                                  Dynamic Response Budget                                                     Overlap Ratio vs. Step
+                                           step 200
+                                                                               max response length
+                                                                               effective length
+
+Token Weight
+                                                                       Length Budget
+                                                                                                                                                Overlap Ratio
+
+step 1
+
+        Token Position                                                                       Training Step                                                                                                                     Training Step
+
+Figure 5: Training-dynamics diagnostics for DeepSeek-R1-Distill-Qwen-1.5B distilled from JustRL-DeepSeek-
+
+1.5B. The panels report mean Prune-OPD weight by token position with curves every 20 training steps from 0 to
+
+200; effective response length and maximum OPD length over training; and overlap ratio over training.
+
+operating point: it preserves OPD-level benchmark performance while reducing training time by
+35.7%. A lower threshold should be more permissive, producing fewer bad events and longer effective
+distillation lengths; a higher threshold should prune earlier and may remove useful long reasoning if
+set too aggressively. The central conclusion is that  = 0.7 provides both performance protection
+and substantial training-efficiency improvement.
+
+5 Related Work
+
+On-policy distillation. MiniLLM formalized OPD for LLMs under a reverse-KL objective optimized
+by policy gradient, emphasizing the mode-seeking behavior of reverse KL [9]. GKD broadened this
+view by interpolating between on-policy and off-policy data under multiple divergences [1]. More
+recent theory frames OPD as dense KL-constrained RL, where the teacher's per-token log-ratio can
+be interpreted as an implicit reward and can even be extrapolated beyond the teacher's standard
+strength [38]. OPD has since appeared in major reasoning and post-training recipes [36, 24, 45, 34,
+20, 17, 15, 7, 38, 8]. It has also been extended to self-distillation and online experiential learning,
+where a model acts as its own teacher under privileged information, feedback, or sample routing
+[14, 47, 12, 30, 43, 26, 18, 42, 37, 21, 46, 6, 31]. These works establish OPD as a strong post-training
+primitive. PRUNE-OPD addresses a complementary reliability problem: even when dense teacher
+rewards are available on-policy, long rollouts may contain prefixes where the teacher's local signal is
+no longer exploitable. More discussions of OPD are provided in Appendix A.5
+
+6 Conclusion
+
+OPD provides dense supervision for long reasoning chains; however, when the student's reasoning
+pattern diverges from that of the teacher, the resulting dense rewards become unreliable. PRUNE-
+OPD treats this as a position-wise reliability problem: it checks whether student and teacher remain
+locally compatible under shared prefix, turns cumulative compatibility failures into a drift signal,
+rescales OPD rewards, and controls response length using reliable rather than raw token count. Across
+diverse distillation settings, overlap-based PRUNE-OPD reduces training time by 37.6%­68.0% in
+low-compatibility regimes while preserving benchmark performance, and it keeps the long training
+window open when compatibility remains high. These results show that efficient long-horizon OPD
+should not be governed by teacher strength or a fixed rollout budget alone. Instead, dense teacher
+supervision should be allocated according to its local exploitability on the prefixes that the student
+actually visits.
+
+                                                           9
+References
+
+ [1] Rishabh Agarwal, Nino Vieillard, Yongchao Zhou, Piotr Stanczyk, Sabela Ramos Garea,
+      Matthieu Geist, and Olivier Bachem. On-policy distillation of language models: Learning from
+      self-generated mistakes. In International Conference on Learning Representations, 2024.
+
+ [2] Samy Bengio, Oriol Vinyals, Navdeep Jaitly, and Noam Shazeer. Scheduled sampling for
+      sequence prediction with recurrent neural networks. Advances in neural information processing
+      systems, 28, 2015.
+
+ [3] Dan Busbridge, Amitis Shidani, Floris Weers, Jason Ramapuram, Etai Littwin, and Russell
+      Webb. Distillation scaling laws. In International Conference on Machine Learning, pages
+      5977­6045. PMLR, 2025.
+
+ [4] Jang Hyun Cho and Bharath Hariharan. On the efficacy of knowledge distillation. In Proceedings
+      of the IEEE/CVF international conference on computer vision, pages 4794­4802, 2019.
+
+ [5] Hyung Won Chung, Le Hou, Shayne Longpre, Barret Zoph, Yi Tay, William Fedus, Yunxuan
+      Li, Xuezhi Wang, Mostafa Dehghani, Siddhartha Brahma, et al. Scaling instruction-finetuned
+      language models. Journal of Machine Learning Research, 25(70):1­53, 2024.
+
+ [6] Ken Ding. Hdpo: Hybrid distillation policy optimization via privileged self-distillation, 2026.
+
+ [7] Yuqian Fu, Haohuan Huang, Kaiwen Jiang, Yuanheng Zhu, and Dongbin Zhao. Revisiting
+      on-policy distillation: Empirical failure modes and simple fixes, 2026.
+
+ [8] Naibin Gu, Chenxu Yang, Qingyi Si, Chuanyu Qin, Dingyu Yao, Peng Fu, Zheng Lin, Weiping
+      Wang, Nan Duan, and Jiaqi Wang. Co-evolving policy distillation, 2026.
+
+ [9] Yuxian Gu, Li Dong, Furu Wei, and Minlie Huang. Minillm: Knowledge distillation of large
+      language models. In The twelfth international conference on learning representations, 2024.
+
+[10] Daya Guo, Dejian Yang, Haowei Zhang, Junxiao Song, Peiyi Wang, Qihao Zhu, Runxin Xu,
+      Ruoyu Zhang, Shirong Ma, Xiao Bi, et al. Deepseek-r1 incentivizes reasoning in llms through
+      reinforcement learning. Nature, 645(8081):633­638, 2025.
+
+[11] Bingxiang He, Zekai Qu, Zeyuan Liu, Yinghao Chen, Yuxin Zuo, Cheng Qian, Kaiyan Zhang,
+      Weize Chen, Chaojun Xiao, Ganqu Cui, et al. Justrl: Scaling a 1.5b llm with a simple rl recipe,
+      2025.
+
+[12] Bingxiang He, Yuxin Zuo, Zeyuan Liu, Shangziqi Zhao, Zixuan Fu, Junlin Yang, Cheng Qian,
+      Kaiyan Zhang, Yuchen Fan, Ganqu Cui, et al. How far can unsupervised rlvr scale llm training?,
+      2026.
+
+[13] Geoffrey Hinton, Oriol Vinyals, and Jeff Dean. Distilling the knowledge in a neural network.
+      arXiv preprint arXiv:1503.02531, 2015.
+
+[14] Jonas Hubotter, Frederike Lubeck, Lejs Behric, Anton Baumann, Marco Bagatella, Daniel Marta,
+      Ido Hakimi, Idan Shenfeld, Thomas Kleine Buening, Carlos Guestrin, et al. Reinforcement
+      learning via self-distillation, 2026.
+
+[15] Ijun Jang, Jewon Yeom, Juan Yeo, Hyunggu Lim, and Taesup Kim. Stable on-policy distillation
+      through adaptive target reformulation, 2026.
+
+[16] Xiaoqi Jiao, Yichun Yin, Lifeng Shang, Xin Jiang, Xiao Chen, Linlin Li, Fang Wang, and Qun
+      Liu. Tinybert: Distilling bert for natural language understanding. In Findings of the Association
+      for Computational Linguistics: EMNLP 2020, pages 4163­4174, 2020.
+
+[17] Woogyeol Jin, Taywon Min, Yongjin Yang, Swanand Ravindra Kadhe, Yi Zhou, Dennis Wei,
+      Nathalie Baracaldo, and Kimin Lee. Entropy-aware on-policy distillation of language models,
+      2026.
+
+[18] Jeonghye Kim, Xufang Luo, Minbeom Kim, Sangmook Lee, Dohyung Kim, Jiwon Jeon,
+      Dongsheng Li, and Yuqing Yang. Why does self-distillation (sometimes) degrade the reasoning
+      capability of llms?, 2026.
+
+                                                          10
+[19] Yoon Kim and Alexander M. Rush. Sequence-level knowledge distillation. In Proceedings of
+      the 2016 Conference on Empirical Methods in Natural Language Processing, pages 1317­1327,
+      2016.
+
+[20] Jongwoo Ko, Sara Abdali, Young Jin Kim, Tianyi Chen, and Pashmina Cameron. Scaling
+      reasoning efficiently via relaxed on-policy distillation, 2026.
+
+[21] Gengsheng Li, Tianyu Yang, Junfeng Fang, Mingyang Song, Mao Zheng, Haiyun Guo, Dan
+      Zhang, Jinqiao Wang, and Tat-Seng Chua. Unifying group-relative and self-distillation policy
+      optimization via sample routing, 2026.
+
+[22] Yaxuan Li, Yuxin Zuo, Bingxiang He, Jinqian Zhang, Chaojun Xiao, Cheng Qian, Tianyu Yu,
+      Huan-ang Gao, Wenkai Yang, Zhiyuan Liu, et al. Rethinking on-policy distillation of large
+      language models: Phenomenology, mechanism, and recipe. arXiv preprint arXiv:2604.13016,
+      2026.
+
+[23] Yuetai Li, Xiang Yue, Zhangchen Xu, Fengqing Jiang, Luyao Niu, Bill Yuchen Lin, Bhaskar Ra-
+      masubramanian, and Radha Poovendran. Small models struggle to learn from strong reasoners.
+      In Findings of the Association for Computational Linguistics: ACL 2025, pages 25366­25394,
+      2025.
+
+[24] Kevin Lu and Thinking Machines Lab. On-policy distillation. Thinking Machines Lab: Connec-
+      tionism, 2025. https://thinkingmachines.ai/blog/on-policy-distillation.
+
+[25] Seyed-Iman Mirzadeh, Mehrdad Farajtabar, Ang Li, Nir Levine, Akihiro Matsukawa, and
+      Hassan Ghasemzadeh. Improved knowledge distillation via teacher assistant. In Proceedings of
+      the AAAI Conference on Artificial Intelligence, volume 34, pages 5191­5198, 2020.
+
+[26] Hejian Sang, Yuanda Xu, Zhengze Zhou, Ran He, Zhipeng Wang, and Jiachen Sun. Crisp:
+      Compressed reasoning via iterative self-policy distillation, 2026.
+
+[27] Victor Sanh, Lysandre Debut, Julien Chaumond, and Thomas Wolf. Distilbert, a distilled version
+      of bert: Smaller, faster, cheaper and lighter, 2019.
+
+[28] Victor Sanh, Albert Webson, Colin Raffel, Stephen Bach, Lintang Sutawika, Zaid Alyafeai,
+      Antoine Chaffin, Arnaud Stiegler, Arun Raja, Manan Dey, et al. Multitask prompted training
+      enables zero-shot task generalization. In International Conference on Learning Representations,
+      2021.
+
+[29] Zhihong Shao, Peiyi Wang, Qihao Zhu, Runxin Xu, Junxiao Song, Xiao Bi, Haowei Zhang,
+      Mingchuan Zhang, Y. K. Li, Yang Wu, et al. Deepseekmath: Pushing the limits of mathematical
+      reasoning in open language models. arXiv preprint arXiv:2402.03300, 2024.
+
+[30] Idan Shenfeld, Mehul Damani, Jonas Hubotter, and Pulkit Agrawal. Self-distillation enables
+      continual learning, 2026.
+
+[31] Yifan Song, Xingjian Tao, Zhicheng Yang, Yihong Luo, and Jing Tang. Ehrag: Bridging
+      semantic gaps in lightweight graphrag via hybrid hypergraph construction and retrieval. arXiv
+      preprint arXiv:2604.17458, 2026.
+
+[32] Wenhui Wang, Furu Wei, Li Dong, Hangbo Bao, Nan Yang, and Ming Zhou. Minilm: Deep
+      self-attention distillation for task-agnostic compression of pre-trained transformers. Advances
+      in Neural Information Processing Systems, 33:5776­5788, 2020.
+
+[33] Jason Wei, Maarten Bosma, Vincent Zhao, Kelvin Guu, Adams Wei Yu, Brian Lester, Nan
+      Du, Andrew M. Dai, and Quoc V. Le. Finetuned language models are zero-shot learners. In
+      International Conference on Learning Representations, 2021.
+
+[34] Bangjun Xiao, Bingquan Xia, Bo Yang, Bofei Gao, Bowen Shen, Chen Zhang, Chenhong He,
+      Chiheng Lou, Fuli Luo, Gang Wang, et al. Mimo-v2-flash technical report, 2026.
+
+[35] Minrui Xu, Zilin Wang, Mengyi DENG, Zhiwei Li, Zhicheng Yang, Xiao Zhu, Yinhong Liu,
+      Boyu Zhu, Baiyu Huang, Chao Chen, Heyuan Deng, Fei Mi, Lifeng Shang, Xingshan Zeng,
+      and Zhijiang Guo. Envfactory: Scaling tool-use agents via executable environments synthesis
+      and robust rl, 2026.
+
+                                                          11
+[36] An Yang, Anfeng Li, Baosong Yang, Beichen Zhang, Binyuan Hui, Bo Zheng, Bowen Yu,
+      Chang Gao, Chengen Huang, Chenxu Lv, et al. Qwen3 technical report, 2025.
+
+[37] Chenxu Yang, Chuanyu Qin, Qingyi Si, Minghui Chen, Naibin Gu, Dingyu Yao, Zheng Lin,
+      Weiping Wang, Jiaqi Wang, and Nan Duan. Self-distilled rlvr, 2026.
+
+[38] Wenkai Yang, Weijie Liu, Ruobing Xie, Kai Yang, Saiyong Yang, and Yankai Lin. Learning
+      beyond teacher: Generalized on-policy distillation with reward extrapolation, 2026.
+
+[39] Zhicheng Yang, Zhijiang Guo, Yinya Huang, Yongxin Wang, Wenlei Shi, Yiwei Wang, Xiaodan
+      Liang, and Jing Tang. Accordion-thinking: Self-regulated step summaries for efficient and
+      readable llm reasoning. In Forty-Third International Conference on Machine Learning, 2026.
+
+[40] Zhicheng Yang, Zhijiang Guo, Yinya Huang, Yongxin Wang, Dongchun Xie, Hanhui Li, Yiwei
+      Wang, Xiaodan Liang, and Jing Tang. Depth-breadth synergy in rlvr: Unlocking llm reasoning
+      gains with adaptive exploration. In Forty-Third International Conference on Machine Learning,
+      2026.
+
+[41] Zhicheng Yang, Yiwei Wang, Yinya Huang, Zhijiang Guo, Wei Shi, Xiongwei Han, Liang Feng,
+      Linqi Song, Xiaodan Liang, and Jing Tang. Optibench meets resocratic: Measure and improve
+      LLMs for optimization modeling. In The Thirteenth International Conference on Learning
+      Representations, 2025.
+
+[42] Tianzhu Ye, Li Dong, Qingxiu Dong, Xun Wu, Shaohan Huang, and Furu Wei. Online
+      experiential learning for language models, 2026.
+
+[43] Tianzhu Ye, Li Dong, Xun Wu, Shaohan Huang, and Furu Wei. On-policy context distillation
+      for language models, 2026.
+
+[44] Qiying Yu, Zheng Zhang, Ruofei Zhu, Yufeng Yuan, Xiaochen Zuo, Yu Yue, Weinan Dai,
+      Tiantian Fan, Gaohong Liu, Lingjun Liu, et al. Dapo: An open-source llm reinforcement
+      learning system at scale, 2025.
+
+[45] Aohan Zeng, Xin Lv, Zhenyu Hou, Zhengxiao Du, Qinkai Zheng, Bin Chen, Da Yin, Chendi
+      Ge, Chengxing Xie, Cunxiang Wang, et al. Glm-5: From vibe coding to agentic engineering,
+      2026.
+
+[46] Guoliang Zhao, Ruobing Xie, An Wang, Shuaipeng Li, Huaibing Xie, and Xingwu Sun. Self-
+      distillation for multi-token prediction, 2026.
+
+[47] Siyan Zhao, Zhihui Xie, Mengchen Liu, Jing Huang, Guan Pang, Feiyu Chen, and Aditya
+      Grover. Self-distilled reasoner: On-policy self-distillation for large language models, 2026.
+
+A Appendix
+
+A.1 Broader Impact
+
+This research contributes to the development of more efficient and reliable training protocols for LLMs
+specializing in complex reasoning. By introducing PRUNE-OPD, we provide a mechanism to mitigate
+the risks of "reward hacking" and training instability inherent in dense on-policy distillation, where
+models might otherwise learn from low-quality or drifted teacher signals. The significant reduction
+in training compute (up to 68%) directly addresses the environmental concerns associated with the
+high energy consumption of LLM post-training. By making sophisticated reasoning models more
+accessible to train with fewer resources, this work democratizes the ability to develop high-performing
+AI, potentially accelerating progress in scientific discovery.
+
+Despite these benefits, we recognize that enhancing the reasoning capabilities of LLMs could
+inadvertently lower the barrier for generating sophisticated misinformation or dual-use content.
+While PRUNE-OPDfocuses on the process of learning rather than the content of the data, the
+resulting models could be more persuasive or harder to detect if used for deceptive purposes. To
+mitigate these risks, we emphasize the importance of using PRUNE-OPDin conjunction with safety-
+aligned teacher models and rigorous verifiable RL frameworks. We are committed to transparency
+
+                                                          12
+and reproducibility by providing detailed experimental setups and hyperparameter configurations,
+enabling the community to audit the reliability of these training dynamics and ensure that reasoning
+improvements do not come at the cost of model safety or ethical alignment.
+
+A.2 LLM Usage Declaration
+
+This manuscript uses LLMs strictly for the purpose of language editing and textual polishing to en-
+hance presentation quality. We declare that the novel ideas, methodological framework, experimental
+execution, and data analysis are the original work of the authors. All content modified by AI tools
+has been carefully reviewed and validated by the authors to ensure accuracy.
+
+A.3 Limitations
+
+PRUNE-OPD relies on top-k local-distribution statistics. The primary overlap metric can miss cases
+where student and teacher share candidate tokens but rank or score them very differently, while the
+top-p action-acceptance variant can be too strict for stylistically different but valid reasoning paths.
+The current decay is linear in cumulative bad events and assumes that local compatibility correlates
+with reward exploitability; this can fail when a low-overlap prefix later returns to a teacher-compatible
+state. The implementation also only rescales OPD rewards and does not attach a GRPO fallback to
+zero-reliability tokens. Finally, the current experiments are limited to math reasoning with DeepSeek,
+Qwen, and Skywork-style models; agentic and multi-turn settings remain future work.
+
+A.4 Future Work
+
+A natural extension is to combine PRUNE-OPD with GRPO in a reliability-gated objective. Before
+the reliability weight decays to zero, the model would still optimize the OPD loss and benefit from
+dense teacher guidance on locally compatible prefixes. After the reliability weight reaches zero,
+the unreliable suffix would switch to a GRPO loss, allowing the student to continue exploring
+with outcome-level feedback instead of forcing it to follow a teacher distribution that is no longer
+locally exploitable. Such a hybrid objective could combine the sample efficiency of teacher-guided
+distillation with the exploratory benefits of reinforcement learning, and may further improve long-
+horizon reasoning beyond reliability-aware truncation alone.
+
+A.5 Additional Related Work
+
+Knowledge distillation and off-policy distillation. Knowledge distillation transfers information
+from a teacher to a student by matching the teacher's soft output distribution [13]. For autoregressive
+sequence models, sequence-level distillation trains the student on teacher-generated outputs [19], and
+this off-policy paradigm underlies many compact language-model distillation methods [27, 16, 32, 8].
+Supervised fine-tuning and instruction tuning similarly improve downstream behavior by training on
+curated responses or demonstrations [5, 28, 33]. The common limitation is train-inference distribution
+mismatch: the student is optimized on teacher or reference trajectories, but at inference time it must
+condition on prefixes sampled from its own policy, an exposure-bias problem that compounds over
+long generations [2]. PRUNE-OPD follows the OPD motivation that distillation should be computed
+on student-visited states, but asks a further question: once the student is on-policy, which visited
+states still admit reliable dense teacher supervision?
+
+OPD dynamics and mechanisms. Recent OPD analysis shows that OPD success is governed by
+thinking-pattern consistency and by whether the teacher contributes new knowledge beyond what the
+student has already acquired [22]. At the token level, successful OPD exhibits progressive alignment
+on high-probability tokens: top-k overlap rises, overlap-token advantage improves, and the entropy
+gap narrows. The same analysis further shows that reward quality degrades with trajectory depth, and
+that a reward can remain globally correlated with final correctness while failing to provide locally
+useful gradients around the student's current policy. PRUNE-OPD directly operationalizes these
+diagnostic findings. Instead of treating overlap ratio, entropy gap, or teacher acceptability as post-hoc
+measurements, it turns per-prefix compatibility into an online reliability signal that attenuates future
+OPD rewards and controls rollout length.
+
+                                                          13
+Capacity gap and distillability. A separate line of work studies when a teacher is too strong,
+too different, or too complex for the student to imitate. Studies have shown that overly capable
+teachers can hurt student performance [4], and teacher assistants have been introduced to bridge
+large capacity gaps [25]. Distillation scaling laws identify non-monotonic interactions among teacher
+quality, student size, and data volume [3]. For reasoning models, small students can struggle to learn
+from strong reasoners with long chain-of-thought traces, suggesting a learnability gap in distilling
+complex reasoning behavior [23]. These results caution against assuming that teacher benchmark
+strength alone determines distillation quality. PRUNE-OPD studies the same issue from an on-policy,
+position-wise perspective: a teacher may be useful globally but unreliable at specific depths of a
+student-generated trajectory.
+
+Reasoning RL and long-horizon supervision. Modern reasoning models rely on verifiable RL, long
+chain-of-thought rollouts, and large mathematical training sets [29, 10, 44, 11, 39, 40, 41, 35]. Long
+responses create room for search and self-correction, but they also make dense supervision expensive
+and harder to trust. Prior OPD results identify a response-length sweet spot: short responses provide
+too little dense signal, while very long responses can trigger late-stage collapse and suffix-to-prefix
+instability [22]. PRUNE-OPD is designed for this long-horizon setting. It does not impose a fixed
+response budget; it estimates which prefixes still carry reliable teacher signal and uses that estimate
+for both reward scaling and dynamic response-length control.
+
+A.6 Reliability Rationale
+
+PRUNE-OPD is motivated by the distinction between globally informative teacher rewards and
+locally exploitable token-level supervision on student-visited prefixes [22]. Overlap ratio and related
+compatibility metrics are therefore used online: repeated low-compatibility events are treated as
+evidence that the student trajectory has drifted into a region where uniform dense OPD rewards are
+less trustworthy. The method does not assume that every low-overlap token is wrong; it only assumes
+that cumulative compatibility failure is a useful path-dependent signal for attenuating later suffix
+rewards.
+
+The monotone reliability decay is a deliberately conservative design. Later tokens can become locally
+compatible because the teacher adapts to an already drifted prefix, not because the full reasoning
+trajectory has returned to a teacher-compatible state. Using cumulative decay avoids re-amplifying
+suffix rewards after repeated drift events, while the base weight wbase separates the reliability estimate
+R from the optimization scale L . This lets PRUNE-OPD down-weight unreliable suffix supervision
+without turning the method into a brittle hard filter.
+
+A.7 Implementation Details
+
+PRUNE-OPD is implemented as a post-processing step on the OPD reward tensor. The baseline
+reward tensor has shape [B, T, k], where B is batch size, T is response length, and k is the top-k
+token dimension. For each valid response position, the method computes the scalar loss weight L
+and multiplies every candidate reward at that position by the same scalar:
+
+                            rb,,j = Lb, rb,,j .                                    (13)
+
+Padding positions have R = 0 and L = 0. The advantage estimator remains
+token_reward_direct, so the scaled reward is used directly as the token-level advantage.
+
+The current code path keeps the baseline isolated. When prune_opd.enable=False, the original
+OPD/GRPObehavior is unchanged. When enabled, the main experiments use overlap_ratio;
+teacher_top_p_accept is retained as an action-level variant. The teacher top-k size is controlled
+by actor_rollout_ref.rollout.log_prob_top_k and is set to 16 in the current experiments.
+
+A.8 Prompt Template
+
+We use the same DAPO-Math prompt template as the OPD dynamics study [22]. For each math
+problem, the raw question is inserted into the following instruction.
+
+DAPO-Math Prompt Template
+{Question} Please reason step by step, and put your final answer within \boxed{}.
+
+                            14
+A.9 Primary Configurations
+
+Table 4 summarizes the primary hyperparameters used across our PRUNE-OPD experiments. Unless
+otherwise stated, all benchmark performance reported in the paper is Avg@16 accuracy: for each
+benchmark problem, evaluation uses 16 sampled responses under the fixed evaluation protocol and
+reports the average correctness across those samples. For high compatibility pair (DeepSeek-R1-
+Distill-Qwen-7B / Skywork-OR1-7), the init dynamic length is set as 6144; For other pairs, the init
+dynamic length is set as 1024.
+
+Table 4: Default hyperparameters for PRUNE-OPD.
+
+Item                                                           Value
+
+Training dataset                          DAPO-Math-17K
+Training temperature                               1.0
+Teacher temperature                                1.0
+Rollout number                                      4
+Mini batch size                                    64
+LogProb top-K                                      16
+Top-K strategy
+Reward weight mode                         Student Top-K
+Max prompt length                        Student probability
+Max response length
+Validation max response length                   1,024
+                                            8,192­12,288
+Learning rate
+Training steps                                   31,744
+KL coefficient                                 1 × 10-6
+Loss aggregation
+Overlap threshold                                 203
+Top-p threshold p                                  0.0
+wdrop                                        token-mean
+wbase                                              0.7
+Dynamic length init/min/max                       0.95
+Dynamic length step                               0.01
+Hit ratio threshold                                0.5
+Length margin                            1024 / 1024 / 12288
+Shrink patience                                   100
+                                                   0.1
+                                                  100
+                                                    3
+
+A.10 Top-p Action-Acceptance Metric
+
+In addition to overlap ratio, we evaluate a stricter action-level compatibility metric. At position  ,
+the student samples the actual next token y , while the teacher returns top-k tokens and probabilities
+under the same prefix:
+
+K = {v,1, . . . , v,k}, q,1  q,2  · · ·  q,k.                         (14)
+
+Given a top-p threshold p, define the cumulative visible mass
+
+                      m                                               (15)
+
+      S,m = q,j .
+
+                    j=1
+
+If a smallest m satisfies S,m  p, the visible nucleus is
+
+      A (p, k) = {v,1, . . . , v,m }.                                 (16)
+
+If the returned top-k mass is still below p, the true nucleus extends beyond the observed set, so we
+conservatively use A (p, k) = K . The bad event is B = 1[y / A (p, k)]. In the reported top-p
+runs, p = 0.95.
+
+A.11 Why PRUNE-OPDCan Improve Accuracy for Low-Overlap Qwen Pairs?
+
+Table 1 shows that the two Qwen3 teacher-student pairs, Qwen3-1.7B-Base / Qwen3-4B (Non-
+thinking) and Qwen3-4B-Base / Qwen3-4B (Non-thinking), are the clearest cases where PRUNE-
+OPD improves both training efficiency and benchmark accuracy. We interpret this as a low-overlap
+
+                                     15
+         Effective Length and Overlap                Effective Length and Overlap
+
+200                                    0.72  400
+                                                                                                                           0.75
+Effective length
+                                                                               Overlap ratio0.66
+
+                                                                                            Effective length
+                                                                                                                                                                            Overlap ratio
+160                                          300
+                                                                                                                           0.60
+
+                                       0.60  200
+
+120               Effective length     0.54                   Effective length    0.45
+ 80               Overlap ratio                               Overlap ratio
+      0            = 0.7                     100               = 0.7
+
+         50  100            150  200              0  50  100            150  200
+             Training step                               Training step
+
+Qwen3-1.7B-Base / Qwen3-4B (Non-thinking)    Qwen3-4B-Base / Qwen3-4B (Non-thinking)
+
+Figure 6: Short effective OPD windows in the low-overlap Qwen3 distillation pairs. For Qwen3-1.7B-Base
+/ Qwen3-4B (Non-thinking) and Qwen3-4B-Base / Qwen3-4B (Non-thinking), low overlap causes PRUNE-
+OPD to concentrate OPD supervision within a few hundred reliable tokens, whereas the OPD baseline keeps
+training on responses up to 12,288 tokens.
+
+regime where reliability-aware pruning acts not only as a compute-saving mechanism, but also as a
+gradient denoising mechanism. As shown in Figure 6, these pairs exhibit low student-teacher overlap,
+and PRUNE-OPD therefore keeps the effective OPD length at only a few hundred tokens. In contrast,
+the corresponding OPD baseline uses a maximum response budget of 12,288 tokens.
+
+This mismatch creates a plausible failure mode for unpruned OPD. Only the early prefix contains
+locally exploitable teacher supervision, while the long suffix contributes a large number of token-level
+gradients produced on drifted, low-overlap prefixes. Because those suffix tokens vastly outnumber
+the useful prefix tokens, their gradients can dominate the update even if each individual suffix reward
+is weak or noisy. PRUNE-OPD removes this imbalance by attenuating and truncating low-reliability
+suffixes, concentrating optimization on the short prefix where the teacher remains actionable. This
+explains why these two Qwen3 pairs can gain accuracy in addition to saving time. For the other
+teacher-student combinations, compatibility is higher or the useful supervision window is already long
+enough that pruning mainly reduces computation while preserving accuracy, rather than substantially
+changing the effective training signal.
+
+A.12 Additional Diagnostics
+
+The appendix diagnostics focus on the compatibility signals that motivate PRUNE-OPD. Figure 7
+reports how overlap ratio evolves across depth bands under unpruned OPD, and Figure 8 shows how
+the overlap threshold controls suffix down-weighting and the dynamic response budget.
+
+Depth-wise overlap under OPD. Figure 7 isolates the compatibility dynamics of the unpruned
+OPD baseline. The shallow 0­1K band acts as a reference for early-prefix supervision, while the later
+bands test whether teacher supervision remains locally aligned after long student-generated reasoning
+prefixes. The key observation is that compatibility is depth-dependent: later token-position bands
+are the regime where overlap is most fragile and where uniform dense rewards are least likely to
+provide useful local gradients. This supports the central premise of PRUNE-OPD: the inefficiency
+of long-horizon OPD is not only that suffixes are expensive, but that the suffix rewards are often
+produced on prefixes where the teacher and student have already drifted apart.
+
+Threshold sensitivity. Figure 8 explains how the reliability threshold changes the intervention. A
+larger threshold declares compatibility failures earlier, which makes the token-level weight decay
+sooner and yields a shorter dynamic OPD budget; a smaller threshold is more permissive and
+preserves longer suffix supervision. The main setting  = 0.7 lies between these extremes: it removes
+a substantial amount of low-reliability suffix computation while avoiding the overly rigid behavior of
+a hard fixed-length truncation. Thus the threshold primarily controls where PRUNE-OPD sits on the
+reliability­compute axis, rather than changing the underlying OPD objective.
+
+                                                          16
+                              0-1K           2-3K                                           4-5K               6-7K
+
+Overlap ratio  0.9                                                                                                             = 0.7
+               0.8
+               0.7
+
+               0       100            200 0      100        200 0                           100         200 0          100    200
+
+                       Training step         Training step                               Training step         Training step
+
+Figure 7: OPD baseline overlap-ratio training dynamics for DeepSeek-R1-Distill-Qwen-1.5B / JustRL-
+DeepSeek-1.5B. Each panel plots overlap ratio versus training step for a token-position band: 0­1K, 2­3K,
+4­6K, and 7­8K. This diagnostic shows how local student-teacher compatibility evolves at different trajectory
+depths under unpruned OPD.
+
+               1.5     (a) Token Weight                                                     (b) Response Budget
+
+                                                  = 0.6         Max response length  8K
+
+Token Weight                                      = 0.7
+                                                  = 0.8
+               1.2                                                                   6K
+
+               0.9     2K             4K     6K                                      4K          50     100            150   = 0.6
+                            Token position                                           2K                 Training step        = 0.7
+               0.6                                                                                                           = 0.8
+                    0                                                                  0
+                                                                                         0                                      200
+
+Figure 8: Prune-OPD threshold diagnostics for DeepSeek-R1-Distill-Qwen-1.5B / JustRL-DeepSeek-1.5B.
+Left: mean Prune-OPD weight as a function of token position under three overlap thresholds,  = 0.6, 0.7, 0.8;
+for each threshold, the curves are taken at training steps 100, 120, 140, 160, 180, and 200. Right: maximum
+OPD response length over training steps under the same thresholds. Together, these diagnostics show how the
+reliability threshold changes suffix down-weighting and dynamic rollout budgets.
+
+A.13 Compute Reporting
+
+The dominant compute cost comes of our work from post-training student models with OPD-style
+teacher scoring and from benchmark evaluation. For each teacher-student pair, OPD, fixed truncation,
+and PRUNE-OPD are run under the same training stack and matched hardware allocation, so the
+reported wall-clock comparisons isolate the effect of reliability-aware pruning rather than changes in
+infrastructure. The main compute evidence is therefore reported as elapsed training time in Tables 1,
+2, and 3, and in Figure 2
+
+                                                            17
+
