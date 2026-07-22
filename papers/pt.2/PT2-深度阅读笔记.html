@@ -1,0 +1,3738 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PT.2 · Prune-OPD &amp; Flow-OPD — OPD 前沿扩展 · 深度阅读笔记</title>
+<script>MathJax={tex:{inlineMath:[['$','$'],['\(','\)']],displayMath:[['$$','$$'],['\[','\]']]},svg:{fontCache:'global'}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+<style>
+:root {
+  --bg: #faf8f5; --card-bg: #ffffff; --text: #2c2416; --text-muted: #6b5e4a;
+  --accent: #c0392b; --accent2: #d4a017; --border: #e0d5c1; --code-bg: #f5f0e8;
+  --highlight: #fef9e7; --prism: #c0392b; --uni-opd: #2471a3;
+  --glossary-bg: #f0faf0; --glossary-border: #7cb342;
+  --analogy-bg: #fff8e1; --analogy-border: #ffa726;
+  --key-bg: #fce4ec; --key-border: #e57373;
+  --ladder-bg: #e8eaf6; --ladder-border: #5c6bc0;
+  --sidebar-w: 240px;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body {
+  font-family: "Segoe UI", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+  background: var(--bg); color: var(--text); line-height: 1.85;
+  padding: 40px 24px 80px; margin-left: var(--sidebar-w);
+}
+h1 { font-size:1.9em; text-align:center; margin:0 0 4px; color:var(--accent); letter-spacing:-0.02em; }
+h2 { font-size:1.4em; margin:52px 0 18px; padding-bottom:8px; border-bottom:2px solid var(--accent); color:var(--accent); }
+h3 { font-size:1.15em; margin:34px 0 12px; color:#5d3a1a; }
+h4 { font-size:1.03em; margin:22px 0 10px; color:#7a5a30; }
+.subtitle { text-align:center; color:var(--text-muted); font-size:.9em; margin-bottom:28px; }
+.research-tag { text-align:center; margin-bottom:16px; }
+.research-tag span { display:inline-block; background:var(--accent); color:#fff; padding:3px 16px; border-radius:14px; font-size:.85em; font-weight:600; letter-spacing:.04em; }
+hr { border:none; border-top:1px dashed var(--border); margin:36px 0; }
+a { color:var(--accent); text-decoration:none; }
+a:hover { text-decoration:underline; }
+p { margin:8px 0 14px; text-align:justify; }
+strong { color:#3d2a0a; }
+ul, ol { margin:8px 0 14px 24px; }
+li { margin:3px 0; }
+blockquote {
+  background: var(--highlight); border-left: 4px solid var(--accent2);
+  margin: 14px 0; padding: 10px 16px; font-size:.93em; border-radius:0 6px 6px 0;
+}
+blockquote p { margin:4px 0; }
+code {
+  font-family: "Cascadia Code", "Fira Code", "JetBrains Mono", Consolas, monospace;
+  font-size:.87em; background: var(--code-bg); padding: 1px 6px; border-radius: 4px;
+}
+pre {
+  background: #2c2416; color: #f5e6c8; padding: 14px 18px; border-radius: 8px;
+  overflow-x: auto; font-size:.84em; line-height:1.6; margin: 12px 0;
+}
+pre code { background:none; padding:0; font-size:inherit; color:inherit; border-radius:0; }
+table {
+  width:100%; border-collapse:collapse; margin:14px 0; font-size:.92em;
+}
+th, td { border: 1px solid var(--border); padding: 8px 12px; text-align:left; }
+th { background: #fdf6e3; font-weight:600; color:#5d3a1a; }
+tr:nth-child(even) { background:#fefcf8; } tr:nth-child(odd) { background:var(--card-bg); }
+
+.glossary {
+  background: var(--glossary-bg); border: 1px solid var(--glossary-border);
+  border-left: 5px solid var(--glossary-border); border-radius: 8px;
+  padding: 12px 18px; margin: 16px 0; font-size:.92em;
+}
+.glossary .g-title { font-weight:700; color:#33691e; margin-bottom:6px; font-size:1.02em; }
+.glossary .g-title::before { content:"📖 "; }
+
+.analogy {
+  background: var(--analogy-bg); border: 1px solid var(--analogy-border);
+  border-left: 5px solid var(--analogy-border); border-radius: 8px;
+  padding: 12px 18px; margin: 16px 0; font-size:.92em;
+}
+.analogy .a-title { font-weight:700; color:#e65100; margin-bottom:6px; font-size:1.02em; }
+.analogy .a-title::before { content:"💡 类比："; }
+
+.keypoint {
+  background: var(--key-bg); border: 1px solid var(--key-border);
+  border-left: 5px solid var(--key-border); border-radius: 8px;
+  padding: 12px 18px; margin: 16px 0; font-size:.92em;
+}
+.keypoint .k-title { font-weight:700; color:#b71c1c; margin-bottom:6px; font-size:1.02em; }
+.keypoint .k-title::before { content:"🔑 核心要点："; }
+
+.ladder {
+  background: var(--ladder-bg); border: 1px solid var(--ladder-border); border-radius: 10px;
+  padding: 16px 22px; margin: 18px 0;
+}
+.ladder .l-title { font-weight:700; color:#283593; margin-bottom:12px; font-size:1.05em; text-align:center; }
+.ladder .l-title::before { content:"🪜 "; }
+.ladder .l-title::after { content:" 知识阶梯"; }
+.ladder ol { margin:0; padding-left:20px; }
+.ladder ol li { margin:5px 0; padding:4px 0; }
+.ladder ol li strong { color:#283593; }
+
+.toc {
+  background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px;
+  padding: 20px 28px; margin: 24px 0;
+}
+.toc h3 { margin-top:0; color:var(--accent); }
+.toc ol { list-style:decimal; } .toc li { margin:4px 0; }
+
+.card {
+  background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px;
+  padding: 20px 24px; margin: 20px 0; box-shadow:0 1px 4px rgba(0,0,0,.04);
+}
+.card h3, .card h4 { margin-top:0; }
+
+.qa { margin:14px 0; }
+.qa .q { font-weight:700; color: var(--accent); margin-bottom:4px; font-size:1.01em; }
+.qa .a {
+  background: var(--highlight); border-left: 3px solid var(--accent2);
+  padding: 8px 14px; border-radius:0 6px 6px 0; font-size:.93em;
+}
+
+.tag {
+  display:inline-block; padding:1px 10px; border-radius:12px;
+  font-size:.78em; font-weight:600; margin-right:6px;
+}
+.tag-prism { background:#fde8e8; color:var(--prism); }
+.tag-uni  { background:#dbeafe; color:var(--uni-opd); }
+.tag-core { background:#fff3e0; color:#e65100; }
+.tag-new  { background:#e8f5e9; color:#2e7d32; }
+
+.highlight-box { border-radius:10px; padding: 18px 22px; margin: 16px 0; }
+.highlight-prism { background:#fef5f5; border:1px solid #f5c6cb; }
+.highlight-uni   { background:#f0f7fd; border:1px solid #bee0f5; }
+
+.flow {
+  display:flex; align-items:center; justify-content:center; flex-wrap:wrap;
+  gap:8px; margin:16px 0; font-size:.9em;
+}
+.flow .step {
+  background:var(--card-bg); border:2px solid var(--border); border-radius:8px;
+  padding:8px 14px; text-align:center; white-space:nowrap;
+}
+.flow .step.red { border-color:var(--prism); background:#fef5f5; }
+.flow .step.blue { border-color:var(--uni-opd); background:#f0f7fd; }
+.flow .arrow { font-size:1.3em; color:var(--text-muted); }
+
+mjx-container { overflow-x:auto; overflow-y:hidden; margin:6px 0; }
+
+/* Header bar */
+.header-bar {
+  position: sticky; top: 0; z-index: 100;
+  background: linear-gradient(135deg, #2c2416, #4a3520);
+  color: #faf8f5; padding: 14px 24px; margin: -40px -24px 32px;
+  text-align: center; box-shadow: 0 2px 12px rgba(0,0,0,.15);
+}
+.header-bar h1 { font-size:1.3em; color:#faf8f5; margin:0; letter-spacing:.02em; border:none; padding:0; }
+.header-bar .hdr-sub { font-size:.82em; color:#c9b896; margin-top:4px; }
+
+/* Sidebar TOC */
+.sidebar-toc {
+  position: fixed; left: 0; top: 0; width: var(--sidebar-w); height: 100vh;
+  overflow-y: auto; background: var(--card-bg); border-right: 1px solid var(--border);
+  padding: 20px 16px; z-index: 90; font-size:.85em;
+  box-shadow: 1px 0 8px rgba(0,0,0,.04);
+}
+.sidebar-toc h3 { font-size:1em; margin:0 0 10px; color:var(--accent); border-bottom:1px solid var(--border); padding-bottom:6px; }
+.sidebar-toc ul { list-style:none; margin:0; padding:0; }
+.sidebar-toc ul li { margin:2px 0; }
+.sidebar-toc ul li a {
+  display:block; padding:3px 8px; border-radius:4px; color:var(--text);
+  text-decoration:none; border-left:3px solid transparent;
+}
+.sidebar-toc ul li a:hover, .sidebar-toc ul li a.active {
+  background: #fef5f5; color: var(--accent); border-left-color: var(--accent);
+}
+.sidebar-toc .toc-group { margin-bottom:16px; }
+.sidebar-toc .toc-group-title {
+  font-weight:700; color:var(--accent); font-size:.9em; margin:10px 0 4px;
+  padding:4px 8px; background:#fdf6e3; border-radius:4px;
+}
+
+/* Section dividers */
+.doc-divider {
+  border:none; border-top:3px double var(--accent);
+  margin: 48px -24px 32px; position:relative; text-align:center;
+}
+.doc-divider::after {
+  content: attr(data-label);
+  position:relative; top:-14px; background:var(--bg); padding:0 20px;
+  font-weight:700; color:var(--accent); font-size:1.1em;
+}
+
+/* Back to top */
+#back-to-top {
+  position: fixed; bottom: 30px; right: 30px; z-index: 200;
+  width: 44px; height: 44px; border-radius: 50%;
+  background: var(--accent); color: #fff; border: none; cursor: pointer;
+  font-size: 1.4em; box-shadow: 0 2px 10px rgba(0,0,0,.2);
+  display: none; align-items:center; justify-content:center;
+  transition: opacity .3s;
+}
+#back-to-top.visible { display:flex; }
+
+/* Responsive */
+@media (max-width: 1100px) {
+  .sidebar-toc { display:none; }
+  body { margin-left: 0; }
+}
+@media (max-width: 768px) {
+  body { padding: 20px 14px 60px; }
+  .header-bar { margin: -20px -14px 24px; padding: 12px 16px; }
+  .header-bar h1 { font-size:1.1em; }
+  h1 { font-size:1.5em; } h2 { font-size:1.2em; } h3 { font-size:1.05em; }
+  table { font-size:.8em; } th, td { padding:5px 8px; }
+  .doc-divider { margin: 32px -14px 24px; }
+}
+
+/* Print */
+@media print {
+  .sidebar-toc, .header-bar, #back-to-top { display:none !important; }
+  body { max-width:100%; padding:20px; font-size:10.5pt; margin:0; }
+  .card, .glossary, .analogy, .keypoint, .ladder { box-shadow:none; break-inside:avoid; }
+  h2 { break-after:avoid; }
+  pre { white-space:pre-wrap; background:#f5f0e8; color:#2c2416; border:1px solid #ddd; }
+  .doc-divider { margin: 24px 0; }
+}
+
+.footer {
+  text-align:center; color:var(--text-muted); font-size:.84em;
+  margin-top:48px; padding-top:20px; border-top:2px solid var(--border);
+}
+</style>
+</head>
+<body>
+
+<nav class="sidebar-toc" id="sidebar">
+  <h3>📑 目录导航</h3>
+  <div class="toc-group">
+    <div class="toc-group-title">一、深度分析报告</div>
+    <ul>
+      <li><a href="#d1-1-两篇论文的定位与关系">1. 两篇论文的定位与关系</a></li>
+      <li><a href="#d1-2-prune-opd-深度解析">2. Prune-OPD 深度解析</a></li>
+      <li><a href="#d1-3-flow-opd-深度解析">3. Flow-OPD 深度解析</a></li>
+      <li><a href="#d1-4-关键对比相同与不同">4. 关键对比：相同与不同</a></li>
+      <li><a href="#d1-5-导师可能追问的20个问题">5. 导师可能追问的20个问题</a></li>
+      <li><a href="#d1-6-论文翻译与辅助资料索引">6. 论文翻译与辅助资料索引</a></li>
+      <li><a href="#d1-7-实验复现指南">7. 实验复现指南</a></li>
+      <li><a href="#d1-8-报告ppt建议结构">8. 报告PPT建议结构</a></li>
+      <li><a href="#d1-9-附录关键公式速查">9. 附录：关键公式速查</a></li>
+    </ul>
+  </div>
+  <div class="toc-group">
+    <div class="toc-group-title">二、Prune-OPD 论文翻译</div>
+    <ul>
+      <li><a href="#d2-摘要">摘要</a></li>
+      <li><a href="#d2-1-引言">1. 引言</a></li>
+      <li><a href="#d2-2-背景与问题设置">2. 背景与问题设置</a></li>
+      <li><a href="#d2-3-prune-opd">3. Prune-OPD</a></li>
+      <li><a href="#d2-4-实验">4. 实验</a></li>
+      <li><a href="#d2-5-相关工作">5. 相关工作</a></li>
+      <li><a href="#d2-6-结论">6. 结论</a></li>
+      <li><a href="#d2-附录">附录</a></li>
+    </ul>
+  </div>
+  <div class="toc-group">
+    <div class="toc-group-title">三、Flow-OPD 论文翻译</div>
+    <ul>
+      <li><a href="#d3-摘要">摘要</a></li>
+      <li><a href="#d3-1-引言">1. 引言</a></li>
+      <li><a href="#d3-2-相关工作">2. 相关工作</a></li>
+      <li><a href="#d3-3-预备知识">3. 预备知识</a></li>
+      <li><a href="#d3-4-动机">4. 动机</a></li>
+      <li><a href="#d3-5-方法flow-opd">5. 方法：Flow-OPD</a></li>
+      <li><a href="#d3-6-实验">6. 实验</a></li>
+      <li><a href="#d3-7-结论">7. 结论</a></li>
+      <li><a href="#d3-附录-a-更多细节">附录</a></li>
+    </ul>
+  </div>
+</nav>
+
+<div class="header-bar">
+  <h1>PT.2 · Prune-OPD &amp; Flow-OPD — OPD 前沿扩展 · 深度阅读笔记</h1>
+  <div class="hdr-sub">2026/07/23 · 三篇合辑：深度分析报告 + Prune-OPD 翻译 + Flow-OPD 翻译</div>
+</div>
+
+<!-- ==================== DOCUMENT 1: 深度分析报告 ==================== -->
+<div class="doc-divider" data-label="第一篇：Prune-OPD &amp; Flow-OPD 深度分析报告"></div>
+
+<h1 id="d1-prune-opd-与-flow-opd-深度分析报告">Prune-OPD 与 Flow-OPD 深度分析报告</h1>
+
+<blockquote><p><strong>组会准备用 · 2026/07/22 · 预计阅读时间：60分钟 · 含实验复现指南</strong></p></blockquote>
+
+<hr>
+
+<h2 id="d1-目录">目录</h2>
+<ol>
+<li><a href="#1-两篇论文的定位与关系">两篇论文的定位与关系</a></li>
+<li><a href="#2-prune-opd-深度解析">Prune-OPD 深度解析</a></li>
+<li><a href="#3-flow-opd-深度解析">Flow-OPD 深度解析</a></li>
+<li><a href="#4-关键对比相同与不同">关键对比：相同与不同</a></li>
+<li><a href="#5-导师可能追问的20个问题">导师可能追问的20个问题</a></li>
+<li><a href="#6-论文翻译与辅助资料索引">论文翻译与辅助资料索引</a></li>
+<li><a href="#7-实验复现指南">实验复现指南</a></li>
+<li><a href="#8-报告ppt建议结构">报告PPT建议结构</a></li>
+<li><a href="#9-附录关键公式速查">附录：关键公式速查</a></li>
+</ol>
+
+<hr>
+
+<h2 id="d1-1-两篇论文的定位与关系">1. 两篇论文的定位与关系</h2>
+
+<h3 id="d1-11-opd-研究版图全景">1.1 OPD 研究版图全景</h3>
+
+<p>在理解这两篇论文之前，必须先看清楚 On-Policy Distillation (OPD) 研究的整体版图。</p>
+
+<p><strong>OPD 的起源与核心思想</strong>：传统大模型后训练流程是 SFT → RLVR。但 SFT 存在 exposure bias（训练-推理分布不一致），RLVR 只能给序列级别的稀疏奖励。OPD 的解决方案是：让学生模型在<strong>自己生成的 on-policy 轨迹</strong>上接受教师的 token 级密集监督。这结合了 RL 的 on-policy 采样优势和 SFT 的细粒度信号优势。</p>
+
+<p><strong>PT.1（上一阶段）</strong> 已经覆盖了两篇 OPD 的基础论文：</p>
+<ul>
+<li><strong>PRISM</strong>：将 OPD 作为 SFT 和 RLVR 之间的中间对齐阶段，用对抗式 MoE 判别器修正分布漂移</li>
+<li><strong>Uni-OPD</strong>：将 OPD 作为独立的后训练范式，系统性解决探索不足和监督不可靠两个瓶颈</li>
+</ul>
+
+<p><strong>PT.2（本阶段）</strong> 覆盖的是 OPD 研究版图的两个前沿扩展方向：</p>
+
+<table>
+<thead><tr>
+<th>扩展维度</th>
+<th>论文</th>
+<th>核心问题</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><strong>效率维度</strong></td>
+<td>Prune-OPD</td>
+<td>OPD 在长程推理中如何不浪费计算？</td>
+</tr>
+<tr>
+<td><strong>范式维度</strong></td>
+<td>Flow-OPD</td>
+<td>OPD 能否从文本 LLM 迁移到流匹配图像生成？</td>
+</tr>
+</tbody></table>
+
+<h3 id="d1-12-两篇论文的共同基础">1.2 两篇论文的共同基础</h3>
+
+<p>两篇论文虽然领域不同（一个是 LLM 数学推理，一个是 T2I 图像生成），但共享 OPD 的理论基础：</p>
+
+<ol>
+<li><strong>On-Policy 采样</strong>：学生模型根据自己的当前策略生成轨迹，而非使用离线数据集</li>
+<li><strong>密集教师监督</strong>：教师沿整条轨迹的每一步（而非仅最终输出）提供 token 级或向量场级的反馈信号</li>
+<li><strong>Reverse KL 散度</strong>：核心优化目标是最小化学生分布与教师分布之间的 reverse KL</li>
+<li><strong>可靠性问题</strong>：两篇论文都认识到——不是所有的教师监督信号都同等可信</li>
+</ol>
+
+<h3 id="d1-13-两篇论文的互补关系">1.3 两篇论文的互补关系</h3>
+
+<p><strong>Prune-OPD 解决的是"OPD 内部的效率问题"</strong>：</p>
+<ul>
+<li>前提：OPD 已经在 LLM 推理中有效</li>
+<li>问题：长链推理时，学生前缀偏离教师后，后续 OPD 奖励不可靠 → 浪费计算</li>
+<li>方案：动态监测师生兼容度，衰减不可靠奖励，截断浪费的 rollout</li>
+</ul>
+
+<p><strong>Flow-OPD 解决的是"OPD 的范式扩展问题"</strong>：</p>
+<ul>
+<li>前提：OPD 在 LLM 中成功，但 T2I 领域没有等效方法</li>
+<li>问题：流匹配模型的奖励稀疏 + 多任务梯度干扰 → 跷跷板效应</li>
+<li>方案：将 OPD 首次引入流匹配模型，证明 Flow-KL 退化为加权 L2 距离</li>
+</ul>
+
+<p><strong>关键理解</strong>：这两篇论文不是竞争关系，而是从<strong>效率（如何更省）</strong> 和<strong>范式（能用在哪儿）</strong> 两个维度共同扩展了 OPD 的研究版图。</p>
+
+<hr>
+
+<h2 id="d1-2-prune-opd-深度解析">2. Prune-OPD 深度解析</h2>
+
+<h3 id="d1-21-论文信息">2.1 论文信息</h3>
+
+<ul>
+<li><strong>标题</strong>：PRUNE-OPD: Efficient and Reliable On-Policy Distillation for Long-Horizon Reasoning （PRUNE-OPD：面向长程推理的高效可靠在策略蒸馏）</li>
+<li><strong>作者</strong>：Zhicheng Yang, Zhijiang Guo, Yifan Song 等（HKUST(GZ)、MBZUAI、UC Merced、SYSU）</li>
+<li><strong>发表</strong>：arXiv:2605.07804v3, 2026年6月</li>
+<li><strong>代码</strong>：https://github.com/yangzhch6/Prune-OPD</li>
+<li><strong>核心标签</strong>：#OPD效率 #前缀漂移 #动态截断 #长程推理</li>
+</ul>
+
+<h3 id="d1-22-核心动机长程推理中-opd-的可靠性悖论">2.2 核心动机：长程推理中 OPD 的可靠性悖论</h3>
+
+<h4 id="d1-问题本质">问题本质</h4>
+
+<p>OPD 在长程推理（如数学证明，单题可达数千 token）中面临一个<strong>根本性矛盾</strong>：</p>
+
+<pre><code>
+学生的生成前缀 不可避免地偏离 教师的思维过程
+    ↓
+教师在偏离后的 token 级密集奖励 → 局部不可利用（locally unexploitable）
+    ↓
+继续在发散轨迹上生成和监督 → 仅浪费大量计算 + 可能降低训练质量
+</code></pre>
+
+<p><strong>"前缀漂移"（Prefix Drift）</strong> 是 Prune-OPD 的核心诊断概念。它不是指学生最终答案错了，而是指：在生成过程中的某个位置，学生选择的推理方向与教师预期的不一致。此时教师在该位置之后的 token 级反馈就变得"空头支票"——从局部来看，教师建议的 token 对于学生的当前推理状态已经没有可执行的指导意义。</p>
+
+<h4 id="d1-现有-opd-实践的困境">现有 OPD 实践的困境</h4>
+
+<p>当前 OPD 的做法是：</p>
+<ol>
+<li>生成前确定一个 rollout 预算（如最大 12288 token）</li>
+<li>沿整条学生轨迹均匀地应用教师密集奖励</li>
+</ol>
+
+<p>这造成了<strong>两难困境</strong>：</p>
+<ul>
+<li><strong>预算太短</strong>：丢弃了有用的长推理链监督</li>
+<li><strong>预算太长</strong>：大量计算花费在"已漂移"的后缀上，这些位置的教师信号已局部不可用</li>
+</ul>
+
+<p><strong>Prune-OPD 的核心洞察</strong>：OPD 需要的不是"更多或更少的密集奖励"，而是<strong>判断哪些位置的密集奖励足够可靠，值得训练</strong>。</p>
+
+<h3 id="d1-23-方法可靠性感知三组件框架">2.3 方法：可靠性感知三组件框架</h3>
+
+<p>Prune-OPD 将长程 OPD 重新定义为<strong>可靠性分配问题</strong>（reliability-allocation problem），由三个组件构成级联系统。</p>
+
+<h4 id="d1-组件-1逐位-top-k-重叠率监测检测层">组件 1：逐位 Top-k 重叠率监测（检测层）</h4>
+
+<p>在每个生成位置 t，计算学生与教师 top-k 预测的<strong>交集比例</strong>：</p>
+
+<p>$$\text{OverlapRate}(t) = \frac{|\text{TopK}(\pi_\theta, t) \cap \text{TopK}(\pi_T, t)|}{k}$$</p>
+
+<ul>
+<li>默认 k = 20，阈值 τ = 0.7</li>
+<li>重叠率低于阈值 → 记录一次"前缀漂移事件"（prefix-drift event）</li>
+<li><strong>为什么是 Top-k 而非 Top-1？</strong> Top-1 只看最优选择可能过于敏感——偶尔一次 token 分歧不代表"思维分叉"。Top-k 捕获的是<strong>候选集层面的语义对齐</strong>：如果学生的 top-20 候选和教师的 top-20 候选大部分重叠，说明思考方向仍然一致</li>
+</ul>
+
+<pre><code>
+累计漂移计数：C(t) = Σᵢ₌₁ᵗ 𝟙[OverlapRate(i) &lt; τ]
+</code></pre>
+
+<p>C(t) 单调递增——每次低于阈值就 +1。C(t) 越大，说明前缀偏离越远。</p>
+
+<h4 id="d1-组件-2单调可靠性权重与动态截断决策层">组件 2：单调可靠性权重与动态截断（决策层）</h4>
+
+<p><strong>可靠性权重公式</strong>：</p>
+
+<p>$$R = \text{clip}(1 - w_{\text{drop}} \cdot C,\ 0,\ 1)$$</p>
+
+<ul>
+<li>w_drop 为衰减速率（默认 0.01）</li>
+<li>R 从 1.0 开始，随着累计漂移事件数 C 增长逐渐衰减至 0</li>
+<li><strong>单调不可逆属性</strong>：R 只能下降不能上升——一旦信任降低就永久降低</li>
+</ul>
+
+<p><strong>实际损失权重</strong>：</p>
+
+<p>$$L = R + w_{\text{base}}$$</p>
+
+<ul>
+<li>w_base = 0.5，确保即使 R→0，仍有基础信任度保留微弱的教师信号</li>
+<li>缩放后的 OPD 奖励：$\tilde{r}_{t,j} = L \cdot r_{t,j}$</li>
+</ul>
+
+<p><strong>动态截断触发</strong>：当 R → 0 时，立即终止该 rollout——不再生成后续 token，将节省的计算资源重新分配给其他更有希望的 prompt。</p>
+
+<p><strong>设计哲学</strong>："及时止损优于强行续写"——一旦学生的推理路径已偏离教师，后续的监督信号本身已不可用，计算它们就是浪费。</p>
+
+<p><strong>为什么 R 是单调不可逆的？</strong> 前缀漂移是路径依赖的——一旦在位置 p 处学生选了与教师不同的方向，后续所有 token 都建在这个分叉之上。单个 token 的"重新对齐"无法消除前缀的分叉效应。</p>
+
+<h4 id="d1-组件-3动态响应预算控制器调度层">组件 3：动态响应预算控制器（调度层）</h4>
+
+<p>M_max 在 2048~12288 之间根据 batch 命中率自适应调整：</p>
+
+<ul>
+<li><strong>高命中率</strong>（足够多的有效可靠长度达到当前上限）→ M_max 扩展（+100），探索更长推理链</li>
+<li><strong>低命中率持续 P 步</strong>（patience=3）→ M_max 收缩（-100），保护计算资源</li>
+</ul>
+
+<p><strong>与组件 2 的耦合</strong>：已触发漂移截断的 prompt 自动释放预算给其他 prompt。</p>
+
+<p><strong>为什么固定预算不够？</strong> 简单 prompt 不需要长链但被分配相同预算（浪费），困难 prompt 需要深度推理但被截断（不足）。动态预算 = "好钢用在刀刃上"。</p>
+
+<h3 id="d1-24-算法伪代码algorithm-1-解读">2.4 算法伪代码（Algorithm 1 解读）</h3>
+
+<pre><code>
+输入: prompt分布 D, 学生策略 πθ, 教师策略 πT, OPD奖励例程, 初始响应预算 M₁
+输出: 更新后的学生策略 πθ, 响应预算序列 {M_t}
+
+for 每个训练步 t = 1, 2, ...:
+    1. 采样 prompts {x^(b)}, 生成长度不超过 M_t 的学生 rollouts
+    2. 在学生访问的前缀上计算原始 OPD 奖励张量
+    3. 对每个 rollout:
+       a. 逐位置计算 top-k 重叠率 (Eq.6)
+       b. 标记低兼容度位置, 累积可靠性权重 (Eqs.7-10)
+       c. 缩放 OPD 奖励 (Eq.11), 计算有效可靠长度 (Eq.12)
+    4. 用缩放后奖励更新 πθ
+    5. 计算 batch 命中率 h_t = 有效长度达到 M_t 的样本比例
+       - 若 h_t ≥ ρ → M_{t+1} = min(M_t + Δ, M_max)
+       - 若 h_t &lt; ρ 持续 P 步 → M_{t+1} = max(M_t - Δ, M_min)
+       - 否则 M_{t+1} = M_t
+</code></pre>
+
+<h3 id="d1-25-实验设计详解">2.5 实验设计详解</h3>
+
+<h4 id="d1-模型与教师配对5-组不同场景">模型与教师配对（5 组不同场景）</h4>
+
+<table>
+<thead><tr>
+<th>学生模型</th>
+<th>教师模型</th>
+<th>场景特征</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>DeepSeek-R1-Distill-Qwen-1.5B</td>
+<td>JustRL-DeepSeek-1.5B</td>
+<td>同尺寸 RL 增强教师</td>
+</tr>
+<tr>
+<td>DeepSeek-R1-Distill-Qwen-1.5B</td>
+<td>DeepSeek-R1-Distill-Qwen-7B</td>
+<td>大教师 → 小学生（跨规模）</td>
+</tr>
+<tr>
+<td>Qwen3-1.7B-Base</td>
+<td>Qwen3-4B (Non-thinking)</td>
+<td>小基础模型 + 思维模式切换</td>
+</tr>
+<tr>
+<td>Qwen3-4B-Base</td>
+<td>Qwen3-4B (Non-thinking)</td>
+<td>中等基础模型 + 思维模式切换</td>
+</tr>
+<tr>
+<td>DeepSeek-R1-Distill-Qwen-7B</td>
+<td>Skywork-OR1-7B</td>
+<td><strong>高兼容度</strong>对照（初始重叠率 ~0.94）</td>
+</tr>
+</tbody></table>
+
+<p><strong>配对选择的设计逻辑</strong>：</p>
+<ul>
+<li>前 4 对是<strong>低兼容度场景</strong>——测试 Prune-OPD 的截断效果</li>
+<li>第 5 对是<strong>高兼容度场景</strong>——验证 Prune-OPD 不会"滥杀无辜"（在师生天然对齐时保留完整长上下文）</li>
+</ul>
+
+<h4 id="d1-基准线设计验证可靠性信号而非简单缩短">基准线设计（验证可靠性信号而非简单缩短）</h4>
+
+<table>
+<thead><tr>
+<th>基准</th>
+<th>描述</th>
+<th>目的</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>OPD</td>
+<td>标准在策略蒸馏，不截断</td>
+<td>性能上界</td>
+</tr>
+<tr>
+<td>OPD (Truncate 4k)</td>
+<td>固定截断到 4096 token</td>
+<td>测试"是否任何截断都有效"</td>
+</tr>
+<tr>
+<td>Prune-OPD (top-p)</td>
+<td>使用教师 top-p 接受度作为兼容度指标</td>
+<td>更严格的兼容度判据</td>
+</tr>
+<tr>
+<td>Prune-OPD (overlap)</td>
+<td>使用 top-k 重叠率（主方法）</td>
+<td>候选集级别的兼容度判据</td>
+</tr>
+</tbody></table>
+
+<h4 id="d1-评估基准">评估基准</h4>
+<ul>
+<li><strong>AMC23</strong>：Australian Mathematics Competition 2023</li>
+<li><strong>AIME24/25</strong>：American Invitational Mathematics Examination 2024/2025</li>
+<li><strong>HMMT24/25</strong>：Harvard-MIT Mathematics Tournament 2024/2025</li>
+<li>全部是<strong>高难度数学竞赛题</strong>，需要长链推理</li>
+</ul>
+
+<h4 id="d1-训练配置">训练配置</h4>
+<ul>
+<li>数据：DAPO-Math-17K</li>
+<li>训练温度：1.0（生成和教师均用）</li>
+<li>每次 rollout 数：4</li>
+<li>Mini batch size：64</li>
+<li>Top-K：16</li>
+<li>学习率：1e-6</li>
+<li>KL 系数：0.0（不用 KL 正则化——因为 OPD 本身就是分布匹配）</li>
+<li>训练步数：203</li>
+</ul>
+
+<h3 id="d1-26-关键实验结果深度解读">2.6 关键实验结果深度解读</h3>
+
+<h4 id="d1-核心结果table-1">核心结果（Table 1）</h4>
+
+<p><strong>四个低兼容度配对的结果解读</strong>：</p>
+
+<table>
+<thead><tr>
+<th>配对</th>
+<th>时间缩减</th>
+<th>准确率变化</th>
+<th>关键解读</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>1.5B / JustRL-1.5B</td>
+<td><strong>40.6%</strong></td>
+<td>保持/略微提升</td>
+<td>同尺寸教师→兼容度中等，overlap 变体最优</td>
+</tr>
+<tr>
+<td>1.5B / 7B</td>
+<td><strong>68.0%</strong></td>
+<td>保持</td>
+<td>大教师→前缀漂移最严重→截断收益最大</td>
+</tr>
+<tr>
+<td>1.7B-Base / 4B-NT</td>
+<td><strong>37.6%</strong></td>
+<td>略微提升</td>
+<td>思维模式切换→固有低兼容度→截断同时去噪</td>
+</tr>
+<tr>
+<td>4B-Base / 4B-NT</td>
+<td><strong>52.6%</strong></td>
+<td>保持/略微提升</td>
+<td>同规模但模式不同→中等兼容度</td>
+</tr>
+</tbody></table>
+
+<p><strong>最重要的发现</strong>：</p>
+<ol>
+<li><strong>链越长，优势越大</strong>：长链场景下漂移更严重，Prune-OPD 的可靠性感知截断收益更大</li>
+<li><strong>Prune-OPD 不是"缩短所有 rollout"</strong>：它只截断<strong>不值得继续的 rollout</strong>（通过师生兼容度判断）</li>
+<li><strong>固定截断不够</strong>：OPD (Truncate 4k) 在某些配对中效果尚可，但在 1.5B/JustRL 配对中反而退化——因为一刀切地丢弃了有用的长推理监督</li>
+<li><strong>overlap > top-p</strong>：候选集重叠率比精确 token 匹配更适合推理场景——推理中存在多个合理的方向，不应仅因一个 token 不匹配就判定漂移</li>
+</ol>
+
+<h4 id="d1-高兼容度对照table-2">高兼容度对照（Table 2）</h4>
+
+<p>DeepSeek-R1-Distill-Qwen-7B / Skywork-OR1-7B：</p>
+<ul>
+<li>初始重叠率约 0.94——师生高度对齐</li>
+<li>Prune-OPD 时间缩减仅 <strong>2.9%</strong>——几乎不截断</li>
+<li>准确率与 OPD 基本持平</li>
+<li>动态预算自动扩展到 12288</li>
+</ul>
+
+<p><strong>这证明了</strong>：Prune-OPD 是一个<strong>自适应可靠性控制器</strong>，而非硬性的长度惩罚。当师生天然对齐时，它自动保留完整的上下文字监督。</p>
+
+<h4 id="d1-qwen3-配对的特殊现象为什么-prune-opd-能同时提升效率和准确率">Qwen3 配对的特殊现象：为什么 Prune-OPD 能同时提升效率和准确率？</h4>
+
+<p>Table 1 中，两个 Qwen3 配对是唯一同时获得效率和准确率提升的场景。附录 A.11 解释了原因：</p>
+
+<ol>
+<li><strong>极度低兼容度</strong>：Qwen3-1.7B-Base 与 Qwen3-4B (Non-thinking) 之间的 top-k 重叠率极低</li>
+<li><strong>Prune-OPD 的有效 OPD 长度仅几百 token</strong>，而 OPD 基线使用最大 12288 token</li>
+<li><strong>未剪枝 OPD 的失败模式</strong>：只有早期前缀包含局部可利用的教师监督，但长后缀（占据绝大多数 token）贡献了大量在漂移、低重叠前缀上计算的梯度——这些梯度噪声淹没了有用信号</li>
+<li><strong>Prune-OPD 通过衰减和截断低可靠性后缀，将优化集中在教师仍然可执行的前缀上</strong>——这不仅是效率机制，也是<strong>梯度去噪机制</strong></li>
+</ol>
+
+<h3 id="d1-27-训练动力学分析">2.7 训练动力学分析</h3>
+
+<h4 id="d1-权重随位置衰减曲线figure-5">权重随位置衰减曲线（Figure 5）</h4>
+
+<ul>
+<li>训练初期（step 1）：权重衰减不明显，因为模型尚未学到可能导致漂移的行为</li>
+<li>训练中期（step 100-150）：后缀权重明显衰减，说明模型已形成特定推理模式，在后期位置容易偏离教师</li>
+<li>训练后期（step 200）：衰减模式趋于稳定</li>
+</ul>
+
+<p><strong>含义</strong>：Prune-OPD 的可靠性信号本身是<strong>学习到的</strong>——随着训练的进行，模型逐渐形成自己的推理风格，与教师的差异（或一致）也逐渐固化。</p>
+
+<h4 id="d1-深度依赖的兼容度figure-7-appendix-a12">深度依赖的兼容度（Figure 7, Appendix A.12）</h4>
+
+<p>OPD 基线在不同深度区间（0-1K, 2-3K, 4-5K, 6-7K token）的重叠率演变：</p>
+<ul>
+<li><strong>浅层（0-1K）</strong>：重叠率最高且稳定——早期推理方向师生基本一致</li>
+<li><strong>中层（2-3K）</strong>：重叠率开始下降，波动增大</li>
+<li><strong>深层（4-5K, 6-7K）</strong>：重叠率最低，且训练过程中无明显改善</li>
+</ul>
+
+<p>这直接支持了 Prune-OPD 的核心前提：<strong>后缀位置的教师监督是最不可靠的</strong>，因为此时学生前缀已经离教师越来越远。</p>
+
+<h4 id="d1-阈值灵敏度figure-8">阈值灵敏度（Figure 8）</h4>
+
+<table>
+<thead><tr>
+<th>τ</th>
+<th>截断时机</th>
+<th>时间缩减</th>
+<th>准确率影响</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>0.6</td>
+<td>最宽松，截断最晚</td>
+<td>30.4%</td>
+<td>接近 OPD</td>
+</tr>
+<tr>
+<td><strong>0.7</strong></td>
+<td><strong>平衡点（默认）</strong></td>
+<td><strong>40.6%</strong></td>
+<td><strong>保持</strong></td>
+</tr>
+<tr>
+<td>0.8</td>
+<td>较严格，截断较早</td>
+<td>55.1%</td>
+<td>轻微下降</td>
+</tr>
+<tr>
+<td>0.9</td>
+<td>最严格，截断最早</td>
+<td>65.2%</td>
+<td>明显下降</td>
+</tr>
+</tbody></table>
+
+<p>τ = 0.7 是性能保护和效率提升的最佳平衡点。</p>
+
+<h3 id="d1-28-方法局限性与批判分析">2.8 方法局限性与批判分析</h3>
+
+<ol>
+<li><strong>w_base = 0.5 是启发式超参</strong>：没有理论推导或自动学习机制。对于不同的师生配对，最优 w_base 可能不同</li>
+<li><strong>Top-k 重叠率可能不捕获语义级发散</strong>：两个模型可能在 top-k 中有很多重叠（词汇层面），但推理语义已经分叉。例如，都在 top-20 中包含 "因此"，但一个在做正确推导，一个在胡言乱语</li>
+<li><strong>线性衰减假设</strong>：R = 1 - w_drop × C 假设每个漂移事件同等重要，但实际上某些位置的漂移可能更关键（如第一个分叉点）</li>
+<li><strong>截断为二值硬决策</strong>：R → 0 时硬截断。可考虑软截断（如逐渐降低生成温度）</li>
+<li><strong>仅测试数学推理</strong>：代码、通用对话、多轮交互等场景的泛化性未知</li>
+<li><strong>需要白盒教师 logits</strong>：API-only 场景不适用——必须能访问教师的 top-k 分布</li>
+<li><strong>附录指出的限制</strong>：overlap metric 可能遗漏"共享候选 token 但排序/分数差异很大"的情况；线性衰减假设在"低重叠前缀后来回到教师兼容状态"时可能过度惩罚</li>
+</ol>
+
+<hr>
+
+<h2 id="d1-3-flow-opd-深度解析">3. Flow-OPD 深度解析</h2>
+
+<h3 id="d1-31-论文信息">3.1 论文信息</h3>
+
+<ul>
+<li><strong>标题</strong>：Flow-OPD: On-Policy Distillation for Flow Matching Models （Flow-OPD：流匹配模型的在策略蒸馏）</li>
+<li><strong>作者</strong>：Zhen Fang<em>, Wenxuan Huang</em>, Yu Zeng 等（USTC、UCLA、CUHK、小红书）</li>
+<li><strong>发表</strong>：arXiv:2605.08063v5, 2026年5月</li>
+<li><strong>项目页</strong>：https://costaliya.github.io/Flow-OPD/</li>
+<li><strong>代码</strong>：https://github.com/CostaliyA/Flow-OPD</li>
+<li><strong>核心标签</strong>：#FlowMatching #T2I #多任务对齐 #流匹配OPD #MAR正则化</li>
+</ul>
+
+<h3 id="d1-32-核心动机t2i-多任务对齐的两大瓶颈">3.2 核心动机：T2I 多任务对齐的两大瓶颈</h3>
+
+<h4 id="d1-瓶颈-1奖励稀疏性">瓶颈 1：奖励稀疏性</h4>
+
+<p>Flow Matching 文本到图像模型的推理过程是<strong>多步去噪轨迹</strong>（典型 10-40 步）。但标准 RL 方法只给每张最终图像一个标量分数：</p>
+
+<pre><code>
+去噪步 1 → 去噪步 2 → ... → 去噪步 N → 最终图像 → 标量奖励 (一个数字)
+</code></pre>
+
+<p>学生不知道在哪一步开始走偏。这类似于考试只告诉学生"你得了 70 分"但不告诉哪道题错了。</p>
+
+<h4 id="d1-瓶颈-2梯度干扰跷跷板效应seesaw-effect">瓶颈 2：梯度干扰（跷跷板效应/Seesaw Effect）</h4>
+
+<p>T2I 多任务对齐需要同时满足：</p>
+<ul>
+<li>文本忠实度（GenEval：对象存在、属性绑定、空间关系）</li>
+<li>文字渲染清晰度（OCR：图像中文字可辨认）</li>
+<li>视觉美学（DeQA：画面好不好看）</li>
+<li>整体质量（PickScore：人类偏好对齐）</li>
+</ul>
+
+<p>这些目标的梯度<strong>相互冲突</strong>：</p>
+<ul>
+<li>提升 OCR 准确率 → 倾向于生成"白底黑字的教科书" → 美学崩塌</li>
+<li>提升美学分数 → 倾向于艺术化渲染 → 文字变得模糊</li>
+<li>混合多奖励直接优化 → "按下一个葫芦浮起一个瓢" → 所有指标均退化</li>
+</ul>
+
+<p><strong>Experimental Evidence（Table 1）</strong>：</p>
+<pre><code>
+SD-3.5-M:           GenEval 0.63, OCR 0.59
++GenEval (GRPO):    GenEval 0.94, OCR 0.65  ← GenEval大幅提升
++OCR:               GenEval 0.89, OCR 0.91  ← GenEval下降5%！
++PickScore:         GenEval 0.82, OCR 0.86  ← 继续退化
++DeQA:              GenEval 0.73, OCR 0.83  ← 灾难性遗忘
+</code></pre>
+
+<p>每增加一个奖励目标，之前的优化成果就被部分覆盖。这就是"稀疏信息瓶颈"——将多维冲突压缩为单一标量优势函数，不可避免地导致零和博弈。</p>
+
+<h3 id="d1-33-方法两阶段多教师-opd-框架">3.3 方法：两阶段多教师 OPD 框架</h3>
+
+<p>Flow-OPD 的核心思想来自 LLM 领域 OPD 的成功经验（DeepSeek-V4、MiMo、GLM-5 都使用 OPD 整合多域能力），将其首次迁移到流匹配模型。</p>
+
+<h4 id="d1-阶段-1领域专精教师培养">阶段 1：领域专精教师培养</h4>
+
+<p>每位教师通过<strong>单奖励 GRPO</strong> 在各自维度训练到性能天花板：</p>
+
+<table>
+<thead><tr>
+<th>教师</th>
+<th>专攻维度</th>
+<th>奖励信号</th>
+<th>底座</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>GenEval 教师</td>
+<td>文本-图像对齐</td>
+<td>GenEval score</td>
+<td>SD3.5 Medium</td>
+</tr>
+<tr>
+<td>OCR 教师</td>
+<td>图像中文字渲染</td>
+<td>OCR accuracy</td>
+<td>SD3.5 Medium</td>
+</tr>
+<tr>
+<td>DeQA 教师</td>
+<td>视觉美学</td>
+<td>DeQA + PickScore (4:6)</td>
+<td>SD3.5 Medium</td>
+</tr>
+<tr>
+<td>PickScore 教师</td>
+<td>整体质量</td>
+<td>PickScore</td>
+<td>SD3.5 Medium</td>
+</tr>
+</tbody></table>
+
+<p><strong>为什么用单奖励？</strong> 确保每位教师在其领域<strong>无干扰地达到性能天花板</strong>——不存在跷跷板效应，因为只有一个目标。</p>
+
+<p><strong>为什么共享底座？</strong> 所有教师从同一 SD3.5 Medium 初始化——"说同一种语言，各有专长"。这保证了后续多教师融合时的<strong>参数空间兼容</strong>——权重可以直接插值（模型合并）或输出可以直接聚合（SFT 合并）。</p>
+
+<h4 id="d1-阶段-2多教师-opd-融合">阶段 2：多教师 OPD 融合</h4>
+
+<h5 id="d1-step-1冷启动cold-start">Step 1：冷启动（Cold Start）</h5>
+
+<p>两种互补策略：</p>
+
+<table>
+<thead><tr>
+<th>策略</th>
+<th>做法</th>
+<th>优势</th>
+<th>局限</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><strong>SFT 合并</strong></td>
+<td>聚合各领域教师的最佳生成输出，在学生上做监督微调</td>
+<td>广泛适用，可扩展</td>
+<td>需要额外训练</td>
+</tr>
+<tr>
+<td><strong>模型合并</strong></td>
+<td>对教师 checkpoint 做权重插值</td>
+<td>零额外训练成本</td>
+<td>要求教师架构同质</td>
+</tr>
+</tbody></table>
+
+<p><strong>目的</strong>："从一个融合点出发，而非从零开始"——冷启动确保 on-policy OPD 循环的初始分布不会离任何教师太远。</p>
+
+<h5 id="d1-step-2on-policy-采样">Step 2：On-Policy 采样</h5>
+
+<p>将确定性 ODE 转化为随机 SDE 以注入探索噪声：</p>
+
+<p>$$dx_t = \left[v_\theta(x_t, t) + \frac{\sigma_t^2}{2t}(x_t + (1-t)v_\theta(x_t, t))\right]dt + \sigma_t d\bar{w}$$</p>
+
+<p>通过 Euler-Maruyama 离散化，学生的转移行为成为局部各向同性高斯策略：</p>
+
+<p>$$\pi_\theta(x_{t-\Delta t}|x_t, c) = \mathcal{N}(\mu_\theta(x_t, t), \sigma_t^2 \Delta t \mathbf{I})$$</p>
+
+<p>每个 prompt 采样 G 条独立轨迹，生成 on-policy 边际分布。</p>
+
+<h5 id="d1-step-3任务路由标记task-routing-labeling">Step 3：任务路由标记（Task Routing Labeling）</h5>
+
+<p>这是 Flow-OPD 的<strong>关键设计</strong>——让学生知道"这一步该听哪位老师的话"：</p>
+
+<p>$$\mathbf{v}_{\text{target}}(x_t, t, c) = \mathbf{v}_k(x_t, t, c), \quad \text{where } k = \mathcal{R}(c)$$</p>
+
+<ul>
+<li>$\mathcal{R}(c)$ 是确定性的任务→教师路由函数</li>
+<li><strong>硬路由</strong>：每个 prompt 只激活一个领域教师——消除跨域梯度干扰</li>
+<li>学生按 prompt 类别接收不同教师的密集监督</li>
+</ul>
+
+<h3 id="d1-34-flow-kl-定理最核心的理论贡献">3.4 Flow-KL 定理：最核心的理论贡献</h3>
+
+<p>这是 Flow-OPD <strong>最重要的理论贡献</strong>，也是理解该方法的关键。</p>
+
+<h4 id="d1-推导过程从-kl-散度到加权-l2">推导过程（从 KL 散度到加权 L2）</h4>
+
+<p><strong>步骤 1：两个高斯策略的 KL 散度</strong></p>
+
+<p>学生策略和教师的目标策略都是 d 维多元高斯分布，且<strong>共享相同的各向同性协方差矩阵</strong> $\Sigma_t = \sigma_t^2 \Delta t \mathbf{I}$（协方差仅由 SDE 噪声调度决定，与学生/教师无关）。</p>
+
+<p>两个高斯分布 $N_1(\mu_1, \Sigma_1)$ 和 $N_2(\mu_2, \Sigma_2)$ 的 KL 散度：</p>
+
+<p>$$D_{KL}(N_1 \| N_2) = \frac{1}{2} \left[\text{tr}(\Sigma_2^{-1}\Sigma_1) - d + (\mu_1 - \mu_2)^T \Sigma_2^{-1}(\mu_1 - \mu_2) + \ln\frac{\det \Sigma_2}{\det \Sigma_1}\right]$$</p>
+
+<p><strong>步骤 2：利用协方差相等简化</strong></p>
+
+<p>因为 $\Sigma_1 = \Sigma_2 = \Sigma_t$：</p>
+<ul>
+<li>$\text{tr}(\Sigma_t^{-1}\Sigma_t) = \text{tr}(\mathbf{I}) = d$ → 与 -d 抵消</li>
+<li>$\ln(\det \Sigma_t / \det \Sigma_t) = \ln(1) = 0$</li>
+<li>只剩下马氏距离项</li>
+</ul>
+
+<p>$$D_{KL}(\pi_\theta \| \pi_{\text{target}}) = \frac{1}{2}(\mu_\theta - \mu_{\text{target}})^T \Sigma_t^{-1}(\mu_\theta - \mu_{\text{target}})$$</p>
+
+<p><strong>步骤 3：均值由向量场参数化</strong></p>
+
+<p>根据 Euler-Maruyama 离散化，去噪转移的均值由预测的向量场 $\mathbf{v}$ 确定：</p>
+
+<p>$$\mu_\theta(x_t, t) = x_t + \left[\mathbf{v}_\theta(x_t, t, c) + \frac{\sigma_t^2}{2t}(x_t + (1-t)\mathbf{v}_\theta(x_t, t, c))\right]\Delta t$$</p>
+
+<p>$\mu_{\text{target}}$ 同理。两者的状态依赖基础项 $x_t$ 在相减时抵消。</p>
+
+<p><strong>步骤 4：最终简洁形式</strong></p>
+
+<p>$$D_{KL}(\pi_\theta \| \pi_{\text{target}}) = \frac{\Delta t}{2\sigma_t^2} \left[t(1-t) + \frac{1}{\Delta t}\right]^2 \cdot \|\mathbf{v}_\theta(x_t, t, c) - \mathbf{v}_{\text{target}}(x_t, t, c)\|^2$$</p>
+
+<p>记权重 $w(t) = \frac{\Delta t}{2\sigma_t^2}[t(1-t) + 1/\Delta t]^2$，则：</p>
+
+<p>$$\boxed{D_{KL}(\pi_\theta \| \pi_T) = \mathbb{E}_{t, x_t \sim \pi_\theta}\left[w(t) \cdot \|\mathbf{v}_\theta(x_t, t) - \mathbf{v}_T(x_t, t)\|^2\right]}$$</p>
+
+<h4 id="d1-推论零策略梯度方差">推论：零策略梯度方差</h4>
+
+<p><strong>文本 LLM 中的 OPD（作为对照）</strong>：</p>
+<ul>
+<li>KL 散度通过 token 级对数比来估计 → 依赖于学生 on-policy 采样 → 需要用 Policy Gradient 传播信号 → <strong>高方差 + 不稳定</strong></li>
+</ul>
+
+<p><strong>Flow-OPD 中的 OPD</strong>：</p>
+<ul>
+<li>KL 散度有<strong>闭式解析解</strong> → 等价于两个向量场之间的加权 L2 距离 → 直接用 MSE 回归优化 → <strong>零方差 + 极稳定</strong></li>
+</ul>
+
+<p>从 Policy Gradient 的等价性来看：</p>
+<p>$$E[\nabla_\theta \log \pi_\theta \cdot (-D_{KL})] \equiv \nabla_\theta(-D_{KL})$$</p>
+
+<p>在离散空间中，等式右边的直接梯度在分析上是不可行的（需要遍历所有 token），所以LLM OPD 必须使用左边的高方差估计。但在连续流匹配空间中，$D_{KL}$ 有解析解，<strong>可以直接通过标准反向传播最小化 MSE 损失</strong>——这完全绕过了 Policy Gradient 估计器。</p>
+
+<p><strong>深层含义</strong>：流匹配 OPD 比文本 OPD 在理论上<strong>更优雅</strong>——它天生避免了 RL 中最大的痛点（方差）。这不是工程优化，而是<strong>数学结构决定的优势</strong>。</p>
+
+<h3 id="d1-35-mar多教师反退化正则化">3.5 MAR：多教师反退化正则化</h3>
+
+<h4 id="d1-动机">动机</h4>
+
+<p>多任务 OPD 中，学生为提升 OCR 准确率可能生成"白底黑字的教科书扫描页"——OCR 分数很高，但完全失去了美学和多样性（reward hacking）。</p>
+
+<h4 id="d1-机制">机制</h4>
+
+<p>一个<strong>冻结的、任务无关的锚定教师</strong>（如 DeQA 教师）提供全数据 KL 正则化：</p>
+
+<p>$$\mathcal{L}_{\text{MAR}} = \mathbb{E}_{c, t, x_t \sim \pi_\theta}\left[w(t)\|\mathbf{v}_\theta(x_t, t, c) - \mathbf{v}_{\text{aesthetic}}(x_t, t, c)\|^2\right]$$</p>
+
+<p>总损失：</p>
+
+<p>$$\mathcal{L}_{\text{Total}} = \mathcal{L}_{\text{Flow-OPD}} + \lambda \cdot \mathcal{L}_{\text{MAR}}$$</p>
+
+<ul>
+<li>λ = 0.02（MAR KL ratio）</li>
+<li>领域教师推动学生向各自的<strong>专精轴</strong>优化</li>
+<li>冻结锚定教师确保学生<strong>不偏离通用图像质量流形</strong></li>
+</ul>
+
+<p><strong>MAR vs. 无 MAR（Figure 5）</strong>：</p>
+<ul>
+<li>无 MAR：背景模式坍塌、语义冗余、多实体生成相同特征</li>
+<li>有 MAR：背景多样化、结构多样性、精确语义遵循</li>
+</ul>
+
+<h4 id="d1-类比-prism">类比 PRISM</h4>
+
+<p>MAR 的角色类似 PRISM 中"用原 Instruct 模型做隐式锚点"——两者都不是主动推动，而是防止退化。Flow-OPD 将这一思想<strong>显式化</strong>为 KL 正则项。</p>
+
+<h3 id="d1-36-实验设计详解">3.6 实验设计详解</h3>
+
+<h4 id="d1-基础模型与训练配置">基础模型与训练配置</h4>
+
+<ul>
+<li><strong>底座</strong>：Stable Diffusion 3.5 Medium（~2.5B 参数）</li>
+<li><strong>训练</strong>：4 节点 × 8 H800 GPU，约 50 小时</li>
+<li><strong>采样步数</strong>：训练 T=10，评估 T=40</li>
+<li><strong>Group size G</strong>：24</li>
+<li><strong>噪声水平</strong>：α = 0.7</li>
+<li><strong>图像分辨率</strong>：512×512</li>
+<li><strong>微调方式</strong>：LoRA（rank=32, α=64）</li>
+</ul>
+
+<h4 id="d1-基准线设计">基准线设计</h4>
+
+<table>
+<thead><tr>
+<th>基准</th>
+<th>描述</th>
+<th>目的</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>SD-3.5-M</td>
+<td>预训练底座</td>
+<td>性能下界</td>
+</tr>
+<tr>
+<td>GRPO-[单奖励]</td>
+<td>单奖励 GRPO 训练</td>
+<td>各维度天花板</td>
+</tr>
+<tr>
+<td>GRPO-Mix</td>
+<td>混合多奖励 GRPO（GenEval:OCR:PickScore=3:1:1）</td>
+<td>直接多任务基线</td>
+</tr>
+<tr>
+<td>SFT/Merge + GRPO-Mix</td>
+<td>冷启动 + 多奖励 GRPO</td>
+<td>冷启动效果</td>
+</tr>
+</tbody></table>
+
+<h4 id="d1-评估指标体系">评估指标体系</h4>
+
+<table>
+<thead><tr>
+<th>指标</th>
+<th>测量维度</th>
+<th>类型</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>GenEval</td>
+<td>组合图像生成（对象、属性、空间关系）</td>
+<td>功能性</td>
+</tr>
+<tr>
+<td>OCR Acc.</td>
+<td>图像中文字渲染准确率</td>
+<td>功能性</td>
+</tr>
+<tr>
+<td>DeQA</td>
+<td>视觉美学质量</td>
+<td>感知性</td>
+</tr>
+<tr>
+<td>PickScore</td>
+<td>通用人类偏好对齐</td>
+<td>感知性</td>
+</tr>
+<tr>
+<td>T2I-CompBench++</td>
+<td>7 维组合泛化（Color/Shape/Texture/Complex/3D-Spatial/Numeracy/Non-Spatial）</td>
+<td>OOD 泛化</td>
+</tr>
+<tr>
+<td>ImageReward / Aesthetic / UnifiedReward / HPS-v2.1 / QwenVL Score</td>
+<td>人类偏好对齐（5 个维度）</td>
+<td>综合质量</td>
+</tr>
+</tbody></table>
+
+<h3 id="d1-37-关键实验结果深度解读">3.7 关键实验结果深度解读</h3>
+
+<h4 id="d1-主结果table-2">主结果（Table 2）</h4>
+
+<table>
+<thead><tr>
+<th>模型</th>
+<th>GenEval</th>
+<th>OCR</th>
+<th>DeQA</th>
+<th>PickScore</th>
+<th>Avg</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>SD-3.5-M (Base)</td>
+<td>0.63</td>
+<td>0.59</td>
+<td>4.07</td>
+<td>21.64</td>
+<td>0.72</td>
+</tr>
+<tr>
+<td>GRPO-GenEval</td>
+<td><strong>0.94</strong></td>
+<td>0.65</td>
+<td>4.01</td>
+<td>21.53</td>
+<td>0.81</td>
+</tr>
+<tr>
+<td>GRPO-OCR</td>
+<td>0.64</td>
+<td><strong>0.92</strong></td>
+<td>4.06</td>
+<td>21.69</td>
+<td>0.80</td>
+</tr>
+<tr>
+<td>GRPO-Mix</td>
+<td>0.73</td>
+<td>0.83</td>
+<td>4.33</td>
+<td>21.84</td>
+<td>0.82</td>
+</tr>
+<tr>
+<td><strong>Flow-OPD (Merge)</strong></td>
+<td><strong>0.93</strong></td>
+<td><strong>0.93</strong></td>
+<td><strong>4.31</strong></td>
+<td><strong>23.05</strong></td>
+<td><strong>0.90</strong></td>
+</tr>
+</tbody></table>
+
+<p><strong>关键发现 1：Flow-OPD 达到或超越领域专精教师</strong></p>
+<ul>
+<li>GenEval: 0.93（教师 0.94）——接近天花板</li>
+<li>OCR: 0.93（教师 0.92）——<strong>超越</strong>教师！</li>
+<li>DeQA: 4.31（教师 4.23）——<strong>超越</strong>教师！</li>
+<li>PickScore: 23.05（教师 23.19→专精，但 Flow-OPD 也接近）</li>
+</ul>
+
+<p><strong>关键发现 2：解决跨域干扰</strong></p>
+<ul>
+<li>GRPO-PickScore 的 GenEval 降至 0.51（从 0.63 退化！）</li>
+<li>Flow-OPD 在所有维度均保持高水平——密集多教师监督<strong>解耦</strong>了各目标</li>
+</ul>
+
+<p><strong>关键发现 3：超教师效应（Teacher-Surpassing）</strong></p>
+<ul>
+<li>OCR 和 DeQA 上学生<strong>超越了各自的领域专精教师</strong></li>
+<li>论文假设原因：<strong>知识交叉授粉</strong>——同时接收多位教师的密集指导，学生在流形中学习了更全局、更平滑的表示</li>
+<li>单个教师受限于领域特定的偏见，而集体监督桥接了认知差距</li>
+</ul>
+
+<h4 id="d1-消融实验关键结论">消融实验关键结论</h4>
+
+<p><strong>冷启动消融（Figure 4）</strong>：</p>
+<ul>
+<li>无冷启动的 OPD：GenEval 0.85, OCR 0.83——远低于有冷启动</li>
+<li>SFT 冷启动：GenEval 0.91, OCR 0.92——广泛适用</li>
+<li>Merge 冷启动：GenEval 0.93, OCR 0.93——零额外成本，最优</li>
+<li>冷启动 + GRPO-Mix：远低于 Flow-OPD——再次证明密集监督优于稀疏标量</li>
+</ul>
+
+<p><strong>MAR 消融（Figure 5 + Table 4）</strong>：</p>
+<ul>
+<li>无 MAR 的 OPD：背景模式坍塌 + 语义冗余</li>
+<li>有 MAR：维持视觉多样性和结构质量</li>
+<li>量化改善：Aesthetic 5.89→6.23, QwenVL Score 3.82→4.05</li>
+</ul>
+
+<p><strong>OOD 泛化（Table 3, T2I-CompBench++）</strong>：</p>
+<ul>
+<li>Flow-OPD 在全部 7 个组合维度上超越 GRPO-Mix</li>
+<li>尤其在 3D-Spatial（0.4565 vs 0.3681）、Numeracy（0.6837 vs 0.6388）上大幅领先</li>
+<li>证明密集专家监督不仅融合了能力，还增强了泛化</li>
+</ul>
+
+<h3 id="d1-38-方法局限性与批判分析">3.8 方法局限性与批判分析</h3>
+
+<ol>
+<li><strong>仅测试 SD3.5 Medium</strong>：更大/更新架构（如 FLUX、SD3.5 Large）上的效果未知</li>
+<li><strong>教师训练成本高</strong>：N 个教师 = N × GRPO 训练 → 总计算成本显著高于单阶段方法</li>
+<li><strong>任务路由 token 手动设计</strong>：$\mathcal{R}(c)$ 是确定性的、预定义的——对于开放域/混合 prompt，路由可能不准确</li>
+<li><strong>仅 4 个奖励维度</strong>：扩展到 10+ 个维度的可扩展性未经测试</li>
+<li><strong>对离散扩散模型不完全适用</strong>：Flow-KL 定理的推导依赖于流匹配的连续时间 SDE 框架</li>
+<li><strong>教师能力上界限制</strong>：如果某个领域教师本身性能差，其错误监督会传播给学生（Figure 11）</li>
+<li><strong>师生架构同质要求</strong>：需要相同的模型架构来进行逐步骤的细粒度向量场监督</li>
+</ol>
+
+<hr>
+
+<h2 id="d1-4-关键对比相同与不同">4. 关键对比：相同与不同</h2>
+
+<h3 id="d1-41-共同点">4.1 共同点</h3>
+
+<table>
+<thead><tr>
+<th>方面</th>
+<th>共性</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><strong>技术范式</strong></td>
+<td>都基于 On-Policy Distillation</td>
+</tr>
+<tr>
+<td><strong>核心洞察</strong></td>
+<td>都认识到"不是所有 OPD 奖励都同等有价值"</td>
+</tr>
+<tr>
+<td><strong>优化目标</strong></td>
+<td>都涉及 reverse KL divergence 的最小化</td>
+</tr>
+<tr>
+<td><strong>可靠性关注</strong></td>
+<td>都区分了"可靠"和"不可靠"的教师监督</td>
+</tr>
+<tr>
+<td><strong>动态性</strong></td>
+<td>都不是静态方法——在训练过程中自适应调整</td>
+</tr>
+<tr>
+<td><strong>OPD 改进方向</strong></td>
+<td>都不改变 OPD 的基本原理，而是在其上添加控制机制</td>
+</tr>
+<tr>
+<td><strong>白盒教师需求</strong></td>
+<td>都需要访问教师模型的内部分布（top-k 或向量场）</td>
+</tr>
+<tr>
+<td><strong>代码开源</strong></td>
+<td>都提供了 GitHub 代码仓库</td>
+</tr>
+</tbody></table>
+
+<h3 id="d1-42-核心差异10-维度对比">4.2 核心差异（10 维度对比）</h3>
+
+<table>
+<thead><tr>
+<th>维度</th>
+<th>Prune-OPD 🪓</th>
+<th>Flow-OPD 🌊</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><strong>应用领域</strong></td>
+<td>LLM 长程数学推理</td>
+<td>Flow Matching T2I 图像生成</td>
+</tr>
+<tr>
+<td><strong>模态</strong></td>
+<td>离散文本 token</td>
+<td>连续图像 latent</td>
+</tr>
+<tr>
+<td><strong>序列长度</strong></td>
+<td>数千 token 的推理链</td>
+<td>10-40 步去噪轨迹</td>
+</tr>
+<tr>
+<td><strong>核心问题</strong></td>
+<td>前缀漂移 → 后缀 OPD 奖励不可靠</td>
+<td>奖励稀疏 + 多任务梯度干扰</td>
+</tr>
+<tr>
+<td><strong>OPD 类型</strong></td>
+<td>Token 级自回归 OPD</td>
+<td>轨迹级向量场 OPD</td>
+</tr>
+<tr>
+<td><strong>可靠性判据</strong></td>
+<td>Top-k 重叠率（离散 token 分布）</td>
+<td>无（通过任务路由+MAR保证监督质量）</td>
+</tr>
+<tr>
+<td><strong>效率机制</strong></td>
+<td>动态截断 + 预算自适应</td>
+<td>闭式 KL（零策略梯度方差）</td>
+</tr>
+<tr>
+<td><strong>多任务</strong></td>
+<td>单任务（推理正确性）</td>
+<td>多任务（美学+OCR+对齐+质量）</td>
+</tr>
+<tr>
+<td><strong>教师架构</strong></td>
+<td>单个密集教师 / rollout</td>
+<td>多领域专精教师 + 冻结锚定教师</td>
+</tr>
+<tr>
+<td><strong>理论基础</strong></td>
+<td>经验启发式（top-k, w_base, w_drop）</td>
+<td>强理论（Flow-KL 定理有解析闭式解）</td>
+</tr>
+<tr>
+<td><strong>模型规模</strong></td>
+<td>1.5B–7B LLMs</td>
+<td>2.5B 扩散模型（SD3.5M）</td>
+</tr>
+<tr>
+<td><strong>关键贡献</strong></td>
+<td>可靠性感知的概念框架</td>
+<td>OPD 跨模态迁移的理论框架</td>
+</tr>
+<tr>
+<td><strong>训练增益</strong></td>
+<td>时间缩减 37.6%–68.0%</td>
+<td>多任务平均 +10 pts 超越 GRPO</td>
+</tr>
+</tbody></table>
+
+<h3 id="d1-43-互补关系">4.3 互补关系</h3>
+
+<p><strong>Prune-OPD 能做但 Flow-OPD 不做的</strong>：</p>
+<ul>
+<li>逐位置监测师生兼容度</li>
+<li>基于兼容度的动态截断</li>
+<li>响应预算自适应调度</li>
+<li>在低兼容度场景下的梯度去噪效应</li>
+</ul>
+
+<p><strong>Flow-OPD 能做但 Prune-OPD 不做的</strong>：</p>
+<ul>
+<li>跨模态 OPD（文本→图像）</li>
+<li>多教师能力融合</li>
+<li>解析 KL 散度推导（Flow-KL 定理）</li>
+<li>多任务去干扰（任务路由 + MAR）</li>
+<li>超教师效应（协同增益）</li>
+</ul>
+
+<p><strong>两者结合的潜在方向</strong>：</p>
+<ol>
+<li><strong>将 Prune-OPD 的可靠性感知移植到 Flow-OPD</strong>：在流匹配去噪轨迹上监测师生向量场在每个时间步的兼容度，对低兼容度时间步衰减监督信号</li>
+<li><strong>将 Flow-OPD 的多教师框架引入 Prune-OPD</strong>：多个推理风格不同的教师（如证明风格 vs 直觉风格）同时蒸馏，用任务路由选择合适的教师</li>
+<li><strong>统一理论框架</strong>：Prune-OPD 的可靠性权重可以被视为一种状态依赖的 KL 散度调节器，与 Flow-OPD 中 MAR 的 KL 正则化在数学形式上可统一</li>
+</ol>
+
+<hr>
+
+<h2 id="d1-5-导师可能追问的20个问题">5. 导师可能追问的20个问题</h2>
+
+<h3 id="d1-基础理解类5题">基础理解类（5题）</h3>
+
+<p><strong>Q1：什么是 On-Policy Distillation？Prune-OPD 和 Flow-OPD 分别如何体现 "on-policy"？</strong></p>
+
+<blockquote><p>OPD 的核心是让学生在自己的生成轨迹上学习教师分布，而非在教师预生成的静态数据上学习。</p></blockquote>
+<p>></p>
+<blockquote><p><strong>Prune-OPD 的 on-policy 体现</strong>：学生自回归采样推理链 y ∼ π_θ(·|x)，教师在相同的学生访问前缀 y_{<t} 上计算 token 级分布 q_t。当学生前缀偏离教师时，OPD 奖励变得不可靠——这正是 Prune-OPD 要解决的问题。</p></blockquote>
+<p>></p>
+<blockquote><p><strong>Flow-OPD 的 on-policy 体现</strong>：学生通过 SDE 采样去噪轨迹 x_t ∼ π_θ(·|c)，教师在同一采样状态上提供向量场 v_target(x_t, t, c)。on-policy 探索打破了离线 SFT 的性能天花板。</p></blockquote>
+
+<p><strong>Q2：Prune-OPD 的"前缀漂移"是什么？为什么它对 OPD 是致命的？</strong></p>
+
+<blockquote><p>前缀漂移是指：在自回归生成过程中，学生的推理前缀 y_{<t} 偏离了教师可能生成的推理路径。当学生选择了一个教师不会选的推理方向后，教师在该前缀下的 next-token 分布 q_t 就不再是有用的局部优化目标。</p></blockquote>
+<p>></p>
+<blockquote><p>致命原因：前缀漂移是<strong>路径依赖</strong>的——一旦在位置 p 处分叉，后续所有 token 都建在这个分叉之上。单个 token 的"重新对齐"无法消除。此时继续应用教师的密集奖励，相当于让教师批改一个已经完全跑题的论证——批改本身可能正确，但对学生没有指导意义，且占据大量计算。</p></blockquote>
+
+<p><strong>Q3：Flow-OPD 中的 Flow-KL 定理为什么是突破性的？零方差意味着什么？</strong></p>
+
+<blockquote><p>Flow-KL 定理证明：在连续流匹配模型中，学生和教师策略之间的 KL 散度有<strong>解析闭式解</strong>，等价于两个向量场之间的加权 L2 距离。</p></blockquote>
+<p>></p>
+<blockquote><p><strong>为什么是突破性的</strong>：文本 LLM 的 OPD 必须通过 Policy Gradient 估计 KL 散度的梯度——这引入了高方差，需要重要性采样、PPO clip 等复杂稳定化技术。而 Flow-OPD 可以直接通过标准 MSE 回归最小化向量场差异——策略梯度方差为零。</p></blockquote>
+<p>></p>
+<blockquote><p><strong>零方差的含义</strong>：训练极其稳定，不需要复杂的 RL 基础设施（优势估计、clip ratio 等），本质上退化为监督学习但保留了 on-policy 探索的优势。</p></blockquote>
+
+<p><strong>Q4：Prune-OPD 的三个组件之间是什么关系？能否单独使用？</strong></p>
+
+<blockquote><p>三个组件是<strong>级联关系</strong>："检测 → 决策 → 资源调度"：<br>- 组件 1（重叠率监测）：<strong>检测</strong>哪些位置发生了漂移<br>- 组件 2（可靠性权重 + 截断）：<strong>决策</strong>如何根据漂移累积来衰减奖励和终止 rollout<br>- 组件 3（动态响应预算）：<strong>调度</strong>如何在 batch 层面全局最优分配计算资源</p></blockquote>
+<p>></p>
+<blockquote><p>可以部分使用：仅用组件 1+2（可靠性感知权重 + 截断，但固定预算）→ 仍有效果，但不如三组件全用。仅用组件 1→ 只是诊断工具，不改变训练。仅用组件 3（动态预算）但不做可靠性截断 → 就是简单的自适应长度，失去了 Prune-OPD 的核心优势。</p></blockquote>
+
+<p><strong>Q5：Flow-OPD 为什么不直接把多个教师的输出混合起来做离线蒸馏，而要用 on-policy 方式？</strong></p>
+
+<blockquote><p>离线混合蒸馏有两个致命问题：<br>1. <strong>分布不匹配</strong>：教师在各自的数据分布上生成最优输出，但学生的 on-policy 采样分布可能完全不同——教师在其"舒适区"之外可能给出低质量监督<br>2. <strong>无法处理梯度干扰</strong>：即使做离线多教师蒸馏，学生在不同任务上的参数更新仍然会互相干扰（今天学 OCR 的知识明天被美学目标覆盖）</p></blockquote>
+<p>></p>
+<blockquote><p>On-policy 方式让学生在<strong>自己的当前分布</strong>上接受教师监督，且通过任务路由和 MAR 解耦了不同目标的梯度。Figure 4 清楚显示：冷启动 + GRPO-mix 远不如冷启动 + Flow-OPD。</p></blockquote>
+
+<h3 id="d1-深入技术类5题">深入技术类（5题）</h3>
+
+<p><strong>Q6：Prune-OPD 的 w_base = 0.5 的作用是什么？如果设 w_base = 0 会发生什么？</strong></p>
+
+<blockquote><p>w_base 有两个实际作用：<br>1. <strong>防止硬开关</strong>：当 R → 0 时，L = R + w_base > 0，教师信号不会被完全切断。这保留了微弱的监督信息，在某些情况下（如 hard case 需要额外的探索信号）有用。<br>2. <strong>权衡去噪与保留</strong>：w_base 控制了保留多少"弱教师信号"。w_base 大 → 更保守，保留更多后缀监督；w_base 小 → 更激进，后缀监督大幅衰减。</p></blockquote>
+<p>></p>
+<blockquote><p>如果 w_base = 0：R → 0 时后缀位置完全失去教师监督。这相当于在低可靠性区域完全"盲飞"，可能对某些需要维持一定探索水平的场景不利。论文没有报告 w_base=0 的实验结果。</p></blockquote>
+
+<p><strong>Q7：Prune-OPD 的 overlap ratio 和 top-p acceptance 有什么区别？为什么 overlap 更好？</strong></p>
+
+<blockquote><p><strong>Top-k Overlap Ratio</strong>：候选集级别的兼容度——学生和教师的 top-k 候选有多少重叠。关注的是"思考方向是否一致"。</p></blockquote>
+<p>></p>
+<blockquote><p><strong>Top-p Action Acceptance</strong>：动作级别的兼容度——学生实际采样的 token 是否在教师可见的核心集中。关注的是"具体选择是否被教师认可"。</p></blockquote>
+<p>></p>
+<blockquote><p><strong>为什么 overlap 更好</strong>：推理任务中存在<strong>多个合理路径</strong>。学生可能选了一个教师 top-p 之外的 token，但整体推理方向仍然正确（有多个合理 token）。Top-p acceptance 对此过分严格——它惩罚了所有"合理但不同"的选择，导致过度截断。Overlap 更宽松——只要候选集有足够重叠，就认为方向一致。</p></blockquote>
+
+<p><strong>Q8：Flow-OPD 的任务路由是硬路由（hard routing）。软路由（soft routing，如加权混合所有教师的输出）会不会更好？</strong></p>
+
+<blockquote><p>论文选择硬路由的原因：<strong>消除跨域梯度干扰</strong>。如果软混合所有教师的向量场（如 α·v_OCR + β·v_GenEval + γ·v_PickScore），在实际优化中这些目标的梯度仍然会互相冲突——α, β, γ 的调节变成了另一个需要解决的优化问题。硬路由将冲突的梯度在样本层面完全解耦。</p></blockquote>
+<p>></p>
+<blockquote><p>但硬路由也有代价：边界样本（如既需要文字渲染又需要美学的 prompt）只能收一位教师的指导。软路由可能是未来的改进方向——例如用 Gumbel-Softmax 做可微分路由。</p></blockquote>
+
+<p><strong>Q9：PRUNE-OPD 的动态预算控制器中的"命中率"具体是如何定义的？为什么要用"margin"？</strong></p>
+
+<blockquote><p>Batch 命中率 h_t：<br>$$h_t = \frac{1}{B}\sum_{b=1}^{B}\mathbf{1}[E^{(b)} \geq M_t - m]$$</p></blockquote>
+<p>></p>
+<blockquote><p>其中 E^(b) 是第 b 个样本的有效可靠长度，M_t 是当前最大响应长度，m = 100 是 margin。</p></blockquote>
+<p>></p>
+<blockquote><p><strong>为什么需要 margin？</strong> 如果严格判断 E^(b) ≥ M_t，那么只要有效长度比 M_t 略小一点（如 12287 vs 12288）就算未命中。Margin 引入了一个容忍区间——有效长度接近上限就算命中。这避免了因微小随机波动导致的预算错误收缩。</p></blockquote>
+<p>></p>
+<blockquote><p>另外，收缩需要连续 P=3 步均低于阈值——这防止了因单步波动而错误收缩（patience/耐心机制）。</p></blockquote>
+
+<p><strong>Q10：Flow-OPD 的 MAR 正则化中，为什么选择 DeQA 教师作为锚点而不是原始 SD3.5-M？</strong></p>
+
+<blockquote><p>DeQA 教师经过单奖励 GRPO 训练，已经将 SD3.5-M 的美学质量优化到了领域天花板。用 DeQA 作为锚点意味着：学生被约束在一个<strong>高美学质量流形</strong>内，而非仅仅是"不退化"。</p></blockquote>
+<p>></p>
+<blockquote><p>如果只用 SD3.5-M 作为锚点，约束太弱——学生可以在 SD3.5-M 的分布范围内找到各种低质量生成。DeQA 提供了一个更紧、更高的质量下界。</p></blockquote>
+<p>></p>
+<blockquote><p>本质上，MAR = "你可以专精，但必须维持在一个很高审美水平上"。</p></blockquote>
+
+<h3 id="d1-实验设计类5题">实验设计类（5题）</h3>
+
+<p><strong>Q11：Prune-OPD 的实验为什么选择 5 组不同的师生配对？每组配对的实验目的是什么？</strong></p>
+
+<blockquote><p>5 组配对覆盖了 OPD 的典型场景：</p></blockquote>
+<p>></p>
+<blockquote><p>1. <strong>1.5B / JustRL-1.5B</strong>：同尺寸、同家族的 RL 增强教师——测试最小能力差距下的兼容度<br>2. <strong>1.5B / 7B</strong>：大教师小学生的跨规模蒸馏——测试极端能力差距导致的前缀漂移<br>3. <strong>1.7B-Base / 4B-NT</strong>：最小 base 模型 + 思维模式切换——测试最差兼容度场景<br>4. <strong>4B-Base / 4B-NT</strong>：中等 base 模型 + 思维模式切换——测试中等兼容度<br>5. <strong>7B / Skywork-OR1-7B</strong>：高兼容度对照——验证 Prune-OPD 不会"滥杀无辜"</p></blockquote>
+<p>></p>
+<blockquote><p>配对 2 的时间缩减最大（68.0%），验证了"大教师→更多前缀漂移→截断收益更大"的假设。配对 5 的时间缩减仅 2.9%，验证了 Prune-OPD 的自适应属性。</p></blockquote>
+
+<p><strong>Q12：Prune-OPD 中 w_drop = 0.01 意味着什么？如果 w_drop = 0.1 会怎样？</strong></p>
+
+<blockquote><p>w_drop = 0.01 意味着每次漂移事件降低 1% 的可靠性权重。对于典型的推理链（2000-12000 token），如果重叠率持续低于阈值，可靠性权重在大约 100 次漂移事件后归零。</p></blockquote>
+<p>></p>
+<blockquote><p>w_drop = 0.1 会怎样：每次漂移事件降低 10% → 10 次事件后 R = 0 → 截断极快发生 → 可能丢失大量有用的中等兼容度后缀。尤其在训练早期，模型尚未稳定，overlap 波动较大，高 w_drop 会导致过度截断。</p></blockquote>
+
+<p><strong>Q13：Flow-OPD 为什么选择 SD3.5 Medium 而不是更大的模型？</strong></p>
+
+<blockquote><p>可能原因：<br>1. <strong>计算资源约束</strong>：训练 4 个教师（各需 GRPO）+ OPD 融合 + 多基准评估 → 在 SD3.5 Large（8B）上成本过高<br>2. <strong>实验可控性</strong>：SD3.5 Medium（2.5B）足够快，可以进行更多消融和分析实验<br>3. <strong>对齐难度适中</strong>：SD3.5 Medium 的多任务对齐有一定难度但不过于极端，适合作为概念验证</p></blockquote>
+<p>></p>
+<blockquote><p>局限：无法确定 Flow-OPD 在更大/更新架构（如 FLUX）上是否同样有效。这需要后续工作验证。</p></blockquote>
+
+<p><strong>Q14：Prune-OPD 中为什么固定 Truncate 4k 的 OPD 基线在某些配对中表现尚可，但在其他配对中退化？</strong></p>
+
+<blockquote><p>Truncate 4k 的效果取决于<strong>有用监督的分布</strong>：<br>- 如果 4k 以内的前缀已经包含了大部分可用的教师监督（如 1.5B/7B 配对中前缀漂移发生得非常早），固定截断能提升效率而不过多损失准确率<br>- 如果 4k 以后仍有大量有价值的监督（如 7B/Skywork-OR1 高兼容度场景），固定截断会丢弃有用的长推理信号 → 性能退化</p></blockquote>
+<p>></p>
+<blockquote><p>Prune-OPD 的优势就在于：它<strong>不假设</strong>有用监督在哪里——而是通过兼容度信号<strong>动态发现</strong>截断点。</p></blockquote>
+
+<p><strong>Q15：Flow-OPD 的超教师效应（Teacher-Surpassing）的实验证据是什么？如何确定不是随机波动？</strong></p>
+
+<blockquote><p>证据：<br>1. OCR: Flow-OPD 0.93 > GRPO-OCR 教师 0.92 —— 在多个评估集上一致<br>2. DeQA: Flow-OPD (Merge) 4.31 > GRPO-DeQA 教师 4.23<br>3. 定性结果（Figure 3）：Flow-OPD 在某些边缘案例中成功，而所有单个教师都失败</p></blockquote>
+<p>></p>
+<blockquote><p>论文的假设解释：<strong>知识交叉授粉</strong>——多教师同时监督使学生学到更全局的表示。单个教师受限于领域偏见（OCR 教师可能过度关注文字而忽略背景），而多教师监督迫使学生在所有维度间寻找平衡，反而发现了单个教师未探索的高质量区域。</p></blockquote>
+<p>></p>
+<blockquote><p>当然，更严谨的做法应该是多次重复实验并报告标准差——论文没有做这个。</p></blockquote>
+
+<h3 id="d1-批判思维类5题">批判思维类（5题）</h3>
+
+<p><strong>Q16：Prune-OPD 的 top-k 重叠率作为兼容度指标有什么根本性局限？有没有更好的替代方案？</strong></p>
+
+<blockquote><p>根本性局限：<br>1. <strong>词汇重叠 ≠ 语义对齐</strong>：都预测"因此"但后续推理可能完全不同<br>2. <strong>无法捕捉排序差异</strong>：top-k tokens 相同但排序或概率分布差异巨大<br>3. <strong>对"合理多样性"不鲁棒</strong>：推理任务中有多个合理的 top-k 候选集，两个都在合理范围内但重叠低</p></blockquote>
+<p>></p>
+<blockquote><p>更好的替代方案：<br>- <strong>语义嵌入空间的重叠</strong>：将 student/teacher 的 top-k token embeddings 投影到共享空间，计算语义相似度而非词汇交集<br>- <strong>KL 散度阈值</strong>：直接用 D_KL(p_t || q_t) 作为兼容度——更直接地测量分布分歧<br>- <strong>学习式兼容度</strong>：训练一个小型判别器来判断 student prefix 是否仍在 teacher 的 support 内<br>- <strong>轨迹级评估</strong>：不只看单步，而是看滑动窗口内的兼容度趋势</p></blockquote>
+
+<p><strong>Q17：Flow-OPD 声称是"首个将 OPD 引入流匹配"的方法，这个声明的边界在哪里？有哪些相关工作？</strong></p>
+
+<blockquote><p>这个声明限定在：<strong>使用 on-policy 采样 + 多教师密集轨迹级监督 + 冷启动 + MAR 正则化</strong>的完整框架。之前的 Flow-GRPO 是单奖励 RL，不是 OPD。DanceGRPO 是混合多奖励的 GRPO，也不是 OPD。</p></blockquote>
+<p>></p>
+<blockquote><p>但以下几个接近的工作值得关注：<br>- <strong>DiffusionNFT</strong>：online RL with forward process，也有密集监督的思想，但无法兼容 CFG（影响性能天花板）<br>- <strong>GDPO</strong>：多奖励设置下的 GRPO 改进，但仍是标量奖励<br>- <strong>Flow-GRPO</strong>：单个教师 + 单奖励，没有多教师融合</p></blockquote>
+<p>></p>
+<blockquote><p>Flow-OPD 确实在 OPD 框架迁移到流匹配方面是首个系统性工作。但其独创性的边界需要参照这些接近的工作来界定。</p></blockquote>
+
+<p><strong>Q18：Prune-OPD 和 Flow-OPD 都依赖于白盒教师（需要访问 logits/向量场）。如果只能通过 API 访问教师，如何做类似的可靠性控制？</strong></p>
+
+<blockquote><p>这是两篇论文的<strong>共同局限性</strong>。</p></blockquote>
+<p>></p>
+<blockquote><p>对于 Prune-OPD：<br>- 可以用<strong>蒸馏一个 logits 代理</strong>：在小样本上微调一个开放模型来模仿教师 API 的 top-k 输出<br>- 可以用<strong>输出文本的重叠度</strong>作为近似兼容度指标：比较学生和教师 API 在相同前缀下的 next-token 生成，用生成 token 的一致性替代分布重叠<br>- 但这会显著降低精确度</p></blockquote>
+<p>></p>
+<blockquote><p>对于 Flow-OPD：<br>- 目前<strong>没有办法</strong>在 API-only 设置下实现——它需要教师模型的完整向量场<br>- 替代方案是用<strong>多个 API 模型</strong>各自生成最终图像，然后做<strong>图像空间的知识蒸馏</strong>（而非向量场蒸馏）——但这不是 OPD 了</p></blockquote>
+<p>></p>
+<blockquote><p>这突出了 OPD 与纯 RL 的核心差异：OPD 需要的是细粒度的分布匹配，而非仅需要最终奖励。</p></blockquote>
+
+<p><strong>Q19：如果模型非常强（如 DeepSeek-R1-671B 作为教师），还需要 Prune-OPD 吗？</strong></p>
+
+<blockquote><p>这取决于师生兼容度，而非教师的绝对强度：</p></blockquote>
+<p>></p>
+<blockquote><p>1. <strong>如果学生也是强模型</strong>（如 R1-Distill-70B 从 R1-671B 蒸馏）：兼容度可能很高 → Prune-OPD 几乎不做任何截断 → 退化为标准 OPD → 不需要<br>2. <strong>如果学生是弱模型</strong>（如 1.5B 从 671B 蒸馏）：兼容度可能极低 → 前缀漂移非常严重 → Prune-OPD 的作用最大<br>3. <strong>更根本的问题</strong>：对于极大的能力差距（671B → 1.5B），教师的大部分知识可能对小学生不可利用（distillability gap）——这不仅是前缀漂移，更是"学生连教师的第一步都看不懂"。Prune-OPD 兼容度信号在这种情况下会很快归零 → 有效 OPD 长度非常短 → 蒸馏几乎等于无效</p></blockquote>
+<p>></p>
+<blockquote><p>所以，Prune-OPD 在强教师弱学生场景下<strong>最有价值但也最受限</strong>——它能识别出哪些部分可靠，但如果没有可靠的部分，截断解决不了根本的能力差距问题。</p></blockquote>
+
+<p><strong>Q20：如果让你设计一个结合 Prune-OPD 和 Flow-OPD 优势的"统一 OPD 框架"，你会怎么设计？</strong></p>
+
+<blockquote><p>一个自然的设计思路——<strong>可靠性感知的多教师 OPD 框架</strong>：</p></blockquote>
+<p>></p>
+<blockquote><p><strong>架构</strong>：<br>1. <strong>多教师专精训练</strong>（借鉴 Flow-OPD Stage 1）：各教师单目标达到天花板<br>2. <strong>冷启动初始化</strong>（借鉴 Flow-OPD）：SFT 或模型合并建立基础能力<br>3. <strong>可靠性感知的 OPD 循环</strong>：<br>   - On-policy 采样学生轨迹（自回归 token 或去噪 latent）<br>   - <strong>逐位兼容度监测</strong>（借鉴 Prune-OPD）：在 token 级（text）或向量场级（image）计算师生兼容度<br>   - <strong>任务路由 + 可靠性双重门控</strong>：先根据任务类型选择教师，再根据兼容度衰减该教师的监督信号<br>   - 兼容度判据的模态适配：<br>     - 文本模态：top-k 重叠率<br>     - 图像模态：向量场余弦相似度或 L2 距离阈值<br>4. <strong>MAR 式锚定正则化</strong>（借鉴 Flow-OPD）：防止多任务优化中的某一维度崩塌<br>5. <strong>动态响应预算</strong>（借鉴 Prune-OPD）：根据兼容度统计自适应调整序列长度</p></blockquote>
+<p>></p>
+<blockquote><p><strong>理论意义</strong>：<br>- Prune-OPD 提供了"教师监督在何处可靠"的位置级答案<br>- Flow-OPD 提供了"教师监督在多任务间如何分配"的任务级答案<br>- 两者结合 → 一个<strong>空间-任务联合可靠性分配框架</strong></p></blockquote>
+<p>></p>
+<blockquote><p><strong>实际挑战</strong>：<br>- 需要在同一框架内统一处理离散 token 和连续 latent<br>- 多模态的兼容度指标可能不可直接比较<br>- 计算开销：同时运行多个教师 + 逐位兼容度计算</p></blockquote>
+
+<hr>
+
+<h2 id="d1-6-论文翻译与辅助资料索引">6. 论文翻译与辅助资料索引</h2>
+
+<h3 id="d1-已准备的辅助资料">已准备的辅助资料</h3>
+
+<table>
+<thead><tr>
+<th>资料</th>
+<th>位置</th>
+<th>状态</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><strong>Prune-OPD 中文全文翻译</strong></td>
+<td><code>pt.2/Prune-OPD-中文翻译.md</code></td>
+<td>✅ 进行中（后台agent）</td>
+</tr>
+<tr>
+<td><strong>Flow-OPD 中文全文翻译</strong></td>
+<td><code>pt.2/Flow-OPD-中文翻译.md</code></td>
+<td>✅ 进行中（后台agent）</td>
+</tr>
+<tr>
+<td><strong>Prune-OPD 英文提取文本</strong></td>
+<td><code>pt.2/prune-opd-extracted.txt</code></td>
+<td>✅ 已完成</td>
+</tr>
+<tr>
+<td><strong>Flow-OPD 英文提取文本</strong></td>
+<td><code>pt.2/flow-opd-extracted.txt</code></td>
+<td>✅ 已完成</td>
+</tr>
+<tr>
+<td><strong>PT.2 演示文稿（幻灯片）</strong></td>
+<td><code>demo-pt2.html</code></td>
+<td>✅ 已完成（Reveal.js）</td>
+</tr>
+<tr>
+<td><strong>本深度分析报告（笔记）</strong></td>
+<td><code>pt.2/Prune-OPD与Flow-OPD深度分析报告.md</code></td>
+<td>✅ 当前文件</td>
+</tr>
+</tbody></table>
+
+<h3 id="d1-原始论文">原始论文</h3>
+
+<ul>
+<li><strong>Prune-OPD</strong>: arXiv:2605.07804v3 — <code>pt.2/[2605.07804v3] Prune-OPD...pdf</code></li>
+<li><strong>Flow-OPD</strong>: arXiv:2605.08063v5 — <code>pt.2/[2605.08063v5] Flow-OPD...pdf</code></li>
+</ul>
+
+<h3 id="d1-相关前置论文pt1">相关前置论文（PT.1）</h3>
+
+<ul>
+<li><strong>PRISM</strong>: arXiv:2604.28123v1 — <code>[2604.28123v1] PRISM...pdf</code>（管道定位的OPD）</li>
+<li><strong>Uni-OPD</strong>: arXiv:2605.03677v2 — <code>[2605.03677v2] Uni-OPD...pdf</code>（双视角OPD统一框架）</li>
+<li><strong>PRISM & Uni-OPD 分析报告</strong>: <code>PRISM与Uni-OPD深度分析报告.md</code>（组会报告参考）</li>
+</ul>
+
+<h3 id="d1-关键参考文献精选">关键参考文献精选</h3>
+
+<p>以下是最重要的上下文论文，阅读它们可以帮助建立完整的 OPD 知识体系：</p>
+
+<table>
+<thead><tr>
+<th>优先级</th>
+<th>论文</th>
+<th>为什么要读</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>⭐⭐⭐</td>
+<td><strong>GKD (Agarwal et al., 2024)</strong></td>
+<td>OPD 的规范框架——建立了 on-policy/off-policy 插值和多散度</td>
+</tr>
+<tr>
+<td>⭐⭐⭐</td>
+<td><strong>MiniLLM (Gu et al., 2024)</strong></td>
+<td>OPD for LLM 的奠基工作——reverse KL + Policy Gradient</td>
+</tr>
+<tr>
+<td>⭐⭐⭐</td>
+<td><strong>OPD Dynamics (Li et al., 2026)</strong></td>
+<td>OPD 机制分析——top-k 重叠率、熵差、think-pattern consistency</td>
+</tr>
+<tr>
+<td>⭐⭐⭐</td>
+<td><strong>Flow-GRPO (Liu et al., 2025)</strong></td>
+<td>Flow-OPD 的基础——流匹配 GRPO 框架</td>
+</tr>
+<tr>
+<td>⭐⭐</td>
+<td><strong>G-OPD (Yang et al., 2026)</strong></td>
+<td>OPD 统一为 KL 约束 RL——reward extrapolation</td>
+</tr>
+<tr>
+<td>⭐⭐</td>
+<td><strong>Thinking Machines OPD Blog (2025)</strong></td>
+<td>OPD 的工业实践——可复制强推理收益</td>
+</tr>
+<tr>
+<td>⭐</td>
+<td><strong>Fast OPD (Zhang et al., 2026)</strong></td>
+<td>前缀截断加速 OPD（与 Prune-OPD 最相关的前置工作）</td>
+</tr>
+<tr>
+<td>⭐</td>
+<td><strong>Entropy-Aware OPD (Jin et al., 2026)</strong></td>
+<td>自适应散度函数保持多样性</td>
+</tr>
+</tbody></table>
+
+<hr>
+
+<h2 id="d1-7-实验复现指南">7. 实验复现指南</h2>
+
+<blockquote><p>⚠️ <strong>重要提醒</strong>：导师要求实验复现。下面给出分难度、分资源的复现路径。建议从 Level 1 开始，逐步推进。</p></blockquote>
+
+<h3 id="d1-71-prune-opd-复现路径">7.1 Prune-OPD 复现路径</h3>
+
+<h4 id="d1-level-1最小复现1-2天单-gpu">Level 1：最小复现（1-2天，单 GPU）</h4>
+
+<p><strong>目标</strong>：验证核心机制——可靠性权重是否真的能区分可靠和不可靠的 OPD 奖励。</p>
+
+<p><strong>环境准备</strong>：</p>
+<pre><code>
+git clone https://github.com/yangzhch6/Prune-OPD
+cd Prune-OPD
+pip install -r requirements.txt
+</code></pre>
+
+<p><strong>最小实验</strong>：</p>
+<ul>
+<li>使用 DeepSeek-R1-Distill-Qwen-1.5B 同时作为 student 和 teacher（自蒸馏模式）</li>
+<li>在 DAPO-Math-17K 的 100 条样本上运行</li>
+<li>训练 50 步</li>
+<li>对比 OPD 基线 vs Prune-OPD (overlap)</li>
+<li><strong>关键指标</strong>：权重衰减曲线、有效可靠长度、训练时间</li>
+</ul>
+
+<p><strong>预期结果</strong>：</p>
+<ul>
+<li>Prune-OPD 的权重沿序列位置呈现趋势性衰减</li>
+<li>有效可靠长度远小于最大响应长度</li>
+<li>训练时间显著低于 OPD</li>
+</ul>
+
+<h4 id="d1-level-2完整复现3-5天4a100h100">Level 2：完整复现（3-5天，4×A100/H100）</h4>
+
+<p><strong>目标</strong>：复现 Table 1 中的一对师生配对结果。</p>
+
+<p><strong>推荐配对</strong>：</p>
+<ul>
+<li>DeepSeek-R1-Distill-Qwen-1.5B / JustRL-DeepSeek-1.5B（训练时间最短，约4-7h）</li>
+<li>或 DeepSeek-R1-Distill-Qwen-1.5B / DeepSeek-R1-Distill-Qwen-7B（时间缩减最显著）</li>
+</ul>
+
+<p><strong>实验清单</strong>：</p>
+<ol>
+<li>OPD 基线（完整训练，不截断）</li>
+<li>OPD (Truncate 4k) 固定截断基线</li>
+<li>Prune-OPD (overlap, τ=0.7)</li>
+<li>Prune-OPD (top-p, p=0.95)</li>
+<li>评估：AMC23, AIME24, AIME25, HMMT24, HMMT25</li>
+</ol>
+
+<p><strong>关键配置</strong>（复制论文 Appendix A.9 Table 4）：</p>
+<ul>
+<li>训练数据: DAPO-Math-17K</li>
+<li>训练温度: 1.0</li>
+<li>Rollout 数: 4</li>
+<li>Mini batch: 64</li>
+<li>Top-K: 16</li>
+<li>LR: 1e-6</li>
+<li>训练步数: 203</li>
+<li>KL coefficient: 0.0</li>
+<li>Overlap threshold: 0.7</li>
+<li>w_drop: 0.01, w_base: 0.5</li>
+<li>动态长度: init 1024, min 1024, max 12288, step 100, margin 100, patience 3</li>
+<li>命中率阈值: 0.1</li>
+</ul>
+
+<h4 id="d1-level-3消融与分析额外2-3天">Level 3：消融与分析（额外2-3天）</h4>
+
+<ol>
+<li><strong>阈值消融</strong>（复现 Table 3）：τ ∈ {0.6, 0.7, 0.8, 0.9}</li>
+<li><strong>深度兼容度分析</strong>（复现 Figure 7）：不同 token 位置区间的重叠率演变</li>
+<li><strong>w_drop 灵敏度</strong>：w_drop ∈ {0.005, 0.01, 0.02, 0.05}</li>
+<li><strong>w_base 消融</strong>：w_base ∈ {0, 0.25, 0.5, 0.75}</li>
+</ol>
+
+<h3 id="d1-72-flow-opd-复现路径">7.2 Flow-OPD 复现路径</h3>
+
+<blockquote><p>⚠️ Flow-OPD 的复现比 Prune-OPD <strong>困难得多</strong>——需要 4×8×H800 = 32 GPU，且需要先训练 4 个教师。按难度和资源分三级。</p></blockquote>
+
+<h4 id="d1-level-1最小理解实验1-2天单-gpu">Level 1：最小理解实验（1-2天，单 GPU）</h4>
+
+<p><strong>目标</strong>：理解 Flow-OPD 的核心机制，进行<strong>定性分析</strong>。</p>
+
+<p><strong>方案 A（推荐）：使用官方权重做推理</strong></p>
+<pre><code>
+# 克隆仓库
+git clone https://github.com/CostaliyA/Flow-OPD
+cd Flow-OPD
+
+# 下载预训练权重（论文承诺发布）
+# 使用 SD3.5-M 和 Flow-OPD 学生模型生成对比图像
+python inference_compare.py --prompts prompts.txt
+</code></pre>
+
+<p><strong>方案 B：小规模 Flow-KL 验证实验</strong></p>
+<ul>
+<li>用 SD3.5-M 的一个 LoRA 层作为测试平台</li>
+<li>分别计算：(a) Policy Gradient 估计的 D_KL 梯度, (b) 解析 MSE 的 D_KL 梯度</li>
+<li>验证两者数值一致性 → 验证 Flow-KL 定理</li>
+<li>量化 PG 估计的方差 vs 解析梯度的零方差</li>
+</ul>
+
+<h4 id="d1-level-2单教师复现5-7天4a100h100">Level 2：单教师复现（5-7天，4×A100/H100）</h4>
+
+<p><strong>目标</strong>：复现单个领域教师训练 + 单教师 OPD 蒸馏。</p>
+
+<p><strong>步骤</strong>：</p>
+<ol>
+<li>选择一个教师任务（推荐 GenEval——奖励信号最强，收敛最快）</li>
+<li>在 Flow-GRPO 下训练教师（~2天，取决于数据量）</li>
+<li>冷启动学生（SFT 或模型合并）</li>
+<li>单教师 Flow-OPD（~1天）</li>
+<li>评估 GenEval + OCR + DeQA + PickScore</li>
+</ol>
+
+<p><strong>最小验证</strong>：单教师 OPD 是否能达到或接近该教师的领域性能？是否能避免其他维度的严重退化？</p>
+
+<h4 id="d1-level-3完整多教师复现2-3周48h800">Level 3：完整多教师复现（2-3周，4×8×H800）</h4>
+
+<p><strong>目标</strong>：完整复现 Table 2 结果。</p>
+
+<p><strong>步骤</strong>：</p>
+<ol>
+<li>训练 4 个领域专精教师（GenEval, OCR, PickScore, DeQA）——各自 1-2 天</li>
+<li>冷启动初始化（SFT 或 Merge）</li>
+<li>多教师 OPD 训练（约2天）</li>
+<li>全基准评估（GenEval, OCR, DeQA, PickScore, T2I-CompBench++, 人类偏好）</li>
+<li>消融：w/o Cold Start, w/o MAR, 不同冷启动策略</li>
+</ol>
+
+<p><strong>关键配置</strong>（论文 Appendix A）：</p>
+<ul>
+<li>底座: SD3.5 Medium</li>
+<li>训练: 4节点 × 8 H800, ~50h</li>
+<li>采样步数: T_train=10, T_eval=40</li>
+<li>Group size G=24</li>
+<li>噪声 α=0.7, 分辨率 512</li>
+<li>MAR KL ratio λ=0.02</li>
+<li>LoRA: r=32, α=64</li>
+<li>GRPO-Mix 数据比例: GenEval:OCR:PickScore = 3:1:1</li>
+</ul>
+
+<h3 id="d1-73-复现资源估算">7.3 复现资源估算</h3>
+
+<table>
+<thead><tr>
+<th>实验</th>
+<th>GPU需求</th>
+<th>预计时间</th>
+<th>预计费用（云GPU）</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>Prune-OPD Level 1</td>
+<td>1×A100</td>
+<td>1-2天</td>
+<td>~$50-100</td>
+</tr>
+<tr>
+<td>Prune-OPD Level 2</td>
+<td>4×A100</td>
+<td>3-5天</td>
+<td>~$500-1000</td>
+</tr>
+<tr>
+<td>Prune-OPD Level 3</td>
+<td>4×A100</td>
+<td>5-8天</td>
+<td>~$800-1500</td>
+</tr>
+<tr>
+<td>Flow-OPD Level 1</td>
+<td>1×A100</td>
+<td>1-2天</td>
+<td>~$50-100</td>
+</tr>
+<tr>
+<td>Flow-OPD Level 2</td>
+<td>4×A100</td>
+<td>5-7天</td>
+<td>~$1000-2000</td>
+</tr>
+<tr>
+<td>Flow-OPD Level 3</td>
+<td>32×H800</td>
+<td>2-3周</td>
+<td>~$5000-10000+</td>
+</tr>
+</tbody></table>
+
+<h3 id="d1-74-如果资源不足怎么办">7.4 如果资源不足怎么办？</h3>
+
+<p><strong>替代方案 1：使用更小模型</strong></p>
+<ul>
+<li>Prune-OPD: Qwen3-1.7B-Base 对 Qwen3-4B（训练最快，约10h/A100）</li>
+<li>Flow-OPD: 使用 SD3.5 Small（如果有）或更早的 SDXL 作为底座</li>
+</ul>
+
+<p><strong>替代方案 2：定性分析为主，定量复现为辅</strong></p>
+<ul>
+<li>重点放在理解机制、复现关键诊断指标（overlap ratio 曲线、权重衰减图、Flow-KL 数值验证）</li>
+<li>使用论文提供的 checkpoint 做推理和可视化分析</li>
+</ul>
+
+<p><strong>替代方案 3：请求导师提供计算资源</strong></p>
+<ul>
+<li>对于 Flow-OPD 的完整复现，30+ GPU 的需求是硬性的</li>
+<li>建议与导师讨论是否可以使用实验室集群、学校超算中心或云 GPU 额度</li>
+</ul>
+
+<hr>
+
+<h2 id="d1-8-报告ppt建议结构">8. 报告PPT建议结构</h2>
+
+<h3 id="d1-建议结构约25-30页45分钟报告">建议结构（约25-30页，45分钟报告）</h3>
+
+<p><strong>Part 0：背景与动机（5页）</strong></p>
+<ol>
+<li>标题页：Prune-OPD & Flow-OPD — OPD 的效率前沿与跨范式扩展</li>
+<li>OPD 研究版图回顾：PRISM → Uni-OPD → 当前工作</li>
+<li>PT.2 的两条主线：效率维度（Prune-OPD）vs 范式维度（Flow-OPD）</li>
+<li>两篇论文的核心问题与核心贡献（对比页）</li>
+<li>DAG 知识结构图（参见 demo-pt2.html 第2页）</li>
+</ol>
+
+<p><strong>Part 1：Prune-OPD（10页）</strong></p>
+<ol>
+<li>核心动机：长程推理中的前缀漂移问题</li>
+<li>可靠性分配框架：三个组件概览</li>
+<li>组件 1 详解：逐位 Top-k 重叠率</li>
+<li>组件 2 详解：单调可靠性权重与动态截断</li>
+<li>组件 3 详解：动态响应预算控制器</li>
+<li>Algorithm 1 走读</li>
+<li>实验设计：5 组师生配对的目的</li>
+<li>关键结果：Table 1 + Table 2 解读</li>
+<li>训练动力学：权重衰减、深度依赖、阈值灵敏度</li>
+<li>Prune-OPD 小结：贡献与局限</li>
+</ol>
+
+<p><strong>Part 2：Flow-OPD（10页）</strong></p>
+<ol>
+<li>核心动机：T2I 多任务对齐的两大瓶颈</li>
+<li>Motivation 三问：Why GRPO works → Why GRPO fails → Why mix training fails</li>
+<li>两阶段框架概览：Stage 1 → Stage 2</li>
+<li>Stage 1：单奖励 GRPO 培养领域专精教师</li>
+<li>Stage 2：多教师 OPD 融合（冷启动 + On-policy 采样 + 任务路由）</li>
+<li><strong>重点页</strong>：Flow-KL 定理：从 KL 散度到加权 L2 距离（公式推导动画）</li>
+<li>MAR：多教师反退化正则化</li>
+<li>关键结果：Table 2 + 超教师效应</li>
+<li>消融实验：冷启动 + MAR + OOD 泛化</li>
+<li>Flow-OPD 小结：贡献与局限</li>
+</ol>
+
+<p><strong>Part 3：对比与展望（5页）</strong></p>
+<ol>
+<li>Prune-OPD vs Flow-OPD 10 维度对比表</li>
+<li>互补关系与结合可能性</li>
+<li>OPD 研究的整体启示：效率、范式、可靠性、可扩展性</li>
+<li>实验复现进展与计划</li>
+<li>未来方向与讨论</li>
+</ol>
+
+<p><strong>Backup Slides（3页）</strong>：</p>
+<ol>
+<li>关键公式汇总</li>
+<li>实验配置速查</li>
+<li>参考文献精选</li>
+</ol>
+
+<hr>
+
+<h2 id="d1-9-附录关键公式速查">9. 附录：关键公式速查</h2>
+
+<h3 id="d1-prune-opd-公式">Prune-OPD 公式</h3>
+
+<p><strong>OPD 目标函数（标准形式）</strong>：</p>
+<p>$$\mathcal{L}_{OPD}(\theta) = \mathbb{E}_{x, y\sim\pi_\theta(\cdot|x)} \sum_{t=1}^{T} D_{KL}(p_t \| q_t)$$</p>
+
+<p><strong>Top-k 重叠率</strong>：</p>
+<p>$$\text{OverlapRate}(t) = \frac{|\text{TopK}(\pi_\theta, t) \cap \text{TopK}(\pi_T, t)|}{k}$$</p>
+
+<p><strong>前缀漂移事件</strong>：</p>
+<p>$$B_t = \mathbf{1}[\text{OverlapRate}(t) < \tau]$$</p>
+
+<p><strong>累积漂移计数</strong>：</p>
+<p>$$C(t) = \sum_{i=1}^{t} B_i$$</p>
+
+<p><strong>可靠性权重</strong>：</p>
+<p>$$R = \text{clip}(1 - w_{\text{drop}} \cdot C,\ 0,\ 1)$$</p>
+
+<p><strong>损失权重</strong>：</p>
+<p>$$L = R + w_{\text{base}}$$</p>
+
+<p><strong>缩放 OPD 奖励</strong>：</p>
+<p>$$\tilde{r}_{t,j} = L \cdot r_{t,j}$$</p>
+
+<p><strong>有效可靠长度</strong>：</p>
+<p>$$E = \sum_{t=1}^{T} \mathbf{1}[R_t > \epsilon]$$</p>
+
+<p><strong>Batch 命中率</strong>：</p>
+<p>$$h_t = \frac{1}{B}\sum_{b=1}^{B} \mathbf{1}[E^{(b)} \geq M_t - m]$$</p>
+
+<p><strong>预算更新规则</strong>：</p>
+<p>$$M_{t+1} = \begin{cases} \min(M_t + \Delta, M_{\max}) & \text{if } h_t \geq \rho \\ \max(M_t - \Delta, M_{\min}) & \text{if } h_t < \rho \text{ for } P \text{ consecutive steps} \\ M_t & \text{otherwise} \end{cases}$$</p>
+
+<h3 id="d1-flow-opd-公式">Flow-OPD 公式</h3>
+
+<p><strong>流匹配训练损失</strong>：</p>
+<p>$$\mathcal{L}_{FM}(\theta) = \mathbb{E}_{t, x_0, x_1} \|\mathbf{v}_\theta(x_t, t) - (x_1 - x_0)\|^2$$</p>
+
+<p><strong>SDE 采样（On-Policy 探索）</strong>：</p>
+<p>$$dx_t = \left[v_\theta(x_t, t) + \frac{\sigma_t^2}{2t}(x_t + (1-t)v_\theta(x_t, t))\right]dt + \sigma_t d\bar{w}$$</p>
+
+<p><strong>学生转移策略（高斯形式）</strong>：</p>
+<p>$$\pi_\theta(x_{t-\Delta t}|x_t, c) = \mathcal{N}(\mu_\theta(x_t, t), \sigma_t^2 \Delta t \mathbf{I})$$</p>
+
+<p><strong>任务路由</strong>：</p>
+<p>$$\mathbf{v}_{\text{target}}(x_t, t, c) = \mathbf{v}_k(x_t, t, c), \quad k = \mathcal{R}(c)$$</p>
+
+<p><strong>Flow-KL 定理（核心）</strong>：</p>
+<p>$$D_{KL}(\pi_\theta \| \pi_{\text{target}}) = \frac{\Delta t}{2\sigma_t^2} \left[t(1-t) + \frac{1}{\Delta t}\right]^2 \cdot \|\mathbf{v}_\theta - \mathbf{v}_{\text{target}}\|^2$$</p>
+
+<p>即：</p>
+<p>$$\boxed{D_{KL}(\pi_\theta \| \pi_T) = \mathbb{E}_{t, x_t \sim \pi_\theta}\left[w(t) \cdot \|\mathbf{v}_\theta(x_t, t) - \mathbf{v}_T(x_t, t)\|^2\right]}$$</p>
+
+<p><strong>Flow-OPD 损失</strong>：</p>
+<p>$$\mathcal{L}_{\text{Flow-OPD}} = \mathbb{E}_{x_t \sim \text{SDE}} \left[w(t)\|\mathbf{v}_\theta(x_t, t, c) - \text{SG}[\mathbf{v}_{\text{target}}(x_t, t, c)]\|^2\right]$$</p>
+
+<p><strong>MAR 正则化</strong>：</p>
+<p>$$\mathcal{L}_{\text{MAR}} = \mathbb{E}_{c, t, x_t \sim \pi_\theta}\left[w(t)\|\mathbf{v}_\theta(x_t, t, c) - \mathbf{v}_{\text{aesthetic}}(x_t, t, c)\|^2\right]$$</p>
+
+<p><strong>总损失</strong>：</p>
+<p>$$\mathcal{L}_{\text{Total}} = \mathcal{L}_{\text{Flow-OPD}} + \lambda \cdot \mathcal{L}_{\text{MAR}}$$</p>
+
+<h3 id="d1-跨论文概念对应">跨论文概念对应</h3>
+
+<table>
+<thead><tr>
+<th>概念</th>
+<th>Prune-OPD</th>
+<th>Flow-OPD</th>
+<th>共性</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>可靠性控制</td>
+<td>可靠性权重 R</td>
+<td>MAR KL 正则化</td>
+<td>均为防止不可靠监督的机制</td>
+</tr>
+<tr>
+<td>兼容度</td>
+<td>Top-k 重叠率</td>
+<td>任务路由（解耦）</td>
+<td>均为判断监督质量的判据</td>
+</tr>
+<tr>
+<td>截断/约束</td>
+<td>动态截断</td>
+<td>锚定向量场</td>
+<td>均为防止退化</td>
+</tr>
+<tr>
+<td>效率机制</td>
+<td>预算自适应</td>
+<td>闭式 KL（零方差）</td>
+<td>均为降低 OPD 成本</td>
+</tr>
+<tr>
+<td>基础损失</td>
+<td>D_KL(p_t \</td>
+<td>\</td>
+<td>q_t)</td>
+<td>w(t)·\</td>
+<td>\</td>
+<td>v_θ − v_T\</td>
+<td>\</td>
+<td>²</td>
+<td>均为分布匹配的 KL</td>
+</tr>
+</tbody></table>
+
+<hr>
+
+<h2 id="d1-附录-b论文概念速查表">附录 B：论文概念速查表</h2>
+
+<h3 id="d1-核心术语中英对照">核心术语中英对照</h3>
+
+<table>
+<thead><tr>
+<th>英文</th>
+<th>中文</th>
+<th>所属论文</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>On-Policy Distillation (OPD)</td>
+<td>在策略蒸馏</td>
+<td>共同</td>
+</tr>
+<tr>
+<td>Prefix Drift</td>
+<td>前缀漂移</td>
+<td>Prune-OPD</td>
+</tr>
+<tr>
+<td>Reliability-Aware</td>
+<td>可靠性感知</td>
+<td>Prune-OPD</td>
+</tr>
+<tr>
+<td>Top-k Overlap Ratio</td>
+<td>Top-k 重叠率</td>
+<td>Prune-OPD</td>
+</tr>
+<tr>
+<td>Cumulative Drift Events</td>
+<td>累积漂移事件</td>
+<td>Prune-OPD</td>
+</tr>
+<tr>
+<td>Monotone Reliability Weight</td>
+<td>单调可靠性权重</td>
+<td>Prune-OPD</td>
+</tr>
+<tr>
+<td>Dynamic Response Budget</td>
+<td>动态响应预算</td>
+<td>Prune-OPD</td>
+</tr>
+<tr>
+<td>Effective Reliable Length</td>
+<td>有效可靠长度</td>
+<td>Prune-OPD</td>
+</tr>
+<tr>
+<td>Flow Matching (FM)</td>
+<td>流匹配</td>
+<td>Flow-OPD</td>
+</tr>
+<tr>
+<td>Velocity Field / Vector Field</td>
+<td>速度场 / 向量场</td>
+<td>Flow-OPD</td>
+</tr>
+<tr>
+<td>Flow-KL Theorem</td>
+<td>Flow-KL 定理</td>
+<td>Flow-OPD</td>
+</tr>
+<tr>
+<td>Seesaw Effect</td>
+<td>跷跷板效应</td>
+<td>Flow-OPD</td>
+</tr>
+<tr>
+<td>Gradient Interference</td>
+<td>梯度干扰</td>
+<td>Flow-OPD</td>
+</tr>
+<tr>
+<td>Manifold Anchor Regularization (MAR)</td>
+<td>流形锚定正则化</td>
+<td>Flow-OPD</td>
+</tr>
+<tr>
+<td>Task Routing Labeling</td>
+<td>任务路由标记</td>
+<td>Flow-OPD</td>
+</tr>
+<tr>
+<td>Cold Start</td>
+<td>冷启动</td>
+<td>Flow-OPD</td>
+</tr>
+<tr>
+<td>Teacher-Surpassing Effect</td>
+<td>超教师效应</td>
+<td>Flow-OPD</td>
+</tr>
+<tr>
+<td>SDE (Stochastic Differential Equation)</td>
+<td>随机微分方程</td>
+<td>Flow-OPD</td>
+</tr>
+<tr>
+<td>ODE (Ordinary Differential Equation)</td>
+<td>常微分方程</td>
+<td>Flow-OPD</td>
+</tr>
+<tr>
+<td>Reward Sparsity</td>
+<td>奖励稀疏性</td>
+<td>Flow-OPD</td>
+</tr>
+<tr>
+<td>Exposure Bias</td>
+<td>曝光偏差</td>
+<td>共同（OPD背景）</td>
+</tr>
+<tr>
+<td>Reverse KL Divergence</td>
+<td>逆向KL散度</td>
+<td>共同（OPD基础）</td>
+</tr>
+<tr>
+<td>GRPO (Group Relative Policy Optimization)</td>
+<td>分组相对策略优化</td>
+<td>共同（算法基础）</td>
+</tr>
+</tbody></table>
+
+<hr>
+
+<blockquote><p><strong>报告撰写：Claude Code · 2026/07/22</strong><br><strong>论文来源</strong>：arXiv:2605.07804v3 (Prune-OPD) · arXiv:2605.08063v5 (Flow-OPD)<br><strong>后续更新</strong>：实验复现进展将追加到本报告的"实验复现指南"章节</p></blockquote>
+
+
+<!-- ==================== DOCUMENT 2: Prune-OPD 中文翻译 ==================== -->
+<div class="doc-divider" data-label="第二篇：Prune-OPD 中文全文翻译"></div>
+
+<h1 id="d2-prune-opd面向长程推理的高效可靠在策略蒸馏">Prune-OPD：面向长程推理的高效可靠在策略蒸馏</h1>
+
+<h1 id="d2-prune-opd-efficient-and-reliable-on-policy-distillation-for-long-horizon-reasoning">Prune-OPD: Efficient and Reliable On-Policy Distillation for Long-Horizon Reasoning</h1>
+
+<p><strong>arXiv:2605.07804v3 [cs.LG] 2026年6月1日</strong></p>
+
+<hr>
+
+<h2 id="d2-作者信息">作者信息</h2>
+
+<p><strong>杨志成¹&emsp;郭志江¹,²&emsp;宋一帆¹&emsp;许敏锐¹&emsp;王永新³&emsp;王一伟⁴&emsp;梁小丹³,⁵&emsp;唐靖¹,²</strong></p>
+
+<p>¹ 香港科技大学（广州）</p>
+<p>² 香港科技大学</p>
+<p>³ 穆罕默德·本·扎耶德人工智能大学（MBZUAI）</p>
+<p>⁴ 加州大学默塞德分校</p>
+<p>⁵ 中山大学</p>
+
+<p><strong>项目仓库：</strong> https://github.com/yangzhch6/Prune-OPD</p>
+
+<hr>
+
+<h2 id="d2-摘要">摘要</h2>
+
+<p>在策略蒸馏（On-Policy Distillation, OPD）利用密集的教师奖励信号来增强推理模型。然而，将OPD扩展到长程任务时暴露了一个关键缺陷：随着学生模型生成的前缀不可避免地偏离教师的思维过程，教师的密集奖励失去了局部可利用性。在这些"漂移"轨迹上继续生成和评估token不仅降低了奖励质量，还造成了大量的计算浪费。为解决这一问题，我们提出了<strong>Prune-OPD</strong>，一个动态将训练预算与监督质量对齐的框架。通过持续监测学生与教师预测之间的局部兼容性（例如，通过top-k重叠度），Prune-OPD实时检测前缀漂移事件。一旦检测到严重漂移，它会单调地降低后续不可靠奖励的权重，并触发动态生成长度截断。这使得训练过程能够停止无意义的生成，并将计算资源严格重新分配到可靠的教师监督上。在多种教师-学生组合中，Prune-OPD始终将计算与监督可靠性对齐。当前缀漂移使密集教师奖励变得不可靠时，它将训练时间减少37.6%至68.0%，同时在具有挑战性的基准测试（AMC、AIME、HMMT）上保持甚至提升性能。当学生-教师兼容性保持较高时，它通过扩展训练窗口自动保留长上下文监督。这些结果表明，Prune-OPD并非通过盲目缩短生成长度来改进OPD，而是通过将计算重新分配到局部可利用的教师奖励上来实现改进。</p>
+
+<hr>
+
+<h2 id="d2-1-引言">1 引言</h2>
+
+<p>在策略蒸馏（OPD）已成为大语言模型后训练的核心技术。最近的系统如Qwen3 [36]、MiMo [34]和GLM-5 [45]在后训练流程中采用OPD风格的密集监督。Thinking Machines Lab [24]报告称，OPD方案能够以远低于结果奖励强化学习的计算量复现强大的推理增益。这使得OPD成为监督微调和可验证强化学习的有力补充：它在长推理轨迹上提供token级学习信号，而非等待稀疏的最终答案奖励。</p>
+
+<p>OPD的吸引力在于其在策略特性。离策略蒸馏在固定的教师生成序列上训练学生，这会引发曝光偏差问题：在推理时，学生必须在并非由教师或参考策略生成的前缀下行动[2]。而OPD则从当前学生模型采样生成长度，并在相同的学生访问前缀上评估教师。这一设计也启发了最近的自蒸馏方法，其中模型在特权信息或反馈下充当自身的教师，并从自身的在策略经验中改进[14, 47, 30]。在长程数学推理中，这一区别尤为重要：单个解答可能包含数千个token，因此即使是微小的训练-推理不匹配也可能在整个轨迹上累积放大。</p>
+
+<p><strong>预印本。</strong></p>
+
+<p>![图1]()</p>
+
+<blockquote><p><strong>图1：Prune-OPD概念概述。</strong> Prune-OPD沿学生生成长度监测局部学生-教师兼容性，在低重叠漂移事件后单调衰减OPD奖励，并在可靠的教师监督耗尽后截断响应。</p></blockquote>
+
+<p>然而，同样的在策略设计也带来了一个新的可靠性问题。教师不仅在被查询的前缀上其局部分布能提供有用的纠正，也在已经偏离教师推理过程的前缀上被查询。最近的OPD动力学分析指出，OPD的成功依赖于局部思维模式兼容性，并且奖励质量可能随轨迹深度而恶化[22]。我们将这一诊断视为设计约束：长程OPD不应将每个生成的token视为同等值得监督。</p>
+
+<p>缺失的一环是在线可靠性控制。当前的OPD方案通常是在生成前选择一个生成长度预算，然后在采样的响应上均匀地施加密集教师奖励。这造成了一个糟糕的权衡。短的固定预算可能丢弃有用的长推理，而长的固定预算则花费大量计算来生成和评分那些教师信号可能不再局部可利用的后缀。实际上，单次生成长度可以同时包含两种状态：早期的前缀，其中学生和教师仍共享合理的下一token支持；以及随后的后缀，其中学生已经承诺了教师不会采取的推理选择。因此，OPD所需的不是简单增加或减少密集奖励，而是一种判断密集奖励在何处足够可靠以用于训练的方法。</p>
+
+<p>我们提出<strong>Prune-OPD</strong>，一个面向长程OPD的可靠性感知修饰器，在训练过程中做出这一决策。Prune-OPD不过滤整个响应，也不施加固定的响应长度，而是提出一个位置级别的问题：在相同的学生前缀下，学生和教师是否仍然共享一个高概率候选区域？主要信号是每位置的top-k重叠率，教师top-p/top-k动作接受度作为一个更严格的变体。当选定的兼容性指标低于其阈值时，Prune-OPD记录一个前缀漂移事件。累积的漂移事件定义了一个单调可靠性权重，用于衰减后续的OPD奖励，而同样的原始可靠性信号则定义了动态生成长度控制的有效响应长度。预期的转变是从固定预算OPD转向可靠性预算OPD：密集监督应被分配到教师在学生轨迹上仍然可操作的位置。</p>
+
+<p>我们进行了广泛的实验，以评估可靠性感知剪枝是否在实践中改善了长程OPD。结果验证了Prune-OPD的有效性：当密集监督变得不可靠时，它将训练时间减少了37.6%至68.0%，同时保持或提升了下游准确率。额外的实验表明，当可靠性信号保持较高时，控制器保留长上下文监督，支持了Prune-OPD重新分配计算而非盲目缩短生长度的论断。总之，我们的贡献如下：</p>
+
+<ul>
+<li>我们将长程OPD形式化为学生访问前缀上的可靠性分配问题，将轨迹深度退化与局部兼容性和奖励可利用性联系起来。</li>
+<li>我们提出了Prune-OPD，它将累积前缀漂移转换为单调的OPD奖励衰减和动态响应长度控制器，在禁用时不改变基线OPD路径。</li>
+<li>我们提供了初步证据，表明可靠性感知剪枝可以在前缀漂移限制可靠监督时将OPD训练时间减少37.6%至68.0%，同时保持基准性能，并且我们指定了固定长度剪枝对照，以测试收益是否来自可靠性而非简单的泛化缩短。</li>
+</ul>
+
+<hr>
+
+<h2 id="d2-2-背景与问题设置">2 背景与问题设置</h2>
+
+<h3 id="d2-21-在策略蒸馏">2.1 在策略蒸馏</h3>
+
+<p>设 $x$ 表示输入提示，$\mathbf{y} = (y_1, \ldots, y_T)$ 是从学生策略 $\pi_\theta$ 自回归采样的响应。在位置 $t$，记 $\mathbf{y}_{<t} = (y_1, \ldots, y_{t-1})$ 为前缀，并定义学生和教师的下一token分布为：</p>
+
+<p>$$p_t(v) \triangleq \pi_\theta(v \mid x, \mathbf{y}_{<t}), \quad q_t(v) \triangleq \pi_T(v \mid x, \mathbf{y}_{<t}), \tag{1}$$</p>
+
+<p>在词汇表token $v \in \mathcal{V}$ 上。OPD在当前学生采样的轨迹上计算监督，通常通过最小化学生生成轨迹上的逆KL目标[9, 1, 22]：</p>
+
+<p>$$\mathcal{L}_{\text{OPD}}(\theta) = \mathbb{E}_{x, \mathbf{y} \sim \pi_\theta(\cdot|x)} \left[ \sum_{t=1}^{T} D_{\text{KL}}(p_t \parallel q_t) \right]. \tag{2}$$</p>
+
+<p>这种token级分解驱动了OPD的样本效率：每个位置提供密集的教师信号，而不是等待最终答案奖励。这也暴露了核心假设：$q_t$ 应在学生访问的状态 $(x, \mathbf{y}_{<t})$ 上是有用的局部目标。在实践中，我们在学生的top-k候选token上近似此奖励，并获得每位置的奖励向量 $\mathbf{r}_{t,\theta}$。由于奖励已经按位置局部化，可靠性修饰器可以在策略损失之前简单地将位置 $t$ 的所有奖励乘以一个标量权重。这是Prune-OPD使用的接口：</p>
+
+<p>可靠的前缀保留其OPD奖励，而漂移的前缀则获得衰减的奖励。</p>
+
+<h3 id="d2-22-动态指标">2.2 动态指标</h3>
+
+<p>遵循OPD机制分析[22]，设 $\mathcal{S}_t(p) = \text{TopK}(p_t, k)$ 和 $\mathcal{S}_t(q) = \text{TopK}(q_t, k)$。该工作提出的重叠率为：</p>
+
+<p>$$\mathcal{M}_{\text{overlap}} = \mathbb{E}_t\left[ \frac{|\mathcal{S}_t(p) \cap \mathcal{S}_t(q)|}{k} \right], \tag{3}$$</p>
+
+<p>它衡量学生和教师是否将高概率分配给共享的候选区域。</p>
+
+<p>熵差：</p>
+
+<p>$$\Delta H_t = |H(q_t) - H(p_t)|, \tag{4}$$</p>
+
+<p>跟踪两个模型在相同访问状态上是否具有相似的不确定性。这些指标通常作为训练后的诊断报告。Prune-OPD将其转化为在线控制信号。当前主要指标是每位置的重叠率，它衡量学生和教师在相同学生前缀上是否仍共享高概率候选区域。我们还评估了一个更严格的动作级别变体，询问采样的学生token是否被教师的可观察top-p/top-k区域接受。</p>
+
+<h3 id="d2-23-长程可靠性问题">2.3 长程可靠性问题</h3>
+
+<p>位置 $t$ 的奖励依赖于 $q_t(v) = \pi_T(v \mid x, \mathbf{y}_{<t})$，其中前缀 $\mathbf{y}_{<t}$ 由学生生成。随着 $t$ 增长，前缀可能偏离教师自然生成的轨迹。先前的OPD分析报告了后缀到前缀的不稳定性，以及随着学生前缀深度增加，教师延续优势递减[22]。因此，在中等长度轨迹上有帮助的同一密集奖励，在长轨迹上可能变得不可靠。这促使了位置级别的可靠性控制。我们估计每个学生前缀是否保持教师兼容，然后将密集监督分配给可靠的前缀，并在前缀漂移后衰减奖励。</p>
+
+<hr>
+
+<h2 id="d2-3-prune-opd">3 Prune-OPD</h2>
+
+<p>Prune-OPD将局部学生-教师兼容性转换为OPD奖励上的位置级权重。该方法被设计为OPD的即插即用修饰器：它不改变教师奖励的计算方式，但改变每个访问位置应该信任该奖励的程度。它包含三个部分：每位置兼容性指标、累积可靠性权重和可选的动态响应长度控制器。</p>
+
+<h3 id="d2-31-兼容性指标">3.1 兼容性指标</h3>
+
+<p>在位置 $\tau$，我们的目标是判断教师在学生当前轨迹上是否仍然提供局部可利用的监督。因此，学生和教师在相同的由学生生成的前缀 $\mathbf{s}_\tau = (x, \mathbf{y}_{<\tau})$ 上进行评估。</p>
+
+<p>我们首先将比较限制在每个模型的高置信度候选token上。设</p>
+
+<p>$$\mathcal{K}_S = \text{TopK}\big(\pi_\theta(\cdot \mid \mathbf{s}_\tau), k\big), \quad \mathcal{K}_T = \text{TopK}\big(\pi_T(\cdot \mid \mathbf{s}_\tau), k\big) \tag{5}$$</p>
+
+<p>为返回的top-k候选集。top-k大小是一个实验超参数。然后，我们用重叠率测量局部兼容性：</p>
+
+<p>$$\mathcal{O}_\tau = \frac{|\mathcal{K}_S \cap \mathcal{K}_T|}{k}. \tag{6}$$</p>
+
+<p>低重叠意味着教师的密集奖励是在其偏好的下一token支持已与学生支持分离的前缀下计算的。因此，我们定义前缀漂移事件为：</p>
+
+<p>$$\mathcal{B}_\tau = \mathbb{1}\left[\mathcal{O}_\tau < \delta\right], \tag{7}$$</p>
+
+<p>其中 $\delta$ 是兼容性阈值。这些漂移事件随后被累积，以衰减后续OPD奖励并定义动态生成长度控制的有效响应长度。</p>
+
+<p>该指标直接遵循OPD机制分析：成功的OPD与逐渐增加的高概率重叠相关联，而失败的运行则在学生访问状态上表现出停滞或不稳定的重叠[22]。它衡量学生和教师是否仍共享合理的局部动作空间。低重叠意味着教师的密集奖励正在其偏好的下一token支持已与学生支持分离的区域中计算。我们还设计了一个替代的top-p动作接受度指标，其定义见附录A.10。</p>
+
+<h3 id="d2-32-累积可靠性与损失加权">3.2 累积可靠性与损失加权</h3>
+
+<p>坏事件在响应上累积：</p>
+
+<p>$$C_\tau = \sum_{i=1}^{\tau} \mathcal{B}_i. \tag{8}$$</p>
+
+<p>原始可靠性权重是一个截断的线性衰减：</p>
+
+<p>$$\tilde{R}_\tau = \text{clip}(1 - w_{\text{drop}} \cdot C_\tau, \; 0, \; 1), \tag{9}$$</p>
+
+<p>其中 $w_{\text{drop}} \geq 0$ 控制每次兼容性失败的惩罚。原始权重沿每个有效响应单调非增。填充位置被强制设为零。</p>
+
+<p>实际损失权重添加一个基础底线：</p>
+
+<p>$$\mathcal{L}_\tau = \tilde{R}_\tau + w_{\text{base}} \tag{10}$$</p>
+
+<p>对有效响应位置，且 $\mathcal{L}_\tau = 0$ 对填充位置。缩放后的OPD奖励为：</p>
+
+<p>$$\tilde{\mathbf{r}}_{\tau,j} = \mathcal{L}_\tau \cdot \mathbf{r}_{\tau,j}. \tag{11}$$</p>
+
+<p>基础权重有两个实际作用。第一，它防止Prune-OPD在 $\tilde{R}_\tau$ 达到零时变成硬开关。第二，它允许方法在去噪和保留弱教师信号之间进行权衡。具体的超参数值在实验设置中指定。</p>
+
+<h3 id="d2-33-动态响应预算">3.3 动态响应预算</h3>
+
+<p>Prune-OPD还可以在训练期间调整生成长度。定义一个样本的有效响应长度为：</p>
+
+<p>$$\mathcal{E} = \sum_{\tau=1}^{T} \mathbb{1}\left[\tilde{R}_\tau > \varepsilon\right], \tag{12}$$</p>
+
+<p>对于一个小容差 $\varepsilon$。此定义刻意使用 $\tilde{R}_\tau$ 而非 $\mathcal{L}_\tau$。因此，具有 $\tilde{R}_\tau = 0$ 和 $w_{\text{base}} > 0$ 的token仍可贡献少量的OPD奖励，但不被计为可靠长度。</p>
+
+<hr>
+
+<p><strong>算法1：Prune-OPD——可靠性感知奖励缩放与动态响应预算</strong></p>
+
+<p><strong>输入：</strong> 提示分布 $\mathcal{D}$，学生策略 $\pi_\theta$，教师策略 $\pi_T$，OPD奖励例程，初始响应预算 $M_1$</p>
+
+<p><strong>输出：</strong> 更新后的学生策略 $\pi_\theta$ 和响应预算序列 $\{M_t\}$</p>
+
+<ol>
+<li><strong>for</strong> 训练步 $t = 1, 2, \ldots$ <strong>do</strong></li>
+<li>&emsp;采样提示 $\{x^{(b)}\}_{b=1}^{B} \sim \mathcal{D}$，并以最大长度 $M_t$ 生成学生生成长度 $\{\mathbf{y}_{1:T_b}^{(b)}\}_{b=1}^{B}$。</li>
+<li>&emsp;在学生访问前缀上计算原始OPD奖励张量 $\mathbf{r}^{(b,j)}$。</li>
+<li>&emsp;<strong>for</strong> 每个生成长度 $b = 1, \ldots, B$ <strong>do</strong></li>
+<li>&emsp;&emsp;使用公式(6)在学生访问前缀上计算重叠率序列。</li>
+<li>&emsp;&emsp;标记低兼容性位置，并使用公式(7)–(10)形成累积可靠性权重。</li>
+<li>&emsp;&emsp;使用公式(11)缩放OPD奖励，并使用公式(12)计算有效可靠长度 $\mathcal{E}^{(b)}$。</li>
+<li>&emsp;<strong>end for</strong></li>
+<li>&emsp;使用缩放后的奖励 $\tilde{\mathbf{r}}^{(b,j)}$ 以OPD目标更新 $\pi_\theta$。</li>
+<li>&emsp;$h_t \leftarrow B^{-1} \sum_{b=1}^{B} \mathbb{1}\left[\mathcal{E}^{(b)} \geq M_t - m\right]$。</li>
+<li>&emsp;<strong>if</strong> $h_t \geq \eta$ <strong>then</strong></li>
+<li>&emsp;&emsp;$M_{t+1} \leftarrow \min(M_t + \Delta, M_{\max})$ 并重置低命中计数器。</li>
+<li>&emsp;<strong>else if</strong> $h_t < \eta$ 连续 $P$ 步 <strong>then</strong></li>
+<li>&emsp;&emsp;$M_{t+1} \leftarrow \max(M_t - \Delta, M_{\min})$ 并重置低命中计数器。</li>
+<li>&emsp;<strong>else</strong></li>
+<li>&emsp;&emsp;$M_{t+1} \leftarrow M_t$。</li>
+<li>&emsp;<strong>end if</strong></li>
+<li><strong>end for</strong></li>
+</ol>
+
+<hr>
+
+<p>令 $M_t$ 为训练步 $t$ 用于生成长度生成的最大响应长度。控制器监测批次命中率：有效可靠长度达到当前限制（减去边距）的样本比例。如果命中率较大，限制按固定步长扩展，上限为 $M_{\max}$。如果命中率在耐心窗口内保持较小，限制按相同步长收缩，下限为 $M_{\min}$。初始限制、上下界、更新步长、边距、命中率阈值和耐心在实验设置中指定。算法1总结了完整的Prune-OPD流程，包括可靠性感知奖励缩放和动态响应预算自适应。为保持训练循环的可读性，位置级兼容性和加权规则直接引用上述定义。</p>
+
+<hr>
+
+<h2 id="d2-4-实验">4 实验</h2>
+
+<p>我们评估可靠性感知奖励缩放是否能在保持下游推理准确率的同时显著降低OPD训练成本。除最终基准准确率和训练时间外，我们还测量学生访问状态上的局部学生-教师动力学，包括重叠率、top-p接受度和有效可靠长度。</p>
+
+<h3 id="d2-41-实验设置">4.1 实验设置</h3>
+
+<p><strong>训练数据。</strong> 我们在DAPO-Math-17K [44]上训练，遵循近期推理实验中使用的OPD设置。训练提示在每次运行前打乱。主要的强化学习结果奖励是最终答案正确性。然而，OPD提供密集的token级蒸馏奖励。</p>
+
+<p><strong>模型。</strong> 我们评估五对教师-学生组合，以在不同OPD动力学下测试可靠性信号。DeepSeek-R1-Distill-Qwen-1.5B从DeepSeek-R1-Distill-Qwen-7B蒸馏，后者是一个更大的同族推理模型，其更高的基准得分可能并不意味着局部可利用的token级反馈[10]。同一学生还从JustRL-DeepSeek-1.5B蒸馏，后者是一个同规模的RL改进版教师，由DeepSeek-R1-Distill-Qwen-1.5B通过RL获得[11]。Qwen3-1.7B-Base和Qwen3-4B-Base从Qwen3-4B（非思考模式）蒸馏，隔离了思考模式转变如何在同一模型族内与学生规模交互[36]。最后，DeepSeek-R1-Distill-Qwen-7B从Skywork-OR1-7B蒸馏，提供了一个高初始重叠的设置，其中Prune-OPD预期保留长上下文监督而非缩短生成长度。总体而言，这些组合在不同条件下测试同一论断：当可靠性衰退时控制器减少计算，当兼容性保持较高时保留密集监督。</p>
+
+<p><strong>基线。</strong> 我们比较基线OPD、固定长度截断基线和Prune-OPD变体。固定长度OPD使用与基线OPD相同的蒸馏目标，但将最大响应长度限制为固定预算。随机剪枝匹配Prune-OPD保留的token比例或保留的OPD奖励质量，同时独立于学生-教师兼容性选择剪枝位置。这些对照测试了收益是否来自学生-教师兼容性信号，而非来自简单的更短生成长度或更低奖励密度。主要Prune-OPD配置使用重叠率，阈值为 $\delta = 0.7$。我们还报告了教师top-p动作接受度变体，$p = 0.95$。两种变体均使用 $\text{top-k} = 16$、$w_{\text{drop}} = 0.01$、$w_{\text{base}} = 0.5$，以及动态长度命中率 $0.1$。除非另有说明，动态响应长度使用初始值 $2048$、最小值 $1024$、最大值 $12288$、更新步长 $100$、边距 $100$ 和收缩耐心 $3$。</p>
+
+<p><strong>评估。</strong> 我们在AMC23、AIME24、AIME25、HMMT24和HMMT25上进行评估。主要指标是固定评估协议下的pass@1准确率。我们还报告相对训练时间减少、响应长度统计、重叠率、top-p接受率和有效可靠长度。训练时间相对于同一教师-学生对下的基线OPD测量。</p>
+
+<h3 id="d2-42-主要结果">4.2 主要结果</h3>
+
+<p>主要结果是在不显著降低下游准确率的情况下实现一致的效率增益。在主要低兼容性运行中，重叠率变体将训练时间分别减少了35.7%、68.0%、37.6%和52.6%，而基准准确率保持接近相应的OPD基线。准确率差异在各个基准上混合存在，应视为次要的：Prune-OPD在若干AIME/HMMT得分上略有提升，但也降低了少数条目，例如DeepSeek-R1-Distill-Qwen-7B教师下的AIME24和JustRL-DeepSeek-1.5B教师下的HMMT24。这一模式与Prune-OPD作为可靠性感知效率机制而非独立的准确率提升方法的角色一致。top-p动作接受度变体通常更保守，且往往弱于重叠率变体，这表明精确采样token的可接受性对于推理轨迹可能过于严格，而候选空间重叠更好地捕捉了教师是否仍然提供可利用的局部监督。</p>
+
+<p><strong>表1：Prune-OPD主要结果。</strong> 准确率以百分比报告。时间减少相对于同一学生-教师对下的基线OPD。</p>
+
+<table>
+<thead><tr>
+<th>方法</th>
+<th>AMC23</th>
+<th>AIME24</th>
+<th>AIME25</th>
+<th>HMMT24</th>
+<th>HMMT25</th>
+<th>时间减少</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><strong>DeepSeek-R1-Distill-Qwen-1.5B / JustRL-DeepSeek-1.5B</strong></td>
+</tr>
+<tr>
+<td>OPD</td>
+<td>77.5</td>
+<td>43.5</td>
+<td>32.7</td>
+<td>23.5</td>
+<td>18.1</td>
+<td>6.9h / 0%</td>
+</tr>
+<tr>
+<td>OPD (截断4k)</td>
+<td>77.8</td>
+<td>43.1</td>
+<td>31.0</td>
+<td>22.7</td>
+<td>17.9</td>
+<td>4.8h / 30.4%</td>
+</tr>
+<tr>
+<td>PRUNE-OPD (top-p)</td>
+<td>77.3</td>
+<td>44.0</td>
+<td>30.8</td>
+<td>23.3</td>
+<td>19.8</td>
+<td>4.3h / 37.7%</td>
+</tr>
+<tr>
+<td>PRUNE-OPD (overlap)</td>
+<td>78.4</td>
+<td>45.2</td>
+<td>33.5</td>
+<td>22.7</td>
+<td>18.8</td>
+<td>4.1h / 40.6%</td>
+</tr>
+<tr>
+<td><strong>DeepSeek-R1-Distill-Qwen-1.5B / DeepSeek-R1-Distill-Qwen-7B</strong></td>
+</tr>
+<tr>
+<td>OPD</td>
+<td>66.4</td>
+<td>33.5</td>
+<td>25.4</td>
+<td>14.4</td>
+<td>15.0</td>
+<td>12.5h / 0%</td>
+</tr>
+<tr>
+<td>OPD (截断4k)</td>
+<td>66.3</td>
+<td>31.7</td>
+<td>25.8</td>
+<td>14.2</td>
+<td>14.4</td>
+<td>6.6h / 47.2%</td>
+</tr>
+<tr>
+<td>PRUNE-OPD (top-p)</td>
+<td>65.5</td>
+<td>29.6</td>
+<td>24.2</td>
+<td>14.6</td>
+<td>14.0</td>
+<td>4.8h / 61.6%</td>
+</tr>
+<tr>
+<td>PRUNE-OPD (overlap)</td>
+<td>65.9</td>
+<td>33.3</td>
+<td>25.8</td>
+<td>14.6</td>
+<td>15.0</td>
+<td>4.0h / 68.0%</td>
+</tr>
+<tr>
+<td><strong>Qwen3-1.7B-Base / Qwen3-4B (非思考)</strong></td>
+</tr>
+<tr>
+<td>OPD</td>
+<td>28.0</td>
+<td>7.3</td>
+<td>2.9</td>
+<td>2.1</td>
+<td>0.6</td>
+<td>16.5h / 0%</td>
+</tr>
+<tr>
+<td>OPD (截断4k)</td>
+<td>28.6</td>
+<td>6.3</td>
+<td>2.9</td>
+<td>2.3</td>
+<td>1.0</td>
+<td>12.9h / 21.8%</td>
+</tr>
+<tr>
+<td>PRUNE-OPD (top-p)</td>
+<td>28.4</td>
+<td>5.6</td>
+<td>2.9</td>
+<td>1.9</td>
+<td>0.6</td>
+<td>11.5h / 30.3%</td>
+</tr>
+<tr>
+<td>PRUNE-OPD (overlap)</td>
+<td>29.1</td>
+<td>7.3</td>
+<td>4.2</td>
+<td>2.9</td>
+<td>1.0</td>
+<td>10.3h / 37.6%</td>
+</tr>
+<tr>
+<td><strong>Qwen3-4B-Base / Qwen3-4B (非思考)</strong></td>
+</tr>
+<tr>
+<td>OPD</td>
+<td>42.7</td>
+<td>14.8</td>
+<td>10.6</td>
+<td>5.4</td>
+<td>2.9</td>
+<td>28.5h / 0%</td>
+</tr>
+<tr>
+<td>OPD (截断4k)</td>
+<td>41.9</td>
+<td>15.2</td>
+<td>13.5</td>
+<td>4.8</td>
+<td>2.7</td>
+<td>22.3h / 21.8%</td>
+</tr>
+<tr>
+<td>PRUNE-OPD (top-p)</td>
+<td>40.5</td>
+<td>13.1</td>
+<td>12.7</td>
+<td>4.8</td>
+<td>4.0</td>
+<td>20.0h / 29.8%</td>
+</tr>
+<tr>
+<td>PRUNE-OPD (overlap)</td>
+<td>42.7</td>
+<td>16.3</td>
+<td>14.6</td>
+<td>6.7</td>
+<td>5.6</td>
+<td>13.5h / 52.6%</td>
+</tr>
+</tbody></table>
+
+<p>![图2]()</p>
+
+<blockquote><p><strong>图2：四个DeepSeek学生-教师对的准确率随墙钟时间变化。</strong> 每个面板以墙钟时间为x轴，基准准确率为y轴，比较OPD和Prune-OPD。成功的曲线应在匹配或超过OPD准确率的同时，以更短的时间达到可比检查点。</p></blockquote>
+
+<h3 id="d2-43-高兼容性下的自适应行为">4.3 高兼容性下的自适应行为</h3>
+
+<p>该设置测试Prune-OPD是否均匀地缩短每次运行。当教师和学生具有高top-k重叠时，有效长度命中率很快得到满足，动态控制器将训练窗口打开到12288个token。由此产生的训练时间和准确率与OPD几乎不变。图3应从三个视图展示相应的机制：重叠率保持高位，动态响应预算跟踪长可靠上下文而非强制提前截断，AMC23学习曲线比较Prune-OPD是否匹配OPD级别的准确率，同时避免固定截断的刚性。这支持了预期的解释：Prune-OPD是一个自适应可靠性控制器，而非硬性的长度惩罚。</p>
+
+<p><strong>表2：高兼容性行为。</strong> DeepSeek-R1-Distill-Qwen-7B和Skywork-OR1-7B初始重叠率约为0.94。</p>
+
+<table>
+<thead><tr>
+<th>方法</th>
+<th>AMC23</th>
+<th>AIME24</th>
+<th>AIME25</th>
+<th>HMMT24</th>
+<th>HMMT25</th>
+<th>时间减少</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><strong>DeepSeek-R1-Distill-Qwen-7B / Skywork-OR1-7B</strong></td>
+</tr>
+<tr>
+<td>OPD</td>
+<td>88.3</td>
+<td>67.1</td>
+<td>52.5</td>
+<td>33.5</td>
+<td>32.1</td>
+<td>17.5h / 0%</td>
+</tr>
+<tr>
+<td>OPD (截断4k)</td>
+<td>88.9</td>
+<td>66.7</td>
+<td>52.1</td>
+<td>33.1</td>
+<td>31.5</td>
+<td>11.3h / 35.4%</td>
+</tr>
+<tr>
+<td>PRUNE-OPD (overlap)</td>
+<td>87.2</td>
+<td>66.0</td>
+<td>48.8</td>
+<td>31.0</td>
+<td>30.4</td>
+<td>17.0h / 2.9%</td>
+</tr>
+</tbody></table>
+
+<p>![图3]()</p>
+
+<blockquote><p><strong>图3：DeepSeek-R1-Distill-Qwen-7B / Skywork-OR1-7B的高兼容性训练动力学。</strong> 左：有效响应长度和最大OPD长度随训练步变化。中：重叠率随训练步变化。右：AMC23准确率随训练变化，比较OPD、OPD（截断4k）和Prune-OPD。</p></blockquote>
+
+<h3 id="d2-44-训练动力学">4.4 训练动力学</h3>
+
+<p>图4检验了Prune-OPD是否改变了学习动力学，还是仅仅减少了生成长度计算。对于JustRL-DeepSeek-1.5B教师，各基准的步数-准确率曲线应显示Prune-OPD在AMC23、AIME24、AIME25、HMMT24和HMMT25上遵循与OPD相同的学习轨迹，而非以牺牲准确率为代价获得速度。图5解释了节省的计算来自何处：按位置的权重图应显示累积前缀漂移后的后缀奖励衰减，有效长度图应显示动态最大OPD长度自适应于可靠监督窗口，重叠率曲线应确认剪枝由测量的局部兼容性信号驱动。</p>
+
+<p>![图4]()</p>
+
+<blockquote><p><strong>图4：DeepSeek-R1-Distill-Qwen-1.5B从JustRL-DeepSeek-1.5B蒸馏的训练步准确率动力学。</strong> 五个面板报告AMC23、AIME24、AIME25、HMMT24和HMMT25上随训练步的基准准确率，比较OPD和Prune-OPD。</p></blockquote>
+
+<p>![图5]()</p>
+
+<blockquote><p><strong>图5：DeepSeek-R1-Distill-Qwen-1.5B从JustRL-DeepSeek-1.5B蒸馏的训练动力学诊断。</strong> 面板报告按token位置的Prune-OPD平均权重，每20个训练步绘制曲线（从0到200）；有效响应长度和最大OPD长度随训练变化；以及重叠率随训练变化。</p></blockquote>
+
+<h3 id="d2-45-墙钟效率">4.5 墙钟效率</h3>
+
+<p>图2在墙钟时间轴上评估核心效率主张：Prune-OPD应在不降低准确率的情况下减少经过的训练时间，在某些情况下甚至可以略微提升。如果Prune-OPD按预期工作，其曲线应在可比准确率水平上位于OPD左侧，或在相同墙钟时间上高于OPD。这一呈现直接测试了Prune-OPD是否在两种DeepSeek教师-学生组合中以更少的经过训练时间达到OPD级别（且偶尔更好）的准确率。结合图4和图5的动力学，这些结果表明：可靠性感知后缀降权缩短了非生产性生成长度计算，同时保留了驱动最终性能的有用前缀监督。</p>
+
+<p><strong>表3：DeepSeek-R1-Distill-Qwen-1.5B / JustRL-DeepSeek-1.5B上的重叠阈值消融。</strong></p>
+
+<table>
+<thead><tr>
+<th>阈值 $\delta$</th>
+<th>AMC23</th>
+<th>AIME24</th>
+<th>AIME25</th>
+<th>HMMT24</th>
+<th>HMMT25</th>
+<th>时间减少</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>0.6</td>
+<td>78.9</td>
+<td>45.4</td>
+<td>33.1</td>
+<td>22.0</td>
+<td>18.8</td>
+<td>4.8h / 30.4%</td>
+</tr>
+<tr>
+<td>0.7</td>
+<td>78.4</td>
+<td>45.2</td>
+<td>33.5</td>
+<td>22.7</td>
+<td>18.8</td>
+<td>4.1h / 40.6%</td>
+</tr>
+<tr>
+<td>0.8</td>
+<td>77.8</td>
+<td>44.5</td>
+<td>31.5</td>
+<td>21.9</td>
+<td>18.0</td>
+<td>3.1h / 55.1%</td>
+</tr>
+<tr>
+<td>0.9</td>
+<td>76.8</td>
+<td>43.9</td>
+<td>30.8</td>
+<td>21.8</td>
+<td>17.9</td>
+<td>2.4h / 65.2%</td>
+</tr>
+</tbody></table>
+
+<h3 id="d2-46-消融研究">4.6 消融研究</h3>
+
+<p><strong>OPD与简单截断。</strong> 我们在表1和表2中包含了OPD（截断4k）作为固定预算基线。该基线使用相同的OPD目标，但均匀地缩短每次生成长度，而不观察学生-教师兼容性。尽管简单截断可以降低成本，并且对某些教师-学生对可能有效，但它并非Prune-OPD的可靠替代。特别是，对于DeepSeek-R1-Distill-Qwen-1.5B / JustRL-DeepSeek-1.5B和DeepSeek-R1-Distill-Qwen-7B / Skywork-OR1-7B，在固定4K预算下截断会降低性能，因为它丢弃了有用的长前缀监督。这一失败模式突显了刚性长度规则的局限：它无法区分漂移的后缀与长但仍兼容的推理轨迹。</p>
+
+<p><strong>剪枝指标：重叠率 vs. top-p接受度。</strong> 指标消融在表1中报告。在已完成的运行中，重叠率是更强的默认选择：它提供与top-p接受度相等或更大的时间减少，同时通常更好地保持准确率。我们将此归因于其支持级别特性：它询问学生和教师是否仍共享高概率候选区域，而非要求采样的学生token落入教师的可见核内。这使得重叠率成为长推理轨迹的平滑可靠性信号，其中多个局部合理的延续可能保持有效。</p>
+
+<p><strong>Prune-OPD阈值消融。</strong> 我们在表3中消融了DeepSeek-R1-Distill-Qwen-1.5B / JustRL-DeepSeek-1.5B上的重叠率阈值。已完成的 $\delta = 0.7$ 设置提供了一个强大的工作点：它在保持OPD级别基准性能的同时将训练时间减少了35.7%。较低的阈值应更宽容，产生更少的坏事件和更长的有效蒸馏长度；较高的阈值应更早剪枝，如果设置过于激进可能移除有用的长推理。核心结论是 $\delta = 0.7$ 同时提供了性能保护和显著的训练效率提升。</p>
+
+<hr>
+
+<h2 id="d2-5-相关工作">5 相关工作</h2>
+
+<p><strong>在策略蒸馏。</strong> MiniLLM将OPD形式化为在逆KL目标下由策略梯度优化的大语言模型方法，强调了逆KL的模式寻求行为[9]。GKD通过在多种散度下插值在策略和离策略数据，拓宽了这一视角[1]。更近期的理论将OPD框架化为密集KL约束的强化学习，其中教师的每token对数比可以被解释为隐式奖励，甚至可以外推到教师标准强度之外[38]。OPD此后出现在主要的推理和后训练方案中[36, 24, 45, 34, 20, 17, 15, 7, 38, 8]。它还被扩展到自蒸馏和在线经验学习，其中模型在特权信息、反馈或样本路由下充当自身的教师[14, 47, 12, 30, 43, 26, 18, 42, 37, 21, 46, 6, 31]。这些工作确立了OPD作为强大的后训练原始语。Prune-OPD解决了一个互补的可靠性问题：即使密集教师奖励在策略上可用，长生成长度可能包含教师局部信号不再可利用的前缀。关于OPD的更多讨论见附录A.5。</p>
+
+<hr>
+
+<h2 id="d2-6-结论">6 结论</h2>
+
+<p>OPD为长推理链提供密集监督；然而，当学生的推理模式偏离教师时，产生的密集奖励变得不可靠。Prune-OPD将其视为位置级可靠性问题：它检查学生和教师在共享前缀下是否保持局部兼容，将累积兼容性失败转换为漂移信号，重新缩放OPD奖励，并基于可靠而非原始token计数控制响应长度。在多种蒸馏设置中，基于重叠的Prune-OPD在低兼容性情境下将训练时间减少了37.6%至68.0%，同时保持基准性能；当兼容性保持较高时，它保持长训练窗口打开。这些结果表明，高效的长程OPD不应仅由教师强度或固定生成长度预算主导。相反，密集教师监督应根据其对学生实际访问前缀的局部可利用性来分配。</p>
+
+<hr>
+
+<h2 id="d2-参考文献">参考文献</h2>
+
+<p>[1] Rishabh Agarwal, Nino Vieillard, Yongchao Zhou, Piotr Stanczyk, Sabela Ramos Garea, Matthieu Geist, and Olivier Bachem. On-policy distillation of language models: Learning from self-generated mistakes. In <em>International Conference on Learning Representations</em>, 2024.</p>
+
+<p>[2] Samy Bengio, Oriol Vinyals, Navdeep Jaitly, and Noam Shazeer. Scheduled sampling for sequence prediction with recurrent neural networks. <em>Advances in Neural Information Processing Systems</em>, 28, 2015.</p>
+
+<p>[3] Dan Busbridge, Amitis Shidani, Floris Weers, Jason Ramapuram, Etai Littwin, and Russell Webb. Distillation scaling laws. In <em>International Conference on Machine Learning</em>, pages 5977–6045. PMLR, 2025.</p>
+
+<p>[4] Jang Hyun Cho and Bharath Hariharan. On the efficacy of knowledge distillation. In <em>Proceedings of the IEEE/CVF International Conference on Computer Vision</em>, pages 4794–4802, 2019.</p>
+
+<p>[5] Hyung Won Chung, Le Hou, Shayne Longpre, Barret Zoph, Yi Tay, William Fedus, Yunxuan Li, Xuezhi Wang, Mostafa Dehghani, Siddhartha Brahma, et al. Scaling instruction-finetuned language models. <em>Journal of Machine Learning Research</em>, 25(70):1–53, 2024.</p>
+
+<p>[6] Ken Ding. HDPO: Hybrid distillation policy optimization via privileged self-distillation, 2026.</p>
+
+<p>[7] Yuqian Fu, Haohuan Huang, Kaiwen Jiang, Yuanheng Zhu, and Dongbin Zhao. Revisiting on-policy distillation: Empirical failure modes and simple fixes, 2026.</p>
+
+<p>[8] Naibin Gu, Chenxu Yang, Qingyi Si, Chuanyu Qin, Dingyu Yao, Peng Fu, Zheng Lin, Weiping Wang, Nan Duan, and Jiaqi Wang. Co-evolving policy distillation, 2026.</p>
+
+<p>[9] Yuxian Gu, Li Dong, Furu Wei, and Minlie Huang. MiniLLM: Knowledge distillation of large language models. In <em>The Twelfth International Conference on Learning Representations</em>, 2024.</p>
+
+<p>[10] Daya Guo, Dejian Yang, Haowei Zhang, Junxiao Song, Peiyi Wang, Qihao Zhu, Runxin Xu, Ruoyu Zhang, Shirong Ma, Xiao Bi, et al. DeepSeek-R1 incentivizes reasoning in LLMs through reinforcement learning. <em>Nature</em>, 645(8081):633–638, 2025.</p>
+
+<p>[11] Bingxiang He, Zekai Qu, Zeyuan Liu, Yinghao Chen, Yuxin Zuo, Cheng Qian, Kaiyan Zhang, Weize Chen, Chaojun Xiao, Ganqu Cui, et al. JustRL: Scaling a 1.5B LLM with a simple RL recipe, 2025.</p>
+
+<p>[12] Bingxiang He, Yuxin Zuo, Zeyuan Liu, Shangziqi Zhao, Zixuan Fu, Junlin Yang, Cheng Qian, Kaiyan Zhang, Yuchen Fan, Ganqu Cui, et al. How far can unsupervised RLVR scale LLM training?, 2026.</p>
+
+<p>[13] Geoffrey Hinton, Oriol Vinyals, and Jeff Dean. Distilling the knowledge in a neural network. <em>arXiv preprint arXiv:1503.02531</em>, 2015.</p>
+
+<p>[14] Jonas Hubotter, Frederike Lubeck, Lejs Behric, Anton Baumann, Marco Bagatella, Daniel Marta, Ido Hakimi, Idan Shenfeld, Thomas Kleine Buening, Carlos Guestrin, et al. Reinforcement learning via self-distillation, 2026.</p>
+
+<p>[15] Ijun Jang, Jewon Yeom, Juan Yeo, Hyunggu Lim, and Taesup Kim. Stable on-policy distillation through adaptive target reformulation, 2026.</p>
+
+<p>[16] Xiaoqi Jiao, Yichun Yin, Lifeng Shang, Xin Jiang, Xiao Chen, Linlin Li, Fang Wang, and Qun Liu. TinyBERT: Distilling BERT for natural language understanding. In <em>Findings of the Association for Computational Linguistics: EMNLP 2020</em>, pages 4163–4174, 2020.</p>
+
+<p>[17] Woogyeol Jin, Taywon Min, Yongjin Yang, Swanand Ravindra Kadhe, Yi Zhou, Dennis Wei, Nathalie Baracaldo, and Kimin Lee. Entropy-aware on-policy distillation of language models, 2026.</p>
+
+<p>[18] Jeonghye Kim, Xufang Luo, Minbeom Kim, Sangmook Lee, Dohyung Kim, Jiwon Jeon, Dongsheng Li, and Yuqing Yang. Why does self-distillation (sometimes) degrade the reasoning capability of LLMs?, 2026.</p>
+
+<p>[19] Yoon Kim and Alexander M. Rush. Sequence-level knowledge distillation. In <em>Proceedings of the 2016 Conference on Empirical Methods in Natural Language Processing</em>, pages 1317–1327, 2016.</p>
+
+<p>[20] Jongwoo Ko, Sara Abdali, Young Jin Kim, Tianyi Chen, and Pashmina Cameron. Scaling reasoning efficiently via relaxed on-policy distillation, 2026.</p>
+
+<p>[21] Gengsheng Li, Tianyu Yang, Junfeng Fang, Mingyang Song, Mao Zheng, Haiyun Guo, Dan Zhang, Jinqiao Wang, and Tat-Seng Chua. Unifying group-relative and self-distillation policy optimization via sample routing, 2026.</p>
+
+<p>[22] Yaxuan Li, Yuxin Zuo, Bingxiang He, Jinqian Zhang, Chaojun Xiao, Cheng Qian, Tianyu Yu, Huan-ang Gao, Wenkai Yang, Zhiyuan Liu, et al. Rethinking on-policy distillation of large language models: Phenomenology, mechanism, and recipe. <em>arXiv preprint arXiv:2604.13016</em>, 2026.</p>
+
+<p>[23] Yuetai Li, Xiang Yue, Zhangchen Xu, Fengqing Jiang, Luyao Niu, Bill Yuchen Lin, Bhaskar Ramasubramanian, and Radha Poovendran. Small models struggle to learn from strong reasoners. In <em>Findings of the Association for Computational Linguistics: ACL 2025</em>, pages 25366–25394, 2025.</p>
+
+<p>[24] Kevin Lu and Thinking Machines Lab. On-policy distillation. <em>Thinking Machines Lab: Connectionism</em>, 2025. https://thinkingmachines.ai/blog/on-policy-distillation.</p>
+
+<p>[25] Seyed-Iman Mirzadeh, Mehrdad Farajtabar, Ang Li, Nir Levine, Akihiro Matsukawa, and Hassan Ghasemzadeh. Improved knowledge distillation via teacher assistant. In <em>Proceedings of the AAAI Conference on Artificial Intelligence</em>, volume 34, pages 5191–5198, 2020.</p>
+
+<p>[26] Hejian Sang, Yuanda Xu, Zhengze Zhou, Ran He, Zhipeng Wang, and Jiachen Sun. CRISP: Compressed reasoning via iterative self-policy distillation, 2026.</p>
+
+<p>[27] Victor Sanh, Lysandre Debut, Julien Chaumond, and Thomas Wolf. DistilBERT, a distilled version of BERT: Smaller, faster, cheaper and lighter, 2019.</p>
+
+<p>[28] Victor Sanh, Albert Webson, Colin Raffel, Stephen Bach, Lintang Sutawika, Zaid Alyafeai, Antoine Chaffin, Arnaud Stiegler, Arun Raja, Manan Dey, et al. Multitask prompted training enables zero-shot task generalization. In <em>International Conference on Learning Representations</em>, 2021.</p>
+
+<p>[29] Zhihong Shao, Peiyi Wang, Qihao Zhu, Runxin Xu, Junxiao Song, Xiao Bi, Haowei Zhang, Mingchuan Zhang, Y. K. Li, Yang Wu, et al. DeepSeekMath: Pushing the limits of mathematical reasoning in open language models. <em>arXiv preprint arXiv:2402.03300</em>, 2024.</p>
+
+<p>[30] Idan Shenfeld, Mehul Damani, Jonas Hubotter, and Pulkit Agrawal. Self-distillation enables continual learning, 2026.</p>
+
+<p>[31] Yifan Song, Xingjian Tao, Zhicheng Yang, Yihong Luo, and Jing Tang. EHRAG: Bridging semantic gaps in lightweight GraphRAG via hybrid hypergraph construction and retrieval. <em>arXiv preprint arXiv:2604.17458</em>, 2026.</p>
+
+<p>[32] Wenhui Wang, Furu Wei, Li Dong, Hangbo Bao, Nan Yang, and Ming Zhou. MiniLM: Deep self-attention distillation for task-agnostic compression of pre-trained transformers. <em>Advances in Neural Information Processing Systems</em>, 33:5776–5788, 2020.</p>
+
+<p>[33] Jason Wei, Maarten Bosma, Vincent Zhao, Kelvin Guu, Adams Wei Yu, Brian Lester, Nan Du, Andrew M. Dai, and Quoc V. Le. Finetuned language models are zero-shot learners. In <em>International Conference on Learning Representations</em>, 2021.</p>
+
+<p>[34] Bangjun Xiao, Bingquan Xia, Bo Yang, Bofei Gao, Bowen Shen, Chen Zhang, Chenhong He, Chiheng Lou, Fuli Luo, Gang Wang, et al. MiMo-v2-flash technical report, 2026.</p>
+
+<p>[35] Minrui Xu, Zilin Wang, Mengyi Deng, Zhiwei Li, Zhicheng Yang, Xiao Zhu, Yinhong Liu, Boyu Zhu, Baiyu Huang, Chao Chen, Heyuan Deng, Fei Mi, Lifeng Shang, Xingshan Zeng, and Zhijiang Guo. EnvFactory: Scaling tool-use agents via executable environments synthesis and robust RL, 2026.</p>
+
+<p>[36] An Yang, Anfeng Li, Baosong Yang, Beichen Zhang, Binyuan Hui, Bo Zheng, Bowen Yu, Chang Gao, Chengen Huang, Chenxu Lv, et al. Qwen3 technical report, 2025.</p>
+
+<p>[37] Chenxu Yang, Chuanyu Qin, Qingyi Si, Minghui Chen, Naibin Gu, Dingyu Yao, Zheng Lin, Weiping Wang, Jiaqi Wang, and Nan Duan. Self-distilled RLVR, 2026.</p>
+
+<p>[38] Wenkai Yang, Weijie Liu, Ruobing Xie, Kai Yang, Saiyong Yang, and Yankai Lin. Learning beyond teacher: Generalized on-policy distillation with reward extrapolation, 2026.</p>
+
+<p>[39] Zhicheng Yang, Zhijiang Guo, Yinya Huang, Yongxin Wang, Wenlei Shi, Yiwei Wang, Xiaodan Liang, and Jing Tang. Accordion-thinking: Self-regulated step summaries for efficient and readable LLM reasoning. In <em>Forty-Third International Conference on Machine Learning</em>, 2026.</p>
+
+<p>[40] Zhicheng Yang, Zhijiang Guo, Yinya Huang, Yongxin Wang, Dongchun Xie, Hanhui Li, Yiwei Wang, Xiaodan Liang, and Jing Tang. Depth-breadth synergy in RLVR: Unlocking LLM reasoning gains with adaptive exploration. In <em>Forty-Third International Conference on Machine Learning</em>, 2026.</p>
+
+<p>[41] Zhicheng Yang, Yiwei Wang, Yinya Huang, Zhijiang Guo, Wei Shi, Xiongwei Han, Liang Feng, Linqi Song, Xiaodan Liang, and Jing Tang. OptiBench meets ReSocratic: Measure and improve LLMs for optimization modeling. In <em>The Thirteenth International Conference on Learning Representations</em>, 2025.</p>
+
+<p>[42] Tianzhu Ye, Li Dong, Qingxiu Dong, Xun Wu, Shaohan Huang, and Furu Wei. Online experiential learning for language models, 2026.</p>
+
+<p>[43] Tianzhu Ye, Li Dong, Xun Wu, Shaohan Huang, and Furu Wei. On-policy context distillation for language models, 2026.</p>
+
+<p>[44] Qiying Yu, Zheng Zhang, Ruofei Zhu, Yufeng Yuan, Xiaochen Zuo, Yu Yue, Weinan Dai, Tiantian Fan, Gaohong Liu, Lingjun Liu, et al. DAPO: An open-source LLM reinforcement learning system at scale, 2025.</p>
+
+<p>[45] Aohan Zeng, Xin Lv, Zhenyu Hou, Zhengxiao Du, Qinkai Zheng, Bin Chen, Da Yin, Chendi Ge, Chengxing Xie, Cunxiang Wang, et al. GLM-5: From vibe coding to agentic engineering, 2026.</p>
+
+<p>[46] Guoliang Zhao, Ruobing Xie, An Wang, Shuaipeng Li, Huaibing Xie, and Xingwu Sun. Self-distillation for multi-token prediction, 2026.</p>
+
+<p>[47] Siyan Zhao, Zhihui Xie, Mengchen Liu, Jing Huang, Guan Pang, Feiyu Chen, and Aditya Grover. Self-distilled reasoner: On-policy self-distillation for large language models, 2026.</p>
+
+<hr>
+
+<h2 id="d2-附录">附录</h2>
+
+<h3 id="d2-a1-更广泛影响">A.1 更广泛影响</h3>
+
+<p>本研究为开发专注于复杂推理的更高效、更可靠的大语言模型训练协议做出了贡献。通过引入Prune-OPD，我们提供了一种机制来缓解密集在策略蒸馏中固有的"奖励黑客"和训练不稳定风险——否则模型可能从低质量或漂移的教师信号中学习。训练计算量的大幅减少（最多68%）直接回应了大语言模型后训练中高能耗带来的环境关切。通过使复杂的推理模型能够以更少的资源进行训练，本工作使开发高性能AI的能力更加民主化，可能加速科学发现的进展。</p>
+
+<p>尽管有这些益处，我们认识到增强大语言模型的推理能力可能在不经意间降低生成复杂错误信息或双重用途内容的门槛。虽然Prune-OPD关注的是学习过程而非数据内容，但由此产生的模型如果被用于欺骗目的，可能更具说服力或更难检测。为减轻这些风险，我们强调将Prune-OPD与安全对齐的教师模型和严格的可验证强化学习框架结合使用的重要性。我们致力于通过提供详细的实验设置和超参数配置来实现透明和可复现性，使社区能够审计这些训练动力学的可靠性，并确保推理能力的提升不以模型安全性或伦理对齐为代价。</p>
+
+<h3 id="d2-a2-大语言模型使用声明">A.2 大语言模型使用声明</h3>
+
+<p>本手稿严格将大语言模型用于语言编辑和文本润色，以提升呈现质量。我们声明，新颖的想法、方法论框架、实验执行和数据分析均为作者的原创工作。所有经AI工具修改的内容均已由作者仔细审查和验证以确保准确性。</p>
+
+<h3 id="d2-a3-局限性">A.3 局限性</h3>
+
+<p>Prune-OPD依赖于top-k局部分布统计量。主要的重叠指标可能遗漏学生和教师共享候选token但排名或评分差异很大的情况，而top-p动作接受度变体对于风格不同但有效的推理路径可能过于严格。当前的衰减是累积坏事件的线性函数，并假设局部兼容性与奖励可利用性相关；当低重叠前缀后来返回到教师兼容状态时，这一假设可能失败。实现上也仅重新缩放OPD奖励，且不为零可靠性token附加GRPO回退。最后，当前实验仅限于使用DeepSeek、Qwen和Skywork风格模型的数学推理；智能体和多轮设置仍然是未来工作。</p>
+
+<h3 id="d2-a4-未来工作">A.4 未来工作</h3>
+
+<p>一个自然的扩展是将Prune-OPD与GRPO结合在可靠性门控目标中。在可靠性权重衰减到零之前，模型仍优化OPD损失并从局部兼容前缀上的密集教师指导中受益。在可靠性权重达到零之后，不可靠的后缀将切换到GRPO损失，允许学生使用结果级反馈继续探索，而非强迫其遵循不再局部可利用的教师分布。这种混合目标可以将教师引导蒸馏的样本效率与强化学习的探索优势结合起来，并可能进一步改进长程推理，超越仅依赖可靠性感知截断的方法。</p>
+
+<h3 id="d2-a5-附加相关工作">A.5 附加相关工作</h3>
+
+<p><strong>知识蒸馏与离策略蒸馏。</strong> 知识蒸馏通过匹配教师的软输出分布将信息从教师迁移到学生[13]。对于自回归序列模型，序列级蒸馏在学生上训练教师生成的输出[19]，这种离策略范式是许多紧凑语言模型蒸馏方法的基础[27, 16, 32, 8]。监督微调和指令调优同样通过在被管理的响应或示范上训练来改进下游行为[5, 28, 33]。共同的局限是训练-推理分布不匹配：学生在教师或参考轨迹上优化，但在推理时必须在其自身策略采样的前缀上条件化——一种在长生成中累积的曝光偏差问题[2]。Prune-OPD遵循OPD的动机，即蒸馏应在学生访问的状态上计算，但提出了一个进一步的问题：一旦学生处于在策略状态，哪些访问状态仍然允许可靠的密集教师监督？</p>
+
+<p><strong>OPD动力学与机制。</strong> 最近的OPD分析表明，OPD的成功由思维模式一致性以及教师是否贡献了超出学生已获知识的新知识所支配[22]。在token层面，成功的OPD表现出高概率token上的渐进对齐：top-k重叠上升、重叠token优势改善，且熵差缩小。同一分析进一步表明，奖励质量随轨迹深度退化，并且奖励可能在全局上与最终正确性相关，但无法在学生当前策略周围提供局部有用的梯度。Prune-OPD直接操作化这些诊断发现。它不是将重叠率、熵差或教师可接受性作为事后测量，而是将每前缀兼容性转化为在线可靠性信号，衰减后续OPD奖励并控制生成长度。</p>
+
+<p><strong>容量差距与可蒸馏性。</strong> 另一条研究线索探讨了教师何时过于强大、差异过大或复杂到学生无法模仿。研究表明，过于强大的教师可能损害学生表现[4]，并且引入了教师助手以弥合大的容量差距[25]。蒸馏缩放定律识别了教师质量、学生规模和数据量之间的非单调交互[3]。对于推理模型，小学生可能难以从具有长思维链轨迹的强大推理者那里学习，表明蒸馏复杂推理行为存在可学习性差距[23]。这些结果警示不应假设教师基准强度单独决定蒸馏质量。Prune-OPD从在策略、位置级的视角研究同一问题：教师可能在全局上是有用的，但在学生生成轨迹的特定深度上不可靠。</p>
+
+<p><strong>推理强化学习与长程监督。</strong> 现代推理模型依赖可验证强化学习、长思维链生成长度和大型数学训练集[29, 10, 44, 11, 39, 40, 41, 35]。长响应为搜索和自我纠正创造空间，但也使密集监督变得昂贵且更难以信任。先前的OPD结果识别了响应长度的最佳点：短响应提供的密集信号太少，而非常长的响应可能触发后期崩溃和后缀到前缀的不稳定性[22]。Prune-OPD专为此长程设置而设计。它不施加固定的响应预算；它估计哪些前缀仍承载可靠的教师信号，并使用该估计进行奖励缩放和动态响应长度控制。</p>
+
+<h3 id="d2-a6-可靠性理由">A.6 可靠性理由</h3>
+
+<p>Prune-OPD的动机在于区分全局信息性教师奖励与学生访问前缀上局部可利用的token级监督[22]。因此，重叠率和相关兼容性指标被在线使用：重复的低兼容性事件被视为学生轨迹已漂移到统一密集OPD奖励不再可信赖的区域的证据。该方法不假设每个低重叠token是错误的；它仅假设累积兼容性失败是衰减后续后缀奖励的有用路径依赖信号。</p>
+
+<p>单调可靠性衰减是一个故意保守的设计。后续token可能因为教师适应了已经漂移的前缀而变得局部兼容，而非因为完整的推理轨迹已返回到教师兼容状态。使用累积衰减避免了在重复漂移事件后重新放大后缀奖励，而基础权重 $w_{\text{base}}$ 将可靠性估计 $\tilde{R}_\tau$ 与优化尺度 $\mathcal{L}_\tau$ 分离。这使Prune-OPD能够降低不可靠后缀监督的权重，而不将方法变成脆弱的硬性过滤器。</p>
+
+<h3 id="d2-a7-实现细节">A.7 实现细节</h3>
+
+<p>Prune-OPD作为OPD奖励张量上的后处理步骤实现。基线奖励张量具有形状 $[B, T, k]$，其中 $B$ 是批次大小，$T$ 是响应长度，$k$ 是top-k token维度。对于每个有效响应位置，该方法计算标量损失权重 $\mathcal{L}_\tau$ 并将该位置的每个候选奖励乘以相同的标量：</p>
+
+<p>$$\tilde{\mathbf{r}}_{b,\tau,j} = \mathcal{L}_{b,\tau} \cdot \mathbf{r}_{b,\tau,j}. \tag{13}$$</p>
+
+<p>填充位置具有 $\tilde{R}_\tau = 0$ 和 $\mathcal{L}_\tau = 0$。优势估计器保持为 <code>token_reward_direct</code>，因此缩放后的奖励直接用作token级优势。</p>
+
+<p>当前代码路径保持基线隔离。当 <code>prune_opd.enable=False</code> 时，原始OPD/GRPO行为不变。当启用时，主要实验使用 <code>overlap_ratio</code>；<code>teacher_top_p_accept</code> 作为动作级变体保留。教师top-k大小由 <code>actor_rollout_ref.rollout.log_prob_top_k</code> 控制，在当前实验中设置为16。</p>
+
+<h3 id="d2-a8-提示模板">A.8 提示模板</h3>
+
+<p>我们使用与OPD动力学研究[22]相同的DAPO-Math提示模板。对于每个数学问题，原始问题被插入到以下指令中。</p>
+
+<p><strong>DAPO-Math提示模板：</strong></p>
+<pre><code>
+{问题} 请逐步推理，并将最终答案放在 \boxed{} 内。
+</code></pre>
+
+<h3 id="d2-a9-主要配置">A.9 主要配置</h3>
+
+<p>表4总结了我们在Prune-OPD实验中使用的超参数。除非另有说明，论文中报告的所有基准性能均为Avg@16准确率：对于每个基准问题，评估使用固定评估协议下的16个采样响应，并报告这些样本的平均正确性。对于高兼容性对（DeepSeek-R1-Distill-Qwen-7B / Skywork-OR1-7B），初始动态长度设置为6144；对于其他对，初始动态长度设置为1024。</p>
+
+<p><strong>表4：Prune-OPD默认超参数。</strong></p>
+
+<table>
+<thead><tr>
+<th>项目</th>
+<th>值</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>训练数据集</td>
+<td>DAPO-Math-17K</td>
+</tr>
+<tr>
+<td>训练温度</td>
+<td>1.0</td>
+</tr>
+<tr>
+<td>教师温度</td>
+<td>1.0</td>
+</tr>
+<tr>
+<td>生成长度数量</td>
+<td>4</td>
+</tr>
+<tr>
+<td>小批次大小</td>
+<td>64</td>
+</tr>
+<tr>
+<td>LogProb top-K</td>
+<td>16</td>
+</tr>
+<tr>
+<td>Top-K策略</td>
+<td>Student Top-K</td>
+</tr>
+<tr>
+<td>奖励权重模式</td>
+<td>Student probability</td>
+</tr>
+<tr>
+<td>最大提示长度</td>
+<td>1,024</td>
+</tr>
+<tr>
+<td>最大响应长度</td>
+<td>8,192–12,288</td>
+</tr>
+<tr>
+<td>验证最大响应长度</td>
+<td>31,744</td>
+</tr>
+<tr>
+<td>学习率</td>
+<td>$1 \times 10^{-6}$</td>
+</tr>
+<tr>
+<td>训练步数</td>
+<td>203</td>
+</tr>
+<tr>
+<td>KL系数</td>
+<td>0.0</td>
+</tr>
+<tr>
+<td>损失聚合</td>
+<td>token-mean</td>
+</tr>
+<tr>
+<td>重叠阈值 $\delta$</td>
+<td>0.7</td>
+</tr>
+<tr>
+<td>Top-p阈值 $p$</td>
+<td>0.95</td>
+</tr>
+<tr>
+<td>$w_{\text{drop}}$</td>
+<td>0.01</td>
+</tr>
+<tr>
+<td>$w_{\text{base}}$</td>
+<td>0.5</td>
+</tr>
+<tr>
+<td>动态长度 初始/最小/最大</td>
+<td>1024 / 1024 / 12288</td>
+</tr>
+<tr>
+<td>动态长度步长</td>
+<td>100</td>
+</tr>
+<tr>
+<td>命中率阈值</td>
+<td>0.1</td>
+</tr>
+<tr>
+<td>长度边距</td>
+<td>100</td>
+</tr>
+<tr>
+<td>收缩耐心</td>
+<td>3</td>
+</tr>
+</tbody></table>
+
+<h3 id="d2-a10-top-p动作接受度指标">A.10 Top-p动作接受度指标</h3>
+
+<p>除重叠率外，我们还评估了一个更严格的动作级兼容性指标。在位置 $\tau$，学生采样实际的下一token $y_\tau$，而教师在同一前缀下返回top-k token和概率：</p>
+
+<p>$$\mathcal{K} = \{v_{\tau,1}, \ldots, v_{\tau,k}\}, \quad q_{\tau,1} \geq q_{\tau,2} \geq \cdots \geq q_{\tau,k}. \tag{14}$$</p>
+
+<p>给定top-p阈值 $p$，定义累积可见质量：</p>
+
+<p>$$S_{\tau,m} = \sum_{j=1}^{m} q_{\tau,j}. \tag{15}$$</p>
+
+<p>如果存在最小 $m$ 满足 $S_{\tau,m} \geq p$，则可见核为：</p>
+
+<p>$$\mathcal{A}_\tau(p, k) = \{v_{\tau,1}, \ldots, v_{\tau,m}\}. \tag{16}$$</p>
+
+<p>如果返回的top-k质量仍低于 $p$，真实核超出观察集，因此我们保守地使用 $\mathcal{A}_\tau(p, k) = \mathcal{K}$。坏事件为 $\mathcal{B}_\tau = \mathbb{1}[y_\tau \notin \mathcal{A}_\tau(p, k)]$。在报告的top-p运行中，$p = 0.95$。</p>
+
+<h3 id="d2-a11-为什么prune-opd能为低重叠qwen对提升准确率">A.11 为什么Prune-OPD能为低重叠Qwen对提升准确率？</h3>
+
+<p>表1显示，两个Qwen3教师-学生对——Qwen3-1.7B-Base / Qwen3-4B（非思考）和Qwen3-4B-Base / Qwen3-4B（非思考）——是Prune-OPD同时提升训练效率和基准准确率的最清晰案例。我们将此解释为低重叠情境，其中可靠性感知剪枝不仅充当节省计算的机制，还充当梯度去噪机制。如图6所示，这些对表现出低学生-教师重叠，因此Prune-OPD将有效OPD长度保持为仅几百个token。相比之下，相应的OPD基线使用最多12,288个token的最大响应预算。</p>
+
+<p>这种不匹配为未剪枝的OPD创造了一个合理的失败模式。只有早期前缀包含局部可利用的教师监督，而长后缀贡献了大量在漂移、低重叠前缀上产生的token级梯度。由于这些后缀token在数量上远超有用前缀token，即使每个单独的后缀奖励很弱或充满噪声，它们的梯度仍可能主导更新。Prune-OPD通过衰减和截断低可靠性后缀来消除这种不平衡，将优化集中在教师仍然可操作的短前缀上。这解释了为什么这两个Qwen3对可以在节省时间的同时获得准确率增益。对于其他教师-学生组合，兼容性更高或有用监督窗口已经足够长，使得剪枝主要减少计算量同时保持准确率，而非显著改变有效训练信号。</p>
+
+<p>![图6]()</p>
+
+<blockquote><p><strong>图6：低重叠Qwen3蒸馏对中的短有效OPD窗口。</strong> 对于Qwen3-1.7B-Base / Qwen3-4B（非思考）和Qwen3-4B-Base / Qwen3-4B（非思考），低重叠导致Prune-OPD将OPD监督集中在几百个可靠token内，而OPD基线继续在最多12,288个token的响应上训练。</p></blockquote>
+
+<h3 id="d2-a12-附加诊断">A.12 附加诊断</h3>
+
+<p>附录诊断聚焦于驱动Prune-OPD的兼容性信号。图7报告了在未剪枝OPD下重叠率如何跨深度带演化，图8显示了重叠阈值如何控制后缀降权和动态响应预算。</p>
+
+<p><strong>OPD下按深度的重叠。</strong> 图7隔离了未剪枝OPD基线的兼容性动力学。浅层0–1K带作为早期前缀监督的参考，而后续带测试了教师监督在长学生生成推理前缀后是否保持局部对齐。关键观察是兼容性是深度依赖的：后续token位置带是重叠最脆弱、统一密集奖励最不可能提供有用的局部梯度的区域。这支持了Prune-OPD的核心前提：长程OPD的低效不仅在于后缀计算昂贵，还在于后缀奖励通常是在教师和学生已经漂移分离的前缀上产生的。</p>
+
+<p>![图7]()</p>
+
+<blockquote><p><strong>图7：DeepSeek-R1-Distill-Qwen-1.5B / JustRL-DeepSeek-1.5B的OPD基线重叠率训练动力学。</strong> 每个面板绘制不同token位置带（0–1K、2–3K、4–6K和7–8K）的重叠率随训练步的变化。此诊断显示了在未剪枝OPD下局部学生-教师兼容性如何在不同轨迹深度上演变。</p></blockquote>
+
+<p><strong>阈值敏感性。</strong> 图8解释了可靠性阈值如何改变干预。更大的阈值更早宣布兼容性失败，使token级权重衰减更快出现并产生更短的动态OPD预算；更小的阈值更宽容，保留更长的后缀监督。主设置 $\delta = 0.7$ 介于这些极端之间：它移除大量低可靠性后缀计算，同时避免了硬性固定长度截断的过度刚性行为。因此，阈值主要控制Prune-OPD在可靠性-计算轴上的位置，而非改变底层的OPD目标。</p>
+
+<p>![图8]()</p>
+
+<blockquote><p><strong>图8：DeepSeek-R1-Distill-Qwen-1.5B / JustRL-DeepSeek-1.5B的Prune-OPD阈值诊断。</strong> 左：三个重叠阈值（$\delta = 0.6, 0.7, 0.8$）下Prune-OPD平均权重作为token位置的函数；对于每个阈值，曲线取训练步100、120、140、160、180和200。右：相同阈值下最大OPD响应长度随训练步的变化。通过结合，这些诊断显示了可靠性阈值如何改变后缀降权和动态生成长度预算。</p></blockquote>
+
+<h3 id="d2-a13-计算量报告">A.13 计算量报告</h3>
+
+<p>我们工作的主要计算成本来自使用OPD风格教师评分对学生模型进行后训练以及基准评估。对于每个教师-学生对，OPD、固定截断和Prune-OPD在相同的训练栈和匹配的硬件分配下运行，因此报告的墙钟时间比较隔离了可靠性感知剪枝的效果，而非基础设施变化的影响。因此，主要计算证据以表1、表2、表3和图2中经过的训练时间报告。</p>
+
+<hr>
+
+<p><em>（翻译完成。本文翻译严格遵循原文结构，保留所有数学公式、表格数据和图表引用。如有任何翻译不准确之处，欢迎指正。）</em></p>
+
+
+<!-- ==================== DOCUMENT 3: Flow-OPD 中文翻译 ==================== -->
+<div class="doc-divider" data-label="第三篇：Flow-OPD 中文全文翻译"></div>
+
+<h1 id="d3-flow-opd-on-policy-distillation-for-flow-matching-models">Flow-OPD: On-Policy Distillation for Flow Matching Models</h1>
+<h1 id="d3-flow-opd面向流匹配模型的在线策略蒸馏">Flow-OPD：面向流匹配模型的在线策略蒸馏</h1>
+
+<p><strong>arXiv:2605.08063v5 [cs.CV] 2026年5月24日</strong></p>
+
+<hr>
+
+<p><strong>方震<sup>1<em></sup> &emsp; 黄文轩<sup>1</em></sup> &emsp; 曾宇<sup>1</sup> &emsp; 赵一鸣<sup>1</sup> &emsp; 陈爽<sup>2</sup> &emsp; 冯凯拓<sup>3</sup> &emsp; 林云龙<sup>3</sup> &emsp; 陈林<sup>1</sup> &emsp; 陈泽辉<sup>1†</sup> &emsp; 曹少成<sup>4†</sup> &emsp; 赵峰<sup>1†</sup></strong></p>
+
+<p><sup>1</sup> 中国科学技术大学 &emsp;</p>
+<p><sup>2</sup> 加州大学洛杉矶分校 &emsp;</p>
+<p><sup>3</sup> 香港中文大学 &emsp;</p>
+<p><sup>4</sup> 小红书公司</p>
+
+<p>fazii@mail.ustc.edu.cn (方震) &emsp; wxhuang0616@gmail.com (黄文轩)</p>
+
+<p><sup>*</sup>: 同等贡献 &emsp; <sup>†</sup>: 项目负责人 &emsp; <sup>†</sup>: 通讯作者</p>
+
+<p><strong>项目主页:</strong> https://costaliya.github.io/Flow-OPD/</p>
+
+<hr>
+
+<h2 id="d3-摘要">摘要</h2>
+
+<p>现有的流匹配（Flow Matching, FM）文本到图像模型在多任务对齐下面临两个关键瓶颈：由标量值奖励引发的奖励稀疏性，以及由联合优化异质目标导致的梯度干扰——这两者共同造成了竞争指标的"跷跷板效应"和普遍的奖励黑客行为。受在线策略蒸馏（On-Policy Distillation, OPD）在大语言模型社区中成功应用的启发，我们提出了 Flow-OPD，这是首个将在线策略蒸馏融入流匹配模型的统一后训练框架。Flow-OPD 采用两阶段对齐策略：首先通过单奖励 GRPO 微调培养领域专用教师模型，使每位专家在隔离状态下达到其性能上限；随后通过基于流的冷启动（Flow-based Cold-Start）方案建立鲁棒的初始策略，并通过三步编排——在线策略采样、任务路由标注和密集轨迹级监督——将异构专业知识无缝整合至单一学生模型。我们进一步引入了流形锚定正则化（Manifold Anchor Regularization, MAR），利用任务无关教师提供全数据监督，将生成过程锚定于高质量流形，有效缓解了纯 RL 驱动对齐中普遍出现的美学退化。基于 Stable Diffusion 3.5 Medium，Flow-OPD 将 GenEval 分数从 63 提升至 92，OCR 准确率从 59 提升至 94，整体性能相比原始 GRPO 提升约 10 分，同时保持了图像保真度和人类偏好对齐，并展现出涌现的"超越教师"效应。这些结果使 Flow-OPD 成为构建通用文本到图像模型的可扩展对齐范式。代码和权重将在以下地址发布：https://github.com/CostaliyA/Flow-OPD。</p>
+
+<hr>
+
+<h2 id="d3-1-引言">1 引言</h2>
+
+<p>流匹配（Flow Matching, FM）[1, 2, 3, 4] 已成为生成建模的优越范式，通过学习连续时间速度场，在采样效率和高保真合成方面均超越了传统扩散模型。然而，随着研究前沿从无约束图像合成转向高度可控的多维对齐，当前后训练方法的局限性已愈发明显。现代应用要求单一模型在统一生成空间中掌握多种任务——从精确文本渲染和复杂组合推理 [5, 6, 7, 8, 9, 10] 到严格遵循细腻的人类美学偏好 [11, 12, 13, 14]。</p>
+
+<p>近期进展尝试通过将强化学习（Reinforcement Learning, RL）算法——如分组相对策略优化（Group Relative Policy Optimization, GRPO）[15]——移植到流匹配领域来弥合这一差距。</p>
+
+<p>预印本。</p>
+
+<p>这些方法在单奖励场景中已展现出显著潜力，在线策略探索使模型能够优化其采样轨迹并改善特定指标，如 PickScore 或美学评分。然而，不同任务需要异质且相互冲突的特征表示。正如大语言模型对齐 [19] 中所指出的，稀疏标量奖励缺乏协调这些目标的粒度，从而导致零和的"跷跷板效应"——优化某些特征（如 OCR）不可避免地通过奖励黑客行为损害美学质量。这迫切需要转向密集的轨迹级蒸馏，以提供解耦的专家监督。</p>
+
+<p>这一问题最近在大语言模型（Large Language Models, LLMs）领域找到了令人信服的解决方案：在线策略蒸馏（On-Policy Distillation, OPD）。受益于 OPD，DeepSeek-V4 [9]、Mimo v2 [20] 和 GLM-5 [19] 等模型通过从专业专家中蒸馏，成功协调了复杂的多领域能力。这一范式转变为视觉社区提出了一个关键问题：流匹配模型是否能类似地利用 OPD 将多个教师模型的多样化优势整合到单一鲁棒的学生模型中？为回答这一关键问题，我们引入了 Flow-OPD——首个将 OPD 融入 FM 模型后训练流程的框架。</p>
+
+<p>我们提出了一种两阶段对齐策略，首先通过单奖励 GRPO 微调培养领域专用教师，确保每位专家在隔离状态下达到其性能上限。为促进学生模型的平滑过渡，我们开发了基于流的冷启动（Flow-based Cold-Start）策略，包含两种不同变体——基于监督微调（SFT）的初始化和模型合并（Model Merging）——旨在建立能够进行多任务学习的鲁棒基础策略。在此基础上，我们通过三步编排将 OPD 应用于流匹配过程：（1）执行在线策略采样以捕获学生模型当前的速度场；（2）执行任务路由标注，由不同专家为各自领域提供密集监督；（3）引入流形锚定正则化（Manifold Anchor Regularization, MAR），纳入任务无关教师提供全数据监督，有效将生成过程锚定于高质量流形，进一步提升合成图像的美学完整性。</p>
+
+<p>跨多个基准和指标的实验结果表明，Flow-OPD 相比使用稀疏奖励的原始 GRPO 实现了 10% 的性能提升，为基于流的生成模型中的规模化对齐建立了新前沿。综上所述，我们的贡献包括以下三个方面：</p>
+
+<ul>
+<li><strong>FM 多任务训练分析</strong>：我们对流匹配模型中基于 GRPO 的多任务训练的失败模式进行了实证分析，特别识别了奖励稀疏性和梯度干扰的挑战。为解决这些问题，据我们所知，我们首次将 OPD 范式引入 FM 模型的后训练中。</li>
+</ul>
+
+<ul>
+<li><strong>Flow-OPD 框架</strong>：我们提出了 Flow-OPD，一个将专业知识获取与模型统一解耦的两阶段后训练框架。我们的框架引入了基于流的冷启动策略（SFT 和合并变体）、用于细粒度监督的任务路由密集标注机制，以及通过任务无关引导确保全局生成质量的新型流形锚定正则化（MAR）。</li>
+</ul>
+
+<ul>
+<li><strong>卓越的性能和泛化能力</strong>：通过在四个主流基准上的广泛实验，我们证明 Flow-OPD 相比 GRPO 基线实现了约 10 分的显著提升。值得注意的是，统一学生模型在域内匹配甚至超越了专业教师的性能，同时展现出卓越的分布外（Out-of-Distribution, OOD）泛化能力。</li>
+</ul>
+
+<hr>
+
+<h2 id="d3-2-相关工作">2 相关工作</h2>
+
+<h3 id="d3-文本到图像模型的强化学习">文本到图像模型的强化学习</h3>
+
+<p>基于 RL 的对齐在大语言模型中的成功最近启发了文本到图像（Text-to-Image, T2I）生成的强化学习。早期方法如 DDPO [23]、DPOK [24] 和 ImageReward/ReFL [25] 将扩散生成建模为策略优化，以美学、人类偏好或图文对齐作为奖励，而 Diffusion-DPO [26] 则利用偏好对来对齐扩散模型。更新的 GRPO 风格方法将 RL 扩展到现代视觉生成器，包括流模型 [27, 17] 和自回归范式 [28, 29, 30, 31, 32] 中的那些。然而，T2I 生成需要多个奖励来覆盖美学、对齐、保真度和组合正确性。现有解决方案仍然难以控制：DanceGRPO [17] 直接混合 HPS 和 CLIP 等奖励，往往在指标之间相互权衡；Flow-GRPO [27] 使用分阶段奖励/数据集课程，使结果对顺序和阶段设计敏感；GDPO [33] 表明 GRPO [9] 在多奖励设置下可能出现奖励归一化崩溃。这促使需要一种更可控的多奖励协调机制。</p>
+
+<h3 id="d3-在线策略蒸馏">在线策略蒸馏</h3>
+
+<p>传统的离线蒸馏依赖于固定数据集，无法适应学生不断演化的轨迹。相比之下，在线策略蒸馏（On-Policy Distillation, OPD）将教师的监督信号与学生的探索空间动态耦合。在大语言模型领域，OPD 发展迅速：GKD [34] 建立了缓解曝光偏差的规范框架；MiniLLM [35] 和 DistiLLM [36] 引入反向和偏斜 KL 散度以改进模式寻求和优化稳定性；G-OPD [37] 在 KL 约束 RL 理论下统一了 OPD；Entropy-Aware OPD [38] 通过自适应散度函数保持多样性；Fast OPD [39] 通过前缀截断显著加速计算；PACED [40] 基于梯度信噪比分析实现了能力感知课程。尽管大语言模型取得了这些进展，OPD 在视觉流匹配模型中仍未被充分探索——后者需要在高维速度场内进行密集监督。我们提出 Flow-OPD，这是在线策略蒸馏在流匹配中的首次系统性迁移，利用多教师密集监督克服奖励稀疏性瓶颈。</p>
+
+<hr>
+
+<h2 id="d3-3-预备知识">3 预备知识</h2>
+
+<h3 id="d3-流匹配模型">流匹配模型</h3>
+
+<p>流匹配（Flow Matching, FM）通过常微分方程 $dx_t = v_t(x_t, t)dt$ 将噪声分布 $p_0$ 映射到数据分布 $p_{\text{data}}$。在最优传输（Optimal Transport, OT）公式 [3] 下，路径为 $x_t = (1-t)x_0 + tx_1$，模型 $v_\theta$ 通过下式学习恒定速度 $(x_1 - x_0)$：</p>
+
+<p>$$ \mathcal{L}_{\text{FM}}(\theta) = \mathbb{E}_{t, x_0, x_1} \left\| v_\theta(x_t, t) - (x_1 - x_0) \right\|^2 \tag{1} $$</p>
+
+<p>遵循 Flow-GRPO [16]，我们将离散化的 ODE 积分概念化为序列马尔可夫去噪过程。通过将每个转移 $x_t \rightarrow x_{t-\Delta t}$ 建模为马尔可夫状态步骤，这一视角连接了连续生成动态与强化学习，为逐步策略优化定义了形式化轨迹。</p>
+
+<h3 id="d3-在线策略蒸馏">在线策略蒸馏</h3>
+
+<p>知识蒸馏旨在通过最小化输出差异将教师能力压缩到学生模型中。为缓解分布偏移，在线策略蒸馏（OPD）[41] 要求学生模型 $f_\theta$ 在实时教师监督的引导下生成轨迹 $\tau \sim p_\theta(\tau)$。对于自回归（Autoregressive, AR）模型，该优化被形式化为最小化学生与教师分布之间的反向 KL 散度：</p>
+
+<p>$$ \mathcal{L}_{\text{OPD}} = -\mathbb{E}_{y \sim p_\theta(y|x)} \left[ \log p_{\text{teacher}}(y|x) \right] = D_{\text{KL}}(p_\theta \parallel p_{\text{teacher}}) \tag{2} $$</p>
+
+<p>通过在模型自身生成的分布上进行对齐，OPD 有效抑制了曝光偏差，确保了交互式或迭代生成任务中的鲁棒泛化。</p>
+
+<hr>
+
+<h2 id="d3-4-动机">4 动机</h2>
+
+<h3 id="d3-41-问题一grpo-为何有效">4.1 问题一：GRPO 为何有效？</h3>
+
+<p>标准 FM 依赖离线重建，从根本上将性能限制在静态数据集质量上，无法优化不可微的偏好。GRPO [9, 16, 17] 通过在线探索克服了这一问题。通过从当前策略 $\pi_\theta$ 主动采样 $G$ 个输出，它利用分组相对优势 $A(\mathbf{x}_1^{(i)}) = (r(\mathbf{x}_1^{(i)}) - \bar{r}) / \sigma$ 评估自身生成的状态。策略梯度于是由这些在线经验显式驱动：</p>
+
+<p>$$ \mathcal{J}(\theta) \approx \frac{1}{G} \sum_{i=1}^{G} A(\mathbf{x}_1^{(i)}) \nabla_\theta \log p_\theta(\mathbf{x}_1^{(i)} | c) \tag{3} $$</p>
+
+<p>这种对自身动态分布的持续探索使模型能够发现新颖的高奖励轨迹，成功突破了离线 SFT 的性能上限。</p>
+
+<h3 id="d3-42-问题二grpo-为何失败多任务视角">4.2 问题二：GRPO 为何失败？——多任务视角</h3>
+
+<p>尽管单奖励 GRPO 对特定目标有效，但它会在正交能力上造成严重退化（图 2）。这种灾难性遗忘源于共享参数空间 $\theta$ 中由稀疏标量奖励驱动的无约束梯度干扰。</p>
+
+<p>对于由目标任务 $T_1$ 驱动（具有优势 $A_1$）的参数更新 $\Delta\theta$，其对未被监控的能力 $T_k$（$k \neq 1$）的附带影响可通过一阶泰勒展开近似：</p>
+
+<p>$$ \Delta J_k \approx \nabla_\theta J_k \cdot \Delta\theta \propto \mathbb{E}_x \left[ A_1(x) \cdot \nabla_\theta J_k \cdot \nabla_\theta \log \pi_\theta(x|c) \right] \tag{4} $$</p>
+
+<p>在高维空间中，发散的任务梯度经常相互冲突（$\nabla_\theta J_k \cdot \nabla_\theta J_1 < 0$）。由于缺少 $T_k$ 的监督信号，优化器会积极利用这些未被监控的自由度来最大化 $A_1$，从而破坏预训练的协同效应并导致流形崩溃。</p>
+
+<p>这引出了一个自然的问题：我们能否通过简单混合多个数据集和奖励进行联合优化来解决这种退化？</p>
+
+<h3 id="d3-43-问题三混合训练能否解决问题">4.3 问题三：混合训练能否解决问题？</h3>
+
+<p>为探索混合训练方法的可行性，我们在 Stable Diffusion 3.5 Medium（SD-3.5-M）[2] 上进行了受控实证实验。遵循 Flow-GRPO，我们逐步叠加四种不同的奖励函数：GenEval、OCR、PickScore 和 DeQA。如表 1 所示，混合标量奖励无法构建稳定的认知基础。</p>
+
+<p><strong>表 1：多奖励优化中的能力退化</strong></p>
+
+<table>
+<thead><tr>
+<th>模型</th>
+<th>GenEval</th>
+<th>OCR</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>SD-3.5-M</td>
+<td>0.63</td>
+<td>0.59</td>
+</tr>
+<tr>
+<td>+GenEval</td>
+<td>0.94</td>
+<td>0.65</td>
+</tr>
+<tr>
+<td>+OCR</td>
+<td>0.89 (-5%)</td>
+<td>0.91</td>
+</tr>
+<tr>
+<td>+PickScore</td>
+<td>0.82 (-7%)</td>
+<td>0.86 (-5%)</td>
+</tr>
+<tr>
+<td>+DeQA</td>
+<td>0.73 (-9%)</td>
+<td>0.83 (-3%)</td>
+</tr>
+</tbody></table>
+
+<p>虽然初始奖励（+GenEval）取得了成功，但后续的添加却触发了灾难性遗忘（例如，+OCR 使 GenEval 下降了 5%）。这验证了我们关于梯度干扰（$\nabla_\theta J_i \cdot \nabla_\theta J_j < 0$）的假设。将多维冲突压缩为标量优势会强制形成零和博弈；例如，适应美学风格化（PickScore）会积极地覆盖精确的几何表示。因此，由于这种稀疏的信息瓶颈，标量奖励混合在根本上不可扩展。</p>
+
+<p>为避免参数相互蚕食，我们需要一种同时具备在线策略性（保持探索）和密集解耦性（防止干扰）的监督信号。受大语言模型中多教师在线策略蒸馏（Multi-Teacher OPD）的启发，我们提出了 Flow-OPD。该框架将多教师范式无缝引入连续基础模型，实现由密集监督引导的主动在线策略探索。</p>
+
+<hr>
+
+<h2 id="d3-5-方法flow-opd">5 方法：Flow-OPD</h2>
+
+<p>Flow-OPD 通过对自生成轨迹进行密集监督来重新定义多任务对齐。我们首先使用 Flow-GRPO 训练领域专家教师。在冷启动初始化之后，学生经历多教师在线蒸馏，将在线样本动态路由到特定教师以获得细粒度引导。最后，流形锚定正则化解耦功能对齐与美学崩塌，保留固有的生成先验。</p>
+
+<h3 id="d3-51-冷启动">5.1 冷启动</h3>
+
+<p>为确保稳定的初始化 $\pi_{\theta_0}$ 并防止早期展开中的轨迹发散，我们探索了两种冷启动策略：基于 SFT 的初始化和模型合并初始化。我们的 SFT 协议遵循 Flow-GRPO，但利用从专业教师采样的轨迹，确保学生从一开始就继承专家级的知识分布。作为替代，模型合并将不同教师的各向异性先验叠加到统一参数状态中。这种"合并即初始化"的方法将学生定位在损失景观中的高能力区域，该区域的多任务协同效应已初步形成，为后续蒸馏提供了鲁棒基础。</p>
+
+<h3 id="d3-511-多教师在线策略蒸馏">5.1.1 多教师在线策略蒸馏</h3>
+
+<p><strong>架接 OPD 与流匹配</strong> 如公式 2 所示，ThinkingMachines 的 OPD [41] 通过使用相对教师分布 $p_{\text{teacher}}$ 的反向 KL 散度作为在自主生成轨迹 $\tau$ 上的环境奖励来优化学生策略 $\pi_\theta$。为将此策略梯度（Policy Gradient, PG）范式转换到连续时间 FM 框架中，我们将离散的 token 序列映射到连续的潜在轨迹 $x_t \in \mathbb{R}^d$。自回归预测转化为由速度场 $v_\theta(x_t, t)$ 参数化的瞬时转移策略。关键在于，我们不是通过监督回归直接最小化向量场之间的距离，而是推导出精确的连续时间 KL 散度，并将其作为密集奖励信号通过 PG 引导策略探索。</p>
+
+<p><strong>在线策略采样</strong> Flow-OPD 的基本前提要求学生暴露其自身的特定分布偏移。为促进充分的状态空间探索——这是 RL 中逃离局部最优的必要条件——我们通过将确定性概率流 ODE 转换为等效的随机微分方程（Stochastic Differential Equation, SDE）来注入随机性 [16]：</p>
+
+<p>$$ dx_t = \left[ v_\theta(x_t, t) + \frac{\sigma_t^2}{2t} \left( x_t + (1 - t) v_\theta(x_t, t) \right) \right] dt + \sigma_t d\mathbf{w} \tag{5} $$</p>
+
+<p>在时间步长 $\Delta t$ 上应用 Euler-Maruyama 离散化，学生的转移行为表现为局部各向同性高斯策略：</p>
+
+<p>$$ \pi_\theta(x_{t-\Delta t} | x_t, c) = \mathcal{N}(\mu_\theta(x_t, t), \sigma_t^2 \Delta t \mathbf{I}) \tag{6} $$</p>
+
+<p>通过对每个提示采样 $G$ 条独立轨迹，生成在线策略边际分布 $x_t \sim \pi_\theta(\cdot | c)$，作为随机行为策略。</p>
+
+<p><strong>任务特定教师标注</strong> 在每个探索状态 $x_t$，学生查询专家教师集成以获得局部监督。为消除域间梯度干扰，我们实现了硬路由机制 $\mathcal{R}(c) = k$，将文本条件 $c$ 映射到集成中唯一的对应领域专家 $k$。该机制选择性地激活单一教师提供参考速度场 $v_{\phi_k}^*(x_t, t, c)$。目标流因此定义为：</p>
+
+<p>$$ v_{\text{target}}(x_t, t, c) = v_{\phi_k}^*(x_t, t, c), \quad \text{其中 } k = \mathcal{R}(c) \tag{7} $$</p>
+
+<p>其中 $\mathcal{R}(\cdot)$ 表示确定性的任务到教师路由函数。这产生了任务特定的目标转移策略 $\pi_{\text{target}} = \mathcal{N}(\mu_{\text{target}}(x_t, t), \sigma_t^2 \Delta t \mathbf{I})$，作为评估学生在线策略轨迹的最终黄金标准。</p>
+
+<p><strong>推导流模型中的解析 KL</strong> 在大语言模型中，OPD 将密集优势定义为负反向 KL 散度：$A_t = -D_{\text{KL}}(\pi_\theta \parallel \pi_{\text{target}})$。由于离散 token 词汇表阻止梯度直接通过采样过程流动，优化严格依赖于得分函数估计器（即策略梯度定理）：</p>
+
+<p>$$ \nabla_\theta \mathcal{J}_{\text{LLM}} = \mathbb{E}_{s_t} \left[ \nabla_\theta \log \pi_\theta(a_t | s_t) \cdot A_t \right] \tag{8} $$</p>
+
+<p>这种离散公式不可避免地引入了高梯度方差，需要计算昂贵的 logprob 跟踪、重要性采样和复杂的代理裁剪机制（如 PPO）来稳定训练。为将此框架迁移到流匹配模型，我们必须在数学上将 KL 计算适应到连续状态空间。根据 SDE 公式，学生转移策略 $\pi_\theta(\cdot | x_t)$ 和目标策略 $\pi_{\text{target}}(\cdot | x_t)$ 都是 $d$ 维多元高斯分布。关键的是，它们共享由前向 SDE 噪声调度严格导出的完全相同各向同性协方差矩阵 $\Sigma_t = \sigma_t^2 \Delta t \mathbf{I}$。对于两个一般高斯分布 $\mathcal{N}_1(\mu_1, \Sigma_1)$ 和 $\mathcal{N}_2(\mu_2, \Sigma_2)$，期望 KL 散度解析定义为：</p>
+
+<p>$$ D_{\text{KL}}(\mathcal{N}_1 \parallel \mathcal{N}_2) = \frac{1}{2} \left[ \text{tr}(\Sigma_2^{-1} \Sigma_1) - d + (\mu_1 - \mu_2)^T \Sigma_2^{-1} (\mu_1 - \mu_2) + \ln \frac{\det \Sigma_2}{\det \Sigma_1} \right] \tag{9} $$</p>
+
+<p>由于我们的策略共享相同的协方差（$\Sigma_1 = \Sigma_2 = \Sigma_t$），迹项求值为数据维度 $\text{tr}(\mathbf{I}) = d$，与 $-d$ 常数无缝抵消。同时，相同行列式的对数比求值为 $\ln(1) = 0$。因此，复杂的散度精简为仅包含马氏距离。代入具体的逆协方差 $\Sigma_t^{-1} = (\sigma_t^2 \Delta t)^{-1} \mathbf{I}$，KL 散度优雅地约化为其均值之间的 L2 距离 [16]：</p>
+
+<p>$$ D_{\text{KL}}(\pi_\theta \parallel \pi_{\text{target}}) = \frac{\|\mu_\theta(x_t, t) - \mu_{\text{target}}(x_t, t)\|^2}{2\sigma_t^2 \Delta t} \tag{10} $$</p>
+
+<p>根据 Euler-Maruyama 离散化，策略均值 $\mu_\theta(x_t, t)$ 由预测向量场 $v_\theta$ 确定性参数化：</p>
+
+<p>$$ \mu_\theta(x_t, t) = x_t + \left[ v_\theta(x_t, t, c) + \frac{\sigma_t^2}{2t} \left( x_t + (1 - t) v_\theta(x_t, t, c) \right) \right] \Delta t \tag{11} $$</p>
+
+<p>当减去目标均值 $\mu_{\text{target}}$ 时，状态相关的基础项完全相同地消去。KL 散度优雅地简化为严格在向量场之间的缩放差异：</p>
+
+<p>$$ D_{\text{KL}}(\pi_\theta \parallel \pi_{\text{target}}) = \frac{\Delta t \left[ t(1 - t) + 1 \right]}{2 \sigma_t^2} \cdot \frac{1}{\Delta t} \left\| v_\theta(x_t, t, c) - v_{\text{target}}(x_t, t, c) \right\|^2 \tag{12} $$</p>
+
+<p><strong>将 OPD 引入流匹配模型</strong> 在大语言模型中，由于离散 token 词汇表禁止通过采样过程直接微分，OPD 必须依赖得分函数估计器（即策略梯度定理）以优化密集奖励 $r_t = -D_{\text{KL}}(\pi_\theta \parallel \pi_{\text{target}})$：</p>
+
+<p>$$ \nabla_\theta \mathcal{J}_{\text{LLM-PG}} = \mathbb{E}_{s_t} \left[ \nabla_\theta \log \pi_\theta(a_t | s_t) \cdot \left( - D_{\text{KL}}(\pi_\theta \parallel \pi_{\text{target}}) \right) \right] \tag{13} $$</p>
+
+<p>将此策略梯度公式直接迁移到流模型的连续状态空间会产生结构上相同的 Flow-OPD PG 更新：</p>
+
+<p>$$ \nabla_\theta \mathcal{J}_{\text{Flow-OPD}} = \mathbb{E}_{x_t \sim \text{SDE}} \left[ \nabla_\theta \log \pi_\theta(x_{t-\Delta t} | x_t) \cdot \left( - D_{\text{KL}}(\pi_\theta \parallel \pi_{\text{target}}) \right) \right] \tag{14} $$</p>
+
+<p>在离散空间中，评估公式 13 需要高方差蒙特卡洛估计。然而，对数导数技巧的一个基本性质规定了 KL 散度的期望策略梯度在数学上等于期望 KL 散度本身的直接梯度。具体而言，在无限样本上计算 PG 期望在数学上收敛为：$\mathbb{E}[\nabla \log \pi \cdot (-D_{\text{KL}})] \equiv \nabla_\theta (-D_{\text{KL}})$。</p>
+
+<p>虽然这种直接梯度对离散大语言模型在解析上不可处理，但我们的连续流公式具有完全可微的闭式解。因此，我们可以完全绕过高方差 PG 估计器、$\log \pi$ 计算和 PPO 代理边界。从根本上说，在流模型中直接最小化这一精确的 MSE 损失在数学上严格等价于在大语言模型中执行策略梯度 OPD，但有效地将梯度方差降至零。因此，公式 14 可以通过直接对标准时间加权 MSE 损失进行反向传播来简化：</p>
+
+<p>$$ \mathcal{L}_{\text{Flow-OPD}} = \mathbb{E}_{x_t \sim \text{SDE}} \left[ w(t) \left\| v_\theta(x_t, t, c) - \text{SG}\left( v_{\text{target}}(x_t, t, c) \right) \right\|^2 \right] \tag{15} $$</p>
+
+<p>其中 $v_\theta$ 保持连接到计算图以接收梯度，$\text{SG}(\cdot)$ 表示教师目标的停止梯度算子，且 $w(t) = \frac{\Delta t \left[ t(1 - t) + 1 \right]}{2 \sigma_t^2} \cdot \frac{1}{\Delta t}$。最终，该公式将在线策略 RL 的严格状态空间探索与回归的确定性优化效率无缝统一。</p>
+
+<p><strong>流形锚定正则化</strong> 激进地优化功能目标（如精确文本渲染或严格空间布局）经常引发奖励黑客行为，表现为视觉美学和生成多样性的严重退化 [16]。为将功能对齐与风格崩塌解耦，我们引入了一种受 Flow-GRPO 中 KL 惩罚启发的连续时间美学保持机制。</p>
+
+<p>然而，不同于锚定到通用预训练模型，我们维持一个冻结的美学教师（例如，通过 DeQA 优化）以提供高保真正则化向量场 $v_{\text{aesthetic}}$。如先前推导的，SDE 框架中的反向 KL 散度优雅地转化为向量场之间的时间加权 L2 距离。在我们的实现中，优化公式化为最小化总损失 $\mathcal{L}_{\text{Total}}(\theta)$，即策略损失 $\mathcal{L}_{\text{Policy}}(\theta)$（定义为替代目标 $-\mathcal{J}(\theta)$ 的负值）与该密集 KL 惩罚的直接求和：</p>
+
+<p>$$ \mathcal{L}_{\text{Total}}(\theta) = \mathcal{L}_{\text{Flow-OPD}}(\theta) + \beta \cdot \mathbb{E}_{c, t, x_t \sim \pi_t} \left[ w(t) \left\| v_\theta(x_t, t, c) - v_{\text{aesthetic}}(x_t, t, c) \right\|^2 \right] \tag{16} $$</p>
+
+<p>该 KL 正则化作为连续的弹性锚运作。它保证在学生策略贪婪吸收多教师集成的功能智能的同时，始终被严格约束在高质量视觉流形上，完全避免单目标 RL 中典型的美学退化。</p>
+
+<hr>
+
+<h2 id="d3-6-实验">6 实验</h2>
+
+<h3 id="d3-61-实验设置">6.1 实验设置</h3>
+
+<p>遵循 Flow-GRPO [16]，我们在四个任务上评估方法：GenEval [21]、OCR [22]、PickScore [42] 和 DeQA [43]。前三个任务我们采用官方检查点作为专家教师。DeQA 教师通过以 4:6 的比例混合 DeQA 和 PickScore 奖励在三个数据集上专门训练。所有训练和测试数据严格遵循 Flow-GRPO 的划分。训练在 4 个节点（每个节点 8 块 H800 GPU）上执行，评估在单个 8 块 H800 节点上进行。</p>
+
+<p>我们主要将 Flow-OPD 与两类基线进行比较：（1）单一奖励 GRPO，记为 GRPO-[奖励名称]，其中模型使用 Flow-GRPO 在单一奖励目标上微调；（2）混合奖励 GRPO，记为 GRPO-Mix，采用固定比例的加权奖励组合（GenEval : OCR : PickScore = 3 : 1 : 1）。这些基线旨在突出传统基于标量的对齐在扩展到多维专家能力时的局限性。</p>
+
+<h3 id="d3-62-主要结果">6.2 主要结果</h3>
+
+<p>表 2 中的定量结果表明，Flow-OPD 在所有基准上始终匹配或超越专业教师模型，特别是在文本渲染和 DeQA 图像质量方面。关键的是，它解决了专业化固有的严重跨域干扰（例如 PickScore 教师的 GenEval 分数降至 0.51），并克服了稀疏奖励多任务 GRPO 的优化瓶颈。通过利用密集多专家监督，Flow-OPD 无缝整合多样化专业知识而无能力退化。</p>
+
+<p><strong>表 2：模型在组合图像生成、视觉文本渲染和图像质量基准上的性能比较。avg 值通过平均四个 0-1 归一化指标计算。教师模型分数以粗体和下划线标出以表示性能上限，不参与比较。最优分数以蓝色标注，次优分数以绿色标注。</strong></p>
+
+<table>
+<thead><tr>
+<th>模型</th>
+<th>GenEval</th>
+<th>OCR Acc.</th>
+<th>DEQA</th>
+<th>PickScore</th>
+<th>Avg</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>SD-3.5-M</td>
+<td>0.63</td>
+<td>0.59</td>
+<td>4.07</td>
+<td>21.64</td>
+<td>0.7165</td>
+</tr>
+<tr>
+<td>+GRPO-Geneval</td>
+<td>0.94</td>
+<td>0.65</td>
+<td>4.01</td>
+<td>21.53</td>
+<td>0.8050</td>
+</tr>
+<tr>
+<td>+GRPO-OCR</td>
+<td>0.64</td>
+<td>0.92</td>
+<td>4.06</td>
+<td>21.69</td>
+<td>0.8015</td>
+</tr>
+<tr>
+<td>+GRPO-deqa</td>
+<td>0.64</td>
+<td>0.66</td>
+<td>4.23</td>
+<td>23.02</td>
+<td>0.7578</td>
+</tr>
+<tr>
+<td>+GRPO-Pickscore</td>
+<td>0.51</td>
+<td>0.69</td>
+<td>4.22</td>
+<td>23.19</td>
+<td>0.7340</td>
+</tr>
+<tr>
+<td>GRPO-Mix</td>
+<td>0.73</td>
+<td>0.83</td>
+<td>4.33</td>
+<td>21.84</td>
+<td>0.8165</td>
+</tr>
+<tr>
+<td>SFT+GRPO-Mix</td>
+<td>0.85</td>
+<td>0.86</td>
+<td>4.29</td>
+<td>21.79</td>
+<td>0.8515</td>
+</tr>
+<tr>
+<td>Merge+GRPO-Mix</td>
+<td>0.84</td>
+<td>0.86</td>
+<td>4.18</td>
+<td>21.87</td>
+<td>0.8442</td>
+</tr>
+<tr>
+<td><strong>Ours (SFT)</strong></td>
+<td><strong>0.91</strong></td>
+<td><strong>0.92</strong></td>
+<td><strong>4.29</strong></td>
+<td><strong>21.83</strong></td>
+<td><strong>0.8820</strong></td>
+</tr>
+<tr>
+<td><strong>Ours (Merge)</strong></td>
+<td><strong>0.93</strong></td>
+<td><strong>0.93</strong></td>
+<td><strong>4.31</strong></td>
+<td><strong>23.05</strong></td>
+<td><strong>0.9021</strong></td>
+</tr>
+</tbody></table>
+
+<p>图 3 中的定性结果表明，Flow-OPD 实现了最优的多任务权衡，在高提示保真度与优越视觉美学之间取得平衡。值得注意的是，Flow-OPD 在所有个别教师都失败的某些边缘情况中取得了成功——我们将此现象称为"超越教师"（Teacher-Surpassing）。我们假设这种涌现的优越性源于潜在流流形中的知识交叉授粉。虽然个别教师受限于领域特定偏差，但同时进行的密集引导迫使学生学习更全面、更平滑的表示。这种集体监督弥合了认知差距，使学生能够合成最终超越任何单一监督者的新颖轨迹。</p>
+
+<h3 id="d3-63-分析">6.3 分析</h3>
+
+<h4 id="d3-631-冷启动消融">6.3.1 冷启动消融</h4>
+
+<p>如图 4 所示，冷启动初始化快速为后续训练建立了鲁棒基础。在两种方案中，SFT 作为一种广泛采用且高度可扩展的策略；值得注意的是，其固有的灵活性为未来从异构教师中提取能力提供了有前景的途径。相反，模型合并在没有任何额外训练成本的情况下，最优地利用可用的同构教师实现优越的功能对齐。关键的是，Flow-OPD 始终优于从零开始和冷启动的多任务 GRPO。当 GRPO 因稀疏标量奖励引起的任务间冲突而收敛到次优状态时，Flow-OPD 利用密集多专家监督解决了梯度干扰。因此，我们的方法在所有基线上实现了显著且均匀的增益，成功匹配或超越了单个专业教师的性能上限。</p>
+
+<h4 id="d3-632-分布外泛化">6.3.2 分布外泛化</h4>
+
+<p>为进一步研究我们方法的泛化能力，我们在 T2I-CompBench 基准上进行了额外评估。Flow-OPD 展示了相比多任务 GRPO 更优越的分布外泛化能力，在多个组合指标上达到了最先进（SOTA）性能。值得注意的是，当从相同的冷启动基线初始化时，标准 GRPO 在特定能力维度上遭受灾难性遗忘，如形状渲染和 3D 空间关系。相比之下，通过利用密集多专家监督和任务风格解耦正则化，Flow-OPD 有效缓解了这些退化问题，产生了鲁棒且全面的性能提升。</p>
+
+<p><strong>表 3：T2I-CompBench++ 结果。最优分数以蓝色标注。</strong></p>
+
+<table>
+<thead><tr>
+<th>模型</th>
+<th>Color</th>
+<th>Shape</th>
+<th>Texture</th>
+<th>Complex</th>
+<th>3D-Spatial</th>
+<th>Numeracy</th>
+<th>Non-Spatial</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>SD3.5-M [2]</td>
+<td>0.7994</td>
+<td>0.5669</td>
+<td>0.7338</td>
+<td>0.3800</td>
+<td>0.3739</td>
+<td>0.5927</td>
+<td>0.3146</td>
+</tr>
+<tr>
+<td>GRPO-mix</td>
+<td>0.7966</td>
+<td>0.5803</td>
+<td>0.7392</td>
+<td>0.3677</td>
+<td>0.3681</td>
+<td>0.6388</td>
+<td>0.3130</td>
+</tr>
+<tr>
+<td>Cold Start</td>
+<td>0.8173</td>
+<td>0.6126</td>
+<td>0.7342</td>
+<td>0.3870</td>
+<td>0.4249</td>
+<td>0.6458</td>
+<td>0.3145</td>
+</tr>
+<tr>
+<td>Cold Start+GRPO</td>
+<td>0.8031</td>
+<td>0.5985</td>
+<td>0.7409</td>
+<td>0.3842</td>
+<td>0.4017</td>
+<td>0.6269</td>
+<td>0.3136</td>
+</tr>
+<tr>
+<td><strong>Ours (Merge)</strong></td>
+<td><strong>0.8298</strong></td>
+<td><strong>0.6292</strong></td>
+<td><strong>0.7446</strong></td>
+<td><strong>0.3943</strong></td>
+<td><strong>0.4565</strong></td>
+<td><strong>0.6837</strong></td>
+<td><strong>0.3163</strong></td>
+</tr>
+</tbody></table>
+
+<h4 id="d3-633-流形锚定正则化">6.3.3 流形锚定正则化</h4>
+
+<p>流形锚定正则化（MAR）是一种任务无关约束，旨在维持生成完整性和美学对齐。如图 5 所示，基于原始 GRPO 的优化经常触发背景模式崩塌——模型过拟合于单调环境——以及语义冗余，由于粗糙的奖励粒度导致多个实体出现相同特征。虽然像 DeQA 这样的教师提供多样化的样本，但它们往往在指令遵循方面存在困难。MAR 通过将优化锚定于高保真流形来解决这些问题，在结构多样性与精确语义遵循之间取得平衡。</p>
+
+<p><strong>表 4：通用图像质量和对齐指标的性能比较。最优分数以蓝色标注。</strong></p>
+
+<table>
+<thead><tr>
+<th>模型</th>
+<th>ImageReward</th>
+<th>Aesthetic</th>
+<th>UnifiedReward</th>
+<th>HPS-v2.1</th>
+<th>QwenVL Score</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>SD-3.5-M</td>
+<td>1.02</td>
+<td>5.87</td>
+<td>3.339</td>
+<td>0.2982</td>
+<td>3.45</td>
+</tr>
+<tr>
+<td>GRPO-DeQA</td>
+<td>1.33</td>
+<td>5.97</td>
+<td>3.456</td>
+<td>0.2846</td>
+<td>3.68</td>
+</tr>
+<tr>
+<td>GRPO-mix</td>
+<td>1.23</td>
+<td>5.93</td>
+<td>3.501</td>
+<td>0.3101</td>
+<td>3.88</td>
+</tr>
+<tr>
+<td>w.o. MAR</td>
+<td>1.26</td>
+<td>5.89</td>
+<td>3.518</td>
+<td>0.2998</td>
+<td>3.82</td>
+</tr>
+<tr>
+<td><strong>Ours (Merge)</strong></td>
+<td><strong>1.36</strong></td>
+<td><strong>6.23</strong></td>
+<td><strong>3.659</strong></td>
+<td><strong>0.3302</strong></td>
+<td><strong>4.05</strong></td>
+</tr>
+</tbody></table>
+
+<p>表 4 进一步提供了我们的方法在图像质量和人类偏好对齐方面优越性的定量证据。MAR 的整合在整个数据集上利用额外监督，显著增强了生成图像的视觉质量和表现力。</p>
+
+<hr>
+
+<h2 id="d3-7-结论">7 结论</h2>
+
+<p>我们引入了 Flow-OPD——首个将在线策略蒸馏融入流匹配模型的框架，有效解决了奖励稀疏性和梯度干扰问题。通过用密集的轨迹级监督替代标量奖励，Flow-OPD 打破了竞争指标的"跷跷板效应"。我们在 SD-3.5-M 上的结果表明，Flow-OPD 成功整合了组合和排版方面的专业知识，同时实现了涌现的"超越教师"效应。通过流形锚定正则化（MAR），该框架通过解耦功能对齐与美学保持来维持高视觉保真度。最终，Flow-OPD 为开发具有优越生成完整性的通用文本到图像模型提供了可扩展的对齐范式。</p>
+
+<hr>
+
+<h2 id="d3-参考文献">参考文献</h2>
+
+<p>[1] Stephen Batifol, Andreas Blattmann, Frederic Boesel, Saksham Consul, Cyril Diagne, Tim Dockhorn, Jack English, Zion English, Patrick Esser, Sumith Kulal, et al. Flux. 1 kontext: Flow matching for in-context image generation and editing in latent space. <em>arXiv e-prints</em>, pages arXiv–2506, 2025.</p>
+
+<p>[2] Patrick Esser, Sumith Kulal, Andreas Blattmann, Rahim Entezari, Jonas Muller, Harry Saini, Yam Levi, Dominik Lorenz, Axel Sauer, Frederic Boesel, et al. Scaling rectified flow transformers for high-resolution image synthesis. In <em>Forty-first international conference on machine learning</em>, 2024.</p>
+
+<p>[3] Yaron Lipman, Ricky TQ Chen, Heli Ben-Hamu, Maximilian Nickel, and Matt Le. Flow matching for generative modeling. <em>arXiv preprint arXiv:2210.02747</em>, 2022.</p>
+
+<p>[4] Zhen Fang, Zhuoyang Liu, Jiaming Liu, Hao Chen, Yu Zeng, Shiting Huang, Zehui Chen, Lin Chen, Shanghang Zhang, and Feng Zhao. Dualvla: Building a generalizable embodied agent via partial decoupling of reasoning and action. <em>arXiv preprint arXiv:2511.22134</em>, 2025.</p>
+
+<p>[5] Wenxuan Huang, Bohan Jia, Zijie Zhai, Shaosheng Cao, Zheyu Ye, Fei Zhao, Zhe Xu, Xu Tang, Yao Hu, and Shaohui Lin. Vision-r1: Incentivizing reasoning capability in multimodal large language models, 2026.</p>
+
+<p>[6] Wenxuan Huang, Yu Zeng, Qiuchen Wang, Zhen Fang, Shaosheng Cao, Zheng Chu, Qingyu Yin, Shuang Chen, Zhenfei Yin, Lin Chen, et al. Vision-deepresearch: Incentivizing deepresearch capability in multimodal large language models. <em>arXiv preprint arXiv:2601.22060</em>, 2026.</p>
+
+<p>[7] Shuang Chen, Yue Guo, Zhaochen Su, Yafu Li, Yulun Wu, Jiacheng Chen, Jiayu Chen, Weijie Wang, Xiaoye Qu, and Yu Cheng. Advancing multimodal reasoning: From optimized cold start to staged reinforcement learning. <em>arXiv preprint arXiv:2506.04207</em>, 2025.</p>
+
+<p>[8] Shuang Chen, Yue Guo, Yimeng Ye, Shijue Huang, Wenbo Hu, Haoxi Li, Manyuan Zhang, Jiayu Chen, Song Guo, and Nanyun Peng. Ares: Multimodal adaptive reasoning via difficulty-aware token-level entropy shaping. <em>arXiv preprint arXiv:2510.08457</em>, 2025.</p>
+
+<p>[9] Daya Guo, Dejian Yang, Haowei Zhang, Junxiao Song, Peiyi Wang, Qihao Zhu, Runxin Xu, Ruoyu Zhang, Shirong Ma, Xiao Bi, et al. Deepseek-r1: Incentivizing reasoning capability in llms via reinforcement learning. <em>arXiv preprint arXiv:2501.12948</em>, 2025.</p>
+
+<p>[10] Shuang Chen, Kaituo Feng, Hangting Chen, Wenxuan Huang, Dasen Dai, Quanxin Shou, Yunlong Lin, Xiangyu Yue, Shenghua Gao, and Tianyu Pang. Opensearch-vl: An open recipe for frontier multimodal search agents, 2026.</p>
+
+<p>[11] Ruiyan Han, Zhen Fang, XinYu Sun, Yuchen Ma, Ziheng Wang, Yu Zeng, Zehui Chen, Lin Chen, Wenxuan Huang, Wei-Jie Xu, et al. Unicorn: Towards self-improving unified multimodal models through self-generated supervision. <em>arXiv preprint arXiv:2601.03193</em>, 2026.</p>
+
+<p>[12] Shuang Chen, Quanxin Shou, Hangting Chen, Yucheng Zhou, Kaituo Feng, Wenbo Hu, Yi-Fan Zhang, Yunlong Lin, Wenxuan Huang, Mingyang Song, et al. Unify-agent: A unified multimodal agent for world-grounded image synthesis. <em>arXiv preprint arXiv:2603.29620</em>, 2026.</p>
+
+<p>[13] Kaituo Feng, Manyuan Zhang, Shuang Chen, Yunlong Lin, Kaixuan Fan, Yilei Jiang, Hongyu Li, Dian Zheng, Chenyang Wang, and Xiangyu Yue. Gen-searcher: Reinforcing agentic search for image generation. <em>arXiv preprint arXiv:2603.28767</em>, 2026.</p>
+
+<p>[14] Wenxuan Huang, Shuang Chen, Zheyong Xie, Shaosheng Cao, Shixiang Tang, Yufan Shen, Qingyu Yin, Wenbo Hu, Xiaoman Wang, Yuntian Tang, et al. Interleaving reasoning for better text-to-image generation. <em>arXiv preprint arXiv:2509.06945</em>, 2025.</p>
+
+<p>[15] Daya Guo, Dejian Yang, Haowei Zhang, Junxiao Song, Peiyi Wang, Qihao Zhu, Runxin Xu, Ruoyu Zhang, Shirong Ma, Xiao Bi, et al. Deepseek-r1: Incentivizing reasoning capability in llms via reinforcement learning. <em>arXiv preprint arXiv:2501.12948</em>, 2025.</p>
+
+<p>[16] Jie Liu, Gongye Liu, Jiajun Liang, Yangguang Li, Jiaheng Liu, Xintao Wang, Pengfei Wan, Di Zhang, and Wanli Ouyang. Flow-grpo: Training flow matching models via online rl. <em>arXiv preprint arXiv:2505.05470</em>, 2025.</p>
+
+<p>[17] Zeyue Xue, Jie Wu, Yu Gao, Fangyuan Kong, Lingting Zhu, Mengzhao Chen, Zhiheng Liu, Wei Liu, Qiushan Guo, Weilin Huang, and Ping Luo. Dancegrpo: Unleashing grpo on visual generation, 2025.</p>
+
+<p>[18] Junzhe Li, Yutao Cui, Tao Huang, Yinping Ma, Chun Fan, Yiming Cheng, Miles Yang, Zhao Zhong, and Liefeng Bo. Mixgrpo: Unlocking flow-based grpo efficiency with mixed ode-sde. <em>arXiv preprint arXiv:2507.21802</em>, 2025.</p>
+
+<p>[19] Aohan Zeng, Xin Lv, Zhenyu Hou, Zhengxiao Du, Qinkai Zheng, Bin Chen, Da Yin, Chendi Ge, Chenghua Huang, Chengxing Xie, et al. Glm-5: from vibe coding to agentic engineering. <em>arXiv preprint arXiv:2602.15763</em>, 2026.</p>
+
+<p>[20] Bangjun Xiao, Bingquan Xia, Bo Yang, Bofei Gao, Bowen Shen, Chen Zhang, Chenhong He, Chiheng Lou, Fuli Luo, Gang Wang, et al. Mimo-v2-flash technical report. <em>arXiv preprint arXiv:2601.02780</em>, 2026.</p>
+
+<p>[21] Dhruba Ghosh, Hannaneh Hajishirzi, and Ludwig Schmidt. Geneval: An object-focused framework for evaluating text-to-image alignment. <em>Advances in Neural Information Processing Systems</em>, 36:52132–52152, 2023.</p>
+
+<p>[22] Jingye Chen, Yupan Huang, Tengchao Lv, Lei Cui, Qifeng Chen, and Furu Wei. Textdiffuser: Diffusion models as text painters. <em>Advances in Neural Information Processing Systems</em>, 36:9353–9387, 2023.</p>
+
+<p>[23] Kevin Black, Michael Janner, Yilun Du, Ilya Kostrikov, and Sergey Levine. Training diffusion models with reinforcement learning, 2024.</p>
+
+<p>[24] Ying Fan, Olivia Watkins, Yuqing Du, Hao Liu, Moonkyung Ryu, Craig Boutilier, Pieter Abbeel, Mohammad Ghavamzadeh, Kangwook Lee, and Kimin Lee. Dpok: Reinforcement learning for fine-tuning text-to-image diffusion models, 2023.</p>
+
+<p>[25] Jiazheng Xu, Xiao Liu, Yuchen Wu, Yuxuan Tong, Qinkai Li, Ming Ding, Jie Tang, and Yuxiao Dong. Imagereward: learning and evaluating human preferences for text-to-image generation. In <em>Proceedings of the 37th International Conference on Neural Information Processing Systems</em>, pages 15903–15935, 2023.</p>
+
+<p>[26] Bram Wallace, Meihua Dang, Rafael Rafailov, Linqi Zhou, Aaron Lou, Senthil Purushwalkam, Stefano Ermon, Caiming Xiong, Shafiq Joty, and Nikhil Naik. Diffusion model alignment using direct preference optimization, 2023.</p>
+
+<p>[27] Jie Liu, Gongye Liu, Jiajun Liang, Yangguang Li, Jiaheng Liu, Xintao Wang, Pengfei Wan, Di Zhang, and Wanli Ouyang. Flow-grpo: Training flow matching models via online rl. <em>arXiv preprint arXiv:2505.05470</em>, 2025.</p>
+
+<p>[28] Shihao Yuan, Yahui Liu, Yang Yue, Jingyuan Zhang, Wangmeng Zuo, Qi Wang, Fuzheng Zhang, and Guorui Zhou. Ar-grpo: Training autoregressive image generation models via reinforcement learning. <em>arXiv preprint arXiv:2508.06924</em>, 2025.</p>
+
+<p>[29] Guohui Zhang, Hu Yu, Xiaoxiao Ma, JingHao Zhang, Yaning Pan, Mingde Yao, Jie Xiao, Linjiang Huang, and Feng Zhao. Group critical-token policy optimization for autoregressive image generation. <em>arXiv preprint arXiv:2509.22485</em>, 2025.</p>
+
+<p>[30] Xiaoxiao Ma, Haibo Qiu, Guohui Zhang, Zhixiong Zeng, Siqi Yang, Lin Ma, and Feng Zhao. Stage: Stable and generalizable grpo for autoregressive image generation. <em>arXiv preprint arXiv:2509.25027</em>, 2025.</p>
+
+<p>[31] Guohui Zhang, Hu Yu, Xiaoxiao Ma, Yaning Pan, Hang Xu, and Feng Zhao. Maskfocus: Focusing policy optimization on critical steps for masked image generation. <em>arXiv preprint arXiv:2512.18766</em>, 2025.</p>
+
+<p>[32] Xiaoxiao Ma, Jiachen Lei, Tianfei Ren, Jie Huang, Siming Fu, Aiming Hao, Jiahong Wu, Xiangxiang Chu, and Feng Zhao. Mar-grpo: Stabilized grpo for ar-diffusion hybrid image generation. <em>arXiv preprint arXiv:2604.06966</em>, 2026.</p>
+
+<p>[33] Shih-Yang Liu, Xin Dong, Ximing Lu, Shizhe Diao, Peter Belcak, Mingjie Liu, Min-Hung Chen, Hongxu Yin, Yu-Chiang Frank Wang, Kwang-Ting Cheng, Yejin Choi, Jan Kautz, and Pavlo Molchanov. Gdpo: Group reward-decoupled normalization policy optimization for multi-reward rl optimization, 2026.</p>
+
+<p>[34] Rishabh Agarwal, Nino Vieillard, Yongchao Zhou, Piotr Stanczyk, Sabela Ramos Garea, Matthieu Geist, and Olivier Bachem. On-policy distillation of language models: Learning from self-generated mistakes. In <em>The twelfth international conference on learning representations</em>, 2024.</p>
+
+<p>[35] Yuxian Gu, Li Dong, Furu Wei, and Minlie Huang. Minillm: Knowledge distillation of large language models. In <em>The twelfth international conference on learning representations</em>, 2024.</p>
+
+<p>[36] Jongwoo Ko, Tianyi Chen, Sungnyun Kim, Tianyu Ding, Luming Liang, Ilya Zharkov, and Se-Young Yun. Distillm-2: A contrastive approach boosts the distillation of llms. <em>arXiv preprint arXiv:2503.07067</em>, 2025.</p>
+
+<p>[37] Wenkai Yang, Weijie Liu, Ruobing Xie, Kai Yang, Saiyong Yang, and Yankai Lin. Learning beyond teacher: Generalized on-policy distillation with reward extrapolation. <em>arXiv preprint arXiv:2602.12125</em>, 2026.</p>
+
+<p>[38] Woogyeol Jin, Taywon Min, Yongjin Yang, Swanand Ravindra Kadhe, Yi Zhou, Dennis Wei, Nathalie Baracaldo, and Kimin Lee. Entropy-aware on-policy distillation of language models. <em>arXiv preprint arXiv:2603.07079</em>, 2026.</p>
+
+<p>[39] Dongxu Zhang, Zhichao Yang, Sepehr Janghorbani, Jun Han, Andrew Ressler II, Qian Qian, Gregory D Lyng, Sanjit Singh Batra, and Robert E Tillman. Fast and effective on-policy distillation from reasoning prefixes. <em>arXiv preprint arXiv:2602.15260</em>, 2026.</p>
+
+<p>[40] Yuanda Xu, Hejian Sang, Zhengze Zhou, Ran He, and Zhipeng Wang. Paced: Distillation and self-distillation at the frontier of student competence. <em>arXiv e-prints</em>, pages arXiv–2603, 2026.</p>
+
+<p>[41] Kevin Lu and Thinking Machines Lab. On-policy distillation. <em>Thinking Machines Lab: Connectionism</em>, 2025. https://thinkingmachines.ai/blog/on-policy-distillation.</p>
+
+<p>[42] Yuval Kirstain, Adam Polyak, Uriel Singer, Shahbuland Matiana, Joe Penna, and Omer Levy. Pick-a-pic: An open dataset of user preferences for text-to-image generation. <em>Advances in Neural Information Processing Systems</em>, 36:36652–36663, 2023.</p>
+
+<p>[43] Zhiyuan You, Xin Cai, Jinjin Gu, Tianfan Xue, and Chao Dong. Teaching large language models to regress accurate image quality scores using score distribution. <em>arXiv preprint arXiv:2501.11561</em>, 2025.</p>
+
+<p>[44] Christoph Schuhmann. Laion aesthetics, Aug 2022.</p>
+
+<p>[45] Jiazheng Xu, Xiao Liu, Yuchen Wu, Yuxuan Tong, Qinkai Li, Ming Ding, Jie Tang, and Yuxiao Dong. Imagereward: Learning and evaluating human preferences for text-to-image generation. <em>Advances in Neural Information Processing Systems</em>, 36, 2024.</p>
+
+<p>[46] Yibin Wang, Yuhang Zang, Hao Li, Cheng Jin, and Jiaqi Wang. Unified reward model for multimodal understanding and generation. <em>arXiv preprint arXiv:2503.05236</em>, 2025.</p>
+
+<p>[47] Xiaoshi Wu, Yiming Hao, Keqiang Sun, Yixiong Chen, Feng Zhu, Rui Zhao, and Hongsheng Li. Human preference score v2: A solid benchmark for evaluating human preferences of text-to-image synthesis. <em>arXiv preprint arXiv:2306.09341</em>, 2023.</p>
+
+<p>[48] An Yang, Anfeng Li, Baosong Yang, Beichen Zhang, Binyuan Hui, Bo Zheng, Bowen Yu, Chang Gao, Chengen Huang, Chenxu Lv, et al. Qwen3 technical report. <em>arXiv preprint arXiv:2505.09388</em>, 2025.</p>
+
+<p>[49] Kaiwen Zheng, Huayu Chen, Haotian Ye, Haoxiang Wang, Qinsheng Zhang, Kai Jiang, Hang Su, Stefano Ermon, Jun Zhu, and Ming-Yu Liu. Diffusionnft: Online diffusion reinforcement with forward process. <em>arXiv preprint arXiv:2509.16117</em>, 2025.</p>
+
+<hr>
+
+<h2 id="d3-附录-a-更多细节">附录 A 更多细节</h2>
+
+<p>遵循 Flow-GRPO 的数据和奖励配置，我们使用 GenEval、OCR 和 PickScore 的轮次比例 3:1:1 对 GRPO-mix 进行多任务混合训练。在每个轮次中，奖励由当前数据分区对应的奖励模型独占提供。训练在四个节点的分布式集群上执行，每个节点配备八块 H800 GPU，约 50 小时。对于 GenEval、OCR 和 PickScore 教师，我们使用了官方的 Flow-GRPO 检查点。此外，为纳入仅关注图像质量的 DeQA 教师，其奖励信号以 1:1 的求和比集成到标准 GRPO-mix 训练中。</p>
+
+<p><strong>超参数说明</strong> 除 $\beta$ 外，GRPO 超参数在各任务间保持一致。我们使用采样时间步 $T = 10$ 和评估时间步 $T = 40$。其他设置包括组大小 $G = 24$、噪声水平 $\sigma = 0.7$ 和图像分辨率 512。MAR KL 比率 $\beta$ 设置为 0.02。我们使用 LoRA，$\alpha = 64$ 和 $r = 32$。</p>
+
+<table>
+<thead><tr>
+<th>模型</th>
+<th>链接</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>SD3.5-M [2]</td>
+<td>https://huggingface.co/stabilityai/stable-diffusion-3.5-medium</td>
+</tr>
+<tr>
+<td>Aesthetic Score [44]</td>
+<td>https://github.com/LAION-AI/aesthetic-predictor</td>
+</tr>
+<tr>
+<td>PickScore [42]</td>
+<td>https://huggingface.co/yuvalkirstain/PickScore_v1</td>
+</tr>
+<tr>
+<td>DeQA score [43]</td>
+<td>https://huggingface.co/zhiyuanyou/DeQA-Score-Mix3</td>
+</tr>
+<tr>
+<td>ImageReward [45]</td>
+<td>https://huggingface.co/THUDM/ImageReward</td>
+</tr>
+<tr>
+<td>UnifiedReward [46]</td>
+<td>https://huggingface.co/CodeGoat24/UnifiedReward-7b-v1.5</td>
+</tr>
+<tr>
+<td>HPS-v2.1 [47]</td>
+<td>https://github.com/tgxs002/HPSv2</td>
+</tr>
+<tr>
+<td>Qwenvl Score [48]</td>
+<td>https://huggingface.co/Qwen/Qwen3-30B-A3B-Instruct-2507</td>
+</tr>
+</tbody></table>
+
+<p>关于 Qwenvl Score，我们采用了 Flow-GRPO [16] 中使用的提示词，如图 6 所示。我们使用 Qwen3-30B-A3B-Instruct-2507。</p>
+
+<p><strong>图 6：Qwenvl Score 的结构化评估提示词</strong></p>
+
+<pre><code>
+[ROLE]（角色）
+You are a professional visual verification assistant. Evaluate the generated image based on the
+provided instruction across three specific dimensions.
+（你是一名专业的视觉验证助手。根据提供的指令，在三个特定维度上评估生成的图像。）
+
+[CRITERIA]（标准）
+1. Aesthetic Quality（美学质量）
+   - 1-2 (Low/低): Blurry, poor lighting, or chaotic composition.（模糊、光线差或构图混乱。）
+   - 3 (Fair/中等): In focus, adequate lighting, but lacks creativity.（对焦清晰、光线充足，但缺乏创意。）
+   - 4-5 (High/高): Sharp, vibrant colors, masterful composition and impact.（清晰、色彩鲜艳、构图精湛且富有冲击力。）
+2. Instruction Following（指令遵循）
+   - 1-2 (Low/低): Ignores or contradicts the instruction; misses key elements.（忽略或违反指令；缺少关键元素。）
+   - 3 (Fair/中等): Partially follows, but distorts some important elements.（部分遵循，但扭曲了一些重要元素。）
+   - 4-5 (High/高): Faithful representation of all elements in the prompt.（忠实呈现提示中的所有元素。）
+3. Overall Score (Priority: Alignment &gt; Aesthetics)（总体分数，优先级：对齐 &gt; 美学）
+The overall score must primarily reflect Instruction Following. A fair image that perfectly follows
+the prompt scores higher than a beautiful image that misses it.
+（总体分数必须主要反映指令遵循程度。一幅完美遵循提示但质量一般的图像，其得分应高于一幅美观但偏离提示的图像。）
+
+[EXECUTION RULES]（执行规则）
+   - Strictness: Be rigorous; required details must be explicitly supported.（严格性：需严谨；要求的细节必须有明确支持。）
+   - Reasoning: You MUST analyze keyword-by-keyword in the &lt;Thought&gt; tag.（推理：必须在 &lt;Thought&gt; 标签中逐关键词分析。）
+   - Output: Provide the analysis first, then the scores in XML tags.（输出：先提供分析，再以 XML 标签形式提供分数。）
+
+[INPUT DATA]（输入数据）
+Instruction: {prompt}
+（指令：{prompt}）
+
+[OUTPUT FORMAT]（输出格式）
+&lt;Thought&gt; [Detailed analysis of quality and adherence] &lt;/Thought&gt;
+&lt;QualityScore&gt;X&lt;/QualityScore&gt;
+&lt;InstructionScore&gt;Y&lt;/InstructionScore&gt;
+&lt;OverallScore&gt;Z&lt;/OverallScore&gt;
+</code></pre>
+
+<hr>
+
+<h2 id="d3-附录-b-更多结果">附录 B 更多结果</h2>
+
+<h3 id="d3-b1-定性结果">B.1 定性结果</h3>
+
+<p>更多定性结果如图 7、8 和 9 所示。我们的方法不仅确保了精确的内容生成，还提供了卓越的图像质量和连贯的结构布局。通过与人类偏好实现更强的对齐，Flow-OPD 展示了在功能准确性与美学卓越之间架桥的显著新颖性。</p>
+
+<p><em>（图 7-9 中的文本提示和图像均为英文原版引用，此处不再逐条翻译。）</em></p>
+
+<h3 id="d3-b2-与-diffusionnft-的比较">B.2 与 DiffusionNFT 的比较</h3>
+
+<p>DiffusionNFT [49] 引入了一种在线强化学习框架，将奖励反馈直接集成到前向扩散过程中，实现在噪声注入阶段的策略优化。尽管在基准分数上具有竞争力，DiffusionNFT 仍存在若干关键局限性。首先，它与无分类器引导（Classifier-Free Guidance, CFG）根本不兼容，这严重限制了其性能上限。其次，它遭受明显的奖励黑客行为。如图 10 所示，虽然模型正确生成了目标文本和"日落"元素，但同时幻觉出畸形的手部和多余的物体（如橙子），并伴有严重的过平滑、类塑料纹理伪影。当前的基准在很大程度上忽视了这些局部结构和美学失败。为解决这一评估盲点，我们采用 Qwenvl Score 进行更全面的评估。通过利用连续时间密集多专家监督和任务风格解耦，Flow-OPD 有效规避了这些奖励黑客行为，获得了比 DiffusionNFT 显著更高的 Qwen-VL 分数。这些发现也凸显了社区亟需开发更鲁棒、细粒度的文本到图像生成评估范式。</p>
+
+<p><strong>表 5：人类偏好对齐的比较。我们的 Flow-OPD 在复杂视觉推理和布局连贯性方面始终获得卓越分数（由 Qwen-VL 评估）。</strong></p>
+
+<table>
+<thead><tr>
+<th>模型</th>
+<th>Qwen-VL Score</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>DiffusionNFT</td>
+<td>3.74</td>
+</tr>
+<tr>
+<td><strong>Ours (Flow-OPD)</strong></td>
+<td><strong>4.05</strong></td>
+</tr>
+</tbody></table>
+
+<h3 id="d3-b3-失败案例与局限性">B.3 失败案例与局限性</h3>
+
+<p>尽管 Flow-OPD 在主观和客观基准上均表现出优越性能，但某些局限性仍然存在。一个主要限制是教师模型所施加的性能上限。如图 11 所示，当专业教师未能合成语义正确的图像时，这些不准确性会通过密集监督信号传播。这种错误引导会将噪声引入蒸馏目标，最终阻碍学生超越教师集成的固有限制。另一个固有局限性是教师和学生模型之间需要架构同质性方可实现细粒度的逐步监督。展望未来，我们旨在通过若干有前景的方向探索 Flow-OPD 的更广泛潜力，包括：（1）协同演化蒸馏（Co-evolutionary Distillation），其中教师和学生迭代地相互优化；（2）自蒸馏（Self-Distillation）机制，无需外部教师即可提升性能；（3）跨词汇表蒸馏（Cross-Vocabulary Distillation），以弥合异构模型架构之间的差距。</p>
+
+<hr>
+
+<h2 id="d3-更广泛的影响">更广泛的影响</h2>
+
+<p>我们关于 Flow-OPD 的工作引入了一个面向生成模型中多任务对齐的鲁棒框架，既带来了积极的社会贡献，也带来了需要审慎考虑的潜在风险。</p>
+
+<h3 id="d3-积极的社会影响">积极的社会影响</h3>
+
+<p>本工作的主要贡献是增强了 AI 生成内容的功能可靠性。通过改进布局连贯性和 OCR 准确率，Flow-OPD 可以显著造福专业领域，如自动化平面设计、教育内容创作以及面向视障人士的辅助技术。此外，我们的多教师范式推动了更平衡的优化目标，这减轻了单奖励强化学习中固有的"赢者通吃"偏差，有望催生更多样化和更具代表性的生成系统。</p>
+
+<h3 id="d3-消极的社会影响">消极的社会影响</h3>
+
+<p>尽管有这些益处，生成高质量、遵循指令的图像的能力提升也可能被滥用于制造复杂的虚假信息或欺骗性视觉内容。虽然我们的模型继承了基础模型的安全过滤器，但增强的结构真实感可能被利用来生成更具说服力的伪造文件或误导性社交媒体资产。为缓解这一问题，我们倡导在下游应用中集成数字水印和来源追踪（如 C2PA）。此外，与所有大规模生成模型一样，存在专业教师可能隐藏训练数据中潜在偏差的风险，这些偏差可能被无意中蒸馏到学生模型中。我们鼓励社区在采用本框架的同时使用偏差检测基准，以确保在所有人群中的公平性能。</p>
+
+<hr>
+
+<p><em>本文为完整翻译版本，保留了所有公式、表格结构、图表说明和参考文献原文。翻译力求学术严谨与专业术语准确。</em></p>
+
+
+<button id="back-to-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="回到顶部">↑</button>
+
+<div class="footer">
+  <p>PT.2 · Prune-OPD &amp; Flow-OPD — OPD 前沿扩展 · 深度阅读笔记</p>
+  <p>论文来源：arXiv:2605.07804v3 (Prune-OPD) · arXiv:2605.08063v5 (Flow-OPD)</p>
+  <p>构建时间：2026/07/23 · Claude Code</p>
+</div>
+
+<script>
+// Scroll-spy for sidebar TOC
+(function() {
+  const sidebar = document.getElementById('sidebar');
+  if (!sidebar) return;
+  const links = sidebar.querySelectorAll('a');
+  const sections = [];
+  links.forEach(link => {
+    const id = link.getAttribute('href');
+    if (id && id.startsWith('#')) {
+      const el = document.querySelector(id);
+      if (el) sections.push({el, link});
+    }
+  });
+
+  function updateActive() {
+    let current = '';
+    const scrollY = window.scrollY + 100;
+    sections.forEach(({el, link}) => {
+      if (el.offsetTop <= scrollY) {
+        current = link.getAttribute('href');
+      }
+    });
+    links.forEach(link => {
+      link.classList.toggle('active', link.getAttribute('href') === current);
+    });
+  }
+
+  window.addEventListener('scroll', updateActive, {passive: true});
+  updateActive();
+})();
+
+// Back to top button
+(function() {
+  const btn = document.getElementById('back-to-top');
+  if (!btn) return;
+  window.addEventListener('scroll', function() {
+    btn.classList.toggle('visible', window.scrollY > 400);
+  }, {passive: true});
+})();
+</script>
+
+</body>
+</html>
