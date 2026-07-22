@@ -1,0 +1,1620 @@
+arXiv:2604.28123v1 [cs.CV] 30 Apr 2026  Preprint.
+
+                                        PRISM: Pre-alignment via Black-box On-policy
+                                        Distillation for Multimodal Reinforcement Learning
+
+                                         Sudong Wang1 Weiquan Huang1 Xiaomin Yu1 Zuhao Yang3 Hehai Lin1
+                                         Keming Wu2 Chaojun Xiao2 Chen Chen2 Wenxuan Wang4 Beier Zhu5
+                                         Yunjian Zhang6 Chengwei Qin1
+                                         1Hong Kong University of Science and Technology (Guangzhou) 2Tsinghua University
+                                         3Nanyang Technological University 4Renmin University of China
+                                         5University of Science and Technology of China 6University of Chinese Academy of Sciences
+                                         {swang886, whuang491}@connect.hkust-gz.edu.cn
+
+                                                                                   ABSTRACT
+
+                                                  The standard post-training recipe for large multimodal models (LMMs) applies
+                                                   supervised fine-tuning (SFT) on curated demonstrations followed by reinforcement
+                                                   learning with verifiable rewards (RLVR). However, SFT introduces distributional
+                                                   drift that neither preserves the model's original capabilities nor faithfully matches
+                                                   the supervision distribution. This problem is further amplified in multimodal rea-
+                                                   soning, where perception errors and reasoning failures follow distinct drift patterns
+                                                   that compound during subsequent RL. We introduce PRISM, a three-stage pipeline
+                                                   that mitigates this drift by inserting an explicit distribution-alignment stage between
+                                                   SFT and RLVR. Building on the principle of on-policy distillation (OPD), PRISM
+                                                   casts alignment as a black-box, response-level adversarial game between the pol-
+                                                   icy and a Mixture-of-Experts (MoE) discriminator with dedicated perception and
+                                                   reasoning experts, providing disentangled corrective signals that steer the policy to-
+                                                  ward the supervision distribution without requiring access to teacher logits. While
+                                                  1.26M public demonstrations suffice for broad SFT initialization, distribution align-
+                                                   ment demands higher-fidelity supervision; we therefore curate 113K additional
+                                                   demonstrations from Gemini 3 Flash, featuring dense visual grounding and step-
+                                                   by-step reasoning on the hardest unsolved problems. Experiments on Qwen3-VL
+                                                   show that PRISM consistently improves downstream RLVR performance across
+                                                   multiple RL algorithms (GRPO, DAPO, GSPO) and diverse multimodal bench-
+                                                   marks, improving average accuracy by +4.4 and +6.0 points over the SFTRLVR
+                                                   baseline on 4B and 8B, respectively. Our code, data, and model checkpoints are
+                                                   publicly available at https://github.com/XIAO4579/PRISM.
+
+                                        1 Introduction
+
+                                        Driven by the success of reasoning-oriented large language models (LLMs) (Guo et al., 2025; Jaech
+                                        et al., 2024; Yang et al., 2025a; Zeng et al., 2026; Lin et al., 2026a), large multimodal models (LMMs)
+                                        have also demonstrated strong instruction-following and reasoning capabilities (Bai et al., 2025;
+                                        Chen et al., 2024). A prevailing paradigm for improving such capabilities is a two-stage post-training
+                                        pipeline: models are first adapted via offline supervised fine-tuning (SFT) on curated demonstrations
+                                        (Liu et al., 2023; 2024), and then further optimized with online reinforcement learning with verifiable
+                                        rewards (RLVR) (Shao et al., 2024; Yang et al., 2024), which directly improves task performance
+                                        using automatic verifiers. In this pipeline, SFT provides a crucial capability bootstrap by anchoring
+                                        the model to high-quality supervision, while RLVR further refines the policy toward task-specific
+                                        objectives and largely determines the final performance. As a result, a growing body of work has
+                                        focused on improving the effectiveness and stability of both stages. For SFT, recent methods optimize
+                                        it by reweighting or regularizing next-token likelihood (Qin & Springenberg, 2025; Zhu et al., 2025).
+
+                                            *Equal contribution.
+                                            Corresponding authors.
+
+                                                                                                   1
+Preprint.
+
+    Example Prompt & Supervision                                (a) Post-SFT                                     (b) Alignment                                                                                   (c) Post-Alignment
+                                                          Supervision Post-SFT policy                             Policy Rollouts
+Question: Based on the sequence of shapes,                                                                                                                                                                       Supervision  PRISM policy
+identify the pattern in the number of vertices.           Semanc dimension 1                                   MoE Discriminator
+How many vertices does the n-th shape have?       Semanc dimension 2                               Perception                                 Reasoning
+                                                                                                                                                                                             Semanc dimension 2Caption Drift:RewardReward
+             Supervision Target                   ...
+                                                                                                               Percepon Expert                                  Semanc dimension 1
+   Caption:                                        **Subjects**: Shape  is a star-like                            Checks visual
+   ...                                            outline; ... Shape  shows five outer                             grounding                             Caption:
+                                                  pentagonal arms.                                                                                       **Subjects**: Shape  is a 6-pointed
+     **Subjects**: Shape  is a 6-pointed          ...                                                                       Reasoning Expert             star; ... Shape  has five pentagonal
+   star; ...Shape  has 5 pentagonal arms          Reasoning Drift:                                                          Checks reasoning             arms and visible inner valleys.
+   ...                                            ...                                                                                                    ...
+   Reasoning:                                     - The shapes form an increasing arm                                          consistency               Reasoning:
+   ...                                            structure, so I count the visible outer                                                                ...
+   - The first vertex counts are 12, 20, 30, 42,  corners.                                                        Supervision Pool                       - The vertex count includes both outer
+   56.                                            - Counting this way gives 6, 12, 20, 30, 42.                 (captions + reasoning)                    arm corners and inner valley corners.
+   - These match 3×4, 4×5, 5×6, 6×7, 7×8.         - Therefore, it fits the pattern as V(n) =                                                             - The first five counts are 12, 20, 30, 42,
+   - Thus, V(n) = (n+2)(n+3).                     (n+1)(n+2).                                                                                            56, matching 3×4, 4×5, 5×6, 6×7, 7×8.
+   ...                                            ...                                                                                                    - Hence, V(n) = (n+2)(n+3).
+                                                                                                                                                         ...
+           SFT introduces dri                                                                   Alignment repairs mismatch
+                                                                                                                                                                Better RLVR initialization
+                                                                                                                                                                   Stronger RLVR gains
+
+                                                                                                                                                                 Beer RLVR inializaon
+
+Figure 1: Overview of the PRISM pipeline. (a) SFT introduces distributional drift between the policy
+and the supervision distribution. (b) The alignment stage uses an MoE discriminator with dedicated
+perception and reasoning experts to repair this drift via adversarial on-policy distillation. (c) The
+resulting distribution-aligned policy provides a stronger initialization for downstream RLVR.
+
+For RLVR, a number of approaches have been proposed to improve optimization stability and reduce
+variance, including GRPO-style variants that redesign importance weighting and clipping mechanisms
+to stabilize policy updates (Yu et al., 2025; Zheng et al., 2025; Zhao et al., 2025; Yue et al., 2025c;
+Wang et al., 2026). The underlying intuition is straightforward: SFT establishes an implicit reasoning
+prior in the model's parameter space, whereas RLVR activates and refines this capability through
+online optimization (Chu et al., 2025; Yue et al., 2025b).
+
+However, recent studies have uncovered a striking and counterintuitive phenomenon: instead of
+reliably improving the model, offline supervision may place the model in a compromised state, where
+it neither adequately matches the demonstration policy distribution nor retains the model's original
+favorable distribution (Kang et al., 2025; Zhang et al., 2026a). In this sense, SFT can become a
+source of distributional drift rather than a pure improvement step. A plausible explanation is that
+SFT optimizes the model to imitate trajectories sampled from the demonstration policy under a
+uniform token-level objective, without distinguishing between process and outcome. As a result, the
+model may learn surface-level patterns rather than faithful reasoning capabilities, and simultaneously
+drift away from its original distribution. While this drift is often tolerable for weaker models that
+gain substantially from learning the demonstration policy, it becomes increasingly costly as the
+base model grows stronger: when the model already possesses a capable reasoning distribution,
+token-level imitation of an external demonstration policy can displace the model's native strengths
+rather than supplement them (Zhang et al., 2026a; Kang et al., 2025). This issue becomes particularly
+pronounced in multimodal models, where the distributional bias introduced by SFT interacts with
+imperfect visual grounding: even slight deviations at the perception stage can distort the premises
+of reasoning and subsequently amplify errors throughout RL (Liu et al., 2025a; Chu et al., 2025).
+Moreover, unlike the relatively uniform drift in text-only models, multimodal drift is inherently
+heterogeneous: visual grounding and logical reasoning degrade in qualitatively different ways that
+a single corrective objective cannot jointly address. This raises a natural question: How can we
+repair the distributional drift introduced by SFT, particularly its heterogeneous impact on
+visual perception and reasoning, before the model enters RL?
+
+Advances in knowledge distillation suggest that a model can benefit substantially from learning from
+its own on-policy generations rather than relying solely on static teacher-forced targets (Gu et al., 2024;
+Agarwal et al., 2024; Zhao et al., 2026). By optimizing on rollouts sampled from its current policy,
+on-policy distillation (OPD) mitigates exposure bias and encourages more faithful policy refinement
+(Gu et al., 2024; Zhang et al., 2019). Building on this principle, we propose PRe-alignment via
+black-box on-policy dIStillation for Multimodal reinforcement learning (PRISM), a new three-stage
+post-training paradigm that extends the standard SFTRL recipe with an explicit pre-alignment stage.
+The core of PRISM is an adversarial OPD framework that drives the post-SFT policy distribution
+toward the supervision distribution, while introducing a logit-free formulation that eliminates the
+
+                                                                                                2
+Preprint.
+
+external-teacher dependency of standard OPD. Specifically, we formulate alignment as a minimax
+game (Goodfellow et al., 2020) between the policy and a Mixture-of-Experts (MoE) discriminator
+with dedicated vision and reasoning experts. The discriminator learns to separate policy rollouts
+from the supervision pool by probing both perceptual grounding and reasoning consistency, while
+the policy is optimized to generate responses that increasingly resemble the supervision distribution.
+This design establishes a critical distribution-level alignment stage after SFT, not only correcting
+distributional drift, but also preparing a more reliable initialization for online optimization.
+
+We validate PRISM on Qwen3-VL across diverse multimodal benchmarks and multiple RL algorithms.
+The results confirm consistent improvements over the standard SFTRLVR pipeline, and further
+analysis shows that the alignment stage substantially narrows the distributional gap left by SFT. An
+overview of the PRISM pipeline is shown in Figure 1.
+
+In summary, our main contributions are as follows:
+
+· We propose PRISM, the first framework to reposition on-policy distillation as a standalone interme-
+  diate alignment stage between SFT and RLVR. In the multimodal setting, PRISM further introduces
+  black-box adversarial alignment with an MoE discriminator, providing decoupled corrective signals
+  for perception and reasoning drift.
+
+· We curate a 113K high-quality multimodal reasoning corpus distilled from Gemini 3 Flash, targeting
+  the hardest problems unsolved by current LMMs with dense visual grounding and step-by-step
+  reasoning traces. Combined with 1.26M publicly available demonstrations from the same model
+  family, this corpus serves as both the SFT foundation and the supervision reference for distribution
+  alignment.
+
+· Experiments on Qwen3-VL-4B/8B validate that PRISM consistently and substantially improves
+  downstream RLVR, with PRISM+GRPO outperforming SFTGRPO by +4.4 and +6.0 average
+  points on the two scales, respectively, and similar gains observed across DAPO and GSPO.
+
+2 Related Work
+
+2.1 Reinforcement Learning for Multimodal Reasoning
+
+Reinforcement learning with verifiable rewards (RLVR) has emerged as a dominant paradigm for
+improving reasoning in both large language models and large multimodal models (LMMs). In the
+text domain, DeepSeek-R1 (Guo et al., 2025) demonstrated that pure RL with verifiable rewards
+can elicit emergent chain-of-thought reasoning without human-labeled traces, motivating a series of
+algorithmic improvements that enhance optimization stability at scale through redesigned clipping,
+advantage estimation, critic-free architectures, or sequence-level objectives (Shao et al., 2024; Hu,
+2025; Yu et al., 2025; Liu et al., 2025b; Zheng et al., 2025). In the multimodal domain, early
+efforts explored R1-style RL for LMMs via cold-start initialization (Huang et al., 2025), cross-modal
+formalization (Yang et al., 2025b), large-scale rule-based RL with emergent reflection (Meng et al.,
+2025; Zhang et al., 2025c), curriculum-based sampling (Hong et al., 2025), and self-reflection
+incentivization (Wang et al., 2025a). More recently, a line of work has recognized that vanilla
+RLVR neglects visual perception fidelity, and proposed perception-aware reward signals through
+judging LLMs (Xiao et al., 2025), evidence-anchored dual-branch reasoning (Zhang et al., 2025a),
+or differential visual reasoning with visual triplets (Gao et al., 2026). While these methods have
+advanced multimodal reasoning through better RL algorithms or reward designs, they all operate
+within the RL stage without addressing the distribution gap inherited from the preceding SFT stage,
+which is the bottleneck that PRISM targets.
+
+2.2 On-Policy Distillation
+
+Standard knowledge distillation for LLMs performs SFT on teacher-generated outputs, but this
+off-policy approach suffers from a distribution mismatch between training and inference. On-policy
+distillation (OPD) addresses this by training the student on its own generations: GKD (Agarwal
+et al., 2024) introduced the paradigm with flexible divergence objectives, followed by explorations of
+alternative divergences (Gu et al., 2024; Ko et al., 2024) and logit-free adversarial formulations (Ye
+et al., 2025a). Recent extensions further broaden OPD along complementary axes such as self-
+distillation (Zhao et al., 2026), reward extrapolation (Yang et al., 2026), selective imitation (Zhang
+
+                                                           3
+Preprint.
+
+et al., 2026c), and multimodal representation transfer (Cai et al., 2025). Despite these advances, most
+existing OPD methods treat distillation as a terminal training objective where the resulting checkpoint
+serves directly as the final model, and rely on a single undifferentiated discriminator or divergence
+signal. PRISM instead positions OPD as an intermediate alignment stage that explicitly prepares
+the policy for subsequent RLVR, and employs an MoE discriminator with dedicated vision and
+reasoning experts to provide decoupled rewards that address the heterogeneous nature of multimodal
+distribution shift. In the multimodal setting, VOLD (Bousselham et al., 2025) combines GRPO with
+logit-based on-policy distillation from a text-only teacher into a unified training objective. PRISM
+differs in three key respects: it decouples alignment from RL as a standalone intermediate stage, it
+operates without teacher logits via adversarial discrimination, and it provides decoupled feedback
+through dedicated perception and reasoning experts.
+
+3 Method
+
+We present PRISM, a three-stage post-training pipeline that augments the conventional SFTRL
+paradigm with an intermediate pre-alignment stage. Specifically, PRISM first performs SFT on
+high-quality demonstrations to obtain an initial policy, then applies adversarial OPD with an MoE
+discriminator to recalibrate the post-SFT policy distribution, and finally conducts outcome-based
+RLVR for final policy improvement. The complete procedure is provided in Appendix D; we describe
+each stage in turn below.
+
+3.1 Cold-Start Supervised Fine-Tuning
+
+As the first stage of PRISM, SFT serves as a cold start that equips the model with an initial multimodal
+reasoning policy. Since the same supervision source is later reused in the alignment stage for
+distribution-level correction, each sample must contain not only a correct final answer but also a
+complete reasoning trajectory with accurate visual grounding. Existing public multimodal datasets
+are often inadequate for this purpose, as many contain brief answers, incomplete reasoning traces, or
+imprecise visual descriptions.
+
+To address this, we curate a 113K multimodal reasoning corpus following (Ye et al., 2025b; Lin
+et al., 2026b): we collect problems with zero pass rate under strong contemporary models, generate
+detailed solutions with Gemini 3 Flash (Google DeepMind, 2025) requiring fine-grained visual
+grounding and step-by-step deduction, and apply multi-stage filtering including format validation and
+LLM-based correctness verification (details in Appendix B). Among the resulting samples, 107K
+are used for SFT and the remaining 6K, which possess the highest annotation quality, are reserved
+for the alignment and RL stages. Since a policy trained on insufficient data remains far from the
+target distribution, placing an excessive corrective burden on the downstream alignment stage, we
+supplement our curated corpus with 1.26M publicly available demonstrations from the same Gemini
+model family (Leng et al., 2025), yielding a combined SFT corpus of approximately 1.37M samples.
+
+Using the combined corpus, we perform standard supervised fine-tuning to obtain an initial reasoning-
+capable policy. As we show next, however, SFT alone does not guarantee a distribution well suited
+for subsequent RL optimization, motivating the explicit pre-alignment stage.
+
+3.2 Distribution Alignment via On-Policy Distillation
+
+3.2.1 Overview
+
+The alignment stage repairs the distributional drift introduced by SFT before the model enters RLVR.
+As discussed in Section 1, the post-SFT policy may only partially absorb the target behavior while
+drifting away from its native distribution. Directly passing such a policy to RLVR forces online
+optimization to start from a distorted state, limiting the gains that RL can deliver. A natural idea is
+to apply additional token-level imitation, but this only encourages surface-level matching without
+repairing the mismatch that emerges under on-policy generation. Moreover, the supervision data may
+originate from proprietary black-box models whose logits are inaccessible, rendering divergence-
+based distillation inapplicable. We therefore formulate alignment as a response-level adversarial
+game that requires only samples from the supervision pool. A further challenge is that distributional
+drift in multimodal reasoning is inherently heterogeneous: visual grounding errors and reasoning
+
+                                                           4
+Preprint.
+
+                                                                     Gradient
+
+Multimodal  Supervision             Supervision     Multimodal MoE Discriminator                Bradley-Terry loss
+Prompts        Data                      Pool                                                         !(, "#)
+                                                                      Perception Expert
+                                       (, ")
+                                                                                        object
+
+                         On-policy                Top-2       Reasoning Expert                      !(, !$)
+                         Rollouts                Routing
+                                                          A  B, B  C  C logic                        
+            Policy !                 Policy                                        Gradient
+                                                                                                (, y!)
+                                    Rollout
+                                    (, !)
+
+                                                 Policy Gradient
+
+Figure 2: Architecture of the distribution-alignment stage. An MoE discriminator with perception
+and reasoning experts is trained via Bradley-Terry loss to distinguish supervision from policy outputs;
+the policy is updated via policy gradient to maximize the combined MoE reward.
+
+failures require qualitatively different corrections. This motivates a Mixture-of-Experts discriminator
+with dedicated perception and reasoning experts. The overall architecture is illustrated in Figure 2.
+
+3.2.2 Mixture-of-Experts Discriminator
+
+To provide targeted corrective signals for heterogeneous errors in multimodal reasoning, we instantiate
+the alignment module with an MoE discriminator. The key idea is that deviations from the supervision
+distribution typically arise from two distinct sources: failures in visual grounding and failures in
+logical reasoning. A single discriminator is often too coarse to capture these two error modes
+simultaneously. We therefore decompose the discrimination process into two specialized experts,
+each responsible for one aspect of the response. Concretely, each response y for multimodal input x
+consists of a visual description c and a reasoning trace t. We define two experts in the discriminator:
+
+· Perception Expert Dv: evaluates the visual description c and measures how well the response is
+  grounded in the visual input;
+
+· Reasoning Expert Dr: evaluates the reasoning trace t and measures the consistency and validity
+  of the underlying deduction.
+
+The discriminator score is then defined as a weighted combination of the two expert scores:
+
+                         r(x, y) =  · Dv(x, c) + (1 - ) · Dr(x, t),                                                 (1)
+
+where  controls the trade-off between perceptual and reasoning feedback.
+
+By delivering disentangled feedback on the two dominant sources of multimodal error rather than
+collapsing them into a single scalar, the MoE discriminator provides a finer-grained basis for the
+adversarial alignment objective introduced next.
+
+3.2.3 Initialization for Alignment
+
+The adversarial alignment stage assumes that the policy and the discriminator are reasonably matched
+in capability. In practice, however, a pretrained LMM before alignment remains far from the
+supervision distribution, making its responses trivially separable from reference demonstrations.
+Under such a large gap, the discriminator can quickly saturate, leaving the policy with uninformative
+training signals (Goodfellow et al., 2014; Arjovsky et al., 2017). We therefore initialize both
+components before entering the adversarial phase.
+
+Policy initialization. The policy is initialized from the SFT checkpoint described in Section 3.1,
+which narrows the gap between policy rollouts and the supervision distribution sufficiently for
+adversarial training to begin.
+
+                                                 5
+Preprint.
+
+MoE discriminator initialization. Both experts are initialized from the same pretrained backbone
+and warm-started on their designated components: Dv on preference pairs from visual descriptions,
+Dr on preference pairs from reasoning traces. An auxiliary load-balancing loss (Fedus et al., 2022)
+prevents expert collapse during this stage.
+
+3.2.4 Adversarial On-Policy Distillation
+
+With all components properly initialized, we formulate the alignment stage as a minimax game
+between the policy G and the MoE discriminator. The policy is optimized to generate responses that
+increasingly resemble high-quality reference demonstrations, while the discriminator is trained to
+separate the two. Through this adversarial interaction, the policy distribution is progressively driven
+toward the reference distribution, yielding a more faithfully aligned model before RLVR.
+
+Specifically, the MoE discriminator assigns a scalar score to each response based on both perceptual
+grounding and reasoning consistency. Let T denote the supervision data from which reference pairs
+are drawn. Given a policy response y- and a reference response y+, we train the discriminator
+
+to assign a higher score to the reference and a lower score to the policy rollout by minimizing its
+
+Bradley-Terry loss:
+
+           LDk = -E(x,y+,y-)T log  Dk(x, yk+) - Dk(x, yk-) ,                                   k  {v, r},  (2)
+
+wy-h,erreesypk+ecatinvdelyyk-, wdiethnokte=thve  k-th component    of the reference response   y+ and the policy response
+                                                 corresponding to  the visual description and  k = r corresponding to the
+
+reasoning trace. Here, y-  G(· | x) is sampled from the current policy, and (·) is the sigmoid
+
+function. Importantly, both experts are optimized jointly with the policy throughout alignment, so that
+
+they function as on-policy discriminators that continuously adapt to the evolving rollout distribution.
+
+This design avoids the reward staleness issue that commonly arises when the reward model is fixed
+
+while the policy keeps changing.
+
+The policy is optimized to improve the quality of its own rollouts under the reward provided by the
+MoE discriminator. For each input x, we sample a group of N responses {yi-}Ni=1 from the current
+policy G(· | x), and evaluate each response with the discriminator reward r(x, yi-). We convert these
+rewards into normalized group-wise advantages:
+
+                                                 Ai  =  r(x, yi-) - mean {r(x, yj-)}Nj=1  ,                (3)
+                                                                std {r(x, yj-)}jN=1
+
+where the normalization is performed within each rollout group. In this way, the policy is encouraged
+to increase the probability of responses that are scored as more consistent with the supervision
+distribution, while suppressing inferior rollouts from the same prompt. Taken together, the two
+objectives define a minimax game between the policy and the discriminator:
+
+           min max                               E(x,y+)T , y-G(·|x)  r(x, y+) - r(x, y-)      ,           (4)
+
+             
+
+where  and  denote the parameters of the policy and discriminator, respectively.
+
+We alternate between updating the policy via GRPO and updating the two discriminator experts with
+their respective Bradley-Terry losses. Notably, we remove the KL regularization term commonly
+used to anchor the policy near its SFT initialization, since such a constraint would directly oppose the
+goal of correcting SFT-induced distributional drift. The alignment stage is run for a fixed number of
+steps, after which the resulting checkpoint is used to initialize the final RLVR stage.
+
+3.3 Reinforcement Learning with Verifiable Rewards
+
+The final stage of PRISM applies standard outcome-based RLVR to the aligned checkpoint produced
+
+in Section 3.2. To construct the RL training set, we filter the 6K reserved samples by difficulty,
+
+retaining the 2K instances whose pass rate under the aligned policy falls in [0.2, 0.8] (Wang et al.,
+
+2025b; Zhang et al., 2026b). At this stage, the reward switches from the learned MoE discriminator to
+
+a deterministic verifiable reward. The reward combines answer accuracy racc and format compliance
+
+rfmt:
+
+                                                     rv(x, y) = racc(x, y) + rfmt(x, y).                   (5)
+
+                                                                   6
+Preprint.
+
+Policy optimization follows the same GRPO-style objective as in the alignment stage, with the
+discriminator reward replaced by rv. Importantly, PRISM is agnostic to the specific RL algorithm; in
+our experiments, we instantiate this stage with GRPO (Shao et al., 2024), DAPO (Yu et al., 2025),
+and GSPO (Zheng et al., 2025).
+
+4 Experiments
+
+4.1 Experimental Setup
+
+Models. We use Qwen3-VL-4B and Qwen3-VL-8B (Bai et al., 2025) as the base models, and
+Gemini 3 Flash as the supervision source for data construction. The MoE discriminator follows
+the Qwen3-VL-MoE architecture (Bai et al., 2025), constructed by assembling four Qwen3-VL-2B
+models as expert modules with top-2 routing. The two expert scores Dv and Dr are obtained by
+passing the visual description and reasoning trace through this single MoE model separately, then
+combined via Eq. (1).
+
+Training details. We follow the three-stage pipeline described in Section 3: SFT for 1 epoch on the
+full supervision dataset, distribution alignment for 500 steps, and RLVR for 1500 steps with verifiable
+rewards. Detailed hyperparameters for all stages (learning rates, batch sizes, , rollout temperature,
+group size N , etc.) are provided in Appendix A.
+
+Benchmarks. We evaluate on two groups of benchmarks. For mathematical reasoning, we use
+MathVista (Lu et al., 2023), MathVerse (Zhang et al., 2024), MathVision (Wang et al., 2024), and
+WeMath (Qiao et al., 2025). For general multimodal understanding, we use MMMU (Yue et al.,
+2024), MMMU-Pro (Yue et al., 2025a), and HallusionBench (Guan et al., 2024).
+
+Baselines. We compare against the following: (1) the base Qwen3-VL models without post-training,
+(2) SFT-only models trained on the full supervision dataset, and (3) the standard SFTRLVR pipeline
+without the alignment stage, using GRPO (Shao et al., 2024) and trained with additional RLVR steps
+equal to those of the alignment stage to match the total training budget. For the PRISM pipeline, we
+report results with GRPO, DAPO (Yu et al., 2025), and GSPO (Zheng et al., 2025) in the RLVR stage
+to demonstrate algorithm-agnostic improvements.
+
+4.2 Main Results
+
+Table 1 presents results across both model scales and three RL algorithms. We highlight three key
+observations.
+
+PRISM consistently improves downstream RLVR. PRISM+GRPO outperforms the SFTGRPO
+baseline by +4.4 and +6.0 average points on 4B and 8B, respectively, with the largest gains concen-
+trated on MathVision and WeMath across both scales. Similar improvements hold for DAPO and
+GSPO, confirming that the alignment stage provides a consistently better initialization regardless of
+the downstream RL algorithm. Moreover, PRISM+GRPO achieves these gains while using fewer
+tokens per response (Appendix A.3).
+
+Alignment improves distribution, not immediate accuracy. The PRISM row, representing the
+checkpoint after alignment but before RLVR, shows accuracy comparable to the SFT checkpoint
+on both scales. This is expected: the alignment objective is distributional correction, reshaping the
+model's visual descriptions and reasoning traces to better match the supervision distribution, rather
+than directly optimizing for answer correctness. The value of this distributional shift is realized
+downstream, where every RL algorithm benefits from the improved initialization.
+
+SFT-induced drift is more pronounced for stronger models. Consistent with the observation
+discussed in the introduction, SFT degrades the Instruct checkpoint on average across both scales,
+with the 8B model suffering a larger drop than 4B. On 8B, the standard SFTRLVR pipeline with
+GRPO and GSPO barely recovers the original Instruct performance, indicating that RLVR alone
+cannot fully compensate for the distributional drift introduced by SFT on a model with an already-
+strong prior. In contrast, PRISM+GRPO exceeds the Instruct baseline by over 5 points, demonstrating
+that the alignment stage effectively repairs the drift and unlocks further gains from RLVR.
+
+                                                           7
+Preprint.
+
+Table 1: Main results on mathematical reasoning and general multimodal benchmarks. We report
+
+accuracy (%) for all benchmarks. Bold indicates the best result within each base model. Shaded rows
+denote PRISM (ours).
+
+                            Math Benchmarks                          General Benchmarks
+
+Method           MathVista  MathVerse   MathVision  WeMath     MMMU    MMMU-Pro     Hallusion  Avg.
+                  testmini    testmini    testmini  testmini      val      overall    Bench
+
+                                             Qwen3-VL-4B
+
+Instruct         74.9       59.0        36.5        70.7       63.6    45.1                68.2 59.7
+                                                                                           69.1 56.8
++ SFT            71.5       58.4        31.9        70.6       53.6    42.8                72.0 61.8
+                                                                                           72.3 63.2
++ GRPO           75.7       64.5        35.5        77.8       60.1    47.3                71.9 61.6
+                                                                                           72.6 57.2
++ DAPO           74.3       65.1        42.7        77.2       62.5    48.0                74.8 66.2
+                                                                                           72.9 66.3
++ GSPO           75.2       64.0        37.5        78.4       58.7    45.6                72.9 65.8
+
+PRISM            71.0       59.5        30.6        67.5       56.3    42.8
+
++ GRPO           77.9       68.6        45.4        82.9       64.1    49.7
+
++ DAPO           77.8       68.2        46.7        83.9       64.1    50.4
+
++ GSPO           77.5       66.6        46.7        82.3       63.2    51.1
+
+                                             Qwen3-VL-8B
+
+Instruct         76.0       62.4        43.7        71.7       65.6    52.3                71.6 63.3
+                                                                                           71.2 58.1
++ SFT            70.2       60.4        32.6        73.4       56.3    42.9                71.9 63.3
+                                                                                           71.5 65.2
++ GRPO           75.9       66.9        37.1        79.7       62.6    48.8                73.6 63.3
+                                                                                           69.5 59.3
++ DAPO           77.0       69.8        41.5        84.3       63.0    49.0                77.2 69.3
+                                                                                           76.1 68.9
++ GSPO           75.9       65.5        41.1        80.8       58.2    47.8                75.8 68.7
+
+PRISM            71.4       62.2        37.1        73.1       58.4    43.4
+
++ GRPO           78.3       71.3        52.0        86.4       66.6    53.3
+
++ DAPO           78.2       70.9        52.0        86.2       66.2    52.4
+
++ GSPO           77.9       71.5        51.6        85.9       65.2    52.7
+
+4.3 Ablation Study
+
+All ablations are conducted on Qwen3-VL-4B with GRPO as the default RL algorithm unless
+otherwise noted.
+
+Table 2: Ablation study results. The first row is the full PRISM pipeline for reference.
+
+                            Math Benchmarks                            General Benchmarks
+
+Setting          MathVista  MathVerse   MathVision  WeMath     MMMU    MMMU-Pro     Hallusion  Avg.
+                  testmini    testmini    testmini  testmini      val      overall    Bench
+
+PRISM (full)     77.9       68.6        45.4        82.9       64.1    49.7                74.8 66.2
+
+                                        Discriminator design
+
+Dense 4B disc.   74.6       63.7        41.8        76.9       61.3    47.1                74.0 62.8
+                                                                                           71.6 62.3
+Text-only disc.  74.0       59.5        42.8        76.8       62.7    48.5
+
+                                              Pipeline stages
+
+w/o SFT          62.4       47.6        25.9        55.7       51.4    36.5                66.1 49.4
+                                                                                           72.0 61.8
+w/o Alignment    75.7       64.5        35.5        77.8       60.1    47.3
+
+                                              SFT data scale
+
+SFT-107K         72.3       67.0        43.1        76.9       60.6    49.0                68.3 62.5
+                                                                                           74.8 66.2
+SFT-1.37M        77.9       68.6        45.4        82.9       64.1    49.7
+
+Why does the MoE discriminator matter? As shown in Table 2, replacing the MoE discriminator
+with a single dense model with equal activated compute leads to consistent degradation (-3.4 avg.),
+with the largest drops on WeMath (-6.0) and MathVerse (-4.9). The dense discriminator collapses
+perception and reasoning feedback into a single scalar: when the policy improves along one axis but
+regresses along the other, the monolithic reward cannot disentangle the two effects and the gradient
+signal becomes noisy. The MoE design avoids this by letting each expert specialize on its own
+domain, providing sharper corrective signals. The training dynamics in Section 4.4 further confirm
+that the two experts converge along distinct trajectories, a structure that a single discriminator would
+inevitably conflate.
+
+                                                           8
+Preprint.
+
+Why is the three-stage pipeline necessary? We ablate each training stage individually and find that
+strong performance emerges only with the full three-stage pipeline, consistent with the observation
+in (Yang et al., 2025c) that each stage in a multi-stage post-training pipeline serves an indispensable
+role. Removing the alignment stage reduces the pipeline to standard SFTRLVR with a -4.4 avg.
+drop, indicating that without explicit distribution correction, RLVR alone cannot fully compensate
+for the distributional drift inherited from SFT. Removing SFT leads to an even starker picture (-16.8
+avg.): without cold-start initialization, the capability gap between the model and the supervision
+distribution is too large for adversarial training to function: the discriminator trivially separates the
+two distributions, and the policy drifts toward a degenerate output mode rather than converging
+toward the supervision distribution. Each stage thus serves an indispensable role: SFT provides initial
+competence and narrows the distribution gap enough for adversarial training to begin; alignment
+refines what the reasoning should look like by explicitly closing the residual gap with the supervision
+distribution; and RLVR optimizes whether the reasoning leads to a correct answer.
+
+Why must the discriminator be vision-language? A natural question is whether the discriminator
+truly needs to see the image, or whether textual patterns alone carry enough signal. We test this
+by replacing the vision-language discriminator with a text-only variant of identical architecture.
+The text-only variant can capture surface-level textual patterns such as formatting conventions,
+reasoning templates, and stylistic cues, but it cannot verify whether a visual description faithfully
+depicts the image content. The result is a form of "parrot alignment": the policy learns to sound
+like the supervision data without actually seeing what it describes. Consistently, the degradation
+is most pronounced on tasks that demand faithful visual perception, confirming that meaningful
+distribution alignment in the multimodal setting requires a discriminator that jointly processes vision
+and language.
+
+How important is SFT data scale? When using only our curated 107K samples for SFT instead
+of the full 1.37M corpus (107K curated + 1.26M public), downstream RLVR performance drops by
+-3.7 avg. With less SFT supervision, the model starts further from the target distribution, widening
+the gap that the alignment stage must bridge. While alignment can partially compensate, as the
+reduced-data variant (62.5 avg.) still outperforms the SFTRLVR baseline trained on the full corpus
+but without alignment (61.8 avg.), it cannot fully recover from a weaker initialization. This confirms
+that SFT and alignment are complementary rather than substitutable: broad SFT data tightens the
+initial distribution gap, and alignment closes whatever residual gap remains.
+
+4.4 Analysis
+
+Training dynamics. We analyze            Score Gap (Supervision Policy)     Perception Expert          Reasoning Expert
+
+the adversarial training dynamics of 8
+PRISM during the alignment stage
+by tracking the reward gap between 6
+
+supervision and policy responses, de- 4
+fined as Dk(x, yk+) - Dk(x, yk-) for
+each expert k  {v, r}. As shown in                                       2
+
+Figure 3, both experts exhibit a charac- 0 0                                200  4S0t0ep 600   800  0  200  4S0t0ep 600  800
+teristic rise-then-convergence pattern,
+
+but with notably different trajectories
+
+that reflect the distinct nature of visual Figure 3: Training dynamics: reward gap (supervision -
+
+and reasoning alignment.                 policy) for the perception expert (left) and reasoning expert
+
+The perception expert peaks early and (right). Training runs for 500 steps; we additionally extend
+converges quickly, whereas the rea- to 900 steps to verify convergence stability.
+
+soning expert rises more gradually
+
+and exhibits greater oscillation before stabilizing, suggesting that reasoning alignment involves
+
+more nuanced distributional corrections than visual grounding. Despite these different trajectories,
+
+both experts converge to a comparable equilibrium level, confirming that the adversarial game reaches
+
+a stable state where the policy has been substantially realigned toward the supervision distribution
+
+along both axes.
+
+This asynchronous convergence further supports the MoE design choice validated in the ablation
+study (Section 4.3).
+
+                                                                            9
+Preprint.
+
+Structural Proxies of Distribution Alignment. Since directly visualizing the full multimodal
+response distribution is difficult in such high-dimensional output spaces, we instead probe its evolution
+through interpretable structural proxies (Tang et al., 2016). This choice is also consistent with
+prior work that analyzes model-generated reasoning traces through their structural qualities and
+patterns (Mathur et al., 2025; Jiang et al., 2025). Concretely, we focus on the two dimensions most
+relevant to PRISM: reasoning complexity and perceptual grounding granularity. We visualize the
+number of reasoning steps in the chain-of-thought trace and the number of descriptive items in the
+visual caption. We compute these statistics for the base model, the supervision data, and the policy
+checkpoints after SFT, alignment, and RLVR.
+
+As shown in Figure 4, the base model             Number of Reasoning Steps                  Description Items in Caption
+
+deviates substantially from the super-  Density  0.25                                 0.14
+vision data under both proxies. Af-              0.20                                 0.12
+ter SFT, the response distributions              0.15       468                       0.10  5 10 15 20 25 30
+shift toward supervision but remain              0.10         Supervision             0.08
+visibly mismatched, particularly be-             0.05                                 0.06  Post-Alignment  Post-RLVR
+cause the caption-side proxy tends to            0.000 2                              0.04
+overshoot and produce more descrip-                                                   0.02
+tive items than the supervision data                  Base                 10 12 0.000
+                                                                              Post-SFT
+
+contains. The alignment stage sub-
+
+stantially reduces this mismatch along Figure 4: Structural proxies of distribution alignment: rea-
+
+both dimensions. Importantly, this im- soning steps (left) and descriptive items per caption (right)
+
+provement persists through RLVR: the across PRISM stages.
+
+post-RLVR distributions continue to
+
+follow similar trends despite the shift in optimization objective from distributional matching to
+
+outcome-based correctness. This suggests that the alignment stage provides a better-shaped initial-
+
+ization for subsequent RLVR, which further improves performance while preserving the alignment
+
+gains.
+
+5 Conclusion
+
+We present PRISM, a three-stage post-training pipeline that mitigates the distributional drift in-
+troduced by SFT through an explicit alignment stage based on black-box adversarial on-policy
+distillation. The core of PRISM is an MoE discriminator with dedicated perception and reasoning
+experts, which provides disentangled corrective signals to steer the post-SFT policy toward the super-
+vision distribution under the model's own rollout dynamics. Extensive experiments on Qwen3-VL
+demonstrate that PRISM consistently improves downstream RLVR performance across multiple RL
+algorithms and diverse multimodal benchmarks. Analysis of training dynamics and response-structure
+distributions suggests that the alignment stage substantially narrows the distributional gap left by
+SFT, and that these corrections persist through subsequent RL optimization.
+
+References
+
+Rishabh Agarwal, Nino Vieillard, Yongchao Zhou, Piotr Stanczyk, Sabela Ramos Garea, Matthieu
+   Geist, and Olivier Bachem. On-policy distillation of language models: Learning from self-
+   generated mistakes. In The twelfth international conference on learning representations, 2024.
+
+Martin Arjovsky, Soumith Chintala, and Léon Bottou. Wasserstein generative adversarial networks.
+   In International conference on machine learning, pp. 214­223. Pmlr, 2017.
+
+Shuai Bai, Yuxuan Cai, Ruizhe Chen, Keqin Chen, Xionghui Chen, Zesen Cheng, Lianghao
+   Deng, Wei Ding, Chang Gao, Chunjiang Ge, et al. Qwen3-vl technical report. arXiv preprint
+   arXiv:2511.21631, 2025.
+
+Walid Bousselham, Hilde Kuehne, and Cordelia Schmid. Vold: Reasoning transfer from llms to
+   vision-language models via on-policy distillation. arXiv preprint arXiv:2510.23497, 2025.
+
+Yuxuan Cai, Jiangning Zhang, Haoyang He, Xinwei He, Ao Tong, Zhenye Gan, Chengjie Wang,
+   Zhucun Xue, Yong Liu, and Xiang Bai. Llava-kd: A framework of distilling multimodal large
+
+                                                 10
+Preprint.
+
+   language models. In Proceedings of the IEEE/CVF International Conference on Computer Vision,
+   pp. 239­249, 2025.
+
+Zhe Chen, Weiyun Wang, Yue Cao, Yangzhou Liu, Zhangwei Gao, Erfei Cui, Jinguo Zhu, Shenglong
+  Ye, Hao Tian, Zhaoyang Liu, et al. Expanding performance boundaries of open-source multimodal
+   models with model, data, and test-time scaling. arXiv preprint arXiv:2412.05271, 2024.
+
+Tianzhe Chu, Yuexiang Zhai, Jihan Yang, Shengbang Tong, Saining Xie, Dale Schuurmans, Quoc V
+   Le, Sergey Levine, and Yi Ma. Sft memorizes, rl generalizes: A comparative study of foundation
+   model post-training. arXiv preprint arXiv:2501.17161, 2025.
+
+William Fedus, Barret Zoph, and Noam Shazeer. Switch transformers: Scaling to trillion parameter
+   models with simple and efficient sparsity. Journal of Machine Learning Research, 23(120):1­39,
+   2022.
+
+Shujian Gao, Yuan Wang, Jiangtao Yan, Zuxuan Wu, and Yu-Gang Jiang. Thinking with deltas:
+   Incentivizing reinforcement learning via differential visual reasoning policy. arXiv preprint
+   arXiv:2601.06801, 2026.
+
+Ian Goodfellow, Jean Pouget-Abadie, Mehdi Mirza, Bing Xu, David Warde-Farley, Sherjil Ozair,
+  Aaron Courville, and Yoshua Bengio. Generative adversarial networks. Communications of the
+  ACM, 63(11):139­144, 2020.
+
+Ian J Goodfellow, Jean Pouget-Abadie, Mehdi Mirza, Bing Xu, David Warde-Farley, Sherjil Ozair,
+  Aaron Courville, and Yoshua Bengio. Generative adversarial nets. Advances in neural information
+   processing systems, 27, 2014.
+
+Google DeepMind. Gemini 3 flash. https://deepmind.google/models/gemini/
+   flash/, 2025. Official model page, accessed 2026-04-23.
+
+Yuxian Gu, Li Dong, Furu Wei, and Minlie Huang. Minillm: Knowledge distillation of large language
+   models. In The twelfth international conference on learning representations, 2024.
+
+Tianrui Guan, Fuxiao Liu, Xiyang Wu, Ruiqi Xian, Zongxia Li, Xiaoyu Liu, Xijun Wang, Lichang
+   Chen, Furong Huang, Yaser Yacoob, et al. Hallusionbench: an advanced diagnostic suite for entan-
+   gled language hallucination and visual illusion in large vision-language models. In Proceedings of
+   the IEEE/CVF conference on computer vision and pattern recognition, pp. 14375­14385, 2024.
+
+Daya Guo, Dejian Yang, Haowei Zhang, Junxiao Song, Peiyi Wang, Qihao Zhu, Runxin Xu, Ruoyu
+   Zhang, Shirong Ma, Xiao Bi, et al. Deepseek-r1: Incentivizing reasoning capability in llms via
+   reinforcement learning. arXiv preprint arXiv:2501.12948, 2025.
+
+Wenyi Hong, Wenmeng Yu, Xiaotao Gu, Guo Wang, Guobing Gan, Haomiao Tang, Jiale Cheng,
+  Ji Qi, Junhui Ji, Lihang Pan, et al. Glm-4.1 v-thinking: Towards versatile multimodal reasoning
+  with scalable reinforcement learning. arXiv e-prints, pp. arXiv­2507, 2025.
+
+Jian Hu. Reinforce++: A simple and efficient approach for aligning large language models. arXiv
+   e-prints, pp. arXiv­2501, 2025.
+
+Wenxuan Huang, Bohan Jia, Zijie Zhai, Shaosheng Cao, Zheyu Ye, Fei Zhao, Zhe Xu, Xu Tang, Yao
+   Hu, and Shaohui Lin. Vision-r1: Incentivizing reasoning capability in multimodal large language
+   models. arXiv preprint arXiv:2503.06749, 2025.
+
+Aaron Jaech, Adam Kalai, Adam Lerer, Adam Richardson, Ahmed El-Kishky, Aiden Low, Alec
+   Helyar, Aleksander Madry, Alex Beutel, Alex Carney, et al. Openai o1 system card. arXiv preprint
+   arXiv:2412.16720, 2024.
+
+Gangwei Jiang, Yahui Liu, Zhaoyi Li, Wei Bi, Fuzheng Zhang, Linqi Song, Ying Wei, and Defu
+   Lian. What makes a good reasoning chain? uncovering structural patterns in long chain-of-thought
+   reasoning. In Proceedings of the 2025 Conference on Empirical Methods in Natural Language
+  Processing, pp. 6501­6525, 2025.
+
+                                                          11
+Preprint.
+
+Feiyang Kang, Michael Kuchnik, Karthik Padthe, Marin Vlastelica, Ruoxi Jia, Carole-Jean Wu, and
+   Newsha Ardalani. Quagmires in sft-rl post-training: When high sft scores mislead and what to use
+   instead. arXiv preprint arXiv:2510.01624, 2025.
+
+Jongwoo Ko, Sungnyun Kim, Tianyi Chen, and Se-Young Yun. Distillm: Towards streamlined
+   distillation for large language models. arXiv preprint arXiv:2402.03898, 2024.
+
+Woosuk Kwon, Zhuohan Li, Siyuan Zhuang, Ying Sheng, Lianmin Zheng, Cody Hao Yu, Joseph
+   Gonzalez, Hao Zhang, and Ion Stoica. Efficient memory management for large language model
+   serving with pagedattention. In Proceedings of the 29th symposium on operating systems principles,
+   pp. 611­626, 2023.
+
+Sicong Leng, Jing Wang, Jiaxi Li, Hao Zhang, Zhiqiang Hu, Boqiang Zhang, Yuming Jiang, Hang
+   Zhang, Xin Li, Lidong Bing, et al. Mmr1: Enhancing multimodal reasoning with variance-aware
+   sampling and open resources. arXiv preprint arXiv:2509.21268, 2025.
+
+Hehai Lin, Yu Yan, Zixuan Wang, Bo Xu, Sudong Wang, Weiquan Huang, Ruochen Zhao, Minzhi Li,
+   and Chengwei Qin. Unified-mas: Universally generating domain-specific nodes for empowering
+   automatic multi-agent systems. arXiv preprint arXiv:2603.21475, 2026a.
+
+Honglin Lin, Zheng Liu, Yun Zhu, Chonghan Qin, Juekai Lin, Xiaoran Shang, Conghui He, Wentao
+   Zhang, and Lijun Wu. Mmfinereason: Closing the multimodal reasoning gap via open data-centric
+   methods. arXiv preprint arXiv:2601.21821, 2026b.
+
+Chengzhi Liu, Zhongxing Xu, Qingyue Wei, Juncheng Wu, James Zou, Xin Eric Wang, Yuyin Zhou,
+   and Sheng Liu. More thinking, less seeing? assessing amplified hallucination in multimodal
+   reasoning models. arXiv preprint arXiv:2505.21523, 2025a.
+
+Haotian Liu, Chunyuan Li, Qingyang Wu, and Yong Jae Lee. Visual instruction tuning. Advances in
+   neural information processing systems, 36:34892­34916, 2023.
+
+Haotian Liu, Chunyuan Li, Yuheng Li, and Yong Jae Lee. Improved baselines with visual instruction
+   tuning. In Proceedings of the IEEE/CVF conference on computer vision and pattern recognition,
+   pp. 26296­26306, 2024.
+
+Zichen Liu, Changyu Chen, Wenjun Li, Penghui Qi, Tianyu Pang, Chao Du, Wee Sun Lee, and Min
+   Lin. Understanding r1-zero-like training: A critical perspective. arXiv preprint arXiv:2503.20783,
+   2025b.
+
+Pan Lu, Hritik Bansal, Tony Xia, Jiacheng Liu, Chunyuan Li, Hannaneh Hajishirzi, Hao Cheng,
+   Kai-Wei Chang, Michel Galley, and Jianfeng Gao. Mathvista: Evaluating mathematical reasoning
+   of foundation models in visual contexts. arXiv preprint arXiv:2310.02255, 2023.
+
+Leena Mathur, Marian Qian, Paul Pu Liang, and Louis-Philippe Morency. Social genome: Grounded
+   social reasoning abilities of multimodal models. In Proceedings of the 2025 Conference on
+  Empirical Methods in Natural Language Processing, pp. 24879­24902, 2025.
+
+Fanqing Meng, Lingxiao Du, Zongkai Liu, Zhixiang Zhou, Quanfeng Lu, Daocheng Fu, Tiancheng
+   Han, Botian Shi, Wenhai Wang, Junjun He, et al. Mm-eureka: Exploring the frontiers of multimodal
+   reasoning with rule-based reinforcement learning. arXiv preprint arXiv:2503.07365, 2025.
+
+Runqi Qiao, Qiuna Tan, Guanting Dong, MinhuiWu MinhuiWu, Chong Sun, Xiaoshuai Song, Jiapeng
+  Wang, Zhuoma Gongque, Shanglin Lei, Yifan Zhang, et al. We-math: Does your large multimodal
+   model achieve human-like mathematical reasoning? In Proceedings of the 63rd Annual Meeting of
+   the Association for Computational Linguistics (Volume 1: Long Papers), pp. 20023­20070, 2025.
+
+Chongli Qin and Jost Tobias Springenberg. Supervised fine tuning on curated data is reinforcement
+   learning (and can be improved). arXiv preprint arXiv:2507.12856, 2025.
+
+Zhihong Shao, Peiyi Wang, Qihao Zhu, Runxin Xu, Junxiao Song, Xiao Bi, Haowei Zhang,
+   Mingchuan Zhang, YK Li, Yang Wu, et al. Deepseekmath: Pushing the limits of mathemat-
+   ical reasoning in open language models. arXiv preprint arXiv:2402.03300, 2024.
+
+                                                          12
+Preprint.
+
+Guangming Sheng, Chi Zhang, Zilingfeng Ye, Xibin Wu, Wang Zhang, Ru Zhang, Yanghua Peng,
+   Haibin Lin, and Chuan Wu. Hybridflow: A flexible and efficient rlhf framework. In Proceedings
+   of the Twentieth European Conference on Computer Systems, pp. 1279­1297, 2025.
+
+Jian Tang, Jingzhou Liu, Ming Zhang, and Qiaozhu Mei. Visualizing large-scale and high-dimensional
+   data. In Proceedings of the 25th international conference on world wide web, pp. 287­297, 2016.
+
+Haozhe Wang, Chao Qu, Zuming Huang, Wei Chu, Fangzhen Lin, and Wenhu Chen. Vl-rethinker:
+   Incentivizing self-reflection of vision-language models with reinforcement learning. arXiv preprint
+   arXiv:2504.08837, 2025a.
+
+Ke Wang, Junting Pan, Weikang Shi, Zimu Lu, Houxing Ren, Aojun Zhou, Mingjie Zhan, and
+   Hongsheng Li. Measuring multimodal mathematical reasoning with math-vision dataset. Advances
+   in Neural Information Processing Systems, 37:95095­95169, 2024.
+
+Yiping Wang, Qing Yang, Zhiyuan Zeng, Liliang Ren, Liyuan Liu, Baolin Peng, Hao Cheng, Xuehai
+   He, Kuan Wang, Jianfeng Gao, et al. Reinforcement learning for reasoning in large language
+   models with one training example. arXiv preprint arXiv:2504.20571, 2025b.
+
+Ziqi Wang, Xingzhou Lou, Meiqi Wu, Zhengqi Wen, and Junge Zhang. Calibration-aware policy
+   optimization for reasoning llms. arXiv preprint arXiv:2604.12632, 2026.
+
+Tong Xiao, Xin Xu, Zhenya Huang, Hongyu Gao, Quan Liu, Qi Liu, and Enhong Chen. Perception-r1:
+  Advancing multimodal reasoning capabilities of mllms via visual perception reward. arXiv preprint
+   arXiv:2506.07218, 2025.
+
+An Yang, Beichen Zhang, Binyuan Hui, Bofei Gao, Bowen Yu, Chengpeng Li, Dayiheng Liu, Jian-
+   hong Tu, Jingren Zhou, Junyang Lin, et al. Qwen2. 5-math technical report: Toward mathematical
+   expert model via self-improvement. arXiv preprint arXiv:2409.12122, 2024.
+
+An Yang, Anfeng Li, Baosong Yang, Beichen Zhang, Binyuan Hui, Bo Zheng, Bowen Yu, Chang
+   Gao, Chengen Huang, Chenxu Lv, et al. Qwen3 technical report. arXiv preprint arXiv:2505.09388,
+   2025a.
+
+Wenkai Yang, Weijie Liu, Ruobing Xie, Kai Yang, Saiyong Yang, and Yankai Lin. Learning
+   beyond teacher: Generalized on-policy distillation with reward extrapolation. arXiv preprint
+   arXiv:2602.12125, 2026.
+
+Yi Yang, Xiaoxuan He, Hongkun Pan, Xiyan Jiang, Yan Deng, Xingtao Yang, Haoyu Lu, Dacheng
+  Yin, Fengyun Rao, Minfeng Zhu, et al. R1-onevision: Advancing generalized multimodal reasoning
+   through cross-modal formalization. In Proceedings of the IEEE/CVF International Conference on
+  Computer Vision, pp. 2376­2385, 2025b.
+
+Zuhao Yang, Sudong Wang, Kaichen Zhang, Keming Wu, Sicong Leng, Yifan Zhang, Bo Li,
+   Chengwei Qin, Shijian Lu, Xingxuan Li, et al. Longvt: Incentivizing" thinking with long videos"
+  via native tool calling. arXiv preprint arXiv:2511.20785, 2025c.
+
+Tianzhu Ye, Li Dong, Zewen Chi, Xun Wu, Shaohan Huang, and Furu Wei. Black-box on-policy
+   distillation of large language models. arXiv preprint arXiv:2511.10643, 2025a.
+
+Yixin Ye, Zhen Huang, Yang Xiao, Ethan Chern, Shijie Xia, and Pengfei Liu. Limo: Less is more for
+   reasoning. arXiv preprint arXiv:2502.03387, 2025b.
+
+Qiying Yu, Zheng Zhang, Ruofei Zhu, Yufeng Yuan, Xiaochen Zuo, Yu Yue, Weinan Dai, Tiantian
+   Fan, Gaohong Liu, Lingjun Liu, et al. Dapo: An open-source llm reinforcement learning system at
+   scale. arXiv preprint arXiv:2503.14476, 2025.
+
+Xiang Yue, Yuansheng Ni, Kai Zhang, Tianyu Zheng, Ruoqi Liu, Ge Zhang, Samuel Stevens,
+   Dongfu Jiang, Weiming Ren, Yuxuan Sun, et al. Mmmu: A massive multi-discipline multimodal
+   understanding and reasoning benchmark for expert agi. In Proceedings of the IEEE/CVF conference
+   on computer vision and pattern recognition, pp. 9556­9567, 2024.
+
+                                                          13
+Preprint.
+
+Xiang Yue, Tianyu Zheng, Yuansheng Ni, Yubo Wang, Kai Zhang, Shengbang Tong, Yuxuan Sun,
+   Botao Yu, Ge Zhang, Huan Sun, et al. Mmmu-pro: A more robust multi-discipline multimodal
+   understanding benchmark. In Proceedings of the 63rd Annual Meeting of the Association for
+  Computational Linguistics (Volume 1: Long Papers), pp. 15134­15186, 2025a.
+
+Yang Yue, Zhiqi Chen, Rui Lu, Andrew Zhao, Zhaokai Wang, Shiji Song, and Gao Huang. Does
+   reinforcement learning really incentivize reasoning capacity in llms beyond the base model? arXiv
+   preprint arXiv:2504.13837, 2025b.
+
+Yu Yue, Yufeng Yuan, Qiying Yu, Xiaochen Zuo, Ruofei Zhu, Wenyuan Xu, Jiaze Chen, Chengyi
+  Wang, TianTian Fan, Zhengyin Du, et al. Vapo: Efficient and reliable reinforcement learning for
+   advanced reasoning tasks. arXiv preprint arXiv:2504.05118, 2025c.
+
+Aohan Zeng, Xin Lv, Zhenyu Hou, Zhengxiao Du, Qinkai Zheng, Bin Chen, Da Yin, Chendi Ge,
+   Chenghua Huang, Chengxing Xie, et al. Glm-5: from vibe coding to agentic engineering. arXiv
+   preprint arXiv:2602.15763, 2026.
+
+Chi Zhang, Haibo Qiu, Qiming Zhang, Yufei Xu, Zhixiong Zeng, Siqi Yang, Peng Shi, Lin Ma, and
+  Jing Zhang. Perceptual-evidence anchored reinforced learning for multimodal reasoning. arXiv
+   preprint arXiv:2511.18437, 2025a.
+
+Dylan Zhang, Yufeng Xu, Haojin Wang, Qingzhi Chen, and Hao Peng. Good sft optimizes for sft,
+   better sft prepares for reinforcement learning. arXiv preprint arXiv:2602.01058, 2026a.
+
+Kaichen Zhang, Bo Li, Peiyuan Zhang, Fanyi Pu, Joshua Adrian Cahyono, Kairui Hu, Shuai Liu,
+  Yuanhan Zhang, Jingkang Yang, Chunyuan Li, et al. Lmms-eval: Reality check on the evaluation
+   of large multimodal models. In Findings of the Association for Computational Linguistics: NAACL
+  2025, pp. 881­916, 2025b.
+
+Kaichen Zhang, Keming Wu, Zuhao Yang, Bo Li, Kairui Hu, Bin Wang, Ziwei Liu, Xingxuan Li,
+   and Lidong Bing. Openmmreasoner: Pushing the frontiers for multimodal reasoning with an open
+   and general recipe. arXiv preprint arXiv:2511.16334, 2025c.
+
+Renrui Zhang, Dongzhi Jiang, Yichi Zhang, Haokun Lin, Ziyu Guo, Pengshuo Qiu, Aojun Zhou, Pan
+   Lu, Kai-Wei Chang, Yu Qiao, et al. Mathverse: Does your multi-modal llm truly see the diagrams
+   in visual math problems? In European Conference on Computer Vision, pp. 169­186. Springer,
+   2024.
+
+Wen Zhang, Yang Feng, Fandong Meng, Di You, and Qun Liu. Bridging the gap between training
+   and inference for neural machine translation. In Proceedings of the 57th annual meeting of the
+   association for computational linguistics, pp. 4334­4343, 2019.
+
+Yunjian Zhang, Sudong Wang, Yang Li, Peiran Xu, Conghao Zhou, Xiaoyue Ma, Jianing Li, and Yao
+   Zhu. Resource-efficient reinforcement for reasoning large language models via dynamic one-shot
+   policy refinement. arXiv preprint arXiv:2602.00815, 2026b.
+
+Zhaoyang Zhang, Shuli Jiang, Yantao Shen, Yuting Zhang, Dhananjay Ram, Shuo Yang, Zhuowen
+  Tu, Wei Xia, and Stefano Soatto. Reinforcement-aware knowledge distillation for llm reasoning.
+   arXiv preprint arXiv:2602.22495, 2026c.
+
+Siyan Zhao, Zhihui Xie, Mengchen Liu, Jing Huang, Guan Pang, Feiyu Chen, and Aditya Grover.
+   Self-distilled reasoner: On-policy self-distillation for large language models. arXiv preprint
+   arXiv:2601.18734, 2026.
+
+Yuzhong Zhao, Yue Liu, Junpeng Liu, Jingye Chen, Xun Wu, Yaru Hao, Tengchao Lv, Shao-
+   han Huang, Lei Cui, Qixiang Ye, et al. Geometric-mean policy optimization. arXiv preprint
+   arXiv:2507.20673, 2025.
+
+Chujie Zheng, Shixuan Liu, Mingze Li, Xiong-Hui Chen, Bowen Yu, Chang Gao, Kai Dang,
+  Yuqiong Liu, Rui Men, An Yang, et al. Group sequence policy optimization. arXiv preprint
+   arXiv:2507.18071, 2025.
+
+                                                          14
+Preprint.
+Yaowei Zheng, Richong Zhang, Junhao Zhang, Yanhan Ye, and Zheyan Luo. Llamafactory: Unified
+
+   efficient fine-tuning of 100+ language models. In Proceedings of the 62nd annual meeting of the
+   association for computational linguistics (volume 3: system demonstrations), pp. 400­410, 2024.
+Wenhong Zhu, Ruobing Xie, Rui Wang, Xingwu Sun, Di Wang, and Pengfei Liu. Proximal supervised
+   fine-tuning. arXiv preprint arXiv:2508.17784, 2025.
+
+                                                          15
+Preprint.
+
+A Implementation Details
+
+A.1 Training Details
+
+We describe the training procedures for all three stages of the PRISM pipeline. The SFT stage is
+implemented using LlamaFactory (Zheng et al., 2024), while the alignment and RLVR stages are both
+built on the veRL framework (Sheng et al., 2025) with vLLM (Kwon et al., 2023) as the inference
+engine. The full set of hyperparameters is provided in Table 3.
+
+           Table 3: Detailed training hyperparameters for each stage of the PRISM pipeline.
+
+           Training Component       SFT PRISM RLVR
+
+           Optimizer                AdamW    AdamW       AdamW
+           Scheduler                 cosine  constant    constant
+           Learning Rate              1e-5
+           Weight Decay                        1e-6        1e-6
+           Epochs / Training Steps      ­       0.01       0.01
+           Warmup Ratio / Steps     1 epoch  500 steps  1500 steps
+           Global Batch Size
+           Max Prompt Length           0.1       ­           ­
+           Max Response Length          2        4          32
+           Rollout Temperature          ­      2048        2048
+           Group Size N               8192     6144        8192
+            (MoE weight)                ­       1.0         1.0
+           Accuracy Reward Weight       ­        16         16
+           Format Reward Weight         ­       0.5          ­
+           Dynamic Bsz                  ­        ­          0.8
+           Remove Padding               ­        ­          0.2
+                                        ­      True        True
+                                        ­      True        True
+
+SFT. We perform full-parameter fine-tuning on the language model while freezing the vision tower
+and the multimodal projector. We use a cutoff length of 8192 tokens with online stream packing
+to maximize training throughput and remove padding tokens to avoid unnecessary computation.
+Training is conducted for 1 epoch with a cosine learning rate schedule (peak 1e-5, warmup ratio 0.1)
+using DeepSpeed ZeRO-2.
+
+PRISM (Alignment). The alignment stage jointly trains the policy and the MoE discriminator.
+The generator and discriminator share the same learning rate (1e-6). For each prompt, we sample
+N = 16 rollouts from the current policy with temperature 1.0. The MoE reward weight is set to
+ = 0.5, giving equal importance to the perception and reasoning experts. We deliberately disable
+KL regularization (KL coefficient = 0.0) to allow the policy to shift freely toward the supervision
+distribution. We train for 500 steps, at which point both discriminator experts have converged to a
+stable equilibrium (see Figure 3), and select the final checkpoint for the subsequent RLVR stage.
+
+RLVR. Starting from the alignment checkpoint, we apply outcome-based RLVR with a global
+batch size of 32 and N = 16 rollouts per prompt at temperature 1.0. All RL algorithms evaluated in
+our experiments share the same set of hyperparameters. The maximum response length is increased
+to 8192 tokens to accommodate longer reasoning traces. We train for up to 1500 steps, saving
+checkpoints periodically and selecting the best one based on validation performance. All experiments
+across all three stages are conducted on 8× NVIDIA H100-SXM5-80GB GPUs.
+
+A.2 Evaluation Details
+
+For all evaluations, we use the lmms-eval framework (Zhang et al., 2025b) with vLLM (Kwon
+et al., 2023) as the serving engine. We set the generation hyperparameters to temperature=1.0,
+top_p=0.7, and top_k=-1 across all benchmarks. The extracted answer is validated using a
+two-stage process: a rule-based validator is first applied to minimize evaluation cost; if the answer
+cannot be verified by rules, we fall back to an LLM-as-judge validator powered by Qwen3-30B-A3B-
+Instruct (Yang et al., 2025a).
+
+                                                          16
+Preprint.
+
+A.3 Token Efficiency
+
+Figure 5 compares the accuracy and average token usage of three configurations on MathVision,
+MathVerse, and MMMU-Pro. Across all three benchmarks, PRISM+GRPO achieves higher accuracy
+than SFT+GRPO while using fewer tokens, suggesting that the alignment stage encourages more
+concise and effective reasoning rather than simply producing longer outputs.
+
+0.6        MathVision              12000  0.8        MathVerse               4000  0.7             MMMU-Pro           4000
+
+                                                                68.6%                              Accuracy
+
+0.5  9538                          10000  0.7  3182 64.5%                    3500  0.6             Average Token Number 3500
+
+                       45.4%              0.6 59.0%                                                     2953
+                                                                                                   47.3%
+Accuracy                                                                     3000  0.5       2761             49.7% 3000
+                                             Average Token umber                        45.1%                      2257 2500
+0.4 36.5%  35.5%                   8000
+                                                 Accuracy0.5                 2500
+                                                                                              Average Token umber
+           5724                                      1942                          0.4
+                                                                                                  Accuracy
+0.3                                                                                                                                            Average Token umber60000.41785 20002000
+
+0.2                                4000   0.3                                1500  0.3
+                                                                                                                                    1500
+
+                       2889               0.2                                1000  0.2                                1000
+
+0.1                                2000   0.1                                500   0.1                                500
+
+0.0  Instruct SFT+GRPO PRISM+GRPO  0      0.0  Instruct SFT+GRPO PRISM+GRPO  0     0.0  Instruct SFT+GRPO PRISM+GRPO  0
+
+           Models                                    Models                                        Models
+
+Figure 5: Token efficiency comparison on MathVision, MathVerse, and MMMU-Pro (Qwen3-VL-4B).
+PRISM+GRPO achieves higher accuracy with fewer tokens across all three benchmarks.
+
+B Data Curation Pipeline
+
+We describe the full pipeline for constructing our curated 113K multimodal reasoning dataset. The
+process consists of source preparation, iterative generation with multi-stage filtering, and downstream
+data splitting.
+
+Source preparation. We begin with a collection of multimodal reasoning problems sourced from
+publicly available benchmarks spanning mathematical reasoning, scientific diagram understanding,
+chart interpretation, and spatial reasoning. During initial inspection, we observe that a non-trivial
+fraction of problems contain multiple sub-questions bundled under a single image but are paired with
+only one ground-truth answer. To resolve this ambiguity, we concatenate the full problem and its
+ground-truth answer, then prompt an LMM to identify which sub-question the answer corresponds
+to, discarding the remaining sub-questions. This ensures a clean one-to-one mapping between each
+problem and its ground truth before generation begins.
+
+Distillation and iterative filtering. We prompt Gemini 3 Flash with a carefully designed distillation
+template (see Appendix C) that requires fine-grained visual descriptions, step-by-step reasoning
+traces, and concise final answers. The raw generations are then processed through a three-stage
+filtering pipeline:
+
+1. Truncation and failure filter: We remove responses that are truncated due to exceeding the
+   maximum output length, as well as those where the API call fails.
+
+2. Format filter: We verify that each response contains the required output structure (<caption>,
+   <think>, <answer> tags) with non-empty content in each section.
+
+3. Correctness filter: We apply an LLM-as-judge to compare the generated answer against the
+   ground truth, discarding responses whose answers are deemed incorrect.
+
+To maximize data yield, samples that fail the truncation/failure filter or the format filter are re-
+submitted to Gemini 3 Flash for regeneration. Samples that fail the correctness filter are re-submitted
+with the ground-truth answer appended to the prompt, guiding the model toward a correct solution
+while preserving the requirement for detailed reasoning. After regeneration, all re-submitted samples
+pass through the same three-stage filter again. This iterative process substantially improves the overall
+yield without sacrificing quality.
+
+                                                          17
+Preprint.
+
+Data splitting. From the resulting 113K verified samples, we randomly hold out 6K samples for
+the alignment and RL stages, and assign the remaining 107K to the SFT pool. For the RLVR training
+set, we further apply a difficulty-based filter: we sample N = 16 rollouts per problem from the
+post-alignment policy and retain only problems whose pass rate falls within [0.2, 0.8], yielding a final
+set of approximately 2K difficulty-matched samples. This ensures that RLVR trains on problems that
+are neither trivially easy nor prohibitively hard for the current policy. Table 4 summarizes the data
+composition across all stages.
+
+           Table 4: Summary of data used across PRISM stages.
+
+           Stage  Source                       Samples
+
+           SFT    Gemini 3 Flash (curated)     107K
+
+           SFT    Public demonstrations (Leng et al., 2025) 1.26M
+
+           Alignment Gemini 3 Flash (curated)                  6K
+
+           RLVR   Difficulty-filtered subset                   2K
+
+C Examples
+
+C.1 Prompts and Data Examples
+
+We provide the prompts used across different stages of PRISM. Figure 6 shows the system prompt
+shared across SFT, RL training, and evaluation, which enforces a structured three-part output format:
+<caption> for visual grounding, <think> for step-by-step reasoning, and <answer> for the
+final response. Figure 7 presents the distillation prompt used to elicit detailed reasoning demon-
+strations from Gemini 3 Flash, which includes fine-grained rules for each output section to ensure
+high-quality supervision. Figure 8 shows the prompt used for LLM-as-judge evaluation.
+
+C.2 Cold-Start Data Samples
+
+We present representative examples from the cold-start SFT dataset used in Stage 1 of PRISM.
+Figure 9 and Figure 10 illustrate the structured three-part output format, including visual grounding
+via <caption>, chain-of-thought reasoning via <think>, and the final response via <answer>.
+
+C.3 Qualitative Data Samples
+
+We provide qualitative examples of model rollouts generated during the reinforcement learning stage
+after PRISM. Figure 11 and Figure 12 show representative reasoning trajectories produced by the
+policy model, demonstrating the structured caption-think-answer pipeline in practice.
+
+                          18
+Preprint.
+
+                      System Prompt for Model
+         You are a helpful scientific assistant.
+         Answer the user's question based on the image provided.
+         Your output must strictly follow this XML format:
+         <caption>
+         - [Briefly describe the image style, key objects, and text using bullet points]
+         </caption>
+         <think>
+         [Reason step-by-step to solve the problem]
+         </think>
+         <answer>
+         [Final answer ONLY]
+         </answer>
+
+Figure 6: System Prompt. This system prompt is shared across SFT, RL training, and benchmark
+evaluation to enforce the structured three-part output format (<caption>, <think>, <answer>).
+
+D Full Training Procedure
+
+We provide the complete PRISM training procedure in Algorithm 1. The pipeline consists of three
+sequential stages. Stage 1 performs standard SFT on the combined corpus to obtain an initial
+policy sft. Stage 2 alternates between updating the MoE discriminator (via Bradley-Terry loss on
+supervision vs. policy rollouts) and updating the policy (via GRPO with discriminator rewards),
+driving the policy distribution toward the supervision distribution. Stage 3 switches the reward
+from the discriminator to a deterministic verifiable reward and runs outcome-based RLVR on the
+difficulty-filtered subset. Each stage feeds its output checkpoint as the initialization for the next.
+
+E Limitations and Future Directions
+
+PRISM introduces additional training cost due to the alignment stage and the MoE discriminator.
+Although the alignment stage runs for only 500 steps, it requires jointly maintaining the policy
+generator and the discriminator during training, increasing memory and compute overhead compared
+to a standard SFTRLVR pipeline. In addition, the current MoE design relies on structured
+response formats (explicit visual caption and reasoning trace) to decompose perception and reasoning
+feedback, which may limit direct applicability to tasks that do not naturally admit such decomposition.
+Moreover, our distribution alignment analysis relies on structural proxies (reasoning steps and caption
+items) rather than direct distributional measures such as embedding-space divergences, which would
+introduce their own model-selection biases; developing model-agnostic alignment metrics remains
+an open problem. Future work includes extending PRISM to broader task formats by exploring
+automatic or learned decomposition of discriminator feedback, scaling to larger base models, and
+investigating whether the alignment stage can be further shortened or amortized across multiple
+downstream RL objectives.
+
+                                                          19
+Preprint.
+
+           Prompt Template for Data Distillation
+         You are an expert in science and visual reasoning with advanced multimodal analysis capabilities. Your output
+         will be used as a high-quality training example.
+         STRICT OUTPUT FORMAT
+         <caption>...</caption> <think>...</think> <answer>...</answer>
+         <caption> RULES (Visual Extraction)
+         Goal: Extract distinct visual evidences objectively without solving.
+         - Format: Use bullet points.
+         - Image Type: Identify style (e.g., photo, chart, UI, diagram).
+         - Subjects: List main objects, their counts, and specific actions/interactions.
+         - Attributes: Describe colors, shapes, textures, and object states explicitly.
+         - Text & Layout: Transcribe visible text exactly. Note structure.
+         - Spatial: Define relative positions (e.g., "A is above B", "C overlaps D").
+         - Constraint: If details are ambiguous, state "unclear". No assumptions.
+         <think> RULES (Reasoning Trace)
+         Goal: A logical bridge from <caption> to <answer>.
+         - Step-by-step deduction: Connect visual facts from <caption> to scientific principles.
+         - Check Units/Format: Explicitly verify if axes/labels use decimal or symbolic formats before calculating.
+         - Be concise but complete: Avoid filler words, but do NOT skip logical steps.
+         - Reference specific bullets from <caption>.
+         - Self-Correction: If the problem has a trap, explicitly mention how to avoid it.
+         - Do not simply state the final result until the end.
+         <answer> RULES
+         Output ONLY the final answer (e.g., "C", "5.2 m/s", "Yes").
+         Problem injection
+         [Input Image Here]
+         Problem: {question}
+         Now do the following in order, strictly:
+         1) Output <caption>...</caption>
+         2) Output <think>...</think>
+         3) Output <answer>...</answer>
+         End your response immediately after </answer>.
+
+Figure 7: Data Distillation Prompt. The full prompt used to query Gemini 3 Flash for generating
+high-quality multimodal reasoning demonstrations with explicit rules for visual extraction, reasoning
+traces, and concise answers.
+
+                                                          20
+Preprint.
+
+              System Prompt for judge model
+         You are a strict evaluator assessing answer correctness. You must output {positive} for fully correct
+         answers and {negative} for any other case.
+           # Input
+           Question:
+           {question}
+           Ground Truth Answer:
+           {answer}
+           Model Prediction:
+           {prediction}
+           # Evaluation Rules
+           - The model prediction may contain the reasoning process, you should spot the final answer from it.
+           - For multiple-choice questions: Score {positive} if the predicted answer matches the ground truth
+         answer, it can be directly in option letters or the content of the options.
+           - For open-ended questions:
+
+            * Score {positive} if the prediction matches the answer semantically, it can be in different format.
+            * Score {negative} for partially correct answers or answers with extra incorrect information, even
+         if the reasoning process is correct.
+           - Ignore minor differences in formatting, capitalization, or spacing since the model may explain in
+         a different way.
+           - Treat numerical answers as correct if they match within reasonable precision
+           - For questions requiring units, both value and unit must be correct
+           # Strict Output format
+           {positive} or {negative}
+
+Figure 8: Judge Model Prompt. The prompt used for LLM-as-judge evaluation, where Qwen3-30B-
+A3B-Instruct compares the model's extracted answer against the ground truth.
+
+                                                          21
+Preprint.
+
+                ColdStart Data Samples
+
+Question: Given that Segment EF is a diameter of circle D, which arc is a major arc?
+
+Answer:  <caption>
+         - **Image Type**: Geometric diagram of a circle.
+         - **Subjects**: A circle with center point D. Points E, F, G, and C are on the circumference.
+         Point H is on the chord EC.
+         - **Segments**: EF (passing through center D), DG, DC, DH, and EC.
+         - **Labels**: Points are labeled with uppercase letters: E, D, F, G, H, C.
+         - **Spatial Relationships**: EF is a straight line passing through the center D, identifying it as a
+         diameter. Point G is in the upper right quadrant, and point C is in the lower right quadrant.
+         </caption>
+
+         <think>
+         - **Analysis**: The problem asks to identify major arcs in circle D, given that EF is a diameter.
+         A major arc is an arc that measures more than 180 degrees (a semicircle).
+         - **Trap Identification**: A common mistake is to identify minor arcs (less than 180°) or
+         semicircles (exactly 180°) as major arcs. In this diagram, EF is a diameter, so any arc spanning
+         more than half the circle is a major arc.
+         - **Derivation**: Based on the provided reference answer, the task is to list specific arcs.
+         However, the reference answer lists "arc FC, arc GC, arc GF, arc EG, arc CE", which are
+         typically considered minor arcs in standard geometric notation (using two letters). In many
+         contexts, a major arc is denoted by three letters to distinguish it from the minor arc. Given the
+         specific reference answer provided, I will list those specific arcs as requested.
+         </think>
+
+         <answer>arc FC, arc GC, arc GF, arc EG, arc CE</answer>
+
+         Figure 9: An example of a cold-start data sample.
+
+                                        22
+Preprint.
+
+                 ColdStart Data Samples
+
+Question:  Who's bike is this?
+           A. man
+           B. woman
+           C. tourist
+           D. child
+           Please provide a clear reasoning process before giving the final answer.
+
+Answer:    <caption>
+           - **Image Type**: A color photograph.
+           - **Subjects**:
+
+              - A shirtless man riding a small blue bicycle.
+              - A shirtless young boy running behind the bicycle.
+              - Two people in the background leaning against a concrete wall.
+              - A person in the distance flying a kite near the water.
+           - **Attributes**:
+              - The bicycle is a small-framed model with small wheels (likely 12 or 16 inches) and a low
+           top tube.
+              - The man is an adult; his legs are deeply bent while pedaling, and his body appears
+           disproportionately large for the bike.
+              - The boy is of a size and age typically associated with a bicycle of these dimensions.
+              - The bicycle is blue with distinctive yellow or orange rims.
+           - **Spatial**:
+              - The man on the bike is in the lower-left foreground.
+              - The boy is running to the right of the man, slightly behind him.
+              - The scene is set on a paved area next to a body of water with mountains in the background.
+           </caption>
+
+           <think>
+           1. **Evaluate the bicycle's design**: The bicycle is a small-scale model, commonly referred to
+           as a "kid's bike," based on the wheel size and frame geometry.
+           2. **Observe the interaction**: An adult man is currently riding the bicycle. However, his
+           physical size is much greater than what the bike is designed for, as shown by his knees being
+           high up near the handlebars.
+           3. **Observe the surroundings**: A child is running directly behind the man. The child's height
+           and build are a much better match for the scale of the bicycle.
+           4. **Logical Deduction**: It is a common occurrence for an adult to briefly ride or "test" a
+           child's bike while playing. Given the size mismatch for the man and the presence of a child who
+           fits the bike's size perfectly, the most logical conclusion is that the bike belongs to the child.
+           5. **Match with options**: Option D (child) is the most accurate description of the likely owner
+           based on the physical characteristics of the object.
+           </think>
+
+           <answer>D</answer>
+
+           Figure 10: An example of a cold-start data sample.
+
+                                         23
+Preprint.
+
+           Qualitative Data Samples
+
+           Question:  This is a Tents puzzle. In this game, you will start with a grid that only marks the positions of the
+                      trees, the number of tents that should be in each row, and the number of tents that should be in
+                      each column. Your goal is to place the tents step by step on the grid according to the following
+                      rules until there are no more missing tents in the grid:
+                      1. **Valid Cell States**: Each cell in the grid can only be in one of the following three states,
+                      which are empty, containing a tree, and containing a tent.
+                      2. **Equal Number of Tents and Trees**: The total number of tents you place must be equal to
+                      the number of trees present on the grid.
+                      3. **Tent Placement Restrictions**: Tents can only be placed horizontally or vertically
+                      (diagonally does not count) adjacent to at least one tree.
+                      4. **No Adjacent Tents**: No two tents can be adjacent, including diagonally.
+                      5. **Row and Column Constraints**: The number of tents that should be placed in each row or
+                      column is given by the numbers on the left and top of the grid.
+
+                      The positions of the trees and the tents are represented by their icons on the grid respectively.
+                      The blue numbers on the left and top of the grid indicate the number of tents that should be
+                      placed in each row or column finally. The black numbers on the left and top of the grid are the
+                      row numbers and column numbers, respectively. In the coordinates (x, y), x corresponds to the
+                      row number, and y corresponds to the column number. The row and column numbering both
+                      start from 0, meaning that the first row is actually row 0. The origin (0,0) is in the upper-left
+                      corner of the grid.
+
+           Answer:    In the current state, only some of the correct positions of the tents are marked in the grid.Given
+                      the current state, how many tents are still missing in column 3?
+
+                      <caption>A 10x10 Tents puzzle grid with row and column indices and constraints.
+                      - **Grid Structure**: A 10x10 square grid with rows and columns numbered 0 to 9.
+                      - **Constraints**:
+                       - **Rows (blue numbers on the left)**: R0: 0, R1: 3, R2: 0, R3: 2, R4: 1, R5: 1, R6: 0, R7: 3,
+                      R8: 0, R9: 0.
+                       - **Columns (blue numbers on the top)**: C0: 2, C1: 0, C2: 0, C3: 4, C4: 0, C5: 3, C6: 0, C7: 1,
+                      C8: 0, C9: 0.
+                      - **Trees (green icons)**:
+                       - (1, 2), (1, 4), (2, 0), (4, 3), (4, 6), (4, 7), (6, 3), (7, 4), (7, 6), (9, 2).
+                      - **Tents (brown icons)**:
+                       - (1, 0), (1, 5), (3, 3), (4, 5), (7, 3), (7, 5).
+                      - **Column 3 Details**:
+                       - Target number of tents: 4 (blue number at top of column 3).
+                       - Current tents in column 3: (3, 3) and (7, 3).
+                       - Total tents currently placed: 6.
+                      </caption>
+
+                      <think>
+                      To find the number of missing tents in column 3, we need to compare the target number of tents
+                      for that column with the number of tents already placed in it.
+
+                      1. **Identify the target number of tents for column 3**:
+                         - Looking at the blue numbers at the top of the grid, the number above column index 3 is
+
+                      **4**.
+
+                      2. **Identify the current number of tents in column 3**:
+                         - Scan column 3 from top to bottom:
+                            - (0, 3): empty
+                            - (1, 3): empty
+                            - (2, 3): empty
+                            - (3, 3): **tent**
+                            - (4, 3): tree
+                            - (5, 3): empty
+                            - (6, 3): tree
+                            - (7, 3): **tent**
+                            - (8, 3): empty
+                            - (9, 3): empty
+                         - There are currently **2** tents in column 3.
+
+                      3. **Calculate the missing tents**:
+                         - Missing tents = Target - Current
+                         - Missing tents = 4 - 2 = 2.
+
+                      Therefore, there are 2 tents still missing in column 3.
+                      </think>
+
+                      <answer>2</answer>
+
+                    Figure 11: An example of our model inference result.
+                                                  24
+Preprint.
+
+           Qualitative Data Samples
+
+           Question:  In the figure, $\mathcal{B} \boldsymbol{C}$ is a diameter of the unit circle $_A$, point $F$ is
+                      on the line segment $A \mathcal{B}$ such that $\overline{BF} = \overline{FA}$, and if
+                      $\mathcal{D}E\mathcal{D}$ is a diameter of circle $_A$ moving around the center $_A$, then
+                      the value of $\overline{FD} \cdot \overline{FE}$ is.
+
+           Answer:    <caption>- Diagram: A circle with center $A$.
+                      - Main Objects:
+
+                         - Circle with center $A$.
+                         - Diameter $BC$ passing through center $A$.
+                         - Diameter $DE$ passing through center $A$.
+                         - Point $F$ on the line segment $AB$.
+                         - Line segments $FD$ and $FE$ connecting point $F$ to points $D$ and $E$ on the circle.
+                      - Labels:
+                         - Points: $B, D, A, F, C, E$.
+                         - $A$ is the center of the circle.
+                         - $BC$ and $DE$ are diameters.
+                      - Spatial Relationships:
+                         - $B, A, F, C$ are collinear in that order.
+                         - $D, A, E$ are collinear in that order.
+                         - $F$ is between $B$ and $A$.
+                      </caption>
+
+                      <think>
+                      1. **Identify the given information:**
+
+                         * The circle is a unit circle with center $A$. This means the radius $R = 1$.
+                         * $BC$ is a diameter, so $B, A, C$ are collinear and $AB = AC = 1$.
+                         * $F$ is on segment $AB$ such that $BF = FA$. Since $AB = 1$, we have $FA = \frac{1}{2}
+                      AB = \frac{1}{2}$.
+                         * $DE$ is a diameter passing through $A$.
+
+                      2. **Set up a coordinate system:**
+                         * Let center $A$ be the origin $(0, 0)$.
+                         * Since $BC$ is a diameter and $A$ is the center, let $B = (-1, 0)$ and $C = (1, 0)$.
+                         * Point $F$ is on $AB$ with $FA = \frac{1}{2}$. Since $A$ is $(0,0)$ and $B$ is $(-1,0)$,
+
+                      $F$ is at $(-\frac{1}{2}, 0)$.
+                         * Since $DE$ is a diameter passing through $A$, let $D = (\cos\theta, \sin\theta)$ and $E =
+
+                      (-\cos\theta, -\sin\theta)$ for some angle $\theta$.
+
+                      3. **Calculate the dot product $\vec{FD} \cdot \vec{FE}$:**
+                         * $\vec{FD} = D - F = (\cos\theta - (-\frac{1}{2}), \sin\theta - 0) = (\cos\theta + \frac{1}{2},
+
+                      \sin\theta)$.
+                         * $\vec{FE} = E - F = (-\cos\theta - (-\frac{1}{2}), -\sin\theta - 0) = (-\cos\theta +
+
+                      \frac{1}{2}, -\sin\theta)$.
+                         * $\vec{FD} \cdot \vec{FE} = (\cos\theta + \frac{1}{2})(-\cos\theta + \frac{1}{2}) +
+
+                      (\sin\theta)(-\sin\theta)$.
+                         * Using the difference of squares formula $(a+b)(a-b) = a^2 - b^2$:
+                            $(\frac{1}{2} + \cos\theta)(\frac{1}{2} - \cos\theta) = \frac{1}{4} - \cos^2\theta$.
+                         * So, $\vec{FD} \cdot \vec{FE} = (\frac{1}{4} - \cos^2\theta) - \sin^2\theta$.
+                         * Combine terms: $\frac{1}{4} - (\cos^2\theta + \sin^2\theta)$.
+                         * Since $\cos^2\theta + \sin^2\theta = 1$:
+                            $\vec{FD} \cdot \vec{FE} = \frac{1}{4} - 1 = -\frac{3}{4}$.
+
+                      4. **Alternative geometric approach:**
+                         * The power of point $F$ with respect to circle $A$ is $FA^2 - R^2$ if $F$ is outside, or
+
+                      $R^2 - FA^2$ if $F$ is inside.
+                         * Here $F$ is inside because $FA = \frac{1}{2} < R = 1$.
+                         * The power of point $F$ is $R^2 - FA^2 = 1^2 - (\frac{1}{2})^2 = 1 - \frac{1}{4} =
+
+                      \frac{3}{4}$.
+                         * For a point $F$ inside a circle, for any chord $DE$ passing through $F$, the product
+
+                      $\vec{FD} \cdot \vec{FE}$ is related to the power.
+                         * Actually, the dot product $\vec{FD} \cdot \vec{FE} = |\vec{FA} + \vec{AD}| \cdot
+
+                      |\vec{FA} - \vec{AE}|$.
+                         * Since $DE$ is a diameter, $\vec{AE} = -\vec{AD}$.
+                         * $\vec{FD} = \vec{AD} - \vec{AF}$
+                         * $\vec{FE} = \vec{AE} - \vec{AF} = -\vec{AD} - \vec{AF}$
+                         * $\vec{FD} \cdot \vec{FE} = (\vec{AD} - \vec{AF}) \cdot (-\vec{AD} - \vec{AF}) = -
+
+                      (\vec{AD}^2 - \vec{AF}^2) = \vec{AF}^2 - \vec{AD}^2$.
+                         * $\vec{AF} = \frac{1}{2}$, $\vec{AD} = R = 1$.
+                         * $\vec{FD} \cdot \vec{FE} = (\frac{1}{2})^2 - 1^2 = \frac{1}{4} - 1 = -\frac{3}{4}$.
+
+                      5. **Final verification:**
+                         * Radius $R = 1$.
+                         * $AF = 1/2$.
+                         * Result is $AF^2 - R^2 = (1/2)^2 - 1^2 = -3/4$.
+
+                      </think>
+
+                      <answer>-\frac{3}{4}</answer>
+
+                    Figure 12: An example of our model inference result.
+                                                  25
+Preprint.
+
+Algorithm 1 PRISM: Three-Stage Post-Training Pipeline
+
+Require: SFT corpus DSFT, curated supervision data Talign, base model 0, balancing weight ,
+
+     group size N
+
+Ensure: Trained policy 
+
+1: // Stage 1: SFT Cold Start
+
+2: sft  SFT(0, DSFT)
+
+3: // Stage 2: Distribution Alignment via On-Policy Distillation
+
+4: Initialize policy G  sft
+
+5: Initialize perception expert Dv and reasoning expert Dr from pretrained backbone; warm-start
+
+     on Talign
+
+6: for each training step do
+
+7: Sample prompts {x} from Talign
+8: Generate rollouts y-  G(·|x); extract c-, t-
+
+9: Retrieve supervision responses y+ from Talign; extract c+, t+
+
+10: Update discriminator:
+
+11:        LDv  - log (Dv(x, c+) - Dv(x, c-))                      Perception expert
+                                                                   Reasoning expert
+12:        LDr  - log (Dr(x, t+) - Dr(x, t-))
+                                                                         MoE reward
+13:        Update Dv, Dr with LDv + LDr
+
+14: Update policy:
+           Sample N responses {yi-}Ni=1 per prompt from G
+15:
+
+16:        ri   · Dv(x, c-i ) + (1 - ) · Dr(x, ti-)
+
+17: Compute advantages Ai via group normalization
+
+18:        Update G via GRPO with {Ai}
+
+19: end for
+
+20: align  G
+21: // Stage 3: RLVR
+
+22: Initialize policy   align
+23: for each training step do
+
+24: Sample prompts, generate rollouts, compute rv = racc + rfmt
+
+25: Update  via GRPO/DAPO/GSPO with verifiable rewards
+
+26: end for
+
+27:
+28: return   
+
+                                         26
+
