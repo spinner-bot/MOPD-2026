@@ -212,3 +212,21 @@
              realizability（学生有能力表示教师策略）的条件下，offline SFT就
              足够匹配教师性能，OPD没有增益；online增益的真正来源是
              non-realizability（学生能力不足以完全表示教师）。
+
+--------------------------------------------------------------------------------
+论文 [014]  Demystifying OPD — Surveys, Foundations & Position Papers
+--------------------------------------------------------------------------------
+  标题       Demystifying OPD: Roles, Pathologies, and Regulations
+  作者       CUHK / Tencent AI Lab
+  日期       2026.07
+  发表       arXiv preprint
+  arXiv      arXiv:2607.13399
+  代码       paper-only (📄)
+  领域       OPD Analysis / Mechanism
+  核心标签   #OPD角色定位 #exploration-catalyst #Student-Teacher-Mismatch
+             #Length-Exploitation #clipping #log-compression
+  一句话总结  重新定位OPD的角色——OPD是"探索催化剂"而非"能力天花板提升器"
+             （pass@1024收敛到base model水平），诊断了两个关键病理：(1)最强
+             的教师可能是最差的教师（Student-Teacher Mismatch），(2)Length
+             Exploitation（学生通过padding/早停来作弊获取更高分数），提出
+             Hard Clipping + Soft Log-Scale Compression零成本修复方案。
