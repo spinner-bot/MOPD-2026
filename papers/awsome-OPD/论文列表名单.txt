@@ -1424,3 +1424,15 @@
   一句话总结  首个面向扩散LLM的OPSD——特权上下文是"自我未来体验"（self future-
              experience）：将已生成的答案作为suffix条件化教师，产生step-level
              （非token-level）的散度。仅需RLVR约10%的优化步数即匹配性能。
+
+
+--------------------------------------------------------------------------------
+论文 [103]  CaOPD — OPSD
+--------------------------------------------------------------------------------
+  标题       CaOPD: The Illusion of Certainty — Privileged Confidence is Biased
+  作者       Salesforce AI Research
+  日期       2026.04 | arXiv:2604.16830 | github.com/SalesforceAIResearch/CaOPD
+  核心标签   #calibration #overconfidence #non-identifiable #empirical-success-rate
+  一句话总结  证明特权条件化使教师置信度不可识别且向上偏置→OPSD以准确率换取
+             严重过自信。修复：用经验rollout成功率重写置信度目标。关注的是
+             OPSD的校准问题而非能力问题。
