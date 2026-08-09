@@ -1034,3 +1034,14 @@ Prune-OPD和TRD诊断了同一个问题（前缀漂移导致后缀教师监督�
 
 ### 可借鉴思路
 - **"改变操作空间"的通用提问**：你所在领域的所有方法都在什么空间操作？如果改到另一个空间会怎样？Token space → hidden state space（OPRD）、output space → weight space（model merging）、discrete space → continuous space（Flow-OPD）。每个空间的转换都可能揭示新的可能性。
+
+---
+
+## [044] IW-OPD — Xidian/Georgia Tech/Amazon (2026.06)
+
+### Idea提出角度：**"发现反直觉的经验规律→用理论证明这不是偶然"**
+
+IW-OPD的贡献遵循"现象→理论"路径（与NAIL的"理论→方法"对称）。先通过实验发现了惊人的位置偏差（前30% token ≈ 全部token，后30% token ≈ 随机），然后用trust-region理论推导出这个偏差的数学必然性。这种"先有惊人发现，再给理论解释"的叙事比"先有理论，再验证"更能抓住审稿人的注意力——因为惊人的发现让审稿人产生"为什么？"的好奇心。
+
+### 位置偏差的理论解释
+Trust-region推导揭示：最优的token重要性权重正比于该位置在教师分布和学生分布之间的"分布距离"。前缀位置：学生刚开始生成，分布接近教师→权重高。后缀位置：学生已偏离教师→分布距离大但trust-region约束限制了权重。这个解释也完美对齐了Fast OPD、Prune-OPD、ESR等prefix-truncation家族的共同发现——除了前缀的监督，后缀的帮助很有限。
