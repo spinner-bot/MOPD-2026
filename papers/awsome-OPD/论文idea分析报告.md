@@ -1300,3 +1300,11 @@ TrOPD与TOP-D共享trust-region思想但实现更细粒度：将学生token分�
 ### Idea提出角度：**"用测量数据挑战领域根基——per-token KL可能是无效的代理指标"**
 
 Pearson r=0.126是一个**炸弹级**的发现。如果per-token KL与真实轨迹散度之间的相关性如此之低，那么整个OPD大厦的地基——"用per-token KL来近似轨迹级分布匹配"——可能是有裂缝的。这篇论文不仅指出了问题，还提出了修复方案（用optimal-transport对齐的near-future窗口替代单点KL）。但真正的贡献是那个r=0.126的测量——它为后续所有"轨迹级OPD"工作（TRD、StepOPSD等）提供了最根本的motivation。这也展示了"做一次精确的测量"有时比"提出一个新方法"更有影响力。
+
+---
+
+## [067] PowerOPD — EIT/HK PolyU/SJTU/Waterloo (2026.06)
+
+### Idea提出角度：**"从数学源头消除不稳定性——将无界奖励变为有界奖励"**
+
+PowerOPD的洞察和TOP-D异曲同工但走的是不同的数学路径：TOP-D通过在概率空间操作来保证有界性，PowerOPD通过Box-Cox变换将log(π_T/π_θ)（无界）映射到[-1,1]（有界）。关键是保持**符号一致性**（sign-consistent）——正奖励保持正，负奖励保持负，仅压缩幅度。这种"保持方向、压缩幅度"的策略是处理无界信号的经典方案，可以应用于任何使用log-ratio作为奖励的场景。
