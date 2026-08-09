@@ -540,3 +540,17 @@
              （既不太简单也不太难的样本）上做自蒸馏。用w(p)=p(1-p)的难度权重
              函数（p=学生正确率），自动聚焦于p≈0.5的"最近发展区"样本。这种
              "只在你最需要学习的地方教你"的课程设计思想简单但极其有效。
+
+--------------------------------------------------------------------------------
+论文 [036]  TSD-KD — White-Box OPD
+--------------------------------------------------------------------------------
+  标题       TSD-KD: Token-Selective Dual Knowledge Distillation
+  作者       Korea University
+  日期       2026.03 | 发表: ICLR 2026 | arXiv:2603.13260
+  代码       github.com/kmswin1/TSD-KD
+  领域       White-Box OPD / Token Selection
+  核心标签   #token-selective #dual-KD #indirect+direct #学生propose教师rerank
+  一句话总结  提出了间接蒸馏+直接蒸馏的双路径设计——学生先propose候选token，
+             教师rerank（间接路径），然后在被选中的token上做直接的logit蒸馏
+             （直接路径）。这种"先筛选再精炼"的两阶段token选择策略在保留
+             OPD的mode-seeking优势的同时降低了全词表KL的计算开销。
