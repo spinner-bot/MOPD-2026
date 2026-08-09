@@ -1207,3 +1207,15 @@
              提供知识）来回答问题，然后通过OPSD将这种"看到上下文时的能力"内化到
              模型参数中（去掉上下文后仍保持）。教师=有上下文的自己，学生=无上下文的
              自己。这是OPSD特权上下文设计变体——"上下文"作为特权信息。
+
+--------------------------------------------------------------------------------
+论文 [086]  GATES — OPSD
+--------------------------------------------------------------------------------
+  标题       GATES: Self-Distillation under Privileged Context for Document QA
+  作者       UMD
+  日期       2026.02 | arXiv:2602.20574 | paper-only (📄)
+  领域       OPSD / Document-Grounded
+  核心标签   #document-conditioned #tutor-consensus-gate #document-QA
+  一句话总结  特权上下文是"完整文档"——教师看到完整文档，学生看到截断/噪声版本。
+             用tutor consensus来gate KL（多个教师快照一致时才蒸馏）。混合了
+             on-policy（学生rollout）和off-policy（教师轨迹）的蒸馏信号。
