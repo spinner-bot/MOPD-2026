@@ -1085,3 +1085,17 @@
              原文），然后在编辑后的近端rollout上训练。"最小的改变产生最可学
              的信号"——如果教师把学生的答案改得面目全非，学生无法理解"我哪里
              错了"；如果只改最少的地方，学生能精确识别错误位置并修正。
+
+--------------------------------------------------------------------------------
+论文 [077]  SODA — Black-Box OPD
+--------------------------------------------------------------------------------
+  标题       SODA: Semi On-Policy Black-Box Distillation — Static Snapshot Strategy
+  作者       Academic
+  日期       2026.04 | arXiv:2604.03873 | paper-only (📄)
+  领域       Black-Box OPD / Preference-Based
+  核心标签   #semi-on-policy #static-snapshot #one-time #10×-faster #beats-GAD
+  一句话总结  只从学生模型做一次静态快照（不需要动态rollout），用这个快照
+             捕捉"学生特异性弱点"，然后通过DPO偏好学习（教师输出=preferred,
+             学生快照输出=rejected）。绕过了GAD的动态对抗训练，10× faster +
+             27% less peak memory，且15/16 benchmarks优于GAD。证明"半在线"
+             策略足以捕捉学生弱点。
