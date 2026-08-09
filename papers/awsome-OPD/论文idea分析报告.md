@@ -1619,3 +1619,11 @@ SSOPD进一步推进了OPSD的"无外部依赖"趋势（SD-Zero→pi-Play→SSOP
 ### Idea提出角度：**"发现OPSD的一个hidden failure——风格漂移"**
 
 RLCSD诊断了一个OPSD的subtle问题：特权信息不仅改变教师对"答案"的判断，还改变了它对"风格"的偏好——教师在有答案的情况下可能更喜欢某种表述风格。OPSD不加区分地蒸馏了这两者，导致学生学到了"特权风格的说话方式"而非"特权推理能力"。对比正确/错误hint来消除风格漂移是一个精致的实验设计。
+
+---
+
+## [102] d-OPSD — THU/TUM/NTU/UT Austin (2026.06)
+
+### Idea提出角度：**"扩散LLM的OPSD需要不同的设计——step-level而非token-level"**
+
+d-OPSD揭示了AR-LLM和扩散LLM的根本差异：后者不能简单套用token-level OPSD。特权上下文"self future-experience"利用扩散模型中later-step包含更多信息这一特性。这启示：当迁移一个方法到新范式时，先理解新范式的独特结构，再适配方法，而非粗暴移植。
