@@ -1683,3 +1683,11 @@ SDSD Diversity从理论上证明了OPSD的多样性崩塌不是可以修的bug�
 ### Idea提出角度：**"在hidden-state transition上做OPSD——超越output distribution"**
 
 PHF扩展了OPRD的feature-based思路，聚焦在residual-stream transitions的几何属性（方向+Gram-matrix CKA）。它证明了两个重要的不变性：对per-trajectory hidden offsets不变、对per-transition positive rescaling不变——这使得监督信号对表示空间的非语义变化鲁棒。这是一个重要的方向：future OPD可能在hidden space上做更多的事情。
+
+---
+
+## [110] Visual-OPSD — XJTU/SYSU (2026.06)
+
+### Idea提出角度：**"用KL probe证明VT的价值在pathway而非pixels→然后蒸馏pathway"**
+
+Visual-OPSD做了一个关键的诊断实验：移除或加噪声到visual thoughts几乎不影响准确率→说明VT的pixel内容不重要。但KL probe显示VT conditioning shift了completion分布4.64 nats/token→说明VT改变了生成路径。于是不是蒸馏pixels，而是蒸馏这个"生成路径的改变"。这种"先理解机制→再设计蒸馏方案"的研究路径值得学习。
