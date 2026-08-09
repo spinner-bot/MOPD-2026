@@ -1546,3 +1546,16 @@
   一句话总结  OPSD是专精加速器而非持续学习稳定器——GRPO学新任务时ToolUse +18%，
              而SDPO学新任务时ToolUse暴跌80%。OPSD的dense监督让学生过度专精
              于当前任务而灾难性遗忘旧任务。是OPSD在continual场景的重要警告。
+
+
+--------------------------------------------------------------------------------
+论文 [112]  Purified OPSD — OPSD
+--------------------------------------------------------------------------------
+  标题       Purified OPSD: Removing Reference-Memorisation from OPSD Signal
+  作者       ZJU / Tongyi Lab Alibaba / HUST / Jilin
+  日期       2026.07 | arXiv:2607.02234
+  核心标签   #reference-memorisation #cos=-0.95 #PMI-reanchor #purified-signal
+  一句话总结  用reference-only teacher分解OPSD信号→发现reference-memorisation
+             成分主导（||ref||/||total||>1）而有用成分被主动压制（cos≈-0.95）。
+             重新锚定在PMI target上。揭示OPSD的很大一部分信号是在死记硬背
+             参考答案而非学习可迁移推理。
