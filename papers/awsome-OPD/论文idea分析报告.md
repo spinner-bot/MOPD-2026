@@ -307,3 +307,36 @@ Li Jiang同时发布了TRD论文（一种轨迹级refine-then-distill的OPD方�
 - **操作方法**：找一个你熟悉的LLM训练方法X，构建一个简化的数学模型来分析X的样本复杂度或收敛速度。你的理论结果只需要在合成实验（如GSM8K、Countdown）上验证，不需要大规模实验。
 - **风险**：理论论文的审稿周期长、容易在数学细节上被卡。建议找有理论背景的导师合作。
 
+---
+
+## [013] Online IL Realizability — Tsinghua/CMU/Berkeley/Harvard (2026.06)
+
+### Idea提出角度：**"挑战主流叙事"**
+
+这篇论文的idea模式极具攻击性：**直接挑战OPD领域最核心的motivation叙事**——"OPD优于offline SFT是因为消除了exposure bias/error accumulation"。该文证明：如果学生有能力表示教师（realizability条件满足），offline SFT就足够了。online增益的真正驱动力不是error accumulation的消除，而是non-realizability。
+
+### 思维链（学习如何"推翻一个领域的常识"）
+```
+领域主流叙事: OPD > SFT 因为消除了exposure bias
+    ↓ 质疑
+"这个叙事有理论依据吗？"
+    ↓ 构建反例
+在realizability条件下，offline SFT理论上可以达到教师性能
+    ↓ 实验验证
+在Countdown、GSM8K、DeepScaleR上验证：realizable时SFT ≈ OPD
+    ↓ 给出新的解释
+online增益的真正来源是non-realizability
+    ↓ 推论
+strong-to-weak OPD天然处于non-realizable regime → 这解释了为什么它work
+```
+
+### 为什么"挑战主流叙事"是高风险高回报的策略
+- **高风险**：如果你挑战的是一个被广泛接受的叙事，审稿人会带着最批判的眼光审视你的每一个论据。如果你有一个数学推导出错，论文直接被拒。
+- **高回报**：如果你挑战成功，你的论文成为领域的新baseline——后续所有论文都需要引用你来justify他们为什么做online而不是offline。
+- **这篇论文的聪明之处**：它没有说"OPD无效"，而是说"OPD有效的条件比之前认为的更微妙"——这是更温和但同等有力的表达方式。它重新定义了讨论框架而不是简单地否定。
+
+### 可借鉴思路（如何找到可以挑战的"主流叙事"）
+- **操作方法**：找一个领域的核心motivation陈述（通常是引言第三段那种"XXX方法优于YYY方法是因为ZZZ原因"）。然后问自己：这个ZZZ原因有没有被严格证明过？还是只是被反复引用而成为"常识"？
+- **最容易被挑战的叙事类型**：基于直觉的因果解释（"OPD更好是因为消除了error accumulation"）往往经不起严格的理论审视。而基于实验的因果推断则更难被推翻。
+- **对大一新生的建议**：挑战主流叙事需要很强的理论功底和实验设计能力。建议先从"修正"而非"推翻"开始——比如"OPD的error accumulation解释只在条件X下成立，在条件Y下不成立"比"error accumulation解释是错的"更安全。
+
