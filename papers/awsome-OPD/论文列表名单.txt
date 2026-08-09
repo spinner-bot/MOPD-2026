@@ -1362,3 +1362,16 @@
   一句话总结  教师看到英文翻译+参考解答→在低资源语言上产生更好的推理；学生只
              看到低资源语言题目。OPSD将"跨语言推理能力"从高资源语言蒸馏到
              低资源语言。覆盖17种非洲语言。
+
+
+--------------------------------------------------------------------------------
+论文 [098]  SGSD — OPSD
+--------------------------------------------------------------------------------
+  标题       SGSD: Skill-Conditional Gated Self-Distillation
+  作者       THU
+  日期       2026.05 | arXiv:2605.28791 | github.com/walawalagoose/SGSD
+  核心标签   #skill-conditional #polarity-gated #weak-privilege
+  一句话总结  特权上下文是"检索到的skill-mistake对"（弱特权信息）。用verifier
+             outcome判断教师极性（distill helpful stance, reverse misleading
+             stance）。在弱特权假设下（不需要正确答案）达到了接近answer-
+             conditioned OPSD的性能。
