@@ -19,3 +19,18 @@
   核心标签   #OPD奠基 #on-policy/off-policy插值 #多散度选择 #GJSD
   一句话总结  OPD的规范框架论文——首次系统性地定义和实验验证了LM的on-policy蒸馏
              范式，建立了on-policy/off-policy插值和多散度选择的理论基础。
+
+--------------------------------------------------------------------------------
+论文 [002]  Thinking Machines OPD Blog — Surveys, Foundations & Position Papers
+--------------------------------------------------------------------------------
+  标题       On-Policy Distillation (blog post)
+  作者       Kevin Lu et al.
+  机构       Thinking Machines Lab
+  日期       2025.10
+  发表       技术博客 + tinker-cookbook
+  链接       https://thinkingmachines.ai/blog/on-policy-distillation/
+  代码       tinker-cookbook (github.com/thinking-machines-lab/tinker-cookbook)
+  领域       OPD Practice / Industrial Recipe
+  核心标签   #OPD入门 #最清晰解释 #工业配方 #~1/10 RL成本
+  一句话总结  工业界视角最清晰的OPD单页解释——"Swap KL ref model for stronger
+             teacher"一行代码改动即可实现OPD，复现Qwen3结果仅需~1/10 RL成本。
