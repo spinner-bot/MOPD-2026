@@ -963,3 +963,18 @@ DEAR的立场: 低熵但高KL的token = 重要token → TIP漏掉了最重要的
 ### 可借鉴思路
 - **"引起争论的论文比没有争议的论文更有影响力"**。TIP被DEAR直接批评，但这恰恰说明TIP提出了一个重要的问题（"哪些token值得监督？"）。如果你能提出一个被后续论文争论的观点，说明你的论文定义了讨论的框架。
 - **"token重要性"是一个开放的研究问题**。目前至少有5种不同的重要性标准：熵（TIP）、KL散度（DEAR）、位置（PW-OPSD/IW-OPD）、teacher confidence（FiRe-OPD）、gradient norm（理论分析）。比较这些标准、提出新的标准、或设计自适应的标准选择——每一个都是论文。
+
+---
+
+## [039] HPD — SJTU/Tencent (ICML 2026)
+
+### Idea提出角度：**"用一个统一的重加权公式替代两个独立的损失函数"**
+
+HPD延续了OPD领域的"统一"主题（G-OPD统一了OPD和RL，Decoupling KL统一了SFT/DAgger/RL/OPD，HPD统一了FKL和RKL）。核心数学技巧是将FKL和RKL都重新表达为重加权对数似然（reweighted log-likelihood），然后发现它们唯一的不同在于**权重项**。因此可以通过设计一个统一的权重函数来同时涵盖FKL和RKL。
+
+### 关于headline实验的重要警示（学习如何批判性地读论文）
+AwesomeOPD的strictness notes指出：HPD的headline Tables 2-4使用的是**轻量近似的on-policy采样**（避免了完整序列rollout），真正的on-policy结果只在§5.4/Table 5中。这不是说论文有问题——作者在论文中明确说明了这一点——但这提醒我们：**读论文时永远要检查headline实验的"小字条款"**。很多时候方法的"真实"效果比headline数字要差一些，而差异的原因（近似 vs 真实on-policy）本身就是值得研究的。
+
+### 可借鉴思路
+- **"统一两个损失函数"的方法通常是寻找它们的共同数学形式**。FKL和RKL看起来完全不同，但当你把它们都写成reweighted log-likelihood时，它们变成了同一公式族中weight不同的特例。这种"找到共同形式→差异仅在于参数→统一参数"的方法论几乎适用于任何两个loss function。
+- **ICML 2026接收这篇论文的可能原因**：①数学上干净的FKL+RKL统一（理论贡献），②LlamaFactory+verl双后端支持（实用贡献），③轻量on-policy近似使OPD更易用（工程贡献）。三合一使得论文在ICML的"理论+实用"平衡中得分很高。
