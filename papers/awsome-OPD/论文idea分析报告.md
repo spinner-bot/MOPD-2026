@@ -1635,3 +1635,11 @@ d-OPSD揭示了AR-LLM和扩散LLM的根本差异：后者不能简单套用token
 ### Idea提出角度：**"OPSD的校准问题——privileged teacher的置信度是系统性偏高的"**
 
 CaOPD从校准角度审视OPSD：特权教师因为看到了答案，其置信度天然偏高且不可识别。学生从这样的教师学习→学生也变得过度自信。这与Why-Does-SD-Degrade的OOD退化问题一致——过度自信是OOD泛化差的一个可能原因。修复方法很聪明：用同一batch中rollout的经验成功率替代教师的置信度。
+
+---
+
+## [104] Vision-OPD — ISCAS/UCAS/Xiaohongshu (2026.05)
+
+### Idea提出角度：**"将视觉感知gap形式化为OPSD——evidence crop = 视觉特权信息"**
+
+Vision-OPD测量了一个关键事实：同一模型在有evidence crop时比看全图时高18-22分。这个perceptual gap成了OPSD的天然动机——教师看到crop（特权），学生看全图，OPSD内化"从全图中找到关键区域"的能力。仅6.2K合成数据即超越Gemini-3.1-Pro证明了这个gap的利用效率。这篇论文展示了一个清晰的idea公式：测量模型在不同信息条件下的性能差距→将这个差距形式化为OPSD。
