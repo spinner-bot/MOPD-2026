@@ -1151,3 +1151,14 @@ MOPD是"工业报告→方法论文"的典范。MiMo-V2-Flash的技术报告简�
 - **它解释了为什么有些multi-teacher OPD成功，有些失败**。如果教师来自不同的预训练分布，它们的输出空间不兼容→学生在它们之间的KL梯度互相矛盾→训练发散。
 - **它实际上是一个"distributional compatibility"约束**。这个约束与THUNLP Rethinking的"thinking-pattern compatibility"条件形成互补——一个在教师之间（same-origin），一个在师生之间（compatible thinking）。
 - **这个发现的方法论意义**：在做multi-teacher OPD之前，先测量教师之间的分布距离。如果距离太大，要么放弃该教师，要么先用SFT在该教师的数据上做分布预热。
+
+---
+
+## [051] Blockwise Drift Gating — Zheng & Jiang, Independent (2026.06)
+
+### Idea提出角度：**"识别一个被忽视的操作模式（rollout reuse）中的隐藏问题"**
+
+大多数OPD方法假设每个rollout只用一次（生成→蒸馏→丢弃）。但在实践中（尤其是PPO式训练），rollout经常被跨epoch复用。Blockwise Drift Gating诊断了这种复用场景下的drift问题——生成rollout的旧策略与当前策略之间的差距。有趣的是，这篇论文标注为"preliminary study"（初步研究），作者为Independent（无机构支持）——说明即使是不完美的初步探索，只要发现了真实的问题，也有发布的价值。
+
+### 可借鉴思路
+- **"preliminary study"也可以发表**。不是每篇论文都需要是完整的SOTA方法。如果你发现了一个有趣的现象或提出了一个有潜力的初步方案，标注为preliminary study可以帮助管理审稿人的期望，同时让你的发现被社区看到。
