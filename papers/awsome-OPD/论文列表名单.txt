@@ -96,3 +96,18 @@
              (teacher-novelty)，(2)教师和学生的思维模式必须兼容
              (thinking-pattern-compatibility)；基于此提出实用配方：off-policy
              冷启动 + 教师对齐的prompt选择。
+
+--------------------------------------------------------------------------------
+论文 [007]  Lightning OPD — Surveys, Foundations & Position Papers
+--------------------------------------------------------------------------------
+  标题       Lightning OPD: Efficient Post-Training with Offline OPD
+  作者       Wu, Han, Cai
+  日期       2026.04
+  发表       arXiv preprint
+  arXiv      arXiv:2604.13010
+  代码       paper-only (📄)
+  领域       OPD Efficiency / Offline OPD
+  核心标签   #离线OPD #teacher-consistency #消除在线教师服务器 #缓存log-probs
+  一句话总结  提出"离线OPD"概念——教师的log-probs在SFT阶段预计算并缓存，
+             训练时直接复用，消除对在线教师服务器的依赖。关键发现：SFT和OPD
+             必须使用同一个教师模型，否则会出现梯度偏差（gradient bias）。
