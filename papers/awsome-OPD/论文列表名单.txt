@@ -177,3 +177,21 @@
              将OPD建模为"feedback-to-update"的七个公式变量路径，并自带证据
              层级表（E0已发表证据→E3作者假设），包含两个未实现的设计方案
              （GAE-OPD、CR-OPD）作为未来研究议程。
+
+--------------------------------------------------------------------------------
+论文 [012]  NAIL — Surveys, Foundations & Position Papers
+--------------------------------------------------------------------------------
+  标题       Behavior Cloning is Not All You Need: The Optimality of OPD for
+             Noisy Expert Feedback
+  作者       Sriraman, Liu, Hsu, Block et al.
+  机构       Columbia University
+  日期       2026.06
+  发表       arXiv preprint
+  arXiv      arXiv:2606.30923
+  代码       github.com/plau666/NAIL
+  领域       OPD Theory / Sample Complexity
+  核心标签   #OPD理论 #sample-complexity #noisy-expert #BC-vs-OPD #exponential-gap
+  一句话总结  理论上证明了在噪声专家设置下，离线行为克隆（BC）需要指数级样本
+             （在horizon上），而OPD只需要多项式级样本——这是对OPD优势的最强
+             理论支撑。提出了NAIL方法，在低噪声时与BC/OPD持平，在高噪声时
+             远超两者。
