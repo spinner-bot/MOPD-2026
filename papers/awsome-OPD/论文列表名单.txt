@@ -1350,3 +1350,15 @@
   一句话总结  特权上下文是英文翻译+CoT指令——教师用高资源语言(英语)理解问题后
              产生安全回答，学生用低资源语言回答。OPSD将跨语言安全能力蒸馏到
              低资源语言上。DPSW权重结合教师top-K熵×学生分歧风险。
+
+
+--------------------------------------------------------------------------------
+论文 [097]  COPSD (Crosslingual) — OPSD
+--------------------------------------------------------------------------------
+  标题       COPSD: Crosslingual OPSD for Low-Resource Math Reasoning
+  作者       LMU Munich / MCML
+  日期       2026.05 | arXiv:2605.09548 | github.com/cisnlp/COPSD
+  核心标签   #crosslingual #17-African-languages #math-reasoning #self-distillation
+  一句话总结  教师看到英文翻译+参考解答→在低资源语言上产生更好的推理；学生只
+             看到低资源语言题目。OPSD将"跨语言推理能力"从高资源语言蒸馏到
+             低资源语言。覆盖17种非洲语言。
