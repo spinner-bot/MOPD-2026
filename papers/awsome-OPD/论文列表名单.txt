@@ -230,3 +230,21 @@
              的教师可能是最差的教师（Student-Teacher Mismatch），(2)Length
              Exploitation（学生通过padding/早停来作弊获取更高分数），提出
              Hard Clipping + Soft Log-Scale Compression零成本修复方案。
+
+--------------------------------------------------------------------------------
+论文 [015]  Unmasking OPD — Surveys, Foundations & Position Papers
+--------------------------------------------------------------------------------
+  标题       Unmasking OPD: Where It Helps, Where It Hurts, and Why
+  作者       Apple
+  日期       2026.05
+  发表       arXiv preprint
+  arXiv      arXiv:2605.10889
+  代码       paper-only (📄) — 诊断研究，非训练方法
+  领域       OPD Analysis / Gradient Diagnosis
+  核心标签   #OPD诊断 #ideal-gradient #cosine-alignment #incorrect-rollouts
+             #training-free-diagnostic #Apple
+  一句话总结  Apple出品的训练无关OPD诊断工具——从经验成功率推导出"理想"
+             per-token梯度，并用余弦对齐度来评分GKD/MiniLLM/Dr.GRPO等
+             方法的梯度质量。核心发现：教师监督在**错误**rollout上的对齐
+             度远高于正确rollout——正确rollout上教师的token级指导反而不
+             如想象中有用。
