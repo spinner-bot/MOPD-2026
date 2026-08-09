@@ -1217,3 +1217,11 @@ COPD提出了一个全新的蒸馏范式：让教师比较两个前缀——一�
 ### Idea提出角度：**"按梯度符号拆分优化策略——正向exploit，反向imitate"**
 
 AOPD的洞察是：OPD梯度可以被分解为两个语义不同的部分——positive（学生比教师更偏好该token→学生在"正确的方向"上已经领先→用policy gradient来exploit这个优势），non-positive（学生弱于教师→学生需要向教师学习→但PG在这里噪声高→改用截断FKL）。这种"按符号分流"的设计在continual learning场景中特别有价值——它让OPD在"学习新能力"（imitate）的同时不破坏"已有能力"（exploit），解决了灾难性遗忘。
+
+---
+
+## [057] SimCT — Tencent Hunyuan/USTC (2026.05)
+
+### Idea提出角度：**"在tokenizer差异中寻找'最小公倍数'"**
+
+SimCT解决跨tokenizer OPD的方案体现了优雅的工程思维：不是强制两个tokenizer对齐（那几乎不可能），而是在两者的词表交集中寻找"最小对齐单元"——两个tokenizer都能分词的最细粒度span。在这些共享单元上，标准OPD损失可以直接使用。这个思路可以类比为：两个说不同语言的人，不要求对方学自己的语言，而是找到双方都能理解的"共同词汇"。
