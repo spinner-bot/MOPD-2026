@@ -1461,3 +1461,16 @@
   一句话总结  利用T2I模型encoder的in-context能力——直接将target image输入
              encoder作为特权上下文（零训练成本）。学生用text-only条件采样
              ODE轨迹，教师用text+target-image条件提供velocity监督。
+
+
+--------------------------------------------------------------------------------
+论文 [106]  PW-OPSD — OPSD
+--------------------------------------------------------------------------------
+  标题       PW-OPSD: Position-Weighted OPSD — Position AUROC 0.83 vs Entropy 0.57
+  作者       SaFo Lab / UW-Madison
+  日期       2026.05 | arXiv:2605.21606 | github.com/SaFo-Lab/PW-OPSD
+  核心标签   #position-weight #branch-viability #AUROC-0.83 #早期token更重要
+  一句话总结  通过分支可行性诊断实验证明：token位置是判断教师token可靠性的
+             最强预测因子（AUROC 0.83），远超熵、MC-dropout等局部不确定性
+             指标（均≤0.57）。因此提出线性递增的位置权重。是position bias
+             家族（IW-OPD同族）的重要成员。
