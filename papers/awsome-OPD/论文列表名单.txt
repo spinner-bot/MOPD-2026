@@ -409,3 +409,20 @@
              对教师数据（高质量但off-policy）用Skew-FKL保证覆盖，对学生
              数据（on-policy但有噪声）用Skew-RKL保证锐度。这种非对称设计
              使其成为ICML 2025 Oral。
+
+--------------------------------------------------------------------------------
+论文 [027]  DSKDv2 — White-Box OPD
+--------------------------------------------------------------------------------
+  标题       DSKDv2: Cross-tokenizer distillation supporting on-policy mode
+  作者       Songming Zhang et al.
+  机构       BJTU (北京交通大学)
+  日期       2025.04
+  发表       arXiv preprint
+  arXiv      arXiv:2504.11426
+  代码       github.com/songmzhang/DSKDv2
+  领域       White-Box OPD / Cross-Tokenizer
+  核心标签   #cross-tokenizer #双空间对齐 #on-policy-mode #不同tokenizer蒸馏
+  一句话总结  解决了OPD中一个关键工程障碍：当教师和学生使用不同tokenizer时如何
+             做token级KL蒸馏。通过在双空间中对齐实现跨tokenizer的on-policy
+             蒸馏——这是多模型家族间OPD（如从LLaMA教师蒸馏到Qwen学生）的基础
+             设施级贡献。
