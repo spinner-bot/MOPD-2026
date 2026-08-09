@@ -512,3 +512,18 @@
              （该位置是确定性的关键token）用RKL锐利对齐。这个简单的门控机制将
              "何时用哪个散度"的问题从全局层面（DistiLLM）细化到了per-token层面，
              是自适应散度方向的重要推进。
+
+--------------------------------------------------------------------------------
+论文 [034]  REOPOLD — White-Box OPD
+--------------------------------------------------------------------------------
+  标题       REOPOLD: Relaxed On-Policy Distillation for Efficient Reasoning
+  作者       Ko et al.
+  机构       KAIST / Microsoft
+  日期       2026.03 | arXiv:2603.11137 | paper-only (📄, code soon)
+  领域       White-Box OPD / Stable Training
+  核心标签   #reward-clipping #entropy-guided-sampling #two-stage-training
+             #heavy-tail #near-zero-reward #entropy-collapse
+  一句话总结  系统解决LLM-OPD中的三个训练瓶颈：(1)重尾负奖励→reward clipping，
+             (2)近零奖励区域浪费计算→entropy-guided动态token采样，(3)训练后期
+             entropy collapse→两阶段训练（先exploration后exploitation）。
+             实现6.7-12×采样效率提升，7B学生匹配32B教师性能。
