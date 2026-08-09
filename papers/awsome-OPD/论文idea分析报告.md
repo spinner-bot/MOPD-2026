@@ -990,3 +990,15 @@ OPD的标准做法是学生采样G个rollout（来降低学生侧的方差），
 ### 为什么"对称性思维"是高效的idea来源
 - **操作步骤**：①找到方法中不对称的设计（学生侧有G个rollout但教师侧只有1个、训练侧有数据增强但推理侧没有、正向路径有优化但反向梯度没有），②问"为什么不给另一边也加上？"，③实验验证对称化后的效果。
 - **对OPD领域的更多对称性机会**：学生有temperature但教师没有→给教师也加temperature？学生有KL regularization但教师的logits没有→给教师logits也加smoothing？这些"对称追问"每一个都可能产生一个新方法。
+
+---
+
+## [041] FiRe-OPD — THU/HKUST/Meituan (2026.06)
+
+### Idea提出角度：**"不同粒度需要不同的决策类型——轨迹层做硬选择，token层做软选择"**
+
+FiRe-OPD提出了一个深层的设计原则：**优化粒度（trajectory vs token）和决策类型（hard vs soft）之间存在天然的匹配关系**。轨迹层面：如果有10条rollout，你可以果断丢弃最差的3条（硬过滤），因为"整条轨迹都很差"的信息是可靠的。Token层面：每个token的重要性是连续的（而非二值的），用连续的teacher-confidence × student-confusion权重（软加权）比"选/不选"的硬门控更合理。
+
+### 为什么这种"粒度-决策匹配"原则是高级的设计智慧
+- **它解释了之前方法的矛盾结果**。TIP在token层面用硬选择（entropy top-50%）被DEAR批评，可能不是因为"高熵token不重要"这个判断错了，而是因为**在token层面做硬选择本身就不合理**——token的重要性是连续谱，硬门控会引入不连续性。FiRe-OPD的建议是：token层面做软加权，轨迹层面做硬过滤。
+- **"粒度-策略匹配"是一个可以迁移到任何ML问题的设计原则**。在什么粒度上做硬决策（filtering, pruning, routing），在什么粒度上做软决策（weighting, interpolating, annealing）——这个框架可以应用于数据选择、模型压缩、多任务学习等几乎所有ML子领域。
