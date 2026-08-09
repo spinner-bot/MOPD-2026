@@ -160,3 +160,20 @@
              监督本质是噪声）、覆盖度衰减（学生探索范围缩小致多样性丧失）、
              短视梯度（token级KL仅见局部最优不见轨迹级最优），与Many Faces of
              OPD和Revisiting OPD形成三种互补的诊断视角。
+
+--------------------------------------------------------------------------------
+论文 [011]  Formula-Driven Survey — Surveys, Foundations & Position Papers
+--------------------------------------------------------------------------------
+  标题       A Formula-Driven Survey and Research Agenda for OPD
+  作者       Bowen Zhang et al.
+  机构       Tsinghua (清华大学)
+  日期       2026.06
+  发表       arXiv preprint
+  arXiv      arXiv:2606.22793
+  代码       paper-only (📄)
+  领域       OPD Survey / Taxonomy / Research Agenda
+  核心标签   #OPD综述 #公式驱动分类 #feedback-to-update路径 #7变量 #证据层级
+  一句话总结  拒绝传统的"KL方向×教师访问"二分法，提出了新的OPD分类框架——
+             将OPD建模为"feedback-to-update"的七个公式变量路径，并自带证据
+             层级表（E0已发表证据→E3作者假设），包含两个未实现的设计方案
+             （GAE-OPD、CR-OPD）作为未来研究议程。
