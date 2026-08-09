@@ -1285,3 +1285,15 @@
              筛选正确的，然后用SFT训练学生模仿自己的正确答案。没有KL，没有
              teacher distribution，本质上就是STaR式的自举（self-bootstrapping）。
              被列为OPSD边界案例——"教师"是同一模型但用不同decoding配置。
+
+
+--------------------------------------------------------------------------------
+论文 [092]  Skill-SD — OPSD (cross-listed into Agent)
+--------------------------------------------------------------------------------
+  标题       Skill-SD: Skill-Conditioned OPSD for Multi-Turn LLM Agents
+  作者       UCAS / CUHK / USTC / vivo AI Lab
+  日期       2026.04 | arXiv:2604.10674
+  领域       OPSD / Agent / Skill-Conditioned
+  核心标签   #skill-conditioned #multi-turn-agent #GRPO+RKL
+  一句话总结  特权上下文是从完成轨迹中自动提炼的技能摘要——教师看到成功策略
+             总结，学生看不到。将OPSD扩展到multi-turn agent场景。
