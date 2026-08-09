@@ -1432,3 +1432,32 @@ OmniOPD可能是Black-Box OPD方向最重要的结果：它证明了**在相同�
 ### Idea提出角度：**"用LLM judge做dense process reward——RL和OPD的边界模糊处"**
 
 ExpRL被列为黑盒OPD的边界案例是因为它的LLM judge虽然在评分学生rollout，但judge不是"教师模型"而是"评分者模型"——judge看到hidden reference solution，对比学生的答案，给出dense process-level reward。这在功能上等同于OPD（dense token/step-level supervision on student rollouts），但在概念上被作者称为RL mid-training。ExpRL被列在这里的启示是：**OPD和RL之间的边界正在变得越来越模糊**（G-OPD证明了OPD是KL约束RL的特例，ExpRL从另一个方向逼近了同样的结论）。
+
+---
+
+## [082] OPSD (Self-Distilled Reasoner) — Zhao et al., UCLA/Meta FAIR (2026.01)
+
+### Idea提出角度：**"当教师=学生+特权信息时，不需要外部教师就能做OPD"**
+
+这是OPD领域最具范式意义的洞察之一：如果你给同一个模型加上"特权信息"（如正确答案、推理链），它就能成为自己的教师。教师和学生的唯一区别是**条件化上下文不同**——教师看到答案，学生看不到。这种"自我特权蒸馏"从根本上消除了对外部教师模型的需求，使得OPD可以在没有更强模型的情况下进行。虽然OPSD被后续研究发现有严重的"fork suppression"问题（Rethinking OPSD for Thinking Models, #未处理），但它的范式开创性不可否认。
+
+### 核心机制：Privileged Context Self-Distillation
+```
+标准OPD: 学生≠教师（不同模型）→ 需要外部教师
+OPSD:    学生=教师（同一模型）+ 不同条件化上下文
+         教师输入: [question, verified_solution] → 产生"知道答案后"的token分布
+         学生输入: [question] → 产生"不知道答案"的token分布
+         学生从教师（知道答案的自己）的分布中学习
+
+这本质上是"让模型学习'如果我知道答案，我会怎么推理'"
+然后把这个能力内化到"不知道答案时也能那样推理"
+```
+
+### 为什么这个范式如此重要
+1. **消除了对外部教师的依赖**。在OPSD之前，OPD需要一个比你强的模型做教师——如果你已经在用最强的模型，你就没法做OPD了。OPSD解决了这个"天花板问题"。
+2. **特权信息可以是任何形式的"额外knowledge"**：正确答案、完整推理链、更长的上下文、更好的图像crop、多模态输入...后续70+篇OPSD论文本质上都是不同形式的"特权上下文"设计。
+3. **但OPSD有根本性的局限**：后续研究发现（Rethinking OPSD #未处理），特权自蒸馏在thinking models上会抑制自我纠正行为（fork suppression），导致性能退化。这说明"自己教自己"并非没有代价。
+
+### 可借鉴思路（对大一新生最重要的启示）
+- **"同模型+不同条件化"是一个极其高产的论文框架**。几乎任何"额外信息"都可以作为特权上下文：正确答案、推理链、长上下文、工具输出、检索结果、多模态输入...每种特权上下文×每种蒸馏策略=一篇OPSD论文。这也是为什么OPSD成为AwesomeOPD中最大类别（70+篇）的原因——这个框架的可扩展性太强了。
+- **但这个方向已经非常拥挤**。如果你想在OPSD方向投稿，你需要回答"你的特权上下文为什么比已有的70+种更好？"——这是一个很高的bar。
