@@ -266,3 +266,21 @@
              on-policy SFT(DAgger)、offline-RL蒸馏和OPD，并证明学生前缀+
              reverse KL等价于密集奖励的REINFORCE目标。这是OPD领域最干净的
              形式化分类——将四种看似无关的方法统一为同一公式族的特例。
+
+--------------------------------------------------------------------------------
+论文 [017]  States, Not Tokens — Surveys, Foundations & Position Papers
+--------------------------------------------------------------------------------
+  标题       Post-Training is About States, Not Tokens
+  作者       Dong Nie (Independent)
+  日期       2026.05
+  发表       arXiv preprint
+  arXiv      arXiv:2605.22731
+  代码       paper-only (📄)
+  领域       OPD Theory / State-Space Perspective
+  核心标签   #状态视角 #state-source×signal-source #degraded-teacher
+             #continuation-OPD #超越教师
+  一句话总结  提出"后训练是关于状态而非token"的新视角——将SFT/RL/OPD按
+             state source（状态来源）× signal source（信号来源）重新分类。
+             惊人的实验发现：即使从一个**故意退化**的教师（比学生还差）
+             做continuation-OPD，学生仍能超越该教师——说明"状态访问"本身
+             比"教师质量"更重要。
