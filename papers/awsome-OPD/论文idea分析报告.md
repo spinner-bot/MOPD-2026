@@ -1316,3 +1316,11 @@ PowerOPD的洞察和TOP-D异曲同工但走的是不同的数学路径：TOP-D�
 ### Idea提出角度：**"用可控的staleness换取显著的加速——故意让教师信号'过时'一点"**
 
 NPD的反直觉策略：在OPD中，教师信号不一定需要是最新鲜的。通过将生成和更新解耦，教师logits在一个稍旧的策略上批量预计算（packed parallel prefill），引入"策略滞后"（policy lag）但获得8.1×加速。关键发现是OPD对staleness的容忍度远超预期——这与AsyncOPD的发现（FKL比RKL更容忍staleness）互补。对资源有限的研究者来说，这个发现意味着"你不需要实时查询教师"。
+
+---
+
+## [069] RWOPD — NUS (2026.05)
+
+### Idea提出角度：**"将OPD应用于极度专业化的领域——证明OPD的跨领域通用性"**
+
+RWOPD将OPD应用于硬件验证这个与NLP相距甚远的领域。关键是它保留了OPD的核心框架（on-policy student rollout + teacher KL supervision），只是将"正确答案"的判断从自然语言的accuracy改成了硬件形式验证（SymbiYosys+Z3 equivalence check）的pass/fail。0.6B学生超越14B教师的结果令人震惊——说明在高度专业化的领域中，OPD的mode-seeking特性恰好适配了"正确答案高度确定"的数据特性。这对大一新生有一个重要启示：**你不一定要在LLM/MLLM主赛道上竞争——把OPD应用到一个专家领域，可能更容易出成果**。
