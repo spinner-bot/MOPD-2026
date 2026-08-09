@@ -1436,3 +1436,16 @@
   一句话总结  证明特权条件化使教师置信度不可识别且向上偏置→OPSD以准确率换取
              严重过自信。修复：用经验rollout成功率重写置信度目标。关注的是
              OPSD的校准问题而非能力问题。
+
+
+--------------------------------------------------------------------------------
+论文 [104]  Vision-OPD — OPSD (cross-list Multimodal)
+--------------------------------------------------------------------------------
+  标题       Vision-OPD: Regional-to-Global OPSD for MLLM Fine Detail
+  作者       ISCAS / UCAS / Xiaohongshu
+  日期       2026.05 | arXiv:2605.18740 | github.com/VisionOPD/Vision-OPD
+  核心标签   #evidence-crop #regional-to-global #synthetic-data #beats-Gemini
+  一句话总结  特权上下文是2×放大证据裁剪——教师看到问题相关的zoom-in区域，
+             学生看到全图。仅用6.2K全合成数据训练1 epoch，9B模型超越
+             Gemini-3.1-Pro on fine-grained benchmark。是OPSD在视觉感知
+             领域的标杆应用。
