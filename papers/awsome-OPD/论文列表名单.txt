@@ -1166,3 +1166,17 @@
              教师条件化在"正确答案"上产生更好的token分布，学生通过RKL从这
              个"更好的自己"学习。匹配GRPO性能但仅需1×8 rollout/1024长度
              （vs GRPO的8×16/16k）。后续几乎所有OPSD工作都在此框架上扩展。
+
+--------------------------------------------------------------------------------
+论文 [083]  SDFT-Continual — OPSD
+--------------------------------------------------------------------------------
+  标题       SDFT-Continual: Self-Distillation for Continual Learning
+  作者       Idan Shen et al.
+  机构       MIT / ETH
+  日期       2026.01 | arXiv:2601.19897 | github.com/idanshen/Self-Distillation
+  领域       OPSD / Continual Learning
+  核心标签   #continual-learning #catastrophic-forgetting #self-distillation
+  一句话总结  将OPSD应用于continual learning场景——当模型需要学习新任务时，用
+             旧checkpoint作为特权教师来保留旧知识。核心洞察：OPSD的mode-seeking
+             特性（RKL→锐利对齐）恰好匹配continual learning中"保留关键旧知识
+             同时学习新知识"的需求。是OPSD框架在非推理场景的早期应用。
