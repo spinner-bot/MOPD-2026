@@ -438,3 +438,16 @@
   一句话总结  将OPD重新形式化为Constrained MDP——用硬KL约束替代软KL惩罚，确保
              学生在蒸馏过程中不会偏离教师太远。是从"软正则化"升级到"硬约束"
              的经典思路，提升了蒸馏的稳定性和安全性。
+
+--------------------------------------------------------------------------------
+论文 [029]  AdaSwitch — White-Box OPD
+--------------------------------------------------------------------------------
+  标题       AdaSwitch: Adaptive On-/Off-Policy Switching for OPD
+  作者       RUC / Baidu
+  日期       2025.10 | arXiv:2510.07842 | paper-only (📄)
+  领域       White-Box OPD / Adaptive Data Strategy
+  核心标签   #on-off-policy切换 #divergence-threshold #自适应数据策略
+  一句话总结  提出根据divergence阈值在on-policy（学生rollout）和off-policy
+             （教师数据）之间自适应切换——当师生分布差异大时用off-policy数据
+             保证稳定性，分布接近时切换到on-policy以获得mode-seeking的优势。
+             是"连续谱"思路（类似DistiLLM）在数据策略维度的应用。
