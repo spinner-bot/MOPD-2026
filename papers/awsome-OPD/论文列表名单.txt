@@ -1623,3 +1623,16 @@
   一句话总结  将OPSD应用于剪枝后模型恢复——剪枝demote而非erase了正确的推理
              路径(pass@k可以恢复)→OPSD可以将这些被demote的路径重新promote。
              teacher=剪枝前的自己。EMA检测后缀重复来控制rollout长度。
+
+
+--------------------------------------------------------------------------------
+论文 [118]  dOPSD (peek-ahead) — OPSD
+--------------------------------------------------------------------------------
+  标题       dOPSD: OPSD for Diffusion LMs — Peek-Ahead Privilege
+  作者       NUS
+  日期       2026.07 | arXiv:2607.04428 | github.com/tuandattt/dOPSD
+  核心标签   #peek-ahead #later-decoded-steps #only-beats-base-all-4
+  一句话总结  特权上下文来自学生自己denoising trajectory的later steps——一个
+             "诚实"的peek-ahead。不需要任何外部reference solution。是唯一
+             在所有4个benchmark上都超越base的方法（SFT和GRPO都在某些benchmark
+             上退化）。证明self-future是最干净的特权信息来源。
