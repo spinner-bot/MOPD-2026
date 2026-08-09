@@ -1572,3 +1572,18 @@
              时减弱特权影响（可能有leakage），分歧小时加强。反向KL barycenter
              在pi_T和pi_S之间插值。Theorem: leakage attenuation + entropy
              preservation。OOD GPQA 54.38 vs SDPO 46.47。
+
+
+--------------------------------------------------------------------------------
+论文 [114]  Rethinking OPSD for Thinking Models — OPSD
+--------------------------------------------------------------------------------
+  标题       Rethinking OPSD for Thinking Models — Fork Suppression of Self-Correction
+  作者       Princeton PLI (Kaur, Ri, He, Fowl, Arora)
+  日期       2026.07 | arXiv:2607.05184
+  核心标签   #OPSD最尖锐负结果 #fork-suppression #all-5-models-degrade #17pct-relative
+  一句话总结  AwesomeOPD Curator Pick #13——OPSD领域最尖锐的负结果：特权自蒸馏
+             使**全部5个**thinking model退化（最高−17%相对），而同一学生在
+             unprivileged OPD下改善。机制是"fork suppression"——fork-token
+             rate 0.083→0.035, lock rate 0.69→0.77, "But wait"等自我纠正
+             cue的log-ratio符号翻转（+0.95→−1.96）。禁用thinking后OPSD
+             保留了base average。
