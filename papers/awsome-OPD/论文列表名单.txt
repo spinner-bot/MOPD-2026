@@ -468,3 +468,19 @@
              学生当前前缀下变得不可靠时，自适应地重构蒸馏目标而非盲目跟随
              教师。通过在logit空间中构建几何桥梁，判断哪些教师信号值得信任，
              哪些应该被"否决"。是OPD训练稳定性的重要贡献。
+
+--------------------------------------------------------------------------------
+论文 [031]  G-OPD — White-Box OPD
+--------------------------------------------------------------------------------
+  标题       G-OPD: On-Policy Distillation as KL-Constrained RL
+  作者       RUC / Tencent
+  日期       2026.02
+  发表       arXiv preprint
+  arXiv      arXiv:2602.12125
+  代码       github.com/RUCBM/G-OPD
+  领域       White-Box OPD / OPD-RL Unification
+  核心标签   #OPD=KL-constrained-RL #reward-extrapolation #ExOPD #λ>1超越教师
+  一句话总结  OPD领域最重要的理论统一工作之一——证明OPD是KL约束RL的一个特例，
+             并提出ExOPD（λ>1的reward extrapolation）使学生在理论上可以
+             **超越教师**的性能天花板。这是"OPD不只imitate还可以extrapolate"
+             的开创性论证，启发了Direct-OPD、OPD²等后续工作。
