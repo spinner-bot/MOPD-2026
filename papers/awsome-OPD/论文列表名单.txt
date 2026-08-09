@@ -248,3 +248,21 @@
              方法的梯度质量。核心发现：教师监督在**错误**rollout上的对齐
              度远高于正确rollout——正确rollout上教师的token级指导反而不
              如想象中有用。
+
+--------------------------------------------------------------------------------
+论文 [016]  Decoupling KL & Trajectories — Surveys, Foundations & Position Papers
+--------------------------------------------------------------------------------
+  标题       A Unified Perspective for SFT, DAgger, Offline RL, and OPD
+  作者       EIT Ningbo / HK PolyU / HKUST / SJTU
+  日期       2026.05
+  发表       arXiv preprint
+  arXiv      arXiv:2605.16826
+  代码       paper-only (📄)
+  领域       OPD Theory / Unified Framework
+  核心标签   #统一框架 #prefix-source×KL-direction #2×2格点 #OPD=REINFORCE
+             #SFT/DAgger/offline-RL/OPD四象限
+  一句话总结  将蒸馏分解为prefix source（教师前缀 vs 学生前缀）× KL direction
+             （forward vs reverse）的2×2格点，证明四个格点恰好对应SFT、
+             on-policy SFT(DAgger)、offline-RL蒸馏和OPD，并证明学生前缀+
+             reverse KL等价于密集奖励的REINFORCE目标。这是OPD领域最干净的
+             形式化分类——将四种看似无关的方法统一为同一公式族的特例。
