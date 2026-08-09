@@ -1539,3 +1539,11 @@ OEL的核心贡献是将OPSD的"特权上下文"概念从静态文本（答案�
 ### Idea提出角度：**"最简单的baseline有时就是最好的baseline——sample-then-SFT"**
 
 Apple SSD的有趣之处在于它的"反向上进"——在所有人都在设计越来越复杂的OPSD方法时，Apple回退到了最简单的方案：用不同temperature让学生自己生成多个答案，筛选正确的，然后用SFT训练。这本质上是STaR（Self-Taught Reasoner）的变体，但被重新解读为"degenerate OPSD"——"特权上下文"是decoding配置（temperature/truncation）。从比赛角度看，这篇论文提供了一个重要的baseline：如果你的复杂OPSD方法不能显著超越sample-then-SFT，你可能高估了方法的贡献。
+
+---
+
+## [092] Skill-SD — UCAS/CUHK/USTC/vivo (2026.04)
+
+### Idea提出角度：**"从已完成轨迹中自动提炼技能——技能作为可蒸馏的隐藏知识"**
+
+Skill-SD和EMPO²共享training-only scaffolding哲学，但特权上下文的形式不同：EMPO²用记忆提示，Skill-SD用从完整轨迹中提炼的"技能摘要"。核心洞察是：一个完成的任务轨迹中包含了"可迁移的策略知识"（skill），这些知识可以被提取为文字描述并作为特权上下文。OPSD将这种"看到技能提示后的更好表现"内化到基础策略中。
