@@ -1338,3 +1338,15 @@
   一句话总结  特权上下文是"更长的上下文"——教师看到完整长文档，学生只看到截断
              版本。OPSD让学生学会"即使只看到一部分也能推理出完整上下文中
              的答案"。是OPSD在long-context场景的自然应用。
+
+
+--------------------------------------------------------------------------------
+论文 [096]  MSD — OPSD
+--------------------------------------------------------------------------------
+  标题       MSD: Multilingual Safety OPSD with Dual-Perspective Safety Weighting
+  作者       Tongji / Shanghai AI Lab
+  日期       2026.05 | arXiv:2605.02971
+  核心标签   #multilingual-safety #crosslingual-privilege #DPSW-weighting
+  一句话总结  特权上下文是英文翻译+CoT指令——教师用高资源语言(英语)理解问题后
+             产生安全回答，学生用低资源语言回答。OPSD将跨语言安全能力蒸馏到
+             低资源语言上。DPSW权重结合教师top-K熵×学生分歧风险。
