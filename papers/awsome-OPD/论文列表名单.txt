@@ -740,3 +740,19 @@
              而非"可迁移的能力差距"。DOPD用privilege-advantage gap将每个token
              路由到四个优化区域（教师特权区/学生特权区/共同区/无关区），只在
              "可迁移能力差距"区域做蒸馏，避免学生学习不可复现的特权信息。
+
+--------------------------------------------------------------------------------
+论文 [050]  MOPD (Xiaomi) — White-Box OPD
+--------------------------------------------------------------------------------
+  标题       MOPD: Multi-Teacher OPD for Capability Integration — The Method
+             Paper Behind MiMo-V2-Flash
+  作者       Xiaomi LLM-Core / PKU / HKU / RUC
+  日期       2026.06 | arXiv:2606.30406 | paper-only (📄)
+  领域       White-Box OPD / Multi-Teacher Consolidation
+  核心标签   #MOPD #multi-teacher #same-origin-essential #MiMo-V2-Flash
+             #inter-stage-consolidation #domain-routing
+  一句话总结  MiMo-V2-Flash中MOPD阶段的方法论文。提出"同源教师是必需的"——
+             所有领域专家教师必须从同一个SFT checkpoint出发做RL训练，否则
+             教师间的分布差异会导致OPD训练发散。提出了规范的多教师OPD配方：
+             共享SFT→并行领域RL→学生从同一SFT checkpoint出发→domain-routed
+             多教师蒸馏。Normalized score 0.937 vs Mix-RL 0.882。
