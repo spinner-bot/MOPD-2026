@@ -770,3 +770,18 @@
              newline-span）级别的student-only drift gate来衰减漂移位置的监督
              信号。此方法完全不触及教师target、support和rollout策略——仅在
              损失函数中添加一个detached gate。标注为preliminary study。
+
+--------------------------------------------------------------------------------
+论文 [052]  Direct-OPD — White-Box OPD
+--------------------------------------------------------------------------------
+  标题       Direct-OPD: Weak-to-Strong Generalization via Teacher Implicit Reward
+  作者       Tsinghua AIR SIA-Lab / ByteDance Seed / PKU
+  日期       2026.07 | arXiv:2607.05394 | github.com/BytedTsinghua-SIA/Direct-OPD
+  领域       White-Box OPD / Weak-to-Strong / Implicit Reward
+  核心标签   #weak-to-strong #implicit-reward #log-ratio #小教师提升大学生
+  一句话总结  OPD领域的范式反转——用**更小**的教师来提升**更大**的学生。核心
+             技巧是蒸馏教师的"implicit reward"（post-RL logits − pre-RL logits
+             的对数比）而非教师的绝对分布。这相当于只学习"RL教会了教师什么"
+             而不学习"教师本身就会什么"。Qwen3-1.7B（教师）→ Qwen3-8B（学生）：
+             AIME24 48.3→58.3（~4h, 8×A100），超越了需要32×A100跑一周的
+             Polaris直接RL。证明了W2S-OPD和OPD²也在探索的同一核心洞察。
