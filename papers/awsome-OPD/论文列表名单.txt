@@ -654,3 +654,16 @@
              绕过了LM head。这打开了OPD的新维度：不仅可以在"模型说了什么"上
              对齐，还可以在"模型怎么想的"（内部表示）上对齐。是后续所有
              feature-based OPD工作的奠基之作。
+
+--------------------------------------------------------------------------------
+论文 [044]  IW-OPD — White-Box OPD
+--------------------------------------------------------------------------------
+  标题       IW-OPD: Importance-Weighted OPD — On the Position Bias of OPD
+  作者       Xidian / Georgia Tech / Amazon AGI SF Lab
+  日期       2026.06 | arXiv:2606.22600 | github.com/YannX1e/IW-OPD
+  领域       White-Box OPD / Position Bias / Prefix Importance
+  核心标签   #position-bias #prefix-importance #trust-region #仅前缀30%匹配全量
+  一句话总结  实验发现了一个惊人的位置偏差：只监督前30%的token就能匹配全token
+             OPD的性能，而只监督后30%几乎不学习。通过trust-region推导出前缀
+             重要性权重的闭式解，证明这不仅是经验现象更是理论必然——后缀token
+             因分布漂移而天然携带退化的监督信号。
