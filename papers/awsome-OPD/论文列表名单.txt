@@ -1180,3 +1180,17 @@
              旧checkpoint作为特权教师来保留旧知识。核心洞察：OPSD的mode-seeking
              特性（RKL→锐利对齐）恰好匹配continual learning中"保留关键旧知识
              同时学习新知识"的需求。是OPSD框架在非推理场景的早期应用。
+
+--------------------------------------------------------------------------------
+论文 [084]  MTP Self-Distill — OPSD
+--------------------------------------------------------------------------------
+  标题       MTP Self-Distill: Multi-Token Prediction via Self-Distillation
+  作者       J. Kirchenbauer et al.
+  机构       UMD / LLNL
+  日期       2026.02 | arXiv:2602.06019 | github.com/jwkirchenbauer/mtp-lm
+  领域       OPSD / Multi-Token Prediction
+  核心标签   #multi-token-prediction #self-distillation #MTP #on-policy
+  一句话总结  将OPSD应用于Multi-Token Prediction（MTP）任务——学生生成多个
+             future token，教师（同一模型+正确future token作为特权上下文）
+             在学生生成的future token位置上提供RKL监督。将OPSD从"单token推理"
+             扩展到"多token预测"，证明了OPSD框架对非标准decoding任务的适用性。
