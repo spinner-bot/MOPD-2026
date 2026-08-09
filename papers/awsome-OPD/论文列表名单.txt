@@ -667,3 +667,18 @@
              OPD的性能，而只监督后30%几乎不学习。通过trust-region推导出前缀
              重要性权重的闭式解，证明这不仅是经验现象更是理论必然——后缀token
              因分布漂移而天然携带退化的监督信号。
+
+--------------------------------------------------------------------------------
+论文 [045]  DEAR — White-Box OPD
+--------------------------------------------------------------------------------
+  标题       DEAR: Finding the Evidence — Entropy Selectors Miss Low-Entropy,
+             High-Divergence Evidence Tokens
+  作者       Meituan LongCat / Nanjing Univ. / TJUNLP
+  日期       2026.06 | arXiv:2606.22830 | paper-only (📄)
+  领域       White-Box OPD / Token Selection / Evidence Tokens
+  核心标签   #TIP批评者 #evidence-tokens #低熵高KL #决策token vs 证据token
+  一句话总结  对TIP的直接方法论批评：熵选择器找到了"决策token"（模型在哪个
+             方向走），但系统性地遗漏了"证据token"（模型基于什么事实做决策）。
+             证据token是低熵但高KL散度的——学生在这些token上自信但错误，恰好
+             是最需要教师监督的。DEAR用hidden-state cosine similarity + 
+             divergence来定位这些被TIP遗漏的证据token，实现了更完整的监督覆盖。
