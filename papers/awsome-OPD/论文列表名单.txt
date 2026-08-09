@@ -64,3 +64,18 @@
   核心标签   #OPD诊断 #三种失败模式 #简单修复 #tokenizer不匹配 #top-p采样
   一句话总结  诊断OPD三种具体失败模式（单token信号失衡、前缀监督不可靠、
              tokenizer不匹配）并提针对性简单修复，是OPD领域必读的"踩坑指南"。
+
+--------------------------------------------------------------------------------
+论文 [005]  Tencent OPD Survey — Surveys, Foundations & Position Papers
+--------------------------------------------------------------------------------
+  标题       A Survey of On-Policy Distillation for LLMs
+  作者       Mingyang Song, Mao Zheng et al.
+  机构       Tencent (腾讯)
+  日期       2026.04
+  发表       arXiv preprint
+  arXiv      arXiv:2604.00626
+  代码       paper-only (📄)
+  领域       OPD Survey / Taxonomy
+  核心标签   #OPD综述 #50+方法分类 #参考索引 #方法目录
+  一句话总结  腾讯出品的OPD系统性综述，收录并分类了50+种OPD方法，适合作为
+             检索索引使用——当你需要快速了解某类OPD方法时查阅。
