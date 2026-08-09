@@ -1324,3 +1324,11 @@ NPD的反直觉策略：在OPD中，教师信号不一定需要是最新鲜的�
 ### Idea提出角度：**"将OPD应用于极度专业化的领域——证明OPD的跨领域通用性"**
 
 RWOPD将OPD应用于硬件验证这个与NLP相距甚远的领域。关键是它保留了OPD的核心框架（on-policy student rollout + teacher KL supervision），只是将"正确答案"的判断从自然语言的accuracy改成了硬件形式验证（SymbiYosys+Z3 equivalence check）的pass/fail。0.6B学生超越14B教师的结果令人震惊——说明在高度专业化的领域中，OPD的mode-seeking特性恰好适配了"正确答案高度确定"的数据特性。这对大一新生有一个重要启示：**你不一定要在LLM/MLLM主赛道上竞争——把OPD应用到一个专家领域，可能更容易出成果**。
+
+---
+
+## [070] ProteinOPD — Tsinghua/IDEA/HKUST/NTU (2026.05)
+
+### Idea提出角度：**"将OPD的多教师融合框架从文本迁移到蛋白质序列"**
+
+ProteinOPD证明了OPD框架的模态无关性——protein sequences虽然在语义上与自然语言不同，但它们也是离散token序列，OPD的token级KL监督完全适用。用product-of-experts来统一多个偏好特异化的教师（thermostability, solubility等），解决了蛋白质工程中的多目标优化问题。这个工作展示了一条清晰的idea路径：**找一个有"序列生成+多目标优化"需求的新领域→把OPD搬过去→根据领域特性做适配**。
