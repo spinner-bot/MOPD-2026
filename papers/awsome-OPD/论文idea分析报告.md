@@ -1241,3 +1241,11 @@ ESR的核心贡献是**发现了一个之前未被命名但广泛存在的现象
 ### Idea提出角度：**"用梯度对齐度而非token重叠度来判断截断时机"**
 
 ADWIN是prefix-truncation家族中最理论化的截断判据：它不看token overlap（Prune-OPD），而看**梯度余弦对齐度**——短前缀的更新方向和全rollout的更新方向是否一致。如果一致→前缀的监督已经足够→截断。如果不一致→需要更长序列。这个设计体现了"用优化信号的一致性而非数据信号的相似性来判断"的更深层思维。延迟全rollout probe作为审计机制也是亮点——确保了截断策略不会系统性地偏离全rollout最优解。
+
+---
+
+## [060] Truncated OPD — CASIA/Meituan (2026.05)
+
+### Idea提出角度：**"用理论证明经验发现——将'可以截断'升级为'为什么截断合理'"**
+
+Truncated OPD为prefix-truncation家族提供了最坚实的理论基石。Fast OPD、Prune-OPD、ESR等都从实验角度证明了截断有效，但Truncated OPD从数学上分析了**为什么**序列级OPD的MSE按O(T³)增长——每个后续token的噪声不仅自身存在，还通过序列累积放大。Token级OPD绕过了这个O(T³)问题，因此截断到10% horizon不仅是经验上可行的，而且是理论上最优的。这种"experiment → theory"的闭环是prefix-truncation家族的最高成就。
