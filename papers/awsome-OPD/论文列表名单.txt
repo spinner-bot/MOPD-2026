@@ -1124,3 +1124,17 @@
   一句话总结  将对抗式OPD（继承自GAD）重新定位为SFT和RLVR之间的独立对齐阶段。
              MoE判别器（感知专家+推理专家）提供解耦的矫正信号。详见
              PRISM与Uni-OPD深度分析报告.md。
+
+--------------------------------------------------------------------------------
+论文 [080]  OmniOPD — Black-Box OPD
+--------------------------------------------------------------------------------
+  标题       OmniOPD: Logit-Free OPD via Speculative Verification — Beats White-Box
+  作者       Meta AI
+  日期       2026.06 | arXiv:2606.01476 | paper-only (📄)
+  领域       Black-Box OPD / Semantic Similarity
+  核心标签   #logit-free #speculative-verification #semantic-similarity #beats-white-box
+  一句话总结  黑盒OPD的巅峰成就——完全不需要教师logits，用entropy-driven
+             scheduler选择学生不确定的chunk→黑盒教师生成Monte-Carlo
+             continuation→用语义相似度评分（而非token匹配）。**69.08 vs
+             white-box OPD 64.16（同一教师家族）**。这是在"没有logits"的
+             限制下实现的——证明了黑盒OPD的上限可以超越白盒OPD。
