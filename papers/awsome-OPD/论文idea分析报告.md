@@ -259,3 +259,30 @@ Li Jiang同时发布了TRD论文（一种轨迹级refine-then-distill的OPD方�
 - **"博客+论文"组合策略**：论文发表具体方法，博客建立思想领导力。博客可以讨论论文中不方便展开的"big picture"问题和领域反思。这种组合让你在领域内的visibility远超单发一篇论文。
 - **对大一新生的建议**：如果你写第一篇论文时积累了足够多的思考，把"方法之外"的反思单独写一篇博客发布。这不仅能帮你建立学术声誉，还能帮你理清下一步研究方向。
 
+---
+
+## [011] Formula-Driven Survey — Bowen Zhang, Tsinghua (2026.06)
+
+### Idea提出角度：**"拒绝现有分类，提出更好的分类"**
+
+这篇Survey的核心勇气在于：它明确拒绝了已有的"KL方向×教师访问"二分法（说这个分类"混淆了不同机制"），并提出了一个全新的分类框架——将OPD建模为从feedback到update的七个公式变量路径。这种"先破后立"的写法让它在已有2-3篇OPD综述的情况下仍然找到了发表空间。
+
+### 七个公式变量（学习这种分解思维）
+它将OPD的优化过程分解为七个独立的选择维度：
+1. State distribution（状态分布——用哪些rollout数据）
+2. Feedback source（反馈来源——教师logits、reward、discriminator等）
+3. Comparison support Ω_t（比较空间——sampled-token vs top-k vs full-vocab）
+4. Temporal credit A_t（时序信用分配——如何将序列级信号分配到每个token）
+5. Gate-or-weight w_t（门控/权重——哪些token需要被监督）
+6. Vocabulary routing（词表路由——如何处理不同tokenizer）
+7. Update route（更新路径——direct-loss vs policy-gradient score-function）
+
+### 为什么这种"拒绝现有分类"的Survey策略有效
+1. **它定义了新的讨论框架**。如果你的分类被接受，后续所有论文都会被放在你定义的框架里讨论。这是Survey的最高目标——不只是索引，而是重新定义领域的话语体系。
+2. **自带研究议程**。这篇Survey不仅分类了已有方法，还提出了两个未实现的设计方案（GAE-OPD和CR-OPD），自标记为E3级别假设。这相当于给后来者提供了"免费"的研究idea。
+3. **证据层级表**（E0→E3）是一个聪明的自我批评机制——明确说"我们这些建议还没有被验证"，降低了审稿人的防御心理。
+
+### 可借鉴思路（如果你要写Survey）
+- **先问自己**：现有的分类方式有什么问题？如果找不到问题，就别写Survey——你的Survey必须有"拒绝旧分类"的勇气和"提出新分类"的洞察。
+- **"分类框架+研究议程"的双层结构**：好的Survey不仅告诉读者"已经做了什么"，还告诉读者"接下来该做什么"。后者的价值往往超过前者。
+
