@@ -1449,3 +1449,15 @@
              学生看到全图。仅用6.2K全合成数据训练1 epoch，9B模型超越
              Gemini-3.1-Pro on fine-grained benchmark。是OPSD在视觉感知
              领域的标杆应用。
+
+
+--------------------------------------------------------------------------------
+论文 [105]  D-OPSD (step-distilled diffusion) — OPSD
+--------------------------------------------------------------------------------
+  标题       D-OPSD: OPSD for Tuning Step-Distilled Diffusion Models
+  作者       HKUST / Z-Image Alibaba / UCSD / CUHK
+  日期       2026.05 | arXiv:2605.05204 | github.com/vvvvvjdy/D-OPSD
+  核心标签   #few-step-diffusion #encoder-in-context #free-privilege
+  一句话总结  利用T2I模型encoder的in-context能力——直接将target image输入
+             encoder作为特权上下文（零训练成本）。学生用text-only条件采样
+             ODE轨迹，教师用text+target-image条件提供velocity监督。
