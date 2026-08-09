@@ -79,3 +79,20 @@
   核心标签   #OPD综述 #50+方法分类 #参考索引 #方法目录
   一句话总结  腾讯出品的OPD系统性综述，收录并分类了50+种OPD方法，适合作为
              检索索引使用——当你需要快速了解某类OPD方法时查阅。
+
+--------------------------------------------------------------------------------
+论文 [006]  THUNLP Rethinking OPD — Surveys, Foundations & Position Papers
+--------------------------------------------------------------------------------
+  标题       Rethinking On-Policy Distillation: Phenomenology, Mechanism & Recipe
+  作者       THUNLP (清华大学自然语言处理实验室)
+  日期       2026.04
+  发表       arXiv preprint
+  arXiv      arXiv:2604.13016
+  代码       github.com/thunlp/OPD
+  领域       OPD Theory / Mechanism Analysis
+  核心标签   #OPD成功条件 #teacher-novelty #thinking-pattern-compatibility
+             #off-policy-cold-start #teacher-aligned-prompt-selection
+  一句话总结  提出OPD成功的两个必要条件——(1)教师必须拥有学生不具备的新能力
+             (teacher-novelty)，(2)教师和学生的思维模式必须兼容
+             (thinking-pattern-compatibility)；基于此提出实用配方：off-policy
+             冷启动 + 教师对齐的prompt选择。
