@@ -34,3 +34,18 @@
   核心标签   #OPD入门 #最清晰解释 #工业配方 #~1/10 RL成本
   一句话总结  工业界视角最清晰的OPD单页解释——"Swap KL ref model for stronger
              teacher"一行代码改动即可实现OPD，复现Qwen3结果仅需~1/10 RL成本。
+
+--------------------------------------------------------------------------------
+论文 [003]  tinker-cookbook — Surveys, Foundations & Position Papers
+--------------------------------------------------------------------------------
+  标题       tinker-cookbook: Reference implementation of the OPD recipe on the
+             Tinker SDK
+  作者       Thinking Machines Lab
+  日期       2025.10
+  发表       GitHub开源仓库
+  链接       github.com/thinking-machines-lab/tinker-cookbook
+  代码       同上链接
+  领域       OPD Implementation / Reference Code
+  核心标签   #OPD参考实现 #Tinker SDK #最小可运行代码 #distillation recipes
+  一句话总结  Thinking Machines OPD Blog的配套代码仓库——提供可运行的OPD最小实现
+             （recipes/distillation/），是后续大多数OPD开源项目的起点。
