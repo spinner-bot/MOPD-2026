@@ -915,3 +915,16 @@
              false negative：你以为训练在顺利进行（KL很低），实际上学生已经在
              错误的方向上越走越远。用滑动窗口检测来发现这种"师生共谋"，截断
              长度59.7%，2.4×加速。
+
+--------------------------------------------------------------------------------
+论文 [063]  TA-OPD — White-Box OPD
+--------------------------------------------------------------------------------
+  标题       TA-OPD: Not All Disagreement Is Learnable — Token Teachability
+  作者       HK PolyU / InfiX.ai
+  日期       2026.05 | arXiv:2605.26844 | github.com/wyy-code/TA-OPD
+  核心标签   #teachable-subset #support-aligned #5-10%-tokens #稀疏监督
+  一句话总结  核心洞察：师生之间的"分歧"（disagreement）不一定都是"可教的"
+             （teachable）。如果一个token教师的top-k候选和学生的top-k候选
+             完全不重叠→教师建议对学生"不可达"→这种分歧无法通过梯度下降
+             来修复。TA-OPD只监督support-aligned的"可教子集"，仅用5-10%
+             的token就能匹配或超越全token OPD。
