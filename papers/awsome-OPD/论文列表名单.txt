@@ -1511,3 +1511,16 @@
   一句话总结  在标准OPSD损失之上增加hidden-state transition几何通道（方向+
              Gram-matrix CKA），证明特权上下文可以在output空间之外提供监督。
              与OPRD同属feature-based OPD方向，但聚焦transition几何。
+
+
+--------------------------------------------------------------------------------
+论文 [110]  Visual-OPSD — OPSD
+--------------------------------------------------------------------------------
+  标题       Visual-OPSD: Internalising Visual Thoughts into Text-Only Student
+  作者       XJTU (MOE KLINNS) / SYSU
+  日期       2026.06 | arXiv:2606.18974 | github.com/TiezMind/Visual-OPSD
+  核心标签   #visual-thought #14.3x-speedup #+3.40-over-teacher #generation-pathway
+  一句话总结  证明了rendered visual thoughts的价值在于generation pathway而非
+             pixels——通过OPSD将VT生成路径蒸馏到纯文本学生。+3.40 pp over
+             VT-generating teacher + 14.3× speedup。KL probe揭示VT conditioning
+             将completion分布shift了~4.64 nats/token。
