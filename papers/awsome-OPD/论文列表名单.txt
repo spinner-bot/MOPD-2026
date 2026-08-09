@@ -527,3 +527,16 @@
              (2)近零奖励区域浪费计算→entropy-guided动态token采样，(3)训练后期
              entropy collapse→两阶段训练（先exploration后exploitation）。
              实现6.7-12×采样效率提升，7B学生匹配32B教师性能。
+
+--------------------------------------------------------------------------------
+论文 [035]  PACED — White-Box OPD
+--------------------------------------------------------------------------------
+  标题       PACED: Frontier Curriculum Self-Distillation
+  作者       LinkedIn
+  日期       2026.03 | arXiv:2603.11178 | github.com/HJSang/OPSD_OnPolicyDistillation
+  领域       White-Box OPD / Curriculum Learning / Self-Distillation
+  核心标签   #frontier-curriculum #difficulty-weighting #w(p)=p(1-p) #self-distill
+  一句话总结  提出"前沿课程"（Frontier Curriculum）概念——只在学生的"能力边界"
+             （既不太简单也不太难的样本）上做自蒸馏。用w(p)=p(1-p)的难度权重
+             函数（p=学生正确率），自动聚焦于p≈0.5的"最近发展区"样本。这种
+             "只在你最需要学习的地方教你"的课程设计思想简单但极其有效。
