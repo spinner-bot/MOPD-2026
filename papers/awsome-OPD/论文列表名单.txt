@@ -1297,3 +1297,17 @@
   核心标签   #skill-conditioned #multi-turn-agent #GRPO+RKL
   一句话总结  特权上下文是从完成轨迹中自动提炼的技能摘要——教师看到成功策略
              总结，学生看不到。将OPSD扩展到multi-turn agent场景。
+
+
+--------------------------------------------------------------------------------
+论文 [093]  SD-Zero — OPSD
+--------------------------------------------------------------------------------
+  标题       SD-Zero: Self-Revision Turns Binary Rewards into Dense Supervision
+  作者       Princeton / Toronto / CMU
+  日期       2026.04 | arXiv:2604.12002
+  领域       OPSD / Self-Revision
+  核心标签   #self-revision #binary-to-dense #generator-reviser #no-verifier
+  一句话总结  一个模型扮演Generator（生成答案）+ Reviser（看到binary reward后
+             修正答案），Reviser的reward-conditioned分布成为Generator的dense
+             token级监督。将稀疏的binary reward转化为密集的过程监督，无需
+             verifier、无需正确答案。>10% over base on Qwen3-4B。
