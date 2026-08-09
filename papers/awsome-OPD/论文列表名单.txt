@@ -498,3 +498,17 @@
              2-47×加速且性能不降。这个反直觉的发现直接催生了prefix-truncation
              家族（Prune-OPD, ESR, ADWIN, Truncated OPD, KAT），是OPD效率
              方向的奠基性工作。
+
+--------------------------------------------------------------------------------
+论文 [033]  Entropy-Aware OPD — White-Box OPD
+--------------------------------------------------------------------------------
+  标题       Entropy-Aware OPD: Adaptive FKL/RKL Switching by Teacher Entropy
+  作者       KAIST / IBM
+  日期       2026.03 | arXiv:2603.07079 | paper-only (📄)
+  领域       White-Box OPD / Adaptive Divergence
+  核心标签   #entropy-gated #FKL-RKL-switching #教师熵引导 #自适应散度
+  一句话总结  提出用教师的熵（entropy）来决定每个token位置使用FKL还是RKL——
+             当教师熵高时（该位置有多种合理选择）用FKL覆盖多样性，当教师熵低时
+             （该位置是确定性的关键token）用RKL锐利对齐。这个简单的门控机制将
+             "何时用哪个散度"的问题从全局层面（DistiLLM）细化到了per-token层面，
+             是自适应散度方向的重要推进。
