@@ -1699,3 +1699,11 @@ Visual-OPSD做了一个关键的诊断实验：移除或加噪声到visual thoug
 ### Idea提出角度：**"OPSD不是万能药——它在continual learning场景下有根本性的缺陷"**
 
 Denser != Better贡献了一个重要的负结果——OPSD的dense监督让模型过度专精。GRPO的稀疏reward天然保留了一些plasticity（因为它不强制每个token都改变），而OPSD的密集KL强制所有token向教师对齐→旧能力被系统性覆盖。这个发现对"OPD替代RL"的叙事构成重要挑战——至少在continual learning场景下，OPSD不能替代RL。
+
+---
+
+## [112] Purified OPSD — ZJU/Alibaba/HUST/Jilin (2026.07)
+
+### Idea提出角度：**"用reference-only teacher作为诊断仪器→发现OPSD信号被死记硬背主导"**
+
+Purified OPSD的实验设计非常精致：构造一个只看到参考答案但看不到题目的"reference-only teacher"→它的输出就是纯memorisation成分。测量发现||ref||/||total||>1且cos(useful, total)≈-0.95——有用的推理信号被主动压制了。这个"用诊断仪器分离信号成分"的方法论可以推广到任何teacher-student系统。
