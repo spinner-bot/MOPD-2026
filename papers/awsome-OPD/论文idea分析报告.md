@@ -1627,3 +1627,11 @@ RLCSD诊断了一个OPSD的subtle问题：特权信息不仅改变教师对"答�
 ### Idea提出角度：**"扩散LLM的OPSD需要不同的设计——step-level而非token-level"**
 
 d-OPSD揭示了AR-LLM和扩散LLM的根本差异：后者不能简单套用token-level OPSD。特权上下文"self future-experience"利用扩散模型中later-step包含更多信息这一特性。这启示：当迁移一个方法到新范式时，先理解新范式的独特结构，再适配方法，而非粗暴移植。
+
+---
+
+## [103] CaOPD — Salesforce (2026.04)
+
+### Idea提出角度：**"OPSD的校准问题——privileged teacher的置信度是系统性偏高的"**
+
+CaOPD从校准角度审视OPSD：特权教师因为看到了答案，其置信度天然偏高且不可识别。学生从这样的教师学习→学生也变得过度自信。这与Why-Does-SD-Degrade的OOD退化问题一致——过度自信是OOD泛化差的一个可能原因。修复方法很聪明：用同一batch中rollout的经验成功率替代教师的置信度。
