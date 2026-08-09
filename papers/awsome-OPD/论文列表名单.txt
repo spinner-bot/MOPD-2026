@@ -339,3 +339,20 @@
   一句话总结  推导出reward extrapolation的闭式安全阈值λ*——超过此阈值OPD对
              近确定性结构化输出会突然崩溃。对G-OPD/ExOPD中λ>1做法给出了首个
              定量安全边界。
+
+--------------------------------------------------------------------------------
+论文 [023]  MiniLLM — White-Box OPD
+--------------------------------------------------------------------------------
+  标题       MiniLLM: Knowledge Distillation of Large Language Models
+  作者       Yuxian Gu et al.
+  机构       Microsoft / Tsinghua (微软 / 清华大学)
+  日期       2023.06
+  发表       ICLR 2024
+  arXiv      arXiv:2306.08543
+  代码       github.com/microsoft/LMOps/tree/main/minillm
+  领域       White-Box OPD / Foundational Method
+  核心标签   #OPD奠基 #reverse-KL #Policy-Gradient #mode-seeking #MiniLLM
+  一句话总结  OPD for LLM的奠基工作——首次在LLM上使用Reverse KL + Policy
+             Gradient实现on-policy蒸馏，证明反向KL（mode-seeking）优于
+             前向KL（mode-covering），是后续所有白盒OPD方法的起点。与GKD
+             几乎同时独立发表（仅差几天），两篇共同定义了OPD的基础范式。
