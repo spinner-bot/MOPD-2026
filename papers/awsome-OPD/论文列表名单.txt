@@ -725,3 +725,18 @@
              cosine annealing从FKL渐近过渡到RKL（exploration→refinement），
              (3) Prompt级：首个OPD的prompt课程——按学生pass rate动态决定
              训练哪些prompt。2³析因实验证明curriculum是单一最强因素(+4.20)。
+
+--------------------------------------------------------------------------------
+论文 [049]  DOPD — White-Box OPD
+--------------------------------------------------------------------------------
+  标题       DOPD: Dual On-Policy Distillation — Routing Tokens by Privilege-
+             Advantage Gap to Counter "Privilege Illusion"
+  作者       JD Explore / NUS / MMLab CUHK / PKU
+  日期       2026.06 | arXiv:2606.30626 | paper-only (📄)
+  领域       White-Box OPD / Privilege Deconfounding
+  核心标签   #privilege-illusion #信息不对称 #四区域路由 #privilege-advantage-gap
+  一句话总结  提出了"privilege illusion"（特权幻觉）概念——带特权信息（如正确答案）
+             的教师之所以比学生强，部分来自"信息不对称"（教师知道答案而学生不知道）
+             而非"可迁移的能力差距"。DOPD用privilege-advantage gap将每个token
+             路由到四个优化区域（教师特权区/学生特权区/共同区/无关区），只在
+             "可迁移能力差距"区域做蒸馏，避免学生学习不可复现的特权信息。
