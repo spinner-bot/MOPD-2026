@@ -627,3 +627,16 @@
              teacher-confidence × student-confusion）。证明硬过滤在轨迹层面
              更有效而软加权在token层面更有效——两者结合优于任何单一策略。
              这个"不同粒度需要不同策略"的发现具有普适的方法论意义。
+
+--------------------------------------------------------------------------------
+论文 [042]  TRD — White-Box OPD
+--------------------------------------------------------------------------------
+  标题       TRD: Trajectory-Refined Distillation — Fixing Prefix Failure
+  作者       Jiang et al. (McGill / Mila / UT Austin)
+  日期       2026.06 | arXiv:2606.08432 | github.com/louieworth/trd
+  领域       White-Box OPD / Trajectory-Level Refinement
+  核心标签   #prefix-failure #trajectory-refinement #先refine再distill #verl-based
+  一句话总结  诊断了"prefix failure"问题：token级密集OPD监督在学生前缀偏离
+             教师后会系统性地失效。不同于Prune-OPD的"截断不可靠后缀"，TRD选择
+             "在轨迹层面先修正学生的错误（refine），再做蒸馏（distill）"——
+             相当于在蒸馏之前先对学生的答案做了一次"批改"。同样适用于OPSD。
