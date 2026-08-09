@@ -1138,3 +1138,16 @@
              continuation→用语义相似度评分（而非token匹配）。**69.08 vs
              white-box OPD 64.16（同一教师家族）**。这是在"没有logits"的
              限制下实现的——证明了黑盒OPD的上限可以超越白盒OPD。
+
+--------------------------------------------------------------------------------
+论文 [081]  ExpRL — Black-Box OPD
+--------------------------------------------------------------------------------
+  标题       ExpRL: Exploratory RL for LLM Mid-Training — Judge-Scored Rollouts
+  作者       Stanford / CMU
+  日期       2026.06 | arXiv:2606.17024 | github.com/violetxi/ExpRL
+  领域       Black-Box OPD / Exploration / Judge-Based
+  核心标签   #mid-training #LLM-judge #hidden-reference #dense-process-reward
+  一句话总结  ⚠️ 本文自述为RL mid-training而非蒸馏。LLM judge对学生rollout和
+             hidden reference solution做对比评分→产生密集过程奖励→然后用稀疏
+             RL优化。在此列为黑盒OPD的边界案例——judge的dense scoring在功能上
+             等同于OPD的token级监督，但judge不是教师而是评分者。
