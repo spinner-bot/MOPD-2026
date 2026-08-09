@@ -1325,3 +1325,16 @@
              examiner出题时的Question Construction Path（反向解题路径）成为
              student的特权上下文。完全不需要外部数据——模型通过自我博弈产生
              无限的训练信号。超越全监督search agent。
+
+
+--------------------------------------------------------------------------------
+论文 [095]  OPSDL — OPSD
+--------------------------------------------------------------------------------
+  标题       OPSDL: On-Policy Self-Distillation for Long-Context LMs
+  作者       Baidu
+  日期       2026.04 | arXiv:2604.17535
+  领域       OPSD / Long-Context
+  核心标签   #long-context #short-context-teacher #self-distillation
+  一句话总结  特权上下文是"更长的上下文"——教师看到完整长文档，学生只看到截断
+             版本。OPSD让学生学会"即使只看到一部分也能推理出完整上下文中
+             的答案"。是OPSD在long-context场景的自然应用。
