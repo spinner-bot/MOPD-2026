@@ -1412,3 +1412,15 @@
   一句话总结  诊断了"特权引起的风格漂移"——OPSD的信号系统地集中在风格token而非
              任务token上。用正确hint和错误hint下的师生差距的**对比**来消除
              风格漂移。这个风格漂移问题是OPSD领域一个被忽视但重要的问题。
+
+
+--------------------------------------------------------------------------------
+论文 [102]  d-OPSD — OPSD
+--------------------------------------------------------------------------------
+  标题       d-OPSD: First OPSD for Diffusion LLMs — Self Future-Experience
+  作者       THU / TUM / NTU / UT Austin
+  日期       2026.06 | arXiv:2606.18195 | github.com/xingzhejun/d-opsd-code
+  核心标签   #diffusion-LLM #step-level-divergence #self-future #10pct-of-RLVR
+  一句话总结  首个面向扩散LLM的OPSD——特权上下文是"自我未来体验"（self future-
+             experience）：将已生成的答案作为suffix条件化教师，产生step-level
+             （非token-level）的散度。仅需RLVR约10%的优化步数即匹配性能。
