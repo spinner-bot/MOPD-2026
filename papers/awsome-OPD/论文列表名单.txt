@@ -554,3 +554,17 @@
              教师rerank（间接路径），然后在被选中的token上做直接的logit蒸馏
              （直接路径）。这种"先筛选再精炼"的两阶段token选择策略在保留
              OPD的mode-seeking优势的同时降低了全词表KL的计算开销。
+
+--------------------------------------------------------------------------------
+论文 [037]  SCOPE — White-Box OPD
+--------------------------------------------------------------------------------
+  标题       SCOPE: Signal-Calibrated OPD with Dual-Path Adaptive Weighting
+  作者       USTC / Meituan / Fudan
+  日期       2026.04 | arXiv:2604.10688 | github.com/machine981/SCOPE
+  领域       White-Box OPD / Signal Calibration
+  核心标签   #signal-calibrated #dual-path #teacher-PPL-weighting #student-PPL-MLE
+             #verifier-routing
+  一句话总结  提出双路径信号校准框架——对错误rollout用teacher-PPL加权的KL
+             （教师困惑度高的区域需要更多监督），对正确rollout用student-PPL
+             加权的MLE（学生困惑度高的区域需要巩固）。通过verifier做正确/错误
+             的路由判断，实现"不同结果的rollout走不同的优化路径"。
