@@ -1524,3 +1524,25 @@
              pixels——通过OPSD将VT生成路径蒸馏到纯文本学生。+3.40 pp over
              VT-generating teacher + 14.3× speedup。KL probe揭示VT conditioning
              将completion分布shift了~4.64 nats/token。
+
+
+--------------------------------------------------------------------------------
+论文 [111]  Denser Not Equal Better — OPSD
+--------------------------------------------------------------------------------
+  标题       Denser != Better: Limits of OPSD for Continual Post-Training
+  作者       HKISI CAS / CASIA / UCAS / NJUST
+  日期       2026.07 | arXiv:2607.01763 | github.com/Moenupa/SDPO-CL
+  核心标签   #continual-learning #specialization-accelerator #ToolUse-80pct-drop
+  一句话总结  OPSD是"专精加速器"而非"持续学习稳定器"——GRPO学新任务时ToolUse
+             +18
+
+--------------------------------------------------------------------------------
+论文 [111]  Denser != Better — OPSD
+--------------------------------------------------------------------------------
+  标题       Denser != Better: Limits of OPSD for Continual Post-Training
+  作者       HKISI CAS / CASIA / UCAS / NJUST
+  日期       2026.07 | arXiv:2607.01763 | github.com/Moenupa/SDPO-CL
+  核心标签   #continual-learning #specialization-accelerator #ToolUse-80pct-drop
+  一句话总结  OPSD是专精加速器而非持续学习稳定器——GRPO学新任务时ToolUse +18%，
+             而SDPO学新任务时ToolUse暴跌80%。OPSD的dense监督让学生过度专精
+             于当前任务而灾难性遗忘旧任务。是OPSD在continual场景的重要警告。
