@@ -1469,3 +1469,11 @@ OPSD:    学生=教师（同一模型）+ 不同条件化上下文
 ### Idea提出角度：**"将OPSD从推理场景迁移到continual learning——旧checkpoint就是最好的'特权教师'"**
 
 SDFT-Continual展示了OPSD框架的通用性：特权上下文不一定是"正确答案"——在continual learning中，"旧模型的checkpoint"就是特权上下文（旧模型知道旧任务的知识）。学生（当前模型）从教师（旧checkpoint）的RKL中保留旧知识。这个迁移优雅地将continual learning中的"知识保留"问题映射到了OPSD的"mode-seeking蒸馏"框架中。
+
+---
+
+## [084] MTP Self-Distill — Kirchenbauer et al., UMD/LLNL (2026.02)
+
+### Idea提出角度：**"将OPSD从单token自回归解码扩展到多token预测——证明框架的通用性"**
+
+MTP Self-Distill的核心贡献是证明了OPSD不限于标准的left-to-right自回归生成。在multi-token prediction中，学生一次预测多个future token→教师看到正确的future tokens作为特权上下文→在学生的预测位置上提供RKL监督。这种"多token特权蒸馏"开辟了OPSD在非标准decoding范式中的应用。idea来源：找到一个新的预测范式→问"OPSD能work吗？"→实验验证。
