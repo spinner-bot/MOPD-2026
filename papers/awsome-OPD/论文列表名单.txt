@@ -940,3 +940,37 @@
              rollout时混合一部分教师策略（μ ∝ π_S^(1−β)·π_T^β），在trust-
              region约束下从纯on-policy逐渐退火到纯教师策略。这种方法让OPD
              的"探索-利用"权衡发生在采样阶段而非损失函数阶段。
+
+--------------------------------------------------------------------------------
+论文 [065]  TrOPD — White-Box OPD
+--------------------------------------------------------------------------------
+  标题       TrOPD: Trust Region On-Policy Distillation — Partitioning Tokens
+  作者       Samsung Research Beijing / Oxford / PKU
+  日期       2026.06 | arXiv:2606.01249 | github.com/Xingrun-Xing2/TrOPD
+  核心标签   #trust-region-partition #RKL-in-region #FKL-outliers #annealed-off-policy
+  一句话总结  将学生token分为trust-region内（用reverse KL精确对齐）和outlier
+             （用top-k forward KL覆盖），外加退火off-policy引导。AIME25 44.06
+             vs OPD 40.72。与TOP-D共享trust-region思想但实现路径不同。
+
+--------------------------------------------------------------------------------
+论文 [066]  Near-Future Guidance — White-Box OPD
+--------------------------------------------------------------------------------
+  标题       Bridging Reasoning Trajectories via Near-Future Guidance
+  作者       UMBC
+  日期       2026.06 | arXiv:2606.00305 | paper-only (📄)
+  核心标签   #Pearson-r=0.126 #optimal-transport #near-future-alignment
+  一句话总结  惊人的测量：per-token KL与真实轨迹散度之间的Pearson相关系数
+             仅0.126——几乎不相关！这意味着标准OPD的token级KL是一个极差的
+             轨迹级对齐代理。用optimal-transport对齐的near-future窗口来
+             替代单点KL监督。这个发现对OPD的理论基础构成严峻挑战。
+
+--------------------------------------------------------------------------------
+论文 [067]  PowerOPD — White-Box OPD
+--------------------------------------------------------------------------------
+  标题       PowerOPD: Stabilizing OPD with Bounded Power Transformation
+  作者       EIT Ningbo / HK PolyU / SJTU / Waterloo
+  日期       2026.06 | arXiv:2606.17199 | paper-only (📄)
+  核心标签   #Box-Cox-transform #bounded-reward #sign-consistent #+6.37-Avg@8
+  一句话总结  核心洞察：vanilla OPD奖励log(π_T/π_θ)是**无界的**（教师概率→0
+             时奖励→−∞），这种无界性是训练不稳定的根源。用符号一致的Box-Cox
+             变换将奖励压缩到[-1, 1]有界区间。+6.37 Avg@8, 59%更少wall-clock。
