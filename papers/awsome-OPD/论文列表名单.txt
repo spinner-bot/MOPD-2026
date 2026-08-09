@@ -195,3 +195,20 @@
              （在horizon上），而OPD只需要多项式级样本——这是对OPD优势的最强
              理论支撑。提出了NAIL方法，在低噪声时与BC/OPD持平，在高噪声时
              远超两者。
+
+--------------------------------------------------------------------------------
+论文 [013]  Online IL Realizability — Surveys, Foundations & Position Papers
+--------------------------------------------------------------------------------
+  标题       When Does Online Imitation Learning Help in LLM Post-Training?
+  作者       Tsinghua / CMU / Berkeley / Harvard 联合
+  日期       2026.06
+  发表       arXiv preprint
+  arXiv      arXiv:2606.30445
+  代码       paper-only (📄)
+  领域       OPD Theory / Realizability Analysis
+  核心标签   #OPD理论 #realizability #error-accumulation-myth #online-vs-offline
+  一句话总结  挑战了OPD领域的主流叙事——"on-policy优于off-policy是因为消除了
+             exposure bias/error accumulation"。该文通过理论+实验证明：在
+             realizability（学生有能力表示教师策略）的条件下，offline SFT就
+             足够匹配教师性能，OPD没有增益；online增益的真正来源是
+             non-realizability（学生能力不足以完全表示教师）。
