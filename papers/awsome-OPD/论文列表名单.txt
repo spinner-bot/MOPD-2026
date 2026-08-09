@@ -373,3 +373,20 @@
              KL之间自适应插值。核心洞察：FKL和RKL各有优劣（FKL稳定但mode-
              covering，RKL锐利但mode-seeking），最佳方案不是二选一而是在两者
              之间根据训练阶段动态调整。这是"将两个极端统一为连续谱"的经典思路。
+
+--------------------------------------------------------------------------------
+论文 [025]  Speculative KD — White-Box OPD
+--------------------------------------------------------------------------------
+  标题       Speculative Knowledge Distillation (Interleaved propose-and-correct
+             with gated KL)
+  作者       UCSB / Google Research
+  日期       2024.10
+  发表       ICLR 2025
+  arXiv      arXiv:2410.11325
+  代码       github.com/google-research/google-research/tree/master/speculative_kd
+  领域       White-Box OPD / Speculative Distillation
+  核心标签   #speculative-decoding #propose-and-correct #gated-KL #interleaved
+  一句话总结  将推测解码（Speculative Decoding）的思想引入蒸馏——学生先propose
+             一批候选token，教师在其中选择和纠正，被教师接受的token直接使用
+             （无需蒸馏），被拒绝的token用gated KL来对齐。这种"只纠正错误"
+             的策略大幅降低了蒸馏的计算开销。
