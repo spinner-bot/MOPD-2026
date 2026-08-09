@@ -1175,3 +1175,14 @@ Direct-OPD的洞察是革命性的：它彻底反转了OPD的"强教师→弱学
 - **师生能力差距不再是一个问题**。因为delta（RL前后变化）的量级通常远小于绝对能力差距。一个小教师在简单任务上做RL所获得的"提升"（delta），可能恰好是一个大学生在更复杂推理中所需要的。
 - **这与人类学习的类比**：一个差生通过努力学习提高了10分——这个"学习策略"（delta）可能对优等生同样有用。差生不需要比优等生强，他只需要展示"怎么进步"。
 - **W2S-OPD和OPD²独立发现了同一核心洞察**。三篇论文从不同角度独立收敛到"蒸馏delta而非绝对值"——这是科学史上"multiple discovery"的经典案例，说明这个方向的基础性。
+
+---
+
+## [053] OPD² (Delta Distillation) — NAVER AI Lab (2026.07)
+
+### Idea提出角度：**"与Direct-OPD独立发现同一洞察——科学中的multiple discovery"**
+
+OPD²和Direct-OPD在几乎同一时间独立发现了同一个核心洞察：蒸馏delta而非绝对值。这是科学史上"multiple discovery"现象的经典案例——当领域积累到一定程度，多个团队会同时看到同一个突破口。两者的差异在于实现细节：Direct-OPD用implicit reward（post-RL − pre-RL），OPD²用delta signal（teacher − teacher_base）+ sign-agreement gate。对于研究者来说，"独立发现"意味着这个方向的基础性得到验证——它不是某个团队的偶然运气，而是一个时机成熟的必然突破。
+
+### Sign-agreement gate的独特贡献
+当delta signal与标准OPD信号方向一致时→使用delta signal。当两者方向不一致时→将该token的更新设为零（不学习）。这个简单的"冲突检测"机制解决了一个重要问题：delta信号在某些token上可能与标准OPD信号冲突（比如教师base认为这个token应该高概率，但post-RL教师降低了它的概率），此时强制学生学习任何一个方向都可能是错误的。
