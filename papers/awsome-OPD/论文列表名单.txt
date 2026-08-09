@@ -356,3 +356,20 @@
              Gradient实现on-policy蒸馏，证明反向KL（mode-seeking）优于
              前向KL（mode-covering），是后续所有白盒OPD方法的起点。与GKD
              几乎同时独立发表（仅差几天），两篇共同定义了OPD的基础范式。
+
+--------------------------------------------------------------------------------
+论文 [024]  DistiLLM — White-Box OPD
+--------------------------------------------------------------------------------
+  标题       DistiLLM: ... (Skewed-KL for on-policy distillation)
+  作者       Jongwook Ko et al.
+  机构       KAIST / Microsoft
+  日期       2024.02
+  发表       ICML 2024
+  arXiv      arXiv:2402.03898
+  代码       github.com/jongwooko/distillm
+  领域       White-Box OPD / Adaptive Divergence
+  核心标签   #Skewed-KL #FKL-RKL插值 #自适应散度 #on-policy+off-policy混合
+  一句话总结  提出Skewed-KL——通过一个可学习的偏度参数α在Forward KL和Reverse
+             KL之间自适应插值。核心洞察：FKL和RKL各有优劣（FKL稳定但mode-
+             covering，RKL锐利但mode-seeking），最佳方案不是二选一而是在两者
+             之间根据训练阶段动态调整。这是"将两个极端统一为连续谱"的经典思路。
