@@ -1643,3 +1643,11 @@ CaOPD从校准角度审视OPSD：特权教师因为看到了答案，其置信�
 ### Idea提出角度：**"将视觉感知gap形式化为OPSD——evidence crop = 视觉特权信息"**
 
 Vision-OPD测量了一个关键事实：同一模型在有evidence crop时比看全图时高18-22分。这个perceptual gap成了OPSD的天然动机——教师看到crop（特权），学生看全图，OPSD内化"从全图中找到关键区域"的能力。仅6.2K合成数据即超越Gemini-3.1-Pro证明了这个gap的利用效率。这篇论文展示了一个清晰的idea公式：测量模型在不同信息条件下的性能差距→将这个差距形式化为OPSD。
+
+---
+
+## [105] D-OPSD — HKUST/Alibaba/UCSD/CUHK (2026.05)
+
+### Idea提出角度：**"利用预训练encoder的in-context能力作为免费特权信息来源"**
+
+D-OPSD发现了T2I模型中一个被忽视的"免费午餐"：LLM/VLM encoder本身就具有in-context learning能力，将target image输入encoder就能获得concept-preserving的生成——零训练成本的特权上下文。这个洞察具有普适性：当你使用预训练encoder时，检查它是否已经具备了你需要的"特权能力"——可能你不需要额外训练，只需要换一种方式使用它。
