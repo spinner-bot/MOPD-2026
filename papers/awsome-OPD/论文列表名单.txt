@@ -1151,3 +1151,18 @@
              hidden reference solution做对比评分→产生密集过程奖励→然后用稀疏
              RL优化。在此列为黑盒OPD的边界案例——judge的dense scoring在功能上
              等同于OPD的token级监督，但judge不是教师而是评分者。
+
+--------------------------------------------------------------------------------
+论文 [082]  OPSD (Self-Distilled Reasoner) — OPSD
+--------------------------------------------------------------------------------
+  标题       OPSD: Self-Distilled Reasoner — The Canonical OPSD Paper
+  作者       Siyan Zhao et al.
+  机构       UCLA / Meta FAIR
+  日期       2026.01 | arXiv:2601.18734 | github.com/siyan-zhao/OPSD
+  领域       OPSD / Foundational Method
+  核心标签   #OPSD奠基 #privileged-context #verified-trace #TRL-GOLD-trainer
+  一句话总结  OPSD（在策略自蒸馏）的奠基工作——同一模型同时充当教师和学生，
+             教师看到verified reasoning trace（特权上下文），学生看不到。
+             教师条件化在"正确答案"上产生更好的token分布，学生通过RKL从这
+             个"更好的自己"学习。匹配GRPO性能但仅需1×8 rollout/1024长度
+             （vs GRPO的8×16/16k）。后续几乎所有OPSD工作都在此框架上扩展。
