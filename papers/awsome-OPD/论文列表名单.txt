@@ -640,3 +640,17 @@
              教师后会系统性地失效。不同于Prune-OPD的"截断不可靠后缀"，TRD选择
              "在轨迹层面先修正学生的错误（refine），再做蒸馏（distill）"——
              相当于在蒸馏之前先对学生的答案做了一次"批改"。同样适用于OPSD。
+
+--------------------------------------------------------------------------------
+论文 [043]  OPRD — White-Box OPD
+--------------------------------------------------------------------------------
+  标题       OPRD: On-Policy Representation Distillation — First Feature-Space OPD
+  作者       ZJU / Ant Group
+  日期       2026.06 | arXiv:2606.06021 | github.com/ShenzhiYang2000/OPRD
+  领域       White-Box OPD / Feature-Space Distillation
+  核心标签   #特征空间OPD #hidden-state-supervision #bypass-LM-head #首个
+  一句话总结  OPD领域的范式突破——首次将蒸馏从输出空间（logits）转移到隐藏
+             表示空间（hidden states）。在教师和学生各层的hidden states上做对齐，
+             绕过了LM head。这打开了OPD的新维度：不仅可以在"模型说了什么"上
+             对齐，还可以在"模型怎么想的"（内部表示）上对齐。是后续所有
+             feature-based OPD工作的奠基之作。
