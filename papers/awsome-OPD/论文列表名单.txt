@@ -484,3 +484,17 @@
              并提出ExOPD（λ>1的reward extrapolation）使学生在理论上可以
              **超越教师**的性能天花板。这是"OPD不只imitate还可以extrapolate"
              的开创性论证，启发了Direct-OPD、OPD²等后续工作。
+
+--------------------------------------------------------------------------------
+论文 [032]  Fast OPD — White-Box OPD
+--------------------------------------------------------------------------------
+  标题       Fast OPD: Prefix-Truncation Distillation for 2-47× Speedup
+  作者       Industrial (工业界)
+  日期       2026.02 | arXiv:2602.15260 | paper-only (📄)
+  领域       White-Box OPD / Efficiency / Prefix Truncation
+  核心标签   #前缀截断 #2-47×加速 #prefix-truncation家族开创者 #OPD效率
+  一句话总结  提出了OPD效率方向最简单的核心洞察——你不需要在完整推理链上做OPD，
+             只在前几个"推理前缀"token上蒸馏就足够了。在数学推理场景下实现
+             2-47×加速且性能不降。这个反直觉的发现直接催生了prefix-truncation
+             家族（Prune-OPD, ESR, ADWIN, Truncated OPD, KAT），是OPD效率
+             方向的奠基性工作。
