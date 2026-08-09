@@ -1715,3 +1715,11 @@ Purified OPSD的实验设计非常精致：构造一个只看到参考答案但�
 ### Idea提出角度：**"用token级disagreement来调制特权影响——分歧大的地方少信特权"**
 
 DemoPSD的设计哲学：特权上下文在某些token上给出合理的监督，但在另一些token上只是"已知答案后的后见之明"（privileged leakage）。per-token JS disagreement恰好能区分这两种情况——分歧大=可能存在leakage→减弱特权pull。这种"根据本地不确定性自适应调节"的模式在多篇OPSD论文中反复出现（CaOPD, DemoPSD, AD-OPSD）。
+
+---
+
+## [114] Rethinking OPSD for Thinking Models — Princeton PLI (2026.07)
+
+### Idea提出角度：**"当所有人都说OPSD好时，问：对thinking model也好吗？答案：不好！"**
+
+这篇论文的贡献模式值得学习：在一个被广泛接受的方法（OPSD）上，问一个关键的边界问题——"对thinking model（有自我纠正行为的模型）也好吗？"答案是否定的。Fork suppression机制揭示了OPSD的根本矛盾：特权自蒸馏奖励"确定性"（教师因为知道答案所以不犹豫），但thinking model的价值恰好在"不确定性"（fork→self-correct→verify）。蒸馏确定性=杀死思考。这个发现对OPSD的适用范围划出了清晰边界——OPSD不适合有self-correction行为的thinking model。
