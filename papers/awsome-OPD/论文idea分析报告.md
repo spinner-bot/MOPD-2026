@@ -1651,3 +1651,11 @@ Vision-OPD测量了一个关键事实：同一模型在有evidence crop时比看
 ### Idea提出角度：**"利用预训练encoder的in-context能力作为免费特权信息来源"**
 
 D-OPSD发现了T2I模型中一个被忽视的"免费午餐"：LLM/VLM encoder本身就具有in-context learning能力，将target image输入encoder就能获得concept-preserving的生成——零训练成本的特权上下文。这个洞察具有普适性：当你使用预训练encoder时，检查它是否已经具备了你需要的"特权能力"——可能你不需要额外训练，只需要换一种方式使用它。
+
+---
+
+## [106] PW-OPSD — SaFo Lab/UW-Madison (2026.05)
+
+### Idea提出角度：**"用精心设计的诊断实验来比较多个候选指标——位置碾压所有竞争者"**
+
+PW-OPSD的"分支可行性"诊断实验设计值得学习：对每个token位置，force教师推荐替代token→继续用学生模板生成→看正确答案还能否恢复。能恢复=教师的建议只是"偏好"（real-uncertain），不能恢复=教师的建议是"正确方向"（real-certain）。用这个ground-truth标签来比较不同候选指标的AUROC——结果是：位置（0.83）>>所有局部指标（≤0.57）。这种"构造ground-truth→比较多个指标"的诊断方法论可以应用于任何需要"判断信号可靠性"的场景。
