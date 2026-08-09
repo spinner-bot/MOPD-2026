@@ -697,3 +697,16 @@
              直觉相反，但与Apple Unmasking OPD的发现一致（教师监督在错误rollout
              上的对齐度更高）。提出了基于prefix-computable log-ratio的pivotal
              token识别方法，在不等待完整rollout结果的情况下近似判断样本重要性。
+
+--------------------------------------------------------------------------------
+论文 [047]  PG-OPD — White-Box OPD
+--------------------------------------------------------------------------------
+  标题       PG-OPD: Prefix-Guided OPD — Mining Golden Trajectories from Rollouts
+  作者       TeleAI / SJTU
+  日期       2026.06 | arXiv:2606.21994 | paper-only (📄)
+  领域       White-Box OPD / Prefix Screening
+  核心标签   #prefix-probe #golden-trajectory-mining #top-k-overlap #2.46×加速
+  一句话总结  用短前缀上的师生top-k重叠率来快速筛选"有潜力的"rollout——只有
+             高质量候选才被继续生成到完整长度。这本质上是一个"先侦察再投入"的
+             计算分配策略：用便宜的前缀评估来判断哪些rollout值得花费完整的
+             生成+蒸馏成本。在数学推理上实现+4.80 avg且2.46× wall-clock加速。
