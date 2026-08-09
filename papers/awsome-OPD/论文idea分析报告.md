@@ -1348,3 +1348,11 @@ MAD-OPD是唯一将"辩论"机制引入OPD的工作。两个教师（K=2）先�
 ### Idea提出角度：**"合成一个'虚拟教师'——将delta蒸馏锚定在学生自己的base model上"**
 
 W2S-OPD是Weak-to-Strong OPD方向的方法论集大成者。它综合了Direct-OPD和OPD²的delta蒸馏思想，但做了一件独特的事：**合成一个不存在的"proxy teacher"**。这个proxy teacher = softmax(z_base + α(z⁺ − z⁻))——它不是任何真实模型的输出，而是将弱教师对的logit差值重新锚定在学生base model的logit空间上。三种contrast source（post-RL vs pre-RL / 强vs弱base / 正确vs错误hint）可互换甚至可叠加。这个"虚拟教师"的概念突破了OPD必须有真实教师的限制——只要你能构造一个有意义的logit delta，你就可以创造教师信号。
+
+---
+
+## [073] ORPO-Distill — Industrial (2025.09)
+
+### Idea提出角度：**"用对比学习替代logit匹配——绕过了白盒访问的限制"**
+
+Black-box OPD的核心理念是：如果教师是API-only（如GPT-5、Gemini），你拿不到logits，只能用教师生成的文本来构造监督信号。ORPO-Distill的策略是：学生自己生成负样本（错误答案），教师提供正样本（正确答案），然后通过ORPO对比学习来让学生区分好坏。这本质上是一种"偏好学习"——学生不需要知道教师的token级概率分布，只需要知道"教师认为哪个答案更好"。
