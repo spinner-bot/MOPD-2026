@@ -124,3 +124,22 @@
   核心标签   #OPSD综述 #自蒸馏分类 #8种设计模式 #参考索引
   一句话总结  针对OPSD（在策略自蒸馏）子领域的综述，将OPSD方法按8种设计维度
              分类，适合作为OPSD方向的快速入门索引。
+
+--------------------------------------------------------------------------------
+论文 [009]  Many Faces of OPD — Surveys, Foundations & Position Papers
+--------------------------------------------------------------------------------
+  标题       The Many Faces of On-Policy Distillation: Pitfalls, Mechanisms,
+             and Fixes
+  作者       Ge Liu's ULab
+  机构       UIUC (伊利诺伊大学厄巴纳-香槟分校)
+  日期       2026.05
+  发表       arXiv preprint
+  arXiv      arXiv:2605.11182
+  代码       paper-only (📄) — 诊断研究，非训练方法
+  领域       OPD Analysis / Failure Diagnosis / Mechanism Study
+  核心标签   #OPD诊断 #三种失败机制 #distribution-mismatch #optimization-instability
+             #PI-free-policy-limit #stop-gradient #稳定训练
+  一句话总结  系统诊断OPD/OPSD的三种失败机制——分布不匹配、优化不稳定性和无PI
+             策略上限（OPSD特有），并提出stop-gradient目标+稳定化训练的修复
+             方案。与Revisiting OPD和THUNLP Rethinking互为补充，三篇合起来形成
+             了对OPD失败模式的完整诊断。
