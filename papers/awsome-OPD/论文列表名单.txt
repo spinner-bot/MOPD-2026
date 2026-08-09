@@ -875,3 +875,17 @@
              如果前缀梯度已经和全梯度很一致，就不需要继续生成。用延迟全rollout
              probe来做审计，确保截断策略不会系统性偏离。59.3→60.9 avg, ~3.4×
              更少FLOPs。是prefix-truncation家族中理论最严谨的截断判据。
+
+--------------------------------------------------------------------------------
+论文 [060]  Truncated OPD — White-Box OPD
+--------------------------------------------------------------------------------
+  标题       Are Full Rollouts Necessary for OPD? — Truncating to 10% Horizon
+  作者       CASIA / Meituan
+  日期       2026.05 | arXiv:2605.31490 | paper-only (📄)
+  领域       White-Box OPD / Prefix Truncation / Theoretical Analysis
+  核心标签   #O(T³)-MSE-增长 #10%-horizon截断 #82%-训练时间缩减 #理论保证
+  一句话总结  理论上证明了序列级OPD的MSE按O(T³)增长（后续噪声累积），而
+             token级OPD不受此影响。基于此证明截断到10% horizon就能匹配全
+             rollout性能，同时削减82%训练时间。这是prefix-truncation家族中
+             理论基础最坚实的工作——不仅"发现可以截断"，而且"证明了为什么
+             截断是合理的"。
