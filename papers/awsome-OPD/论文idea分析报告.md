@@ -1340,3 +1340,11 @@ ProteinOPD证明了OPD框架的模态无关性——protein sequences虽然在�
 ### Idea提出角度：**"用多智能体辩论来增强教师信号——辩论本身成为蒸馏目标"**
 
 MAD-OPD是唯一将"辩论"机制引入OPD的工作。两个教师（K=2）先就一个推理问题进行多轮辩论，辩论过程中的token级输出被聚合为蒸馏目标。核心洞察：**辩论过程暴露了单个教师可能忽略的推理路径和反例**——辩论后的教师信号比单个教师的输出更"稳健"。4B学生战胜14B教师的结果表明，两个较小教师的辩论可以产生超越单个更强教师的训练信号。
+
+---
+
+## [072] W2S-OPD — UMD/Microsoft Research/MBZUAI (2026.07)
+
+### Idea提出角度：**"合成一个'虚拟教师'——将delta蒸馏锚定在学生自己的base model上"**
+
+W2S-OPD是Weak-to-Strong OPD方向的方法论集大成者。它综合了Direct-OPD和OPD²的delta蒸馏思想，但做了一件独特的事：**合成一个不存在的"proxy teacher"**。这个proxy teacher = softmax(z_base + α(z⁺ − z⁻))——它不是任何真实模型的输出，而是将弱教师对的logit差值重新锚定在学生base model的logit空间上。三种contrast source（post-RL vs pre-RL / 强vs弱base / 正确vs错误hint）可互换甚至可叠加。这个"虚拟教师"的概念突破了OPD必须有真实教师的限制——只要你能构造一个有意义的logit delta，你就可以创造教师信号。
