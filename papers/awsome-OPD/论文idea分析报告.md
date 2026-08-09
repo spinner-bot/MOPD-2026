@@ -1424,3 +1424,11 @@ OmniOPD可能是Black-Box OPD方向最重要的结果：它证明了**在相同�
 
 ### 对大一新生的启示
 这个发现级别的工作不需要你做大规模实验——Meta用同一个教师家族对比了白盒和黑盒的差距。如果你有API访问一个强大的黑盒教师和一个开放的白盒教师（同家族），做同样的对比实验，你可能会发现更多"黑盒>白盒"的场景。这个方向在2026年还几乎没有被探索。
+
+---
+
+## [081] ExpRL — Stanford/CMU (2026.06)
+
+### Idea提出角度：**"用LLM judge做dense process reward——RL和OPD的边界模糊处"**
+
+ExpRL被列为黑盒OPD的边界案例是因为它的LLM judge虽然在评分学生rollout，但judge不是"教师模型"而是"评分者模型"——judge看到hidden reference solution，对比学生的答案，给出dense process-level reward。这在功能上等同于OPD（dense token/step-level supervision on student rollouts），但在概念上被作者称为RL mid-training。ExpRL被列在这里的启示是：**OPD和RL之间的边界正在变得越来越模糊**（G-OPD证明了OPD是KL约束RL的特例，ExpRL从另一个方向逼近了同样的结论）。
