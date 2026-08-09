@@ -1047,3 +1047,16 @@
   一句话总结  黑盒OPD的早期探索——学生生成负样本，教师提供正样本，通过ORPO
              对比学习来做蒸馏。不需要教师logits，只需要教师生成的文本。是
              black-box OPD方向的基础工作之一。
+
+--------------------------------------------------------------------------------
+论文 [074]  GAD — Black-Box OPD
+--------------------------------------------------------------------------------
+  标题       GAD: Generative Adversarial Distillation — Co-Evolving Discriminator
+  作者       Microsoft Research
+  日期       2025.11 | arXiv:2511.10643 | github.com/microsoft/LMOps (gad/)
+  领域       Black-Box OPD / Adversarial
+  核心标签   #adversarial-OPD #discriminator-as-RM #minimax-game #GPT-5-level
+  一句话总结  黑盒OPD的奠基工作——训练一个判别器来区分学生输出和教师（如GPT-5）
+             输出，判别器成为在线奖励模型。通过minimax博弈让判别器和策略共同
+             进化。Qwen2.5-14B学生达到GPT-5-Chat水平（LMSYS评估）。是PRISM
+             的对抗式OPD的直接前身。
