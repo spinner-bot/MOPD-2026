@@ -111,3 +111,16 @@
   一句话总结  提出"离线OPD"概念——教师的log-probs在SFT阶段预计算并缓存，
              训练时直接复用，消除对在线教师服务器的依赖。关键发现：SFT和OPD
              必须使用同一个教师模型，否则会出现梯度偏差（gradient bias）。
+
+--------------------------------------------------------------------------------
+论文 [008]  OPSD Survey — Surveys, Foundations & Position Papers
+--------------------------------------------------------------------------------
+  标题       A Brief Overview: On-Policy Self-Distillation in LLMs
+  日期       2026.05
+  发表       arXiv preprint
+  arXiv      arXiv:2605.18141
+  代码       paper-only (📄)
+  领域       OPSD Survey
+  核心标签   #OPSD综述 #自蒸馏分类 #8种设计模式 #参考索引
+  一句话总结  针对OPSD（在策略自蒸馏）子领域的综述，将OPSD方法按8种设计维度
+             分类，适合作为OPSD方向的快速入门索引。
