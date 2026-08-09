@@ -1234,3 +1234,14 @@
              特权上下文。关键设计：memory只在训练时存在（推理时移除）——学生
              通过OPSD将"有记忆时的更好表现"内化到权重中。ScienceWorld +128.6%,
              WebShop +11.3% over GRPO。是"训练时脚手架，推理时移除"设计的典范。
+
+--------------------------------------------------------------------------------
+论文 [088]  CRISP / OPSDC — OPSD
+--------------------------------------------------------------------------------
+  标题       CRISP/OPSDC: Compressing Long CoT via "Be Concise" Privileged Prefix
+  作者       LinkedIn
+  日期       2026.03 | arXiv:2603.05433 | github.com/HJSang/CRISP_Reasoning_Compression
+  领域       OPSD / Reasoning Compression
+  核心标签   #reasoning-compression #be-concise-prefix #无熵崩塌
+  一句话总结  特权上下文是"be concise"指令前缀——教师被要求简洁回答，学生正常
+             提问。OPSD将"简洁模式"蒸馏到"正常模式"，实现推理压缩无熵崩塌。
