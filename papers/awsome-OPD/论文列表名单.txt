@@ -1035,3 +1035,15 @@
              这个"proxy teacher"不是任何真实模型，而是合成的目标分布。
              Qwen3-8B math avg 17.0→51.8，超越4B教师(48.8)。三种contrast
              source可互换+可叠加，是多教师weak-to-strong的统一框架。
+
+--------------------------------------------------------------------------------
+论文 [073]  ORPO-Distill — Black-Box OPD
+--------------------------------------------------------------------------------
+  标题       ORPO-Distill: Mixed-Policy Black-Box Distillation via SGO+ORPO
+  作者       Industrial
+  日期       2025.09 | arXiv:2509.25100 | paper-only (📄)
+  领域       Black-Box OPD / Preference-Based
+  核心标签   #mixed-policy #student-generated-negatives #ORPO-contrast #NeurIPS2025-WS
+  一句话总结  黑盒OPD的早期探索——学生生成负样本，教师提供正样本，通过ORPO
+             对比学习来做蒸馏。不需要教师logits，只需要教师生成的文本。是
+             black-box OPD方向的基础工作之一。
