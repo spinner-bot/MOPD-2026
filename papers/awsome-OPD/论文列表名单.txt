@@ -451,3 +451,20 @@
              （教师数据）之间自适应切换——当师生分布差异大时用off-policy数据
              保证稳定性，分布接近时切换到on-policy以获得mode-seeking的优势。
              是"连续谱"思路（类似DistiLLM）在数据策略维度的应用。
+
+--------------------------------------------------------------------------------
+论文 [030]  Veto — White-Box OPD
+--------------------------------------------------------------------------------
+  标题       Veto: Stable OPD via Adaptive Target Reconstruction
+  作者       SNU (Seoul National University)
+  日期       2026.01
+  发表       ACL 2026 Findings
+  arXiv      arXiv:2601.07155
+  代码       paper-only (📄)
+  领域       White-Box OPD / Training Stability
+  核心标签   #稳定OPD #adaptive-target-reformulation #logit-space-geometric-bridge
+             #gradient-veto
+  一句话总结  提出一种"梯度否决"（gradient veto）机制——当教师的logits在
+             学生当前前缀下变得不可靠时，自适应地重构蒸馏目标而非盲目跟随
+             教师。通过在logit空间中构建几何桥梁，判断哪些教师信号值得信任，
+             哪些应该被"否决"。是OPD训练稳定性的重要贡献。
