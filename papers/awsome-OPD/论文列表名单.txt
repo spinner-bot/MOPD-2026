@@ -785,3 +785,45 @@
              而不学习"教师本身就会什么"。Qwen3-1.7B（教师）→ Qwen3-8B（学生）：
              AIME24 48.3→58.3（~4h, 8×A100），超越了需要32×A100跑一周的
              Polaris直接RL。证明了W2S-OPD和OPD²也在探索的同一核心洞察。
+
+--------------------------------------------------------------------------------
+论文 [053]  OPD² (Delta Distillation) — White-Box OPD
+--------------------------------------------------------------------------------
+  标题       OPD²: On-Policy Delta Distillation — Isolating What Post-Training Added
+  作者       NAVER AI Lab
+  日期       2026.07 | arXiv:2607.15161 | github.com/naver-ai/opd2
+  领域       White-Box OPD / Delta Distillation
+  核心标签   #delta-signal #teacher-minus-base #sign-agreement-gate #Direct-OPD同类
+  一句话总结  与Direct-OPD独立发现了同一洞察——蒸馏"教师post-training的变化"
+             （teacher − teacher's own base model）而非教师的绝对分布。额外的
+             创新是sign-agreement gate：当delta信号与标准OPD信号方向不一致时，
+             将该token的更新设为零（避免冲突信号）。Qwen3-1.7B math avg
+             34.8→54.6（vs OPD 51.0, ExOPD 51.4）。
+
+--------------------------------------------------------------------------------
+论文 [054]  TOP-D — White-Box OPD
+--------------------------------------------------------------------------------
+  标题       TOP-D: Trust Region Policy Distillation — Bounded Gradient Variance
+  作者       HKUST(GZ) / Microsoft
+  日期       2026.07 | arXiv:2607.04751 | paper-only (📄)
+  领域       White-Box OPD / Trust Region / Bounded Variance
+  核心标签   #probability-space-interpolation #bounded-variance #global-convergence
+             #monotonic-improvement
+  一句话总结  在概率空间（而非logit空间）做师生插值——r̃ = log(αρ + 1 − α)，
+             使得token奖励有严格下界，从而梯度方差可证明有界（Thm 4.2）。
+             这是对OPD不稳定性问题的理论解决方案——不是启发式地clipping，
+             而是从数学上消除方差的爆炸源。AIME24 avg@32: 50.42 vs 标准OPD 24.58。
+
+--------------------------------------------------------------------------------
+论文 [055]  COPD — White-Box OPD
+--------------------------------------------------------------------------------
+  标题       COPD: Contrastive OPD — Light vs Heavy Thinking Prefix Contrast
+  作者       SJTU / Alibaba Qwen
+  日期       2026.07 | arXiv:2607.19046 | paper-only (📄)
+  领域       White-Box OPD / Contrastive Distillation / Thinking Mode
+  核心标签   #contrastive #light-vs-heavy-thinking #thinking-mode #COPSD-variant
+  一句话总结  不是匹配教师分布，而是让教师比较同一token在"轻思考"和"重思考"
+             两种前缀下的概率差异——这个contrast本身就是优势信号。Qwen3-VL-8B
+             →2B: +2.1pp + 57%更短回复 + 60 GPU-h（vs OPD 132h）。其COPSD
+             自蒸馏变体也有效：+3.5pp, −63.8%长度。是一种"不需要正确答案、
+             不需要verifier、不需要长度惩罚"的新蒸馏范式。
