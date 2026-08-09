@@ -1547,3 +1547,11 @@ Apple SSD的有趣之处在于它的"反向上进"——在所有人都在设计
 ### Idea提出角度：**"从已完成轨迹中自动提炼技能——技能作为可蒸馏的隐藏知识"**
 
 Skill-SD和EMPO²共享training-only scaffolding哲学，但特权上下文的形式不同：EMPO²用记忆提示，Skill-SD用从完整轨迹中提炼的"技能摘要"。核心洞察是：一个完成的任务轨迹中包含了"可迁移的策略知识"（skill），这些知识可以被提取为文字描述并作为特权上下文。OPSD将这种"看到技能提示后的更好表现"内化到基础策略中。
+
+---
+
+## [093] SD-Zero — Princeton/Toronto/CMU (2026.04)
+
+### Idea提出角度：**"用self-revision将binary reward转化为dense token级监督——不需要正确答案的OPSD"**
+
+SD-Zero的独特之处在于它不需要任何ground-truth答案或verifier——只需要一个binary reward（对/错）。Generator生成→Reviser看到reward后修正→Reviser的修正分布成为Generator的dense监督。这本质上是用"自我修正"作为特权上下文来源，绕过了OPSD对外部特权信息的依赖。对大一新生的启示：特权信息不一定来自外部——来自模型自身的"重新思考"也可以作为特权信号。
