@@ -756,3 +756,17 @@
              教师间的分布差异会导致OPD训练发散。提出了规范的多教师OPD配方：
              共享SFT→并行领域RL→学生从同一SFT checkpoint出发→domain-routed
              多教师蒸馏。Normalized score 0.937 vs Mix-RL 0.882。
+
+--------------------------------------------------------------------------------
+论文 [051]  Blockwise Drift Gating — White-Box OPD
+--------------------------------------------------------------------------------
+  标题       Blockwise Policy-Drift Gating for OPD under Rollout Reuse
+  作者       Independent (Zheng & Jiang)
+  日期       2026.06 | arXiv:2606.24084 | paper-only (📄) — 初步研究(preliminary)
+  领域       White-Box OPD / Rollout Reuse / Drift Detection
+  核心标签   #rollout-reuse #policy-drift #old↔current-gate #block-level #初步研究
+  一句话总结  针对PPO式rollout复用场景——当rollout被多个epoch复用时，生成该
+             rollout的旧策略与当前策略之间出现drift。提出用block（64-token或
+             newline-span）级别的student-only drift gate来衰减漂移位置的监督
+             信号。此方法完全不触及教师target、support和rollout策略——仅在
+             损失函数中添加一个detached gate。标注为preliminary study。
