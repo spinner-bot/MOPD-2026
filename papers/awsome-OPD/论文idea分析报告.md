@@ -1723,3 +1723,11 @@ DemoPSD的设计哲学：特权上下文在某些token上给出合理的监督�
 ### Idea提出角度：**"当所有人都说OPSD好时，问：对thinking model也好吗？答案：不好！"**
 
 这篇论文的贡献模式值得学习：在一个被广泛接受的方法（OPSD）上，问一个关键的边界问题——"对thinking model（有自我纠正行为的模型）也好吗？"答案是否定的。Fork suppression机制揭示了OPSD的根本矛盾：特权自蒸馏奖励"确定性"（教师因为知道答案所以不犹豫），但thinking model的价值恰好在"不确定性"（fork→self-correct→verify）。蒸馏确定性=杀死思考。这个发现对OPSD的适用范围划出了清晰边界——OPSD不适合有self-correction行为的thinking model。
+
+---
+
+## [115] GeoSD — Jukic & Titov, ILLC/ILCC (2026.07)
+
+### Idea提出角度：**"选择正确的散度几何来天然保证OOD泛化——Hellinger > KL"**
+
+GeoSD的理论洞察具有深度：标准KL的梯度按teacher mass加权→教师自信的token拉动最大→即使学生不支持也在拉。Hellinger的梯度按sqrt(p*q)缩放→学生不支持时pull消失→不会强制学生去cover它根本不理解的模式。这个几何学视角解释了为什么KL在OOD上系统性失败，并指出了修复方案。选择正确的统计距离（不一定是KL）本身就是重要贡献。
