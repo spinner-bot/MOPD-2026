@@ -1611,3 +1611,15 @@
   一句话总结  诊断thinking collapse：OPSD使epistemic token密度从10.3降至7.9
              per 1k。entropy masking能恢复密度但准确率不恢复——揭示了一个
              优化死锁(optimization deadlock)。提出非对称教师不可靠性插值修复。
+
+
+--------------------------------------------------------------------------------
+论文 [117]  ShortOPD — OPSD
+--------------------------------------------------------------------------------
+  标题       ShortOPD: Short-to-Long OPD for Pruned LLMs — Recovering Demoted Paths
+  作者       ByteDance / ISCAS / UCAS
+  日期       2026.07 | arXiv:2607.13124
+  核心标签   #pruned-model-recovery #pass@k-recovery #suffix-repetition-EMA
+  一句话总结  将OPSD应用于剪枝后模型恢复——剪枝demote而非erase了正确的推理
+             路径(pass@k可以恢复)→OPSD可以将这些被demote的路径重新promote。
+             teacher=剪枝前的自己。EMA检测后缀重复来控制rollout长度。
