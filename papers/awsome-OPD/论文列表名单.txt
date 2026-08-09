@@ -1400,3 +1400,15 @@
              外部解答。将最短正确完成蒸馏到最长错误完成的前缀上。用stopping-
              time视角证明了shortest-correct/longest-wrong规则的合理性。是
              完全self-contained的OPSD。
+
+
+--------------------------------------------------------------------------------
+论文 [101]  RLCSD — OPSD
+--------------------------------------------------------------------------------
+  标题       RLCSD: Contrastive OPSD — Cancels Privilege-Induced Style Drift
+  作者       THU (BPM) / Alibaba Tongyi
+  日期       2026.06 | arXiv:2606.11709 | github.com/THU-BPM/RLCSD
+  核心标签   #privilege-induced-style-drift #contrastive #correct-vs-wrong-hint
+  一句话总结  诊断了"特权引起的风格漂移"——OPSD的信号系统地集中在风格token而非
+             任务token上。用正确hint和错误hint下的师生差距的**对比**来消除
+             风格漂移。这个风格漂移问题是OPSD领域一个被忽视但重要的问题。
