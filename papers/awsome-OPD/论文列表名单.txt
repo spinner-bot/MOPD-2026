@@ -390,3 +390,22 @@
              一批候选token，教师在其中选择和纠正，被教师接受的token直接使用
              （无需蒸馏），被拒绝的token用gated KL来对齐。这种"只纠正错误"
              的策略大幅降低了蒸馏的计算开销。
+
+--------------------------------------------------------------------------------
+论文 [026]  DistiLLM-2 — White-Box OPD
+--------------------------------------------------------------------------------
+  标题       DistiLLM-2: Contrastive Skew-FKL on teacher data + Skew-RKL on
+             student data
+  作者       Jongwook Ko et al.
+  机构       KAIST / Microsoft
+  日期       2025.03
+  发表       ICML 2025 Oral
+  arXiv      arXiv:2503.07067
+  代码       github.com/jongwooko/distillm-2
+  领域       White-Box OPD / Contrastive Distillation
+  核心标签   #DistiLLM续作 #contrastive #非对称损失 #teacher-data-FKL
+             #student-data-RKL #ICML-Oral
+  一句话总结  DistiLLM的升级版——核心洞察升级为"不同数据源需要不同的散度"：
+             对教师数据（高质量但off-policy）用Skew-FKL保证覆盖，对学生
+             数据（on-policy但有噪声）用Skew-RKL保证锐度。这种非对称设计
+             使其成为ICML 2025 Oral。
