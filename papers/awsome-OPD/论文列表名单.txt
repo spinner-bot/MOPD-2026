@@ -827,3 +827,51 @@
              →2B: +2.1pp + 57%更短回复 + 60 GPU-h（vs OPD 132h）。其COPSD
              自蒸馏变体也有效：+3.5pp, −63.8%长度。是一种"不需要正确答案、
              不需要verifier、不需要长度惩罚"的新蒸馏范式。
+
+--------------------------------------------------------------------------------
+论文 [056]  AOPD (Asymmetric OPD) — White-Box OPD
+--------------------------------------------------------------------------------
+  标题       AOPD: Asymmetric OPD — Splitting Gradient into Exploit vs Imitate
+  作者       HUST / PKU / Meituan
+  日期       2026.05 | arXiv:2605.06387 | paper-only (📄)
+  核心标签   #非对称梯度 #positive-exploit #non-positive-imitate #FKL替代PG
+  一句话总结  将OPD梯度按符号分为positive（exploit: 学生在正确方向→用policy
+             gradient）和non-positive（imitate: 学生弱于教师→用截断FKL替代
+             高噪声PG）。这种非对称设计在continual tool-use训练中保留数学
+             准确率（+0.61 vs OPD −7.49），解决了"学新能力时遗忘旧能力"的
+             灾难性遗忘问题。
+
+--------------------------------------------------------------------------------
+论文 [057]  SimCT — White-Box OPD
+--------------------------------------------------------------------------------
+  标题       SimCT: Recovering Lost Supervision for Cross-Tokenizer OPD
+  作者       Tencent Hunyuan / USTC / Shanghai Innovation Institute
+  日期       2026.05 | arXiv:2605.07711 | github.com/sunjie279/SimCT-
+  核心标签   #cross-tokenizer #minimal-aligned-units #共享词表空间
+  一句话总结  与DSKDv2同类的跨tokenizer OPD方案——通过构建"最小对齐单元"
+             （两tokenizer可共同分词的最细粒度span）来建立一个共享监督空间。
+             在这个共享空间上，标准OPD损失可以直接应用，无需修改。
+
+--------------------------------------------------------------------------------
+论文 [058]  ESR — White-Box OPD
+--------------------------------------------------------------------------------
+  标题       ESR: Less is More — Early Stopping Rollout for OPD
+  作者       UCLA / BIGAI
+  日期       2026.05 | arXiv:2605.27028 | paper-only (📄)
+  核心标签   #early-stopping #Off-Policy-Teacher-Decay #24×加速 #前缀截断家族
+  一句话总结  Prefix-truncation家族的核心成员。命名了"Off-Policy Teacher Decay"
+             现象——当教师被条件化在学生漂移前缀上时，其后缀token分布退化为
+             "学生级的自动补全"。因此后缀OPD监督不仅是冗余的，更是有害的。
+             在每个配置下都超越全rollout OPD，最多24×加速。
+
+--------------------------------------------------------------------------------
+论文 [059]  ADWIN — White-Box OPD
+--------------------------------------------------------------------------------
+  标题       ADWIN: Adaptive Windows for Horizon-Aware OPD
+  作者       PKU / Tencent
+  日期       2026.05 | arXiv:2605.28396 | paper-only (📄)
+  核心标签   #gradient-cosine-alignment #delayed-full-rollout-probe #~3.4×FLOPs
+  一句话总结  用短前缀和全rollout更新之间的梯度余弦对齐度来判断截断位置——
+             如果前缀梯度已经和全梯度很一致，就不需要继续生成。用延迟全rollout
+             probe来做审计，确保截断策略不会系统性偏离。59.3→60.9 avg, ~3.4×
+             更少FLOPs。是prefix-truncation家族中理论最严谨的截断判据。
