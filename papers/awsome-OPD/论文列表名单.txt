@@ -1474,3 +1474,16 @@
              最强预测因子（AUROC 0.83），远超熵、MC-dropout等局部不确定性
              指标（均≤0.57）。因此提出线性递增的位置权重。是position bias
              家族（IW-OPD同族）的重要成员。
+
+
+--------------------------------------------------------------------------------
+论文 [107]  OPSD Predictive Law — OPSD
+--------------------------------------------------------------------------------
+  标题       A Predictive Law for OPSD From World Feedback (ICML RLxF 2026)
+  作者       Tufa Labs, Zurich
+  日期       2026.05 | arXiv:2605.30070
+  核心标签   #predictive-law #pre-training-gap #R^2=0.949 #zero-cost-screening
+  一句话总结  发现一个惊人的预测规律：预训练学生与自教师之间的初始准确率差距
+             可以线性预测OPSD的最终增益——训练前就能精确预测训练后效果（OLS
+             R^2=0.949 on Qwen3-8B, 0.996 on Olmo-3-7B）。这意味着可以
+             在零训练成本下筛选特权上下文设计。
