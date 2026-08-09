@@ -1060,3 +1060,15 @@
              输出，判别器成为在线奖励模型。通过minimax博弈让判别器和策略共同
              进化。Qwen2.5-14B学生达到GPT-5-Chat水平（LMSYS评估）。是PRISM
              的对抗式OPD的直接前身。
+
+--------------------------------------------------------------------------------
+论文 [075]  OVD — Black-Box OPD
+--------------------------------------------------------------------------------
+  标题       OVD: On-policy Verbal Distillation — Sequence-Level Language Scoring
+  作者       HKU / Huawei
+  日期       2026.01 | arXiv:2601.21968 | paper-only (📄)
+  领域       Black-Box OPD / Verbal Feedback
+  核心标签   #verbal-scoring #0-9-scale #sequence-level #logit-free
+  一句话总结  用序列级的语言评分（0-9分）替代token级logit匹配。教师不是给出
+             token概率而是给整条回复打分和文字反馈。+25.7% over baselines。
+             是black-box OPD中"用语言反馈替代数值信号"路线的代表。
