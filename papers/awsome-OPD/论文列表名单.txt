@@ -1599,3 +1599,15 @@
   一句话总结  用平方Hellinger距离替代KL散度——Hellinger的梯度按geometric-mean
              overlap sqrt(p*q)缩放→当学生不支持某token时pull自动消失→天然
              避免KL的OOD崩塌（FKL OOD -8.1, RKL -7.5, GeoSD +8.6）。
+
+
+--------------------------------------------------------------------------------
+论文 [116]  AD-OPSD — OPSD
+--------------------------------------------------------------------------------
+  标题       AD-OPSD: Diagnosing Thinking Collapse — Student-Epistemic Token Drop
+  作者       Beihang / HK PolyU / Alibaba
+  日期       2026.07 | arXiv:2607.10805
+  核心标签   #thinking-collapse #epistemic-token #10.3-to-7.9-per-1k #死锁
+  一句话总结  诊断thinking collapse：OPSD使epistemic token密度从10.3降至7.9
+             per 1k。entropy masking能恢复密度但准确率不恢复——揭示了一个
+             优化死锁(optimization deadlock)。提出非对称教师不可靠性插值修复。
