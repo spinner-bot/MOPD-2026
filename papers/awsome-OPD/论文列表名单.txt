@@ -1499,3 +1499,15 @@
   一句话总结  OPSD的最优策略是按pointwise conditional mutual information而非
              reward来倾斜分布→amplify已有模式→pass@1↑但pass@k持平、语义
              多样性最低、OOD失败。即使刻意使用多样化外部demo也无法修复。
+
+
+--------------------------------------------------------------------------------
+论文 [109]  PHF — OPSD
+--------------------------------------------------------------------------------
+  标题       PHF: Privileged Hidden Flow — OPSD on Hidden-State Transitions
+  作者       HKUST(GZ) / NUAA / NUDT
+  日期       2026.06 | arXiv:2606.29340
+  核心标签   #hidden-flow #residual-transitions #transition-geometry #OPRD同类
+  一句话总结  在标准OPSD损失之上增加hidden-state transition几何通道（方向+
+             Gram-matrix CKA），证明特权上下文可以在output空间之外提供监督。
+             与OPRD同属feature-based OPD方向，但聚焦transition几何。
