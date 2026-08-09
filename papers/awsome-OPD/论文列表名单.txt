@@ -1112,3 +1112,15 @@
              用这些rubric来打分学生的rollout。核心洞察：好的评分标准不是通用的
              ——每个问题需要自己的评分维度。Rubricator从对比中学习"这个特定问题
              上什么是好答案"，Verifier基于rubric打分。10× sample efficiency。
+
+--------------------------------------------------------------------------------
+论文 [079]  PRISM — Black-Box OPD
+--------------------------------------------------------------------------------
+  标题       PRISM: Pre-alignment via Black-Box OPD for Multimodal RL
+  作者       HKUST(GZ) / Tsinghua / NTU / RUC / USTC / UCAS
+  日期       2026.04 | arXiv:2604.28123 | github.com/XIAO4579/PRISM
+  领域       Black-Box OPD / Multimodal / Adversarial
+  核心标签   #三阶段管道 #MoE判别器 #SFT→OPD→RLVR #感知-推理解耦 #4B+4.4/8B+6.0
+  一句话总结  将对抗式OPD（继承自GAD）重新定位为SFT和RLVR之间的独立对齐阶段。
+             MoE判别器（感知专家+推理专家）提供解耦的矫正信号。详见
+             PRISM与Uni-OPD深度分析报告.md。
