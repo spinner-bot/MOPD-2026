@@ -1387,3 +1387,16 @@
   一句话总结  将OPSD应用于知识编辑——当需要更新模型的某个fact时，用"因果叙事"
              （解释为什么旧fact变新fact）作为特权上下文。将知识编辑从"孤立
              fact注入"升级为"因果理解内化"。
+
+
+--------------------------------------------------------------------------------
+论文 [100]  SSOPD — OPSD
+--------------------------------------------------------------------------------
+  标题       SSOPD: Self-Supervised OPSD — Shortest Correct/Longest Wrong Rule
+  作者       THU / Beihang
+  日期       2026.05 | arXiv:2605.17497
+  核心标签   #self-supervised #no-external-trace #stopping-time #intra-group-contrast
+  一句话总结  特权上下文来自学生自己GRPO group内的"最短正确完成"——完全不需要
+             外部解答。将最短正确完成蒸馏到最长错误完成的前缀上。用stopping-
+             time视角证明了shortest-correct/longest-wrong规则的合理性。是
+             完全self-contained的OPSD。
