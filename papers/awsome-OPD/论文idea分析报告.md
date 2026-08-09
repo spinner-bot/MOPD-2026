@@ -1747,3 +1747,11 @@ AD-OPSD最有价值的发现是optimization deadlock：entropy masking可以恢�
 ### Idea提出角度：**"剪枝不是erase而是demote——OPSD可以恢复被降级的推理路径"**
 
 ShortOPD的关键测量：剪枝后模型pass@1暴跌但pass@64恢复——说明正确的推理路径仍存在，只是被demote到了低概率区域。OPSD（teacher=剪枝前的自己）可以将这些路径重新promote。这是OPSD在模型压缩场景的独特应用——不是"学习新能力"而是"恢复被压缩损失的能力"。
+
+---
+
+## [118] dOPSD — NUS (2026.07)
+
+### Idea提出角度：**"自己未来的denoising step是最好的特权信息——self-future as privilege"**
+
+dOPSD的核心洞察具有哲学深度：最干净的特权信息不是外部答案，而是"未来更了解的自己"。在扩散模型中，later denoising steps自然包含更多信息→用later steps的分布作为当前steps的特权目标。这种方法不需要任何外部信息——特权完全来自模型自身的"时间不对称性"。对于大一新生：如果你能找到模型中"时间/层/步的不对称性"——未来比现在知道更多——你就找到了免费的OPSD特权来源。
