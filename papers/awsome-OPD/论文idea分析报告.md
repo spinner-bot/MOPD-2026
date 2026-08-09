@@ -621,3 +621,35 @@ Skewed-KL (0<α<1): 在两者之间插值
   - Single-teacher vs Multi-teacher → MOPD相关方法已经触及
   - Dense vs Sparse supervision → 可以构建连续谱
 - **对大一新生的建议**："连续谱统一"比"提出一个全新的极端点"更容易被接受——因为你不是在挑战已有的两个极端，而是在说"你们都对，但在不同情况下对的程度不同"。这种"和解式"的叙事比"对抗式"的叙事更容易通过审稿。
+
+---
+
+## [025] Speculative KD — UCSB/Google (ICLR 2025)
+
+### Idea提出角度：**"两个技术的交叉授粉"**
+
+这篇论文的核心idea来自一个精彩的技术嫁接：**将推测解码（Speculative Decoding，一种推理加速技术）中的"propose-and-correct"机制嫁接到知识蒸馏中**。在推测解码中，一个小模型（drafter）先propose候选token，一个大模型（verifier）校验并纠正。Speculative KD将这个机制反转：学生propose，教师correct，被教师接受的token不需要蒸馏（学生已经对了），被拒绝的token才需要蒸馏。
+
+### 思维链——技术嫁接的经典范式
+```
+技术A: Speculative Decoding（推理加速）
+  核心机制: 小模型propose → 大模型verify → 只纠正错误
+技术B: Knowledge Distillation（模型压缩）
+  核心机制: 教师在学生输出上提供token级监督
+    ↓ 嫁接
+"如果用推测解码的propose-and-correct机制来做蒸馏会怎样？"
+    ↓ 核心优势
+学生已经正确的token不需要蒸馏 → 计算量大幅降低
+只有学生错误的token才需要教师的密集监督 → 蒸馏更"有针对性"
+    ↓
+结果: Speculative KD = propose-and-correct + gated KL
+```
+
+### 为什么"技术嫁接"是高效的idea生成策略
+1. **每个领域都已经验证了各自技术的有效性**——你不需要同时说服审稿人A和B都有效，只需要说服他们"A+B的组合比单独使用A或B更好"。
+2. **嫁接产生的insight通常是反直觉的**——"蒸馏竟然可以和推测解码结合？"这种"没想到可以这样组合"的惊讶感是论文被记住的关键。
+3. **嫁接创造了新的设计空间**——Speculative KD中间的一步（propose-and-correct）可以有很多变体：propose多少token？用什么门控机制？被拒绝的token用什么loss？每个选择都是一篇后续论文。
+
+### 可借鉴思路——如何找到你的"技术嫁接"机会
+- **系统性地扫描两个领域**：列出领域X的核心机制（如OPD中的on-policy sampling、reverse KL、multi-teacher fusion、prefix truncation...），列出领域Y的核心机制（如SD中的propose-and-correct、verification gate、tree attention...），在X×Y的矩阵中寻找有意义的组合。
+- **好的嫁接通常满足两个条件**：①两个技术解决的是同一个问题的不同方面（SD解决推理效率、KD解决训练效率→都是"效率"），②两个技术之间存在自然的"接口"（SD的propose-and-correct和KD的teacher supervision都在token级别操作→接口兼容）。
