@@ -928,3 +928,15 @@
              完全不重叠→教师建议对学生"不可达"→这种分歧无法通过梯度下降
              来修复。TA-OPD只监督support-aligned的"可教子集"，仅用5-10%
              的token就能匹配或超越全token OPD。
+
+--------------------------------------------------------------------------------
+论文 [064]  TRB — White-Box OPD
+--------------------------------------------------------------------------------
+  标题       TRB: Trust-Region Behavior Blending — Controlling Rollout Policy
+  作者       T-Tech
+  日期       2026.05 | arXiv:2605.31159 | paper-only (📄)
+  核心标签   #behavior-policy-blending #trust-region #μ∝π_S^(1-β)·π_T^β
+  一句话总结  不修改OPD损失函数，而是修改rollout的行为策略——让学生在生成
+             rollout时混合一部分教师策略（μ ∝ π_S^(1−β)·π_T^β），在trust-
+             region约束下从纯on-policy逐渐退火到纯教师策略。这种方法让OPD
+             的"探索-利用"权衡发生在采样阶段而非损失函数阶段。
