@@ -1691,3 +1691,11 @@ PHF扩展了OPRD的feature-based思路，聚焦在residual-stream transitions的
 ### Idea提出角度：**"用KL probe证明VT的价值在pathway而非pixels→然后蒸馏pathway"**
 
 Visual-OPSD做了一个关键的诊断实验：移除或加噪声到visual thoughts几乎不影响准确率→说明VT的pixel内容不重要。但KL probe显示VT conditioning shift了completion分布4.64 nats/token→说明VT改变了生成路径。于是不是蒸馏pixels，而是蒸馏这个"生成路径的改变"。这种"先理解机制→再设计蒸馏方案"的研究路径值得学习。
+
+---
+
+## [111] Denser != Better — HKISI/CASIA (2026.07)
+
+### Idea提出角度：**"OPSD不是万能药——它在continual learning场景下有根本性的缺陷"**
+
+Denser != Better贡献了一个重要的负结果——OPSD的dense监督让模型过度专精。GRPO的稀疏reward天然保留了一些plasticity（因为它不强制每个token都改变），而OPSD的密集KL强制所有token向教师对齐→旧能力被系统性覆盖。这个发现对"OPD替代RL"的叙事构成重要挑战——至少在continual learning场景下，OPSD不能替代RL。
