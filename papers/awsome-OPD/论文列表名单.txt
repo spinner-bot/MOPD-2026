@@ -710,3 +710,18 @@
              高质量候选才被继续生成到完整长度。这本质上是一个"先侦察再投入"的
              计算分配策略：用便宜的前缀评估来判断哪些rollout值得花费完整的
              生成+蒸馏成本。在数学推理上实现+4.80 avg且2.46× wall-clock加速。
+
+--------------------------------------------------------------------------------
+论文 [048]  SEAD — White-Box OPD
+--------------------------------------------------------------------------------
+  标题       SEAD: Competence-Aware OPD — Three Scales of Adaptivity
+  作者       Capital One
+  日期       2026.06 | arXiv:2606.28562 | paper-only (📄)
+  领域       White-Box OPD / Curriculum + Adaptive Divergence
+  核心标签   #三尺度自适应 #entropy-zoning #cosine-annealing #prompt-curriculum
+             #首个prompt级课程 #skip-RKL-FKL区域 #2³-factorial-design
+  一句话总结  OPD领域最全面的自适应设计——在三个尺度上同时做自适应：(1) Token级：
+             按joint entropy将token分为skip/RKL/FKL三个zone，(2) 时间级：用
+             cosine annealing从FKL渐近过渡到RKL（exploration→refinement），
+             (3) Prompt级：首个OPD的prompt课程——按学生pass rate动态决定
+             训练哪些prompt。2³析因实验证明curriculum是单一最强因素(+4.20)。
