@@ -1292,3 +1292,11 @@ TA-OPD的核心洞察可以类比为教学场景：老师和学生对同一个�
 ### Idea提出角度：**"在trust-region内用RKL精确对齐，在区域外用FKL覆盖——将token分类而非统一处理"**
 
 TrOPD与TOP-D共享trust-region思想但实现更细粒度：将学生token分为"可信区"（学生在该token的分布形态与教师一致→用RKL精确对齐）和"异常区"（学生分布远离教师→用FKL覆盖而非强制对齐）。这种分区处理的哲学是：**不要用同一种监管策略对待所有token——先判断token的类型，再决定如何监管**。这个设计原则在OPD中反复出现（SEAD的skip/RKL/FKL zone、DOPD的四区域路由、TrOPD的trust-region分区）。
+
+---
+
+## [066] Near-Future Guidance — UMBC (2026.06)
+
+### Idea提出角度：**"用测量数据挑战领域根基——per-token KL可能是无效的代理指标"**
+
+Pearson r=0.126是一个**炸弹级**的发现。如果per-token KL与真实轨迹散度之间的相关性如此之低，那么整个OPD大厦的地基——"用per-token KL来近似轨迹级分布匹配"——可能是有裂缝的。这篇论文不仅指出了问题，还提出了修复方案（用optimal-transport对齐的near-future窗口替代单点KL）。但真正的贡献是那个r=0.126的测量——它为后续所有"轨迹级OPD"工作（TRD、StepOPSD等）提供了最根本的motivation。这也展示了"做一次精确的测量"有时比"提出一个新方法"更有影响力。
