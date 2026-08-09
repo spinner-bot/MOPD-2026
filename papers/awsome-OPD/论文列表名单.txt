@@ -1258,3 +1258,17 @@
   一句话总结  将OPSD从静态推理扩展到交互式环境——学生在游戏/规划环境中交互并
              生成轨迹，教师（同一模型+环境反馈作为特权上下文）在学生的交互
              轨迹上提供RKL监督。是OPSD在RL-like交互场景的早期探索。
+
+--------------------------------------------------------------------------------
+论文 [090]  Why Does SD Degrade — OPSD (Diagnostic)
+--------------------------------------------------------------------------------
+  标题       Why Does Self-Distillation (Sometimes) Degrade Reasoning?
+  作者       MSR / KAIST / SNU
+  日期       2026.03 | arXiv:2603.24472 | github.com/beanie00/self-distillation-analysis
+  领域       OPSD / Failure Analysis
+  核心标签   #OPSD诊断 #epistemic-verbalization #rich-context-risk #OOD-drop
+  一句话总结  诊断OPSD的关键失败模式——当教师被给予更丰富的特权上下文时，学生
+             的"认知表达"（epistemic verbalization，如"我不确定..."、"让我再
+             想想..."）被系统性抑制。这导致in-domain快速提升但OOD最多暴跌40%。
+             发现特权上下文的丰富度是一把双刃剑——越丰富的上下文，in-domain
+             提升越快，但OOD泛化越差。是OPSD领域最重要的"警告"之一。
