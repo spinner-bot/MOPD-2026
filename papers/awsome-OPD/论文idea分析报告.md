@@ -1249,3 +1249,11 @@ ADWIN是prefix-truncation家族中最理论化的截断判据：它不看token o
 ### Idea提出角度：**"用理论证明经验发现——将'可以截断'升级为'为什么截断合理'"**
 
 Truncated OPD为prefix-truncation家族提供了最坚实的理论基石。Fast OPD、Prune-OPD、ESR等都从实验角度证明了截断有效，但Truncated OPD从数学上分析了**为什么**序列级OPD的MSE按O(T³)增长——每个后续token的噪声不仅自身存在，还通过序列累积放大。Token级OPD绕过了这个O(T³)问题，因此截断到10% horizon不仅是经验上可行的，而且是理论上最优的。这种"experiment → theory"的闭环是prefix-truncation家族的最高成就。
+
+---
+
+## [061] Prefix Teach, Suffix Fade — ZJU/Meituan/Jilin (2026.05)
+
+### Idea提出角度：**"用统计检测（BIC）精确定位'可教性崩塌点'"**
+
+这篇论文将prefix-truncation问题形式化为一个统计变点检测（change-point detection）任务：在strong-to-weak OPD中，教师的top-1/top-2概率差（margin）相对于学生可达候选集会有一个突变点——在这个点之后，教师建议的token对于学生来说已经"不可达"（不在学生的top候选内），所以继续监督是没有意义的。BIC提供了一个有统计保证的方法来定位这个点，而不是像Prune-OPD那样用启发式阈值τ。这种"用统计方法替代启发式超参数"的升级模式适用于很多ML系统。
