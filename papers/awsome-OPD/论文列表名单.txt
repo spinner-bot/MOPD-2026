@@ -1272,3 +1272,16 @@
              想想..."）被系统性抑制。这导致in-domain快速提升但OOD最多暴跌40%。
              发现特权上下文的丰富度是一把双刃剑——越丰富的上下文，in-domain
              提升越快，但OOD泛化越差。是OPSD领域最重要的"警告"之一。
+
+--------------------------------------------------------------------------------
+论文 [091]  Apple SSD — OPSD
+--------------------------------------------------------------------------------
+  标题       Embarrassingly Simple Self-Distillation (Apple SSD)
+  作者       Apple MLR
+  日期       2026.04 | arXiv:2604.01193 | github.com/apple/ml-ssd
+  领域       OPSD / Self-Training
+  核心标签   #degenerate-OPSD #sample-then-SFT #decoding-config-privilege
+  一句话总结  "退化版"OPSD——用temperature/truncation采样让学生生成多个答案，
+             筛选正确的，然后用SFT训练学生模仿自己的正确答案。没有KL，没有
+             teacher distribution，本质上就是STaR式的自举（self-bootstrapping）。
+             被列为OPSD边界案例——"教师"是同一模型但用不同decoding配置。
