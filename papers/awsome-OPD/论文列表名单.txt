@@ -1245,3 +1245,16 @@
   核心标签   #reasoning-compression #be-concise-prefix #无熵崩塌
   一句话总结  特权上下文是"be concise"指令前缀——教师被要求简洁回答，学生正常
              提问。OPSD将"简洁模式"蒸馏到"正常模式"，实现推理压缩无熵崩塌。
+
+--------------------------------------------------------------------------------
+论文 [089]  OEL — OPSD
+--------------------------------------------------------------------------------
+  标题       OEL: Online Experiential Learning — Self-Distillation on Interactive
+             Game/Planning Trajectories
+  作者       Microsoft Research
+  日期       2026.03 | arXiv:2603.16856 | github.com/microsoft/LMOps (oel/)
+  领域       OPSD / Interactive Learning
+  核心标签   #interactive-trajectories #game-planning #self-distillation
+  一句话总结  将OPSD从静态推理扩展到交互式环境——学生在游戏/规划环境中交互并
+             生成轨迹，教师（同一模型+环境反馈作为特权上下文）在学生的交互
+             轨迹上提供RKL监督。是OPSD在RL-like交互场景的早期探索。
