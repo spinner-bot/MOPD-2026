@@ -1587,3 +1587,15 @@
              rate 0.083→0.035, lock rate 0.69→0.77, "But wait"等自我纠正
              cue的log-ratio符号翻转（+0.95→−1.96）。禁用thinking后OPSD
              保留了base average。
+
+
+--------------------------------------------------------------------------------
+论文 [115]  GeoSD — OPSD
+--------------------------------------------------------------------------------
+  标题       GeoSD: Geometric Self-Distillation — Hellinger Distance + Fisher-Rao
+  作者       ILLC Amsterdam / ILCC Edinburgh (Jukic & Titov)
+  日期       2026.07 | arXiv:2607.06855
+  核心标签   #Hellinger-distance #Fisher-Rao #K-FAC #OOD-win #KL-fails
+  一句话总结  用平方Hellinger距离替代KL散度——Hellinger的梯度按geometric-mean
+             overlap sqrt(p*q)缩放→当学生不支持某token时pull自动消失→天然
+             避免KL的OOD崩塌（FKL OOD -8.1, RKL -7.5, GeoSD +8.6）。
