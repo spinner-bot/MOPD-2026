@@ -717,3 +717,14 @@ DistiLLM-1提出了FKL和RKL之间的连续插值，隐含假设是"同一个α�
 
 ### 可借鉴思路
 - **在你的领域中找到所有"软惩罚"的地方，问"能改成硬约束吗？"** 如果能，而且硬约束版本有更好的理论保证或更稳定的训练，这就是一篇论文。
+
+---
+
+## [029] AdaSwitch — RUC/Baidu (2025.10)
+
+### Idea提出角度：**"在最优数据策略上做自适应切换"**
+
+AdaSwitch将DistiLLM的"连续谱"思想从**散度维度**（FKL↔RKL）迁移到了**数据维度**（off-policy↔on-policy）。核心洞察：训练初期学生的分布离教师很远→on-policy rollouts质量太差→应该先用off-policy数据；训练后期学生分布接近教师→on-policy的mode-seeking优势显现→切换到on-policy。用divergence threshold来判断何时切换。
+
+### 可借鉴思路
+- **"将一个维度的连续谱思想迁移到另一个维度"是高效的idea迭代方式**。DistiLLM证明了"在两个极端之间做连续过渡"有用——AdaSwitch把这个设计模式应用到了数据策略维度。你可以进一步应用到：token选择维度（全部token↔关键token）、教师数量维度（单教师↔多教师）、损失权重维度（纯蒸馏↔纯RL）。每个维度都可以写一篇AdaSwitch式的论文。
