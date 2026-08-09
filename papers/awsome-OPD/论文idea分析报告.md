@@ -1675,3 +1675,11 @@ R²=0.949/0.996的预测精度意味着：你可以在不动用GPU的情况下�
 ### Idea提出角度：**"用理论分析揭示OPSD的必然缺陷——多样性崩塌是数学必然"**
 
 SDSD Diversity从理论上证明了OPSD的多样性崩塌不是可以修的bug，而是目标的数学特性：最优SDSD-KL策略按pointwise CMI倾斜→amplify已有概率差距→必然sharpening已有模式。这意味着如果你关心pass@k或OOD泛化，OPSD可能不是正确的工具——你应该用RL（保留了概率比率）。这种"揭示一个方法的根本性局限"的论文对后来者非常有价值。
+
+---
+
+## [109] PHF — HKUST(GZ)/NUAA/NUDT (2026.06)
+
+### Idea提出角度：**"在hidden-state transition上做OPSD——超越output distribution"**
+
+PHF扩展了OPRD的feature-based思路，聚焦在residual-stream transitions的几何属性（方向+Gram-matrix CKA）。它证明了两个重要的不变性：对per-trajectory hidden offsets不变、对per-transition positive rescaling不变——这使得监督信号对表示空间的非语义变化鲁棒。这是一个重要的方向：future OPD可能在hidden space上做更多的事情。
