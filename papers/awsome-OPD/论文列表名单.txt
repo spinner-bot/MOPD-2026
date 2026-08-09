@@ -598,3 +598,17 @@
              为一个单一目标函数——不同的token根据其特性自动获得不同的FKL/RKL
              混合权重。同时包含一个轻量级的on-policy采样近似来保持训练效率。
              ⚠️ headline实验使用近似on-policy，真正的on-policy结果仅在§5.4。
+
+--------------------------------------------------------------------------------
+论文 [040]  BRTS — White-Box OPD
+--------------------------------------------------------------------------------
+  标题       BRTS: Best-of-N Teacher Rollout Selection for OPD
+  作者       JHU (Patel group)
+  日期       2026.05 | arXiv:2605.09725 | github.com/BWGZK-keke/BRTS
+  领域       White-Box OPD / Teacher Variance Reduction
+  核心标签   #Best-of-N #teacher-rollout-selection #correctness-first #降低教师方差
+  一句话总结  核心洞察：单次教师rollout的监督信号有高方差（教师的一次采样可能
+             不代表其真实偏好）。BRTS用Best-of-N策略从多个教师rollout中选择最优
+             的一个（先按正确性筛选，再按与学生对齐度筛选），用选出的高质量教师
+             rollout作为蒸馏目标。这种"教师侧的variance reduction"与学生侧的
+             G个rollout互补——两边都做多次采样再择优。
