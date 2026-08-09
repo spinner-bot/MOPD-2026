@@ -1531,3 +1531,11 @@ OEL的核心贡献是将OPSD的"特权上下文"概念从静态文本（答案�
 ### Idea提出角度：**"发现OPSD的阴暗面——更多特权上下文以牺牲OOD为代价"**
 
 这篇诊断论文的贡献是一种"警告"：OPSD中更丰富的特权上下文≠更好的模型。当教师看到更多信息，学生的"认知表达"（epistemic verbalization——"让我验证一下"、"另一个角度是"）被系统性压制。结果：in-domain ↑但OOD最多−40%。特权上下文的丰富度是双刃剑。
+
+---
+
+## [091] Apple SSD — Apple MLR (2026.04)
+
+### Idea提出角度：**"最简单的baseline有时就是最好的baseline——sample-then-SFT"**
+
+Apple SSD的有趣之处在于它的"反向上进"——在所有人都在设计越来越复杂的OPSD方法时，Apple回退到了最简单的方案：用不同temperature让学生自己生成多个答案，筛选正确的，然后用SFT训练。这本质上是STaR（Self-Taught Reasoner）的变体，但被重新解读为"degenerate OPSD"——"特权上下文"是decoding配置（temperature/truncation）。从比赛角度看，这篇论文提供了一个重要的baseline：如果你的复杂OPSD方法不能显著超越sample-then-SFT，你可能高估了方法的贡献。
