@@ -1555,3 +1555,11 @@ Skill-SD和EMPO²共享training-only scaffolding哲学，但特权上下文的�
 ### Idea提出角度：**"用self-revision将binary reward转化为dense token级监督——不需要正确答案的OPSD"**
 
 SD-Zero的独特之处在于它不需要任何ground-truth答案或verifier——只需要一个binary reward（对/错）。Generator生成→Reviser看到reward后修正→Reviser的修正分布成为Generator的dense监督。这本质上是用"自我修正"作为特权上下文来源，绕过了OPSD对外部特权信息的依赖。对大一新生的启示：特权信息不一定来自外部——来自模型自身的"重新思考"也可以作为特权信号。
+
+---
+
+## [094] pi-Play — CASIA/UCAS/Meituan (2026.04)
+
+### Idea提出角度：**"Self-play产生无限特权数据——examiner出题时的解题路径=student的免费特权上下文"**
+
+pi-Play是OPSD中唯一完全不需要外部数据的方法：一个examiner agent出题（它必须知道答案才能出题）→解题路径（QCP）自然成为特权上下文→student看不到QCP但可以从examiner（看到QCP的EMA copy）的分布中学习。这是一个优雅的closed-loop系统——不需要外部数据、不需要外部教师、不需要verifier。对大一新生的启示：如果你能找到"产生数据的过程本身携带了监督信号"的场景，你就可以构建data-free的训练系统。
