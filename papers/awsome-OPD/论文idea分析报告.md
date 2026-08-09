@@ -1707,3 +1707,11 @@ Denser != Better贡献了一个重要的负结果——OPSD的dense监督让模�
 ### Idea提出角度：**"用reference-only teacher作为诊断仪器→发现OPSD信号被死记硬背主导"**
 
 Purified OPSD的实验设计非常精致：构造一个只看到参考答案但看不到题目的"reference-only teacher"→它的输出就是纯memorisation成分。测量发现||ref||/||total||>1且cos(useful, total)≈-0.95——有用的推理信号被主动压制了。这个"用诊断仪器分离信号成分"的方法论可以推广到任何teacher-student系统。
+
+---
+
+## [113] DemoPSD — CityU/Tsinghua (2026.07)
+
+### Idea提出角度：**"用token级disagreement来调制特权影响——分歧大的地方少信特权"**
+
+DemoPSD的设计哲学：特权上下文在某些token上给出合理的监督，但在另一些token上只是"已知答案后的后见之明"（privileged leakage）。per-token JS disagreement恰好能区分这两种情况——分歧大=可能存在leakage→减弱特权pull。这种"根据本地不确定性自适应调节"的模式在多篇OPSD论文中反复出现（CaOPD, DemoPSD, AD-OPSD）。
