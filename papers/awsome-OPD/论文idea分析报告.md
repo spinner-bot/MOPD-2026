@@ -1138,3 +1138,16 @@ DOPD的核心洞察可以用因果推断的语言来表述：特权教师（知�
 - **这是一个领域内所有人都忽视的混淆**。大多数OPD研究者假设教师越强越好，但DOPD指出了"强"有两个维度（信息优势和能力优势），盲目录入信息优势会适得其反。
 - **"privilege illusion"这个概念具有普适性**。不仅适用于OPD——任何使用特权信息（数据增强、多模态输入、检索增强）的teacher-student框架都可能存在类似的"特权幻觉"问题。
 - **四区域路由是一个优雅的解决方案**。通过测量同一个教师在"有/无特权"两种条件下的log-prob差距，DOPD将每个token精确分类到四个优化区域。这个框架的数学干净度和直觉可解释性都很高。
+
+---
+
+## [050] MOPD (Xiaomi) — Xiaomi/PKU/HKU/RUC (2026.06)
+
+### Idea提出角度：**"工业配方的方法论提炼——从'我们做了什么'到'为什么这样做'"**
+
+MOPD是"工业报告→方法论文"的典范。MiMo-V2-Flash的技术报告简要描述了多教师OPD阶段，但MOPD论文深入挖掘了其中的方法论原理——特别是"same-origin teachers"这个关键约束。Xiaomi的实验发现：用一个更强但分布远的外来教师（如Qwen3-235B）替代一个同源教师，OPD在step 18就发散（score从0.937崩到-1.19）。这个发现可能是OPD领域最被低估的重要约束条件之一。
+
+### "Same-origin teachers"约束的深远意义
+- **它解释了为什么有些multi-teacher OPD成功，有些失败**。如果教师来自不同的预训练分布，它们的输出空间不兼容→学生在它们之间的KL梯度互相矛盾→训练发散。
+- **它实际上是一个"distributional compatibility"约束**。这个约束与THUNLP Rethinking的"thinking-pattern compatibility"条件形成互补——一个在教师之间（same-origin），一个在师生之间（compatible thinking）。
+- **这个发现的方法论意义**：在做multi-teacher OPD之前，先测量教师之间的分布距离。如果距离太大，要么放弃该教师，要么先用SFT在该教师的数据上做分布预热。
