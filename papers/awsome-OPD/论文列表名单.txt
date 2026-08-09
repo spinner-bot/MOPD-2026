@@ -974,3 +974,64 @@
   一句话总结  核心洞察：vanilla OPD奖励log(π_T/π_θ)是**无界的**（教师概率→0
              时奖励→−∞），这种无界性是训练不稳定的根源。用符号一致的Box-Cox
              变换将奖励压缩到[-1, 1]有界区间。+6.37 Avg@8, 59%更少wall-clock。
+
+--------------------------------------------------------------------------------
+论文 [068]  NPD (Near-Policy Distillation) — White-Box OPD
+--------------------------------------------------------------------------------
+  标题       NPD: Near-Policy Distillation — 8.1× Speedup via Packed Parallel Prefill
+  作者       Huawei / Tianjin Univ.
+  日期       2026.05 | arXiv:2605.05940 | paper-only (📄)
+  核心标签   #packed-parallel-prefill #8.1×加速 #policy-lag #deliberate-staleness
+  一句话总结  用工程优化加速OPD：将生成和更新解耦，教师top-k logits通过packed
+             parallel prefill批量计算。代价是引入"策略滞后"（policy lag）——
+             训练用的教师logits来自稍旧的策略。8.1×加速，证明"稍微过时的
+             教师信号"在OPD中是可以接受的。与AsyncOPD的staleness研究互补。
+
+--------------------------------------------------------------------------------
+论文 [069]  RWOPD — White-Box OPD
+--------------------------------------------------------------------------------
+  标题       RWOPD: Reward-Weighted OPD for NL→SystemVerilog Assertions
+  作者       NUS
+  日期       2026.05 | arXiv:2605.13501 | paper-only (📄)
+  核心标签   #domain-specific-OPD #hardware-verification #beats-14B-teacher
+  一句话总结  将OPD应用于一个非常具体的领域——自然语言到SystemVerilog硬件断言
+             的生成。用SymbiYosys+Z3形式验证通过率作为forward KL的权重。
+             **0.6B学生超越了14B教师和671B通用baseline**。证明了OPD在特定
+             领域中可以在极小模型上实现专家级性能。
+
+--------------------------------------------------------------------------------
+论文 [070]  ProteinOPD — White-Box OPD
+--------------------------------------------------------------------------------
+  标题       ProteinOPD: Multi-Teacher OPD for Protein Language Models
+  作者       Tsinghua / IDEA / HKUST(GZ) / NTU
+  日期       2026.05 | arXiv:2605.10189 | github.com/THU-AI4S/ProteinOPD
+  核心标签   #protein-OPD #product-of-experts #PPL-83.7% #thermostability+54.2%
+  一句话总结  将多教师OPD应用于蛋白质语言模型——用normalized product-of-experts
+             将多个偏好特异化的教师（thermostability, solubility等）融合为
+             统一目标。token级generalized JSD。PPL −83.7%，热稳定性+54.2%。
+             证明了OPD框架的跨领域通用性——从文本到蛋白质序列。
+
+--------------------------------------------------------------------------------
+论文 [071]  MAD-OPD — White-Box OPD
+--------------------------------------------------------------------------------
+  标题       MAD-OPD: Breaking the Ceiling via Multi-Agent Debate
+  作者       HUST / Alibaba
+  日期       2026.05 | arXiv:2605.01347 | github.com/chiefovoavicii/MAD-OPD
+  核心标签   #multi-agent-debate #K=2-teachers #4B-beats-14B #LiveCodeBench
+  一句话总结  创新性地将"多智能体辩论"引入OPD——两个教师先相互辩论多轮，辩论
+             结果形成token级蒸馏目标。4B学生超越14B教师在LiveCodeBench-v6上。
+             是唯一将"辩论作为教师信号增强机制"的OPD方法。
+
+--------------------------------------------------------------------------------
+论文 [072]  W2S-OPD — White-Box OPD (Weak-to-Strong)
+--------------------------------------------------------------------------------
+  标题       W2S-OPD: Weak-to-Strong OPD via Synthesized Proxy Teacher
+  作者       UMD / Microsoft Research / MBZUAI
+  日期       2026.07 | arXiv:2607.26246 | github.com/Yu-Fangxu/W2S-OPD
+  核心标签   #weak-to-strong #proxy-teacher #logit-delta #3种contrast-source
+  一句话总结  Weak-to-Strong OPD的集大成者——综合了Direct-OPD和OPD²的"delta
+             蒸馏"思想，将弱教师对（post-RL vs pre-RL / 强vs弱base model /
+             正确vs错误hint）的logit差值重新锚定到**学生自己的base model**上。
+             这个"proxy teacher"不是任何真实模型，而是合成的目标分布。
+             Qwen3-8B math avg 17.0→51.8，超越4B教师(48.8)。三种contrast
+             source可互换+可叠加，是多教师weak-to-strong的统一框架。
