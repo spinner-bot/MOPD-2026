@@ -568,3 +568,17 @@
              （教师困惑度高的区域需要更多监督），对正确rollout用student-PPL
              加权的MLE（学生困惑度高的区域需要巩固）。通过verifier做正确/错误
              的路由判断，实现"不同结果的rollout走不同的优化路径"。
+
+--------------------------------------------------------------------------------
+论文 [038]  TIP — White-Box OPD
+--------------------------------------------------------------------------------
+  标题       TIP: Token Importance — Only High-Entropy 50% Tokens Carry OPD Signal
+  作者       Meta / LinkedIn
+  日期       2026.04 | arXiv:2604.14084 | github.com/HJSang/OPSD_OnPolicyDistillation
+  领域       White-Box OPD / Token Importance / Efficiency
+  核心标签   #token-importance #entropy-filtering #50%-token-selection #47%-memory-save
+  一句话总结  核心发现：只有学生高熵的~50% token携带有效的OPD信号，其余低熵token
+             的KL几乎为零且无学习价值。基于此提出只在高熵token上计算KL的简单策略，
+             实现~47%显存节省。这个发现直接引出了DEAR的批评——"但evidence token
+             恰好是低熵token！只选高熵token会错过最重要的学习信号。"TIP和DEAR
+             的争论是OPD领域最精彩的学术对话之一。
