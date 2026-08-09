@@ -978,3 +978,15 @@ AwesomeOPD的strictness notes指出：HPD的headline Tables 2-4使用的是**轻
 ### 可借鉴思路
 - **"统一两个损失函数"的方法通常是寻找它们的共同数学形式**。FKL和RKL看起来完全不同，但当你把它们都写成reweighted log-likelihood时，它们变成了同一公式族中weight不同的特例。这种"找到共同形式→差异仅在于参数→统一参数"的方法论几乎适用于任何两个loss function。
 - **ICML 2026接收这篇论文的可能原因**：①数学上干净的FKL+RKL统一（理论贡献），②LlamaFactory+verl双后端支持（实用贡献），③轻量on-policy近似使OPD更易用（工程贡献）。三合一使得论文在ICML的"理论+实用"平衡中得分很高。
+
+---
+
+## [040] BRTS — JHU (2026.05)
+
+### Idea提出角度：**"对称性思维——如果学生侧需要多次采样，教师侧呢？"**
+
+OPD的标准做法是学生采样G个rollout（来降低学生侧的方差），但教师通常只被查询一次（在学生的每个rollout前缀上）。BRTS提出了一个简单但被忽视的问题：**教师的单次forward pass也有随机性（教师logits本身就是它分布的采样），这个教师侧的方差也应该被降低**。通过Best-of-N选择最优质的教师rollout，BRTS在教师侧做了与学生侧G次采样对称的variance reduction。
+
+### 为什么"对称性思维"是高效的idea来源
+- **操作步骤**：①找到方法中不对称的设计（学生侧有G个rollout但教师侧只有1个、训练侧有数据增强但推理侧没有、正向路径有优化但反向梯度没有），②问"为什么不给另一边也加上？"，③实验验证对称化后的效果。
+- **对OPD领域的更多对称性机会**：学生有temperature但教师没有→给教师也加temperature？学生有KL regularization但教师的logits没有→给教师logits也加smoothing？这些"对称追问"每一个都可能产生一个新方法。
