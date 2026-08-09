@@ -284,3 +284,58 @@
              惊人的实验发现：即使从一个**故意退化**的教师（比学生还差）
              做continuation-OPD，学生仍能超越该教师——说明"状态访问"本身
              比"教师质量"更重要。
+
+--------------------------------------------------------------------------------
+论文 [018]  Geometry of OPD — Surveys, Foundations & Position Papers
+--------------------------------------------------------------------------------
+  标题       On the Geometry of On-Policy Distillation
+  作者       HKUST / Brown / ZJU / HK PolyU / USTC / BUPT
+  日期       2026.06 | arXiv:2606.07082 | paper-only (📄)
+  领域       OPD Theory / Parameter Geometry
+  核心标签   #参数几何 #subspace-locking #update-sparsity #OPD在SFT与RLVR之间
+  一句话总结  定位OPD在参数空间中的位置——更新稀疏度（51.6%）介于SFT（8.1%）
+             和RLVR（77.2%）之间，并发现早期参数更新会"锁定"到持续的低秩
+             更新通道中（subspace locking），解释了OPD的快速收敛特性。
+
+--------------------------------------------------------------------------------
+论文 [019]  Dense Supervision, Sparse Updates — Surveys
+--------------------------------------------------------------------------------
+  标题       On the Sparsity and Geometry of OPD
+  作者       Nanjing Univ. / Amap Alibaba
+  日期       2026.06 | arXiv:2606.13657 | github.com/SydCS/OPD-Param-Analysis
+  核心标签   #参数稀疏性 #0.036-0.142%相对Frobenius范数 #67-90%坐标稀疏 #FFN集中
+  一句话总结  发现OPD更新幅度极小（相对Frobenius范数仅0.036-0.142%）且67-90%
+             坐标稀疏、集中在FFN层——仅训练发现的稀疏mask就能接近完整OPD性能。
+
+--------------------------------------------------------------------------------
+论文 [020]  Rock Tokens — Surveys, Foundations & Position Papers
+--------------------------------------------------------------------------------
+  标题       Cornerstones or Stumbling Blocks? Deciphering the Rock Tokens in OPD
+  作者       UMBC / Case Western / ASU / VU Amsterdam
+  日期       2026.05 | arXiv:2605.09253 | github.com/YuxuanJiang1/Rock-Token
+  核心标签   #rock-tokens #高KL饱和 #结构脚手架 #Adam中和 #因果无关
+  一句话总结  训练后期保持高KL散度的"顽固token"大多是结构脚手架（标点、格式化
+             token），Adam会中和其梯度，且与准确率因果近乎无关——所以不需要
+             特别处理它们。
+
+--------------------------------------------------------------------------------
+论文 [021]  OPSD Compresses RLVR — Surveys
+--------------------------------------------------------------------------------
+  标题       OPSD Compresses What RLVR Teaches
+  作者       Yonsei University
+  日期       2026.05 | arXiv:2605.06188 | paper-only (📄)
+  核心标签   #OPSD角色 #压缩而非修复 #长度压缩 #post-RL-compaction
+  一句话总结  分离正确/错误rollout的对照实验揭示：OPSD主要**压缩**已正确的
+             推理链（长度-29.22%但准确率仅-1.03pp）而非修复错误——建议将
+             OPSD定位为RLVR后的压缩阶段而非替代品。
+
+--------------------------------------------------------------------------------
+论文 [022]  Extrapolation Cliff — Surveys
+--------------------------------------------------------------------------------
+  标题       The Extrapolation Cliff in OPD of Near-Deterministic Structured Outputs
+  作者       NTU Singapore
+  日期       2026.05 | arXiv:2605.08737 | paper-only (📄)
+  核心标签   #外推悬崖 #闭式安全阈值λ* #G-OPD/ExOPD #λ>1崩溃
+  一句话总结  推导出reward extrapolation的闭式安全阈值λ*——超过此阈值OPD对
+             近确定性结构化输出会突然崩溃。对G-OPD/ExOPD中λ>1做法给出了首个
+             定量安全边界。
