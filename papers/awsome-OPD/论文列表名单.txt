@@ -682,3 +682,18 @@
              证据token是低熵但高KL散度的——学生在这些token上自信但错误，恰好
              是最需要教师监督的。DEAR用hidden-state cosine similarity + 
              divergence来定位这些被TIP遗漏的证据token，实现了更完整的监督覆盖。
+
+--------------------------------------------------------------------------------
+论文 [046]  ReNIO — White-Box OPD
+--------------------------------------------------------------------------------
+  标题       ReNIO: Reweighting Negative Trajectory Importance — Incorrect
+             Rollouts Beat Correct-Only Under Both OPD and OPSD
+  作者       ECNU / Shanghai Innovation Institute
+  日期       2026.06 | arXiv:2606.23104 | github.com/BDML-lab/ReNIO
+  领域       White-Box OPD / Negative Sample Importance
+  核心标签   #错误样本更重要 #correct-vs-incorrect #pivotal-token #prefix-computable
+  一句话总结  反直觉的核心发现：在OPD和OPSD中，**只训练错误rollout比只训练正确
+             rollout效果更好**（OPD +2.59, OPSD +2.50）。这与"向正确答案学习"的
+             直觉相反，但与Apple Unmasking OPD的发现一致（教师监督在错误rollout
+             上的对齐度更高）。提出了基于prefix-computable log-ratio的pivotal
+             token识别方法，在不等待完整rollout结果的情况下近似判断样本重要性。
