@@ -1375,3 +1375,15 @@
              outcome判断教师极性（distill helpful stance, reverse misleading
              stance）。在弱特权假设下（不需要正确答案）达到了接近answer-
              conditioned OPSD的性能。
+
+
+--------------------------------------------------------------------------------
+论文 [099]  CODE — OPSD
+--------------------------------------------------------------------------------
+  标题       CODE: OPSD on Knowledge Editing via Causal Bootstrapping+Internalization
+  作者       USTC
+  日期       2026.05 | arXiv:2605.28303 | github.com/CrashBugger/CODE
+  核心标签   #knowledge-editing #causal-narrative #epistemic-dissonance
+  一句话总结  将OPSD应用于知识编辑——当需要更新模型的某个fact时，用"因果叙事"
+             （解释为什么旧fact变新fact）作为特权上下文。将知识编辑从"孤立
+             fact注入"升级为"因果理解内化"。
