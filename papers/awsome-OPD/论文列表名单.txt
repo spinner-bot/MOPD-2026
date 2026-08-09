@@ -1099,3 +1099,16 @@
              学生快照输出=rejected）。绕过了GAD的动态对抗训练，10× faster +
              27% less peak memory，且15/16 benchmarks优于GAD。证明"半在线"
              策略足以捕捉学生弱点。
+
+--------------------------------------------------------------------------------
+论文 [078]  ROPD — Black-Box OPD
+--------------------------------------------------------------------------------
+  标题       ROPD: Rubric-based On-Policy Distillation — Prompt-Specific Rubrics
+  作者       NUS / USTC / Tencent
+  日期       2026.05 | arXiv:2605.07396 | github.com/Peregrine123/ROPD_official
+  领域       Black-Box OPD / Rubric Scoring
+  核心标签   #rubric-induction #teacher-student-contrast #10×-sample-efficiency
+  一句话总结  从教师-学生回答的对比中自动诱导出prompt-specific评分rubric，然后
+             用这些rubric来打分学生的rollout。核心洞察：好的评分标准不是通用的
+             ——每个问题需要自己的评分维度。Rubricator从对比中学习"这个特定问题
+             上什么是好答案"，Verifier基于rubric打分。10× sample efficiency。
