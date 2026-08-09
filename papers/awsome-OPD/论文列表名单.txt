@@ -1559,3 +1559,16 @@
              成分主导（||ref||/||total||>1）而有用成分被主动压制（cos≈-0.95）。
              重新锚定在PMI target上。揭示OPSD的很大一部分信号是在死记硬背
              参考答案而非学习可迁移推理。
+
+
+--------------------------------------------------------------------------------
+论文 [113]  DemoPSD — OPSD
+--------------------------------------------------------------------------------
+  标题       DemoPSD: Disagreement-Modulated OPSD — Attenuating Privileged Leakage
+  作者       CityU HK / Tsinghua / SIAT / CUHK-SZ
+  日期       2026.07 | arXiv:2607.02502
+  核心标签   #disagreement-gate #privileged-leakage #reverse-KL-barycenter
+  一句话总结  通过per-token JS disagreement来调制特权pull的强度——当师生分歧大
+             时减弱特权影响（可能有leakage），分歧小时加强。反向KL barycenter
+             在pi_T和pi_S之间插值。Theorem: leakage attenuation + entropy
+             preservation。OOD GPQA 54.38 vs SDPO 46.47。
