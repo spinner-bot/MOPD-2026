@@ -1487,3 +1487,15 @@
              可以线性预测OPSD的最终增益——训练前就能精确预测训练后效果（OLS
              R^2=0.949 on Qwen3-8B, 0.996 on Olmo-3-7B）。这意味着可以
              在零训练成本下筛选特权上下文设计。
+
+
+--------------------------------------------------------------------------------
+论文 [108]  SDSD Diversity — OPSD
+--------------------------------------------------------------------------------
+  标题       OPSD with Sampled Demonstrations Reduces Output Diversity
+  作者       Mila / Univ. Montreal / FAIR at Meta
+  日期       2026.06 | arXiv:2606.26091
+  核心标签   #diversity-collapse #pointwise-CMI #pass@1-up-pass@k-flat
+  一句话总结  OPSD的最优策略是按pointwise conditional mutual information而非
+             reward来倾斜分布→amplify已有模式→pass@1↑但pass@k持平、语义
+             多样性最低、OOD失败。即使刻意使用多样化外部demo也无法修复。
