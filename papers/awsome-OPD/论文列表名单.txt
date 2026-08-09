@@ -426,3 +426,15 @@
              做token级KL蒸馏。通过在双空间中对齐实现跨tokenizer的on-policy
              蒸馏——这是多模型家族间OPD（如从LLaMA教师蒸馏到Qwen学生）的基础
              设施级贡献。
+
+--------------------------------------------------------------------------------
+论文 [028]  Constrained OPD — White-Box OPD
+--------------------------------------------------------------------------------
+  标题       Constrained OPD: A CMDP Framework for On-Policy Distillation
+  作者       Huawei Noah's Ark
+  日期       2025.09 | arXiv:2509.22921 | paper-only (📄)
+  领域       White-Box OPD / Safety-Constrained OPD
+  核心标签   #CMDP #硬KL约束 #安全蒸馏 #constrained-optimization
+  一句话总结  将OPD重新形式化为Constrained MDP——用硬KL约束替代软KL惩罚，确保
+             学生在蒸馏过程中不会偏离教师太远。是从"软正则化"升级到"硬约束"
+             的经典思路，提升了蒸馏的稳定性和安全性。
