@@ -1311,3 +1311,17 @@
              修正答案），Reviser的reward-conditioned分布成为Generator的dense
              token级监督。将稀疏的binary reward转化为密集的过程监督，无需
              verifier、无需正确答案。>10% over base on Qwen3-4B。
+
+
+--------------------------------------------------------------------------------
+论文 [094]  pi-Play — OPSD
+--------------------------------------------------------------------------------
+  标题       pi-Play: Multi-Agent Self-Play OPSD — No External Data
+  作者       CASIA / UCAS / Meituan
+  日期       2026.04 | arXiv:2604.14054
+  领域       OPSD / Self-Play / Multi-Agent
+  核心标签   #self-play #examiner-student #QCP-privilege #data-free #2-3x-efficient
+  一句话总结  用self-play让一个examiner agent出题→一个student agent答题→
+             examiner出题时的Question Construction Path（反向解题路径）成为
+             student的特权上下文。完全不需要外部数据——模型通过自我博弈产生
+             无限的训练信号。超越全监督search agent。
