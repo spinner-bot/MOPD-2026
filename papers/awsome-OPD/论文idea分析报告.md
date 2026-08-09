@@ -1739,3 +1739,11 @@ GeoSD的理论洞察具有深度：标准KL的梯度按teacher mass加权→教�
 ### Idea提出角度：**"发现一个optimization deadlock——恢复thinking token密度但准确率不恢复"**
 
 AD-OPSD最有价值的发现是optimization deadlock：entropy masking可以恢复epistemic token密度（10.7 vs base 11.1），但准确率stuck。这意味着"thinking token的存在"和"thinking token的有用性"是两个独立问题——OPSD同时破坏了二者，但只修复密度还不够。66.29%的student-epistemic→teacher-non-epistemic top-1 discrepancy集中在top-10% entropy区间。
+
+---
+
+## [117] ShortOPD — ByteDance/ISCAS/UCAS (2026.07)
+
+### Idea提出角度：**"剪枝不是erase而是demote——OPSD可以恢复被降级的推理路径"**
+
+ShortOPD的关键测量：剪枝后模型pass@1暴跌但pass@64恢复——说明正确的推理路径仍存在，只是被demote到了低概率区域。OPSD（teacher=剪枝前的自己）可以将这些路径重新promote。这是OPSD在模型压缩场景的独特应用——不是"学习新能力"而是"恢复被压缩损失的能力"。
