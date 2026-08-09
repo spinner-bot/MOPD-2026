@@ -1731,3 +1731,11 @@ DemoPSD的设计哲学：特权上下文在某些token上给出合理的监督�
 ### Idea提出角度：**"选择正确的散度几何来天然保证OOD泛化——Hellinger > KL"**
 
 GeoSD的理论洞察具有深度：标准KL的梯度按teacher mass加权→教师自信的token拉动最大→即使学生不支持也在拉。Hellinger的梯度按sqrt(p*q)缩放→学生不支持时pull消失→不会强制学生去cover它根本不理解的模式。这个几何学视角解释了为什么KL在OOD上系统性失败，并指出了修复方案。选择正确的统计距离（不一定是KL）本身就是重要贡献。
+
+---
+
+## [116] AD-OPSD — Beihang/HK PolyU/Alibaba (2026.07)
+
+### Idea提出角度：**"发现一个optimization deadlock——恢复thinking token密度但准确率不恢复"**
+
+AD-OPSD最有价值的发现是optimization deadlock：entropy masking可以恢复epistemic token密度（10.7 vs base 11.1），但准确率stuck。这意味着"thinking token的存在"和"thinking token的有用性"是两个独立问题——OPSD同时破坏了二者，但只修复密度还不够。66.29%的student-epistemic→teacher-non-epistemic top-1 discrepancy集中在top-10% entropy区间。
