@@ -889,3 +889,15 @@
              rollout性能，同时削减82%训练时间。这是prefix-truncation家族中
              理论基础最坚实的工作——不仅"发现可以截断"，而且"证明了为什么
              截断是合理的"。
+
+--------------------------------------------------------------------------------
+论文 [061]  Prefix Teach, Suffix Fade — White-Box OPD
+--------------------------------------------------------------------------------
+  标题       Local Teachability Collapse in Strong-to-Weak OPD
+  作者       ZJU / Meituan LongCat / Jilin Univ.
+  日期       2026.05 | arXiv:2605.13643 | paper-only (📄)
+  核心标签   #BIC-change-point #teachability-collapse #strong-to-weak
+  一句话总结  在strong-to-weak OPD场景下，通过BIC（贝叶斯信息准则）检测
+             "可教性崩塌点"——教师top-1/top-2概率差超过学生可达候选集的
+             那个位置。在该点之后截断密集监督。Avg 36.8→40.1。是prefix-
+             truncation家族中唯一专注于strong-to-weak场景的方法。
