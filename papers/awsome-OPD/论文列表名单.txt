@@ -49,3 +49,18 @@
   核心标签   #OPD参考实现 #Tinker SDK #最小可运行代码 #distillation recipes
   一句话总结  Thinking Machines OPD Blog的配套代码仓库——提供可运行的OPD最小实现
              （recipes/distillation/），是后续大多数OPD开源项目的起点。
+
+--------------------------------------------------------------------------------
+论文 [004]  Revisiting OPD — Surveys, Foundations & Position Papers
+--------------------------------------------------------------------------------
+  标题       Revisiting OPD: Failure Modes & Simple Fixes
+  作者       Fu et al.
+  机构       CASIA (中国科学院自动化研究所)
+  日期       2026.03
+  发表       COLM 2026
+  arXiv      arXiv:2603.25562
+  代码       github.com/hhh675597/revisiting_opd
+  领域       OPD Analysis / Failure Diagnosis
+  核心标签   #OPD诊断 #三种失败模式 #简单修复 #tokenizer不匹配 #top-p采样
+  一句话总结  诊断OPD三种具体失败模式（单token信号失衡、前缀监督不可靠、
+             tokenizer不匹配）并提针对性简单修复，是OPD领域必读的"踩坑指南"。
