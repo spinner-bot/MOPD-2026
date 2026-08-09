@@ -582,3 +582,19 @@
              实现~47%显存节省。这个发现直接引出了DEAR的批评——"但evidence token
              恰好是低熵token！只选高熵token会错过最重要的学习信号。"TIP和DEAR
              的争论是OPD领域最精彩的学术对话之一。
+
+--------------------------------------------------------------------------------
+论文 [039]  HPD — White-Box OPD
+--------------------------------------------------------------------------------
+  标题       HPD: Hybrid Policy Distillation — Reweighted Log-Likelihood
+             Unifying FKL + RKL
+  作者       SJTU / Shanghai Innovation Institute / Tencent
+  日期       2026.04 | 发表: ICML 2026 | arXiv:2604.20244
+  代码       github.com/zwhong714/Hybrid-Policy-Distillation (LlamaFactory+verl)
+  领域       White-Box OPD / Unified Objective
+  核心标签   #hybrid-distillation #reweighted-log-likelihood #FKL+RKL统一
+             #轻量on-policy近似 #ICML-2026
+  一句话总结  提出用重加权对数似然（reweighted log-likelihood）统一FKL和RKL
+             为一个单一目标函数——不同的token根据其特性自动获得不同的FKL/RKL
+             混合权重。同时包含一个轻量级的on-policy采样近似来保持训练效率。
+             ⚠️ headline实验使用近似on-policy，真正的on-policy结果仅在§5.4。
