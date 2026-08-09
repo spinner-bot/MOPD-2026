@@ -1018,3 +1018,19 @@ Prune-OPD和TRD诊断了同一个问题（前缀漂移导致后缀教师监督�
 ### 可借鉴思路
 - **"同一问题的两种解决方案"本身就是一篇对比研究论文**。你可以设计实验来回答：什么时候应该回避（Prune-OPD），什么时候应该修复（TRD）？回避的成本（丢失信息）和修复的成本（额外的refine步骤）之间的trade-off是什么？
 - **TRD的refine-then-distill管道是可推广的**。在任何teacher-student框架中，你都可以在蒸馏之前插入一个"修正"步骤——先让教师的某种形式的反馈来修正学生的输出，再在修正后的输出上做蒸馏。这个"先修正再蒸馏"的两阶段管道模板可以应用于OPD之外的很多领域。
+
+---
+
+## [043] OPRD — ZJU/Ant Group (2026.06)
+
+### Idea提出角度：**"质疑蒸馏应该发生在哪个空间——从输出空间到表示空间"**
+
+所有之前的OPD方法都在做同一件事：在logits/output空间对齐教师和学生。OPRD问了一个根本性的问题：**为什么蒸馏必须发生在输出空间？教师和学生的hidden states包含更丰富的"推理过程"信息，为什么不直接在表示空间对齐？** 这个质疑打开了一个全新的OPD子方向。
+
+### 为什么"改变操作空间"是范式级别的贡献
+- **Hidden states的维度远大于logits的维度**（hidden_size >> vocab_size），这意味着表示空间可以捕捉比输出概率分布更丰富的"思考结构"。
+- **OPRD避开了全词表KL的高计算成本**——hidden state的L2/MSE比full-vocabulary softmax快得多。这也是一个效率贡献。
+- **"第一个做X"本身就具有历史价值**。即使OPRD的方法简单（层间hidden state对齐），"首个特征空间OPD"的标签确保它会被后续所有feature-based OPD工作引用。
+
+### 可借鉴思路
+- **"改变操作空间"的通用提问**：你所在领域的所有方法都在什么空间操作？如果改到另一个空间会怎样？Token space → hidden state space（OPRD）、output space → weight space（model merging）、discrete space → continuous space（Flow-OPD）。每个空间的转换都可能揭示新的可能性。
