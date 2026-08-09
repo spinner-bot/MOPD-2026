@@ -612,3 +612,18 @@
              的一个（先按正确性筛选，再按与学生对齐度筛选），用选出的高质量教师
              rollout作为蒸馏目标。这种"教师侧的variance reduction"与学生侧的
              G个rollout互补——两边都做多次采样再择优。
+
+--------------------------------------------------------------------------------
+论文 [041]  FiRe-OPD — White-Box OPD
+--------------------------------------------------------------------------------
+  标题       FiRe-OPD: Filter, then Reweight — Decoupling Optimization Granularity
+  作者       THU / HKUST / Meituan (Li et al.)
+  日期       2026.06 | arXiv:2606.02684 | github.com/YuYingLi0/FiRe-OPD
+  领域       White-Box OPD / Decoupled Granularity
+  核心标签   #hard-trajectory-filtering #soft-token-reweighting #解耦优化粒度
+             #multi-teacher-math-code #teacher-confidence×student-confusion
+  一句话总结  核心洞察是将优化粒度解耦——在轨迹层面做**硬**过滤（drop掉教师
+             log-prob最低的p% rollout），在token层面做**软**重加权（权重=
+             teacher-confidence × student-confusion）。证明硬过滤在轨迹层面
+             更有效而软加权在token层面更有效——两者结合优于任何单一策略。
+             这个"不同粒度需要不同策略"的发现具有普适的方法论意义。
