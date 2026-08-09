@@ -1219,3 +1219,18 @@
   一句话总结  特权上下文是"完整文档"——教师看到完整文档，学生看到截断/噪声版本。
              用tutor consensus来gate KL（多个教师快照一致时才蒸馏）。混合了
              on-policy（学生rollout）和off-policy（教师轨迹）的蒸馏信号。
+
+--------------------------------------------------------------------------------
+论文 [087]  EMPO² — OPSD (cross-listed into Agent)
+--------------------------------------------------------------------------------
+  标题       EMPO²: Memory-Tip-Conditioned Online Self-Distillation for Exploratory
+             LLM Agents
+  作者       Microsoft Research
+  日期       2026.02 | 发表: ICLR 2026 | arXiv:2602.23008
+  代码       github.com/microsoft/agent-lightning
+  领域       OPSD / Agent / Memory-Augmented
+  核心标签   #memory-tips #training-only-scaffolding #ICLR-2026 #Agent-Lightning
+  一句话总结  用自生成的"记忆提示"（memory tips，总结过去rollout的经验）作为
+             特权上下文。关键设计：memory只在训练时存在（推理时移除）——学生
+             通过OPSD将"有记忆时的更好表现"内化到权重中。ScienceWorld +128.6%,
+             WebShop +11.3% over GRPO。是"训练时脚手架，推理时移除"设计的典范。
