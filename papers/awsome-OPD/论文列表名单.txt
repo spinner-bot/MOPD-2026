@@ -2358,3 +2358,14 @@
   核心标签   #co-evolving #parallel-expert-branches #mutual-OPD
   一句话总结  并行专家分支交替做分支专用GRPO与互OPD——每分支从共同进化的兄弟checkpoint
              在对方数据上蒸馏。
+
+
+--------------------------------------------------------------------------------
+论文 [188]  RLRT — OPD-RL混合
+--------------------------------------------------------------------------------
+  标题       Rebellious Student — Reversing Teacher Signals
+  作者       Microsoft Research / KAIST
+  日期       2026.05 | arXiv:2605.10781 | paper-only
+  核心标签   #reverse-teacher-signal #divergence-amplification #rebellious-student
+  一句话总结  对"学生偏离特权教师但仍成功"的token放大而非抑制；Qwen3-4B-Base avg@16
+             +18.0%。
