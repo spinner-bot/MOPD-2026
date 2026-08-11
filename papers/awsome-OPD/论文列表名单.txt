@@ -2030,3 +2030,13 @@
   代码       https://arxiv.org/abs/2410.20727
   核心标签   #iterative-BoN #game-theoretic #win-rate-dominance
   一句话总结  BOND的博弈论加速变体，用胜率支配加速迭代BoN蒸馏。
+
+
+--------------------------------------------------------------------------------
+论文 [158]  AlignDistil — OPD-RL混合
+--------------------------------------------------------------------------------
+  标题       AlignDistil: Token-Level Language Model Alignment as Adaptive Policy Distillation (ACL 2025)
+  作者       BJTU / Tencent
+  日期       2025.03 | arXiv:2503.02832 | github.com/songmzhang/AlignDistil
+  核心标签   #RLHF-equivalence #DPO-as-distillation #token-level #ACL2025
+  一句话总结  将DPO重述为策略蒸馏，token级对齐，RLHF等价。
