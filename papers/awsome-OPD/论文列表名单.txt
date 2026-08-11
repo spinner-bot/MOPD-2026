@@ -1798,3 +1798,14 @@
   日期       2026.05 | arXiv:2605.23493 | paper-only
   核心标签   #guided-rollout #positive-evidence-mask #negative-result-math
   一句话总结  引导rollout将特权上下文注入学生采样使稀有行为on-policy，另加positive-evidence mask；数学轴上显式负结果（AIME25 0.392 < base 0.531）。
+
+
+--------------------------------------------------------------------------------
+论文 [136]  SC-SDPO — OPSD
+--------------------------------------------------------------------------------
+  标题       Restoring the Sweet Spot — Pass-Rate Weighted Self-Distillation
+  作者       Penn State
+  日期       2026.05 | arXiv:2605.27765 | paper-only
+  核心标签   #sqrt(p(1-p))-weight #pass-rate #difficulty-sweet-spot
+  一句话总结  用同一批rollout免费计算的√(p̂(1-p̂))重加权每个prompt的SDPO loss，恢复
+             GRPO式难度sweet spot。
