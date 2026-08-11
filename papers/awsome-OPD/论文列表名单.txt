@@ -2270,3 +2270,14 @@
   核心标签   #bidirectional-self-distillation #credit-aware #skill-conditioning-false
   一句话总结  证明"技能条件⇒更好"的特权教师假设经验上不成立，于是向实际胜出的分支
              蒸馏、双向进行。
+
+
+--------------------------------------------------------------------------------
+论文 [180]  DRIFT — OPD-RL混合
+--------------------------------------------------------------------------------
+  标题       DRIFT — Difficulty Routing Self-Distillation
+  作者       Beike (Ke.com) / Tsinghua / ENS Paris-Saclay
+  日期       2026.06 | arXiv:2606.30345 | paper-only
+  核心标签   #difficulty-routing #SDPO+gated-GRPO #cross-batch-success-buffer
+  一句话总结  错误样本走SDPO（逐token正确路径对照），正确样本走门控GRPO；跨批成功
+             缓冲维持正样本稀缺时的稠密监督。
