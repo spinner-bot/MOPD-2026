@@ -1755,3 +1755,59 @@ ShortOPD的关键测量：剪枝后模型pass@1暴跌但pass@64恢复——说�
 ### Idea提出角度：**"自己未来的denoising step是最好的特权信息——self-future as privilege"**
 
 dOPSD的核心洞察具有哲学深度：最干净的特权信息不是外部答案，而是"未来更了解的自己"。在扩散模型中，later denoising steps自然包含更多信息→用later steps的分布作为当前steps的特权目标。这种方法不需要任何外部信息——特权完全来自模型自身的"时间不对称性"。对于大一新生：如果你能找到模型中"时间/层/步的不对称性"——未来比现在知道更多——你就找到了免费的OPSD特权来源。
+
+---
+
+## [119] TOPD — CASIA/UCAS (2026.07)
+
+### Idea提出角度：**"在扩散LM的去噪轨迹中，只监督那些能'活到最后的token'"**
+
+TOPD的关键洞察：masked diffusion LM的随机掩码会产生大量"backward-reconstruction"中间状态——这些状态只是为了恢复被随机mask掉的内容，并不真正贡献于最终答案。TOPD提出trace-aligned supervision：只监督那些在完整去噪轨迹中从当前步一直存活到最终答案的token。这样做既减少了噪声监督（省4× rollout），又提升了最终性能（MATH500 +5.7）。对于大一新生：如果你能识别出训练过程中哪些步骤是"真正有用的"、哪些只是"过程性噪音"，你就能设计出更高效的监督信号。
+
+---
+
+## [120] Prune-OPD — HKUST(GZ)/MBZUAI/UC Merced/SYSU (2026.05)
+
+### Idea提出角度：**"不是所有token都值得监督——当师生已经一致时就该停下来"**
+
+Prune-OPD的idea非常实用：逐位置监测teacher和student的top-k重叠度，当重叠度太低时（说明这个位置的监督对当前学生"不可学习"），直接截断该样本的后续token，不浪费算力。这相当于在训练过程中动态决定"这个样本要训练多深"。KAT-Coder-V2.5后来归功于此机制，说明好的训练效率trick本身就是重要的研究贡献。省37.6-68.0%训练时间这个数字本身就足以说服审稿人。
+
+---
+
+## [121] PromptSD — UW-Madison/JHU/NTU (2026.07)
+
+### Idea提出角度：**"用一个框架（teacher三要素）系统化地指出所有现有方法的缺陷"**
+
+PromptSD最值得学习的是它的"诊断框架"：它先定义了好的teacher应该满足的三个条件（thinking-pattern一致性、可吸收能力差、无post-hoc rationalization），然后逐一检查现有的teacher族（gold answer、critique、process reward等）都至少违背其一。这种"先建立评价标准、再系统性地指出所有方法都不完美"的写法非常有说服力。解决方案是把teacher本身变成一个可学习的soft prompt——参数化teacher而非手工设计teacher。对大一新生：如果你能提出一个清晰的评价框架来诊断现有方法的系统性缺陷，论文就成功了一半。
+
+---
+
+## [122] PAINT — Tsinghua/Beihang (2026.04)
+
+### Idea提出角度：**"让teacher部分失明——只看到被mask掉答案的验证解"**
+
+PAINT的核心设计：teacher只能看到suffix被mask掉的验证解→teacher不知道完整答案，因此它的指导更接近"提示"而非"泄露"。配合两个技术：overlap-adaptive masking（学生推理和teacher推理重叠的部分不mask）和entropy-gated logit interpolation（高熵token更多依赖学生自己）。Qwen3-8B较此前OPSD +2.1。对大一新生：有时候最好的teacher不是"全知全能"的，而是"知道得恰到好处"——故意限制teacher的信息访问可以迫使学生内化推理能力。
+
+---
+
+## [123] PBSD (Preference-Based SD) — Penn State/TikTok (2026.05)
+
+### Idea提出角度：**"KL散度不是唯一的选择——把自蒸馏frame成偏好优化问题"**
+
+PBSD的idea简洁而有力：既然我们要让学生偏好特权teacher的输出胜过自己的on-policy输出，为什么不直接用preference optimization框架（Bradley-Terry）？用reward-regularized BT loss替代KL匹配，teacher正样本 vs 学生负样本构成偏好对。这种"把一个熟悉的问题映射到另一个更成熟框架"的策略是发论文的经典套路——你会发现大量ICLR/ICML论文的核心贡献就是"我们发现在X场景下，用Y框架比用Z框架更好"。
+
+---
+
+## [124] vOPD — Seoul National University (2026.05)
+
+### Idea提出角度：**"前向KL已经免费算好了反向KL——用这个作为控制变量基线削减方差"**
+
+vOPD展示了一种精致的"免费午餐"思维：OPD训练中前向KL（学生→教师）已经计算好了，而反向KL（教师→学生）恰好可以从前向KL推导出闭式解。用这个"已经算好"的反向KL作为控制变量基线，可以无偏地削减token级方差。结果：相对全词表KL省57.7%墙钟时间。对大一新生：如果你能在现有的计算过程中发现"已经被计算但被丢弃的中间量"，把这些中间量重新利用起来，这就是最高效的研究贡献。
+
+---
+
+## [125] OPHSD — PKU (2026.05)
+
+### Idea提出角度：**"最好的特权上下文不是文本——而是程序化的推理工具"**
+
+OPHSD的差异化在于：它不用文本（如gold answer、critique）作为特权上下文，而是用程序化的推理期harness——draft-verify（草稿-验证循环）和plan-solve with oracle（有oracle的计划-执行）。这些harness是结构化的、程序化的工具，而非自然语言。HMMT25相对OPSD +10.83%，说明结构化特权比文本特权更有效。对大一新生：不要局限于"给teacher更好的prompt"——考虑"给teacher一个工具/程序/API"，结构化信息往往比自然语言更精确。
