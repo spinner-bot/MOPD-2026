@@ -1839,3 +1839,53 @@
   核心标签   #clean-complete-context #sharded-polluted-history #multi-turn
   一句话总结  学生看被污染的分片历史、teacher看干净完整上下文；raw-sharded数学66.0→
              82.5。
+
+
+--------------------------------------------------------------------------------
+论文 [140]  Feedback Distillation — OPSD
+--------------------------------------------------------------------------------
+  标题       Distilling LLM Feedback for Lean Theorem Proving
+  作者       FAIR at Meta / Inria / Sorbonne / CERMICS-ENPC
+  日期       2026.05 | arXiv:2605.30861 | paper-only
+  核心标签   #LLM-critique-privilege #EMA-self-teacher #Lean-proving
+  一句话总结  学生失败尝试的LLM批评成为EMA self-teacher的特权上下文；GRPO-over-FD
+             pass@1 75% vs GRPO单独59%。
+
+--------------------------------------------------------------------------------
+论文 [141]  RAFT — OPSD
+--------------------------------------------------------------------------------
+  标题       Data Refinement and Adaptive Distillation
+  作者       BAAI / BJTU
+  日期       2026.06 | arXiv:2606.00147 | paper-only
+  核心标签   #answer-conditioned-OPSD #EMA-balance #instruction-retention
+  一句话总结  对原始instruction-tuned权重做answer-conditioned OPSD，EMA平衡SFT loss；
+             IFEval保持91.2%→99.5%。
+
+--------------------------------------------------------------------------------
+论文 [142]  TS-OPSD — OPSD
+--------------------------------------------------------------------------------
+  标题       Internalize the Temperature — OPSD as Policy Reheater
+  作者       Tsinghua
+  日期       2026.06 | arXiv:2606.00755 | paper-only
+  核心标签   #temperature-scaling #entropy-recovery #RLVR-collapse
+  一句话总结  把模型自身温度缩放版logits蒸馏回自身，恢复RLVR坍缩checkpoint的熵。
+
+--------------------------------------------------------------------------------
+论文 [143]  SafeSteer — OPSD
+--------------------------------------------------------------------------------
+  标题       Localized OPD for Safety Alignment
+  作者       Beihang / BIT / BUPT / PKU / CASIA / Shanghai AI Lab / BAAI
+  日期       2026.06 | arXiv:2606.02530 | github.com/Anjingkun/SafeSteer
+  核心标签   #activation-refusal-steering #50-token-safety-subset #ASR-2.87-to-0.91
+  一句话总结  特权是注入残差流的激活级拒答steering vector，KL限制在50-token安全子集；
+             仅用100个有害样本ASR 2.87%→0.91%。
+
+--------------------------------------------------------------------------------
+论文 [144]  COPSD (Constitutional) — OPSD
+--------------------------------------------------------------------------------
+  标题       Constitutional On-Policy Safe Distillation
+  作者       Fudan / Shanghai Innovation Institute / Ant Group / ZJU / CityU HK
+  日期       2026.06 | arXiv:2606.03089 | github.com/SII-FLEEECERmw/SafeC-OPSD
+  核心标签   #safety-constitution #Cross-SFT-cold-start #distributional-collapse
+  一句话总结  teacher以安全宪法为条件，Cross-SFT冷启动先修复constitution-induced
+             distributional collapse。注意与COPSD Crosslingual(2605.09548)不同。
