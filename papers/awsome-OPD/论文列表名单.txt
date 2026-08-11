@@ -2085,6 +2085,17 @@
   核心标签   #knowledge-base #preference-RL #sequence-level
   一句话总结  在偏好RL中加入知识库grounding，序列级知识增强偏好优化。
 
+
+--------------------------------------------------------------------------------
+论文 [164]  Open-AgentRL — OPD-RL混合
+--------------------------------------------------------------------------------
+  标题       Open-AgentRL — RLAnything / DemyAgent multi-domain
+  作者       Gen-Verse
+  日期       2026.02 | github.com/Gen-Verse/Open-AgentRL | 无arXiv
+  核心标签   #GRPO-TCR #multi-domain-teacher #reasoning/GUI/coding
+  一句话总结  多领域教师+GRPO-TCR，包含SandboxFusion过程奖励建模；推理/GUI/编码
+             三域统一框架。
+
 --------------------------------------------------------------------------------
 论文 [162]  SDPO — OPD-RL混合
 --------------------------------------------------------------------------------
