@@ -1983,3 +1983,15 @@
   核心标签   #self-play #DPO #frozen-previous-checkpoint #iterative
   一句话总结  teacher=前一个冻结checkpoint，序列级DPO偏好监督；更准确地说是"迭代
              on-policy DPO"——C1满足但C2非逐token logit形式。
+
+
+--------------------------------------------------------------------------------
+论文 [154]  rStar — Iterative Self-Bootstrapping
+--------------------------------------------------------------------------------
+  标题       rStar / rStar-Math / rStar2-Agent
+  作者       Microsoft Research
+  日期       2025.01 | arXiv:2501.04519 (rStar-Math) · 2508.20722 (rStar2-Agent)
+  代码       github.com/microsoft/rStar
+  核心标签   #MCTS-filtering #PPM-discriminator #self-improvement #iterative
+  一句话总结  MCTS过滤学生样本+SFT，"teacher信号"是step级PPM/discriminator分数而非
+             逐token KL，属迭代自改进。
