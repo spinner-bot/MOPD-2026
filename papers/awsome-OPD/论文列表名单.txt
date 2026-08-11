@@ -2237,3 +2237,14 @@
   核心标签   #annealed-scheduling #external-teacher #turn-level-weight #超越教师
   一句话总结  外部教师OPD优势与GRPO在退火调度下融合（早期OPD主导、晚期RL主导）+
              轮级分歧×熵权重；超越自身教师+2.16。
+
+
+--------------------------------------------------------------------------------
+论文 [177]  PASS — OPD-RL混合
+--------------------------------------------------------------------------------
+  标题       PASS — Process Advantage Signal Shaping
+  作者       Tsinghua / WeChat Tencent
+  日期       2026.06 | arXiv:2606.29296 | paper-only
+  核心标签   #process-signal-shaping #GRPO-middleware #multi-hop-QA
+  一句话总结  任意步级过程信号与GRPO之间的范式无关中间件；其OPD/G-OPD实例使多跳QA
+             pass@1 +5.50。
