@@ -2325,3 +2325,14 @@
   核心标签   #rubric-RL #suppressed-criteria #forward-KL-injection #counterfactual-flip
   一句话总结  命名Unexplored与Suppressed两类准则，用准则注入前向KL行为注入+反事实
              优势翻转修复两者。
+
+
+--------------------------------------------------------------------------------
+论文 [185]  H²SD — OPD-RL混合
+--------------------------------------------------------------------------------
+  标题       H²SD — Hybrid Hindsight Self-Distillation
+  作者       Shanghai AI Lab / HIT / Fudan / CUHK
+  日期       2026.07 | arXiv:2607.18955 | paper-only
+  核心标签   #correctness-routing #privilege-context-ranking #magnitude-modulation
+  一句话总结  按正确性路由：成功样本幅度调制，失败样本提示条件逆KL；发布特权上下文
+             类型排序（提示≫兄弟解≫真值≫验证器反馈）。
