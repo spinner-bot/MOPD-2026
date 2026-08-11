@@ -1961,3 +1961,14 @@
   核心标签   #gold-solution+peer-rollout #KL-at-divergence-point #credit-localization
   一句话总结  teacher见金解+成功peer rollout，KL集中于失败rollout首次偏离该peer的
              token——精确定位"哪里开始出错了"。
+
+
+--------------------------------------------------------------------------------
+论文 [152]  RCSD — OPSD
+--------------------------------------------------------------------------------
+  标题       Rubric-Conditioned Self-Distillation
+  作者       Yale
+  日期       2026.06 | arXiv:2606.19327 | github.com/carriegu0818/RCSD
+  核心标签   #two-stage #rubric-generator #criterion-level-alignment
+  一句话总结  Stage I用OPSD学习rubric生成器，Stage II使teacher条件化该rubric，用判据
+             级指导替代单参考对齐。
