@@ -2226,3 +2226,14 @@
   核心标签   #hindsight-skills #hierarchical #multi-turn-agent #GRPO
   一句话总结  将完成的智能体轨迹转为分层后见技能，在技能增强上下文下重评同一样本响应；
              推理无需外部技能库。
+
+
+--------------------------------------------------------------------------------
+论文 [176]  ATOD — OPD-RL混合
+--------------------------------------------------------------------------------
+  标题       ATOD — Annealed Turn-aware OPD
+  作者       Tencent / Tsinghua
+  日期       2026.06 | arXiv:2606.27814 | paper-only
+  核心标签   #annealed-scheduling #external-teacher #turn-level-weight #超越教师
+  一句话总结  外部教师OPD优势与GRPO在退火调度下融合（早期OPD主导、晚期RL主导）+
+             轮级分歧×熵权重；超越自身教师+2.16。
