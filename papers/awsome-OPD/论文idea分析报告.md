@@ -1992,4 +1992,12 @@ Feedback Alignment的贡献不是提出新方法，而是做了一个系统的�
 
 When Context Returns报告了一个反直觉现象：context-induced degradation——训练时用teacher特权上下文做OPSD、学生内化了这些知识后，测试时重新给同样的上下文居然会让性能下降。修复方案：no-context anchoring正则项（11/12设置有效）。**这种"发现一个反直觉现象→分析机制→提出简单修复"的模式，是最有说服力的论文类型之一。** 对大一新生：反直觉的实验结果是最好的论文种子——它意味着你发现了某些被忽视的机制。
 
+---
+
+## [151] HSD — George Washington University (2026.06)
+
+### Idea提出角度：**"不需要对所有token都做KL——只需要在'学生首次偏离成功路径的那个token'上做"**
+
+HSD的credit localization策略极其精准：teacher同时看到gold solution和一条成功的peer rollout——当学生在某个token首次偏离成功peer的路径时，KL集中施加在那个"分叉点"上。**这种"不监督整个轨迹、只监督出错的那一个token"的思路，把稀疏的信用分配问题转化为了teacher-conditioned的分叉检测。** 对大一新生：在序列决策中，大多数token都是"正确的"——找到第一个出错的token并只在那里施加监督，既高效又精准。
+
 COPSD的核心设计：teacher以"安全宪法"（一套安全规则）为条件，生成constitution-compliant的输出。但直接这样做会导致distributional collapse——teacher变得过于保守。Cross-SFT冷启动先修复这个塌缩，然后再做constitutional OPSD。**这种"先诊断设计引入的副作用→用冷启动修复→再做主流训练"的三步策略，是引入任何新训练范式时的标准安全操作。** 注意：此COPSD(2606.03089)与COPSD Crosslingual(2605.09548)为同名不同论文。
