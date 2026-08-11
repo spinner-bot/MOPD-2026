@@ -1811,3 +1811,63 @@ vOPD展示了一种精致的"免费午餐"思维：OPD训练中前向KL（学生
 ### Idea提出角度：**"最好的特权上下文不是文本——而是程序化的推理工具"**
 
 OPHSD的差异化在于：它不用文本（如gold answer、critique）作为特权上下文，而是用程序化的推理期harness——draft-verify（草稿-验证循环）和plan-solve with oracle（有oracle的计划-执行）。这些harness是结构化的、程序化的工具，而非自然语言。HMMT25相对OPSD +10.83%，说明结构化特权比文本特权更有效。对大一新生：不要局限于"给teacher更好的prompt"——考虑"给teacher一个工具/程序/API"，结构化信息往往比自然语言更精确。
+
+---
+
+## [126] AntiSD — Xiaohongshu / CASIA (2026.05)
+
+### Idea提出角度：AntiSD的核心反转思维：所有人都用KL/JSD下降来蒸馏，但如果你故意让它上升（符号反向）呢？在entropy gate的控制下，2-10×更少步就能达到GRPO峰值。**这种"故意反着做"的策略——把一个公认的优化方向反过来——往往能发现新的机制。** 对大一新生：如果大家都在最小化某个loss，问自己"如果我最大化它会发生什么？"不一定是无意义的——可能揭示出被忽视的动力学。
+
+---
+
+## [127] CREDIT — Xiaohongshu / CASIA (2026.05)
+
+### Idea提出角度：CREDIT的贡献模式：把一个empirical方法（OPSD token reward）的数学本质搞清楚（=Bayesian滤波下的PMI增量），然后指出"你目前的计算里混入了一个input-generic的基线成分——把它减掉就更好"。**这种"数学化→发现隐藏偏差→修正"的三步策略是顶会论文的黄金模板。** 对大一新生：学一点信息论（PMI）和贝叶斯推断，然后去找那些"只靠直觉设计的loss函数"，把它们数学化，你会发现隐藏的偏差。
+
+---
+
+## [128] Adaptive Teacher Exposure — ByteDance Douyin (2026.05)
+
+### Idea提出角度：这篇的核心洞察：teacher不应该总是看到完整的参考答案——应该根据学生的学习进度动态决定"暴露多少"。用一个REINFORCE训练的Beta-policy来控制teacher的"可见度"。**这种"动态调度信息流"的思路在curriculum learning、active learning中反复出现，但用在OPD的特权信息控制上是新的。** 对大一新生：在任何一个teacher-student系统中，问"teacher什么时候应该闭嘴/少说？"就是一篇论文。
+
+---
+
+## [129] OGLS-SD — UNC Chapel Hill / NVIDIA (2026.05)
+
+### Idea提出角度：OGLS-SD的设计哲学：不要对每个rollout都给teacher监督——先按结果（正确/错误）把rollout分池，然后用两个池的teacher logit差异作为steering direction。**这种"池化→对比→定向引导"的三段式设计，比逐样本应用KL更高效。** 对大一新生：在OPD中，数据选择（在哪些rollout上做KD）和信号设计（用什么散度）同样重要——而前者的研究远少于后者。
+
+---
+
+## [130] Multi-Rollout OPD — Microsoft / CMU / Purdue (2026.05)
+
+### Idea提出角度：Multi-Rollout OPD提出了一种"不依赖外部teacher"的自蒸馏范式：同一prompt下采样多条rollout，用成功的那条作为正例演示、失败的那些作为负例对比，全部给self-teacher作为上下文。**这种"用同一模型的不同outcome之间的差异作为训练信号"的思路，把"对比学习"的思想引入了OPD。** 对大一新生：如果你能在一个batch内同时获得正负样本（同一个prompt的多个rollout），你就有了免费的对比信号——不需要外部teacher。
+
+---
+
+## [131] RESD — UC San Diego / Amazon / Georgia Tech (2026.05)
+
+### Idea提出角度：RESD解决了一个关键瓶颈：当成功样本极度稀少时（1 rollout/prompt、大多数都失败），OPSD没有足够的正信号。RESD的应对：给teacher加上"回顾性反思"（分析为什么这次成功了）和"跨步playbook"（把成功经验编码为可复用的策略）。**这种"从稀少成功中提取可迁移知识"的思路，本质上是在做data augmentation on the success side。** 对大一新生：样本不平衡时，不要只想着"多采样"——想办法从稀少的成功中提取更多信号。
+
+---
+
+## [132] EGRSD — SJTU / Tsinghua / Shanghai AI Lab (2026.05)
+
+### Idea提出角度：EGRSD的关键设计分离：方向由outcome reward决定（RL的思路），幅度由teacher-student log-ratio决定（KD的思路），再用min-entropy gate保护那些"暂时不确定但可能很重要"的pivot token。**这种"方向与幅度解耦"的设计哲学在控制论和优化中很常见，但应用到OPD中是新的。** 对大一新生：任何一个loss函数都可以被分解为"方向×幅度"，然后你可以用不同的信号源来分别控制这两个维度。
+
+---
+
+## [133] VPD — Salesforce AI Research (2026.05)
+
+### Idea提出角度：VPD的贡献在于把一个模糊的问题（"如何利用语言反馈做蒸馏？"）映射到了一个经典框架（EM算法）。E步：用偏好优化训练一个feedback-conditioned的teacher（隐变量推断）。M步：把teacher蒸馏到学生（似然最大化）。**"把新问题映射到经典算法框架"是发ICLR/NeurIPS的常用策略——它让你的方法立即有了理论合法性。** 对大一新生：如果你的问题可以写成"有一个隐变量，我想交替优化它和模型参数"——那么EM框架就是你的朋友。
+
+---
+
+## [134] OPSA — UC Riverside / ICSI / Microsoft / Berkeley Lab (2026.05)
+
+### Idea提出角度：OPSA解决了一个实际痛点：安全对齐通常以牺牲推理能力为代价（"安全税"）。OPSA的应对：不是对所有样本都用同样的特权上下文——根据样本类型（有害/良性）切换teacher的行为模式（拒答 vs 有用）。**这种"context-dependent teacher behavior switching"的思路，本质上是multi-task learning在teacher设计层面的应用。** 对大一新生：对于任何trade-off问题（安全vs能力、速度vs质量），"根据输入类型动态切换策略"总是比"一刀切"更好。
+
+---
+
+## [135] EDGE-OPD — EdgeRunner AI (2026.05)
+
+### Idea提出角度：EDGE-OPD提出了一个实用的trick（guided rollout注入特权上下文），但更值得学习的是它诚实报告了负面结果：在数学推理上EDGE-OPD反而比base还差（0.392 vs 0.531）。**勇敢报告负面结果是建立可信度的方式——审稿人欣赏诚实的failure analysis。** 对大一新生：不是所有idea都在所有任务上有效。如果你发现你的方法在某个领域系统性失败，不要隐藏它——把它写成failure analysis，这本身就是贡献。
