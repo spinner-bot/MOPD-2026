@@ -2204,3 +2204,14 @@
   核心标签   #teacher-guided-generation #RLVR-trajectory-reward #large-gap
   一句话总结  教师直接条件于学生上下文进行token级引导，融合RLVR轨迹奖励；面向大师生
              发散场景。
+
+
+--------------------------------------------------------------------------------
+论文 [174]  OPD+ — OPD-RL混合
+--------------------------------------------------------------------------------
+  标题       OPD+ — Rethinking the Advantage Design (RL with f-divergence reward)
+  作者       Columbia / Capital One
+  日期       2026.06 | arXiv:2606.01039 | paper-only
+  核心标签   #f-divergence-reward #advantage-estimation-bias #corrected-estimator
+  一句话总结  将OPD表述为带f散度奖励的RL，证明常见stop-gradient优势估计有偏并给出
+             修正估计器。
