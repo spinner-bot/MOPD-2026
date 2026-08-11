@@ -1903,3 +1903,43 @@ MAIGO发现了"lost-in-conversation"现象：在多轮对话中，学生先前�
 ### Idea提出角度：**"让学生看到碎片化的污染历史，让teacher看到干净的完整上下文——差距就是训练信号"**
 
 CCOPD的设计：在多轮对话中，学生看到的是被"sharding"污染的分片历史（模拟真实部署场景），而teacher看到的是干净的完整上下文。两者的logit差距恰好指示了"哪里被污染影响最严重"。**这种"故意给学生劣化输入、保留teacher优质输入"的不对称设计，是把distribution shift转化为训练信号的有效方法。** raw-sharded数学从66.0提升到82.5，说明"teacher-student信息不对称"本身就是最有效的训练信号。
+
+---
+
+## [140] Feedback Distillation — FAIR/Meta/Inria/Sorbonne (2026.05)
+
+### Idea提出角度：**"把LLM critique作为特权上下文——teacher不仅知道答案，还知道'为什么学生的尝试失败了'"**
+
+Feedback Distillation用在定理证明（Lean）场景：学生尝试证明失败后，用LLM生成critique（分析失败原因），这个critique成为teacher的特权上下文。**这种"用LLM的批评/反思作为特权"的思路，把"human feedback"的概念扩展到了"LLM-generated feedback"，适用于任何有可验证正确性的领域。** GRPO-over-FD pass@1 75% vs GRPO单独59%——LLM critique提供了纯结果奖励无法提供的细粒度信号。
+
+---
+
+## [141] RAFT — BAAI/BJTU (2026.06)
+
+### Idea提出角度：**"OPSD会破坏指令遵循能力——用EMA在OPSD和SFT之间找平衡"**
+
+RAFT解决了一个关键问题：OPSD训练会覆盖模型的指令遵循能力。RAFT的修复：用EMA在OPSD loss和原始SFT loss之间动态平衡——既学习推理能力，又保持指令遵循。IFEval从91.2%提升到99.5%几乎是"完全保留"了指令能力。**这种"用EMA动态平衡两个冲突目标"的策略，在任何multi-objective fine-tuning场景都适用。**
+
+---
+
+## [142] TS-OPSD — Tsinghua (2026.06)
+
+### Idea提出角度：**"RLVR训练后模型熵崩了？用温度缩放版自己的logits蒸馏回来"**
+
+TS-OPSD针对一个具体问题：RLVR训练后的模型常常出现"entropy collapse"（输出概率分布过于尖锐）。修复非常简单：把同一个模型的temperature-scaled logits（高温度=更平滑的分布）蒸馏回模型自身。**这种"用温度参数调节目标分布的平滑度"的思路，本质上是entropy regularization的KD等价形式。** 对大一新生：当你发现RL训练后模型有分布塌缩，最简单的修复就是self-distillation with temperature scaling。
+
+---
+
+## [143] SafeSteer — Beihang/BIT/BUPT/PKU/CASIA/Shanghai AI Lab/BAAI (2026.06)
+
+### Idea提出角度：**"安全对齐不需要全模型微调——在激活空间注入一个refusal steering vector就够了"**
+
+SafeSteer的极致效率：只在残差流中注入一个activation-level的refusal steering vector，KL只施加在50-token安全子集上。仅用100个有害样本就将ASR从2.87%降到0.91%。**这种"在激活空间做轻量级编辑"的思路，本质上是把safety alignment从"full fine-tuning"降维到"activation-level intervention"。** 对大一新生：有时候最有效的解决方案不是在权重空间工作，而是在激活空间做线性编辑——参数量可以少几个数量级。
+
+---
+
+## [144] COPSD (Constitutional) — Fudan/Shanghai Innovation Inst./Ant Group/ZJU/CityU HK (2026.06)
+
+### Idea提出角度：**"用'安全宪法'作为teacher的条件——但先要修复constitution引发的分布塌缩"**
+
+COPSD的核心设计：teacher以"安全宪法"（一套安全规则）为条件，生成constitution-compliant的输出。但直接这样做会导致distributional collapse——teacher变得过于保守。Cross-SFT冷启动先修复这个塌缩，然后再做constitutional OPSD。**这种"先诊断设计引入的副作用→用冷启动修复→再做主流训练"的三步策略，是引入任何新训练范式时的标准安全操作。** 注意：此COPSD(2606.03089)与COPSD Crosslingual(2605.09548)为同名不同论文。
