@@ -2000,4 +2000,10 @@ When Context Returns报告了一个反直觉现象：context-induced degradation
 
 HSD的credit localization策略极其精准：teacher同时看到gold solution和一条成功的peer rollout——当学生在某个token首次偏离成功peer的路径时，KL集中施加在那个"分叉点"上。**这种"不监督整个轨迹、只监督出错的那一个token"的思路，把稀疏的信用分配问题转化为了teacher-conditioned的分叉检测。** 对大一新生：在序列决策中，大多数token都是"正确的"——找到第一个出错的token并只在那里施加监督，既高效又精准。
 
-COPSD的核心设计：teacher以"安全宪法"（一套安全规则）为条件，生成constitution-compliant的输出。但直接这样做会导致distributional collapse——teacher变得过于保守。Cross-SFT冷启动先修复这个塌缩，然后再做constitutional OPSD。**这种"先诊断设计引入的副作用→用冷启动修复→再做主流训练"的三步策略，是引入任何新训练范式时的标准安全操作。** 注意：此COPSD(2606.03089)与COPSD Crosslingual(2605.09548)为同名不同论文。
+---
+
+## [152] RCSD — Yale (2026.06)
+
+### Idea提出角度：**"不要用单一参考答案做对齐——用learned rubric generator产生的多维判据来指导"**
+
+RCSD的两阶段设计：Stage I先用OPSD学习一个rubric generator——它能根据prompt生成多维度的评判标准（如"逻辑连贯性""数学严谨性"等）。Stage II中，teacher以这些rubric为条件，提供criterion-level的指导，而非简单的"模仿参考答案"。**这种"学习评判标准→用标准指导生成"的元学习思路，比直接模仿参考答案更可泛化。** 对大一新生：当参考答案太具体而无法泛化时，升一级到"评判标准"——教模型理解"什么是好的"而非"好的长什么样"。
