@@ -2292,3 +2292,14 @@
   核心标签   #reward-gating #top-k-reverse-KL #tail-correction-bucket
   一句话总结  仅在验证器奖励与师生似然差方向一致时保留轨迹，再做top-k逆KL+显式尾
              修正桶。
+
+
+--------------------------------------------------------------------------------
+论文 [182]  CPO — OPD-RL混合
+--------------------------------------------------------------------------------
+  标题       CPO — Beyond Entropy (Contrastive Disagreement Advantage)
+  作者       CUHK / SCUT / NTU
+  日期       2026.07 | arXiv:2607.14614 | paper-only
+  核心标签   #contrastive-disagreement #GRPO-advantage-shaping #OPD-as-special-case
+  一句话总结  用token级后验-先验log比整形GRPO优势，并证明OPD逆KL是其特例；pass@16
+             +7.7%/+8.5%。
