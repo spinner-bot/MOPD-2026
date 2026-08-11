@@ -2019,3 +2019,14 @@
   核心标签   #Best-of-N #sequence-level #Jeffreys-divergence #iterative
   一句话总结  将Best-of-N作为目标分布的迭代蒸馏，序列级对齐（非逐token logit KL）；
              用Jeffreys散度做BoN分布匹配。
+
+
+--------------------------------------------------------------------------------
+论文 [157]  Faster WIND — OPD-RL混合
+--------------------------------------------------------------------------------
+  标题       Faster WIND: Accelerating Iterative Best-of-N Distillation (AISTATS 2025)
+  作者       CMU / Google
+  日期       2024.10 | arXiv:2410.20727
+  代码       https://arxiv.org/abs/2410.20727
+  核心标签   #iterative-BoN #game-theoretic #win-rate-dominance
+  一句话总结  BOND的博弈论加速变体，用胜率支配加速迭代BoN蒸馏。
