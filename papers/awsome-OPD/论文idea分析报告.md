@@ -2007,3 +2007,11 @@ HSD的credit localization策略极其精准：teacher同时看到gold solution�
 ### Idea提出角度：**"不要用单一参考答案做对齐——用learned rubric generator产生的多维判据来指导"**
 
 RCSD的两阶段设计：Stage I先用OPSD学习一个rubric generator——它能根据prompt生成多维度的评判标准（如"逻辑连贯性""数学严谨性"等）。Stage II中，teacher以这些rubric为条件，提供criterion-level的指导，而非简单的"模仿参考答案"。**这种"学习评判标准→用标准指导生成"的元学习思路，比直接模仿参考答案更可泛化。** 对大一新生：当参考答案太具体而无法泛化时，升一级到"评判标准"——教模型理解"什么是好的"而非"好的长什么样"。
+
+---
+
+## [153] SPIN — UCLA (ICML 2024)
+
+### Idea提出角度：**"用self-play的框架做迭代蒸馏——每个iteration的学生成为下一轮的teacher"**
+
+SPIN是迭代自举的经典论文：当前模型生成样本，用DPO偏好损失对比"当前模型输出 vs 上一轮checkpoint输出"。**SPIN的核心洞察：不需要外部teacher——让模型和自己的过去版本对抗，用self-play驱动持续改进。** 这种"自我博弈"框架后来被rStar、BIRD等大量工作引用和扩展。对大一新生：SPIN证明了一个重要原则——在迭代自改进系统中，"teacher比你强"不是必须的，"teacher和你有差异"就够了。
