@@ -2040,3 +2040,14 @@
   日期       2025.03 | arXiv:2503.02832 | github.com/songmzhang/AlignDistil
   核心标签   #RLHF-equivalence #DPO-as-distillation #token-level #ACL2025
   一句话总结  将DPO重述为策略蒸馏，token级对齐，RLHF等价。
+
+
+--------------------------------------------------------------------------------
+论文 [159]  LUFFY — OPD-RL混合
+--------------------------------------------------------------------------------
+  标题       LUFFY: mixed-policy GRPO with off-policy R1 traces
+  作者       Westlake U.
+  日期       2025.04 | arXiv:2504.14945 | github.com/ElliottYan/LUFFY
+  核心标签   #mixed-policy-GRPO #off-policy-R1 #reasoning-traces
+  一句话总结  将离策略R1轨迹插入学生rollout的混合策略GRPO（一半on-policy学生+一半
+             off-policy R1）。
