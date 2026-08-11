@@ -2259,3 +2259,14 @@
   核心标签   #counterfactual-token-importance #sibling-rollout-reuse #near-zero-cost
   一句话总结  复用G−1个兄弟GRPO rollout，把师生差距转为有符号有界逐token信用，几乎
              零额外算力。
+
+
+--------------------------------------------------------------------------------
+论文 [179]  UCOB — OPD-RL混合
+--------------------------------------------------------------------------------
+  标题       UCOB — Credit-Aware Bidirectional Self-Distillation
+  作者       CASIA / Pengcheng Lab / Memorax AI
+  日期       2026.06 | arXiv:2606.29502 | github.com/TU2021/UCOB
+  核心标签   #bidirectional-self-distillation #credit-aware #skill-conditioning-false
+  一句话总结  证明"技能条件⇒更好"的特权教师假设经验上不成立，于是向实际胜出的分支
+             蒸馏、双向进行。
