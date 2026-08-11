@@ -2336,3 +2336,14 @@
   核心标签   #correctness-routing #privilege-context-ranking #magnitude-modulation
   一句话总结  按正确性路由：成功样本幅度调制，失败样本提示条件逆KL；发布特权上下文
              类型排序（提示≫兄弟解≫真值≫验证器反馈）。
+
+
+--------------------------------------------------------------------------------
+论文 [186]  CADENCE — OPD-RL混合
+--------------------------------------------------------------------------------
+  标题       CADENCE — coverage-adaptive FKL↔RKL scheduling + dense partial-credit reward
+  作者       Independent (Kumar & Jha)
+  日期       2026.07 | arXiv:2607.16955 | paper-only
+  核心标签   #coverage-gated-beta #FKL-RKL-scheduling #single-Mac-Studio
+  一句话总结  覆盖自适应FKL/RKL调度+稠密部分信用奖励；单台Apple Mac Studio端到端
+             训练。
