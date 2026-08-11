@@ -1871,3 +1871,11 @@ OPHSD的差异化在于：它不用文本（如gold answer、critique）作为�
 ## [135] EDGE-OPD — EdgeRunner AI (2026.05)
 
 ### Idea提出角度：EDGE-OPD提出了一个实用的trick（guided rollout注入特权上下文），但更值得学习的是它诚实报告了负面结果：在数学推理上EDGE-OPD反而比base还差（0.392 vs 0.531）。**勇敢报告负面结果是建立可信度的方式——审稿人欣赏诚实的failure analysis。** 对大一新生：不是所有idea都在所有任务上有效。如果你发现你的方法在某个领域系统性失败，不要隐藏它——把它写成failure analysis，这本身就是贡献。
+
+---
+
+## [136] SC-SDPO — Penn State (2026.05)
+
+### Idea提出角度：**"GRPO有一个hidden的'难度sweet spot'——OPSD丢失了它，但可以用pass-rate权重免费恢复"**
+
+SC-SDPO的洞察：GRPO天然有一种"难度sweet spot"效应——中等难度的prompt获得最多的有效训练信号。OPSD因为对所有prompt均匀加权而丢失了这个特性。SC-SDPO的修复极其优雅：用同一批rollout免费计算√(p̂(1-p̂))（pass-rate的标准差）作为每个prompt的权重——不需要额外推理、不需要外部模型。**这种"发现隐藏属性→用免费统计量恢复"的模式是最高效的论文类型：贡献明确、实现简单、效果可验证。** 对大一新生：当你发现方法A比方法B好时，不要只报告数字——去深挖B在哪里丢失了A的什么好性质，然后提出"恢复这个性质"的简单方案。
