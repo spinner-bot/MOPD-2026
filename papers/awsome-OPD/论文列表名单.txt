@@ -2077,6 +2077,17 @@
 
 
 --------------------------------------------------------------------------------
+论文 [162]  SDPO — OPD-RL混合
+--------------------------------------------------------------------------------
+  标题       SDPO — RL via Self-Distillation (Self-Distillation Policy Optimization)
+  作者       ETH / MIT
+  日期       2026.01 | arXiv:2601.20802 | github.com/lasgroup/SDPO
+  核心标签   #feedback-conditioned-self-teacher #token-level #code/tool/science
+  一句话总结  采样学生rollout获得token化反馈，用反馈条件自教师重评并蒸馏纠正后的下一
+             token分布回策略；代码/工具/科学三域验证。
+
+
+--------------------------------------------------------------------------------
 论文 [163]  KEPO — OPD-RL混合
 --------------------------------------------------------------------------------
   标题       KEPO (Knowledge-Enhanced Preference Optimization)
@@ -2141,13 +2152,3 @@
   核心标签   #GRPO+OPD #judge-hindsight-prompt #terminal/GUI/SWE/tool
   一句话总结  在一个trainer中统一二元RL与逐token OPD，判断器模型提取后见提示、token
              logprob差作方向性优势；终端/GUI/SWE/工具四域验证。
-
---------------------------------------------------------------------------------
-论文 [162]  SDPO — OPD-RL混合
---------------------------------------------------------------------------------
-  标题       SDPO — RL via Self-Distillation (Self-Distillation Policy Optimization)
-  作者       ETH / MIT
-  日期       2026.01 | arXiv:2601.20802 | github.com/lasgroup/SDPO
-  核心标签   #feedback-conditioned-self-teacher #token-level #code/tool/science
-  一句话总结  采样学生rollout获得token化反馈，用反馈条件自教师重评并蒸馏纠正后的下一
-             token分布回策略；代码/工具/科学三域验证。
