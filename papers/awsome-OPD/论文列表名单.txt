@@ -2347,3 +2347,14 @@
   核心标签   #coverage-gated-beta #FKL-RKL-scheduling #single-Mac-Studio
   一句话总结  覆盖自适应FKL/RKL调度+稠密部分信用奖励；单台Apple Mac Studio端到端
              训练。
+
+
+--------------------------------------------------------------------------------
+论文 [187]  CoPD — OPD-RL混合
+--------------------------------------------------------------------------------
+  标题       CoPD — Co-Evolving Policy Distillation
+  作者       JD.COM / IIE CAS / UCAS
+  日期       2026.04 | arXiv:2604.27083 | paper-only
+  核心标签   #co-evolving #parallel-expert-branches #mutual-OPD
+  一句话总结  并行专家分支交替做分支专用GRPO与互OPD——每分支从共同进化的兄弟checkpoint
+             在对方数据上蒸馏。
