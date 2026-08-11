@@ -1889,3 +1889,64 @@
   核心标签   #safety-constitution #Cross-SFT-cold-start #distributional-collapse
   一句话总结  teacher以安全宪法为条件，Cross-SFT冷启动先修复constitution-induced
              distributional collapse。注意与COPSD Crosslingual(2605.09548)不同。
+
+
+--------------------------------------------------------------------------------
+论文 [145]  CGTR — OPSD
+--------------------------------------------------------------------------------
+  标题       When Should the Teacher Move?
+  作者       PKU / UCAS / Tsinghua
+  日期       2026.06 | arXiv:2606.03532 | paper-only
+  核心标签   #teacher-refresh-scheduling #quarantine-period #anti-collapse
+  一句话总结  以隔离期+reward提升+长度尾安全门控self-teacher刷新；300步中CGTR保持
+             mean@16 0.806零塌缩，固定间隔刷新在第189步塌到0.000。
+
+--------------------------------------------------------------------------------
+论文 [146]  DistIL — OPSD
+--------------------------------------------------------------------------------
+  标题       RL from Rich Feedback with Distributional DAgger
+  作者       USC
+  日期       2026.06 | arXiv:2606.05152 | github.com/rishabh-1086/distIL
+  核心标签   #Distributional-DAgger #student-visited-states #future-aware-credit
+  一句话总结  不同于普通DAgger，forward-CE loss落在学生自己访问的状态上，带future-
+             aware credit项，并有单调提升保证。
+
+--------------------------------------------------------------------------------
+论文 [147]  OPDLM — OPSD
+--------------------------------------------------------------------------------
+  标题       Autoregressive-to-Diffusion LMs via OPD
+  作者       Texas A&M / UTHealth Houston
+  日期       2026.06 | arXiv:2606.06712 | github.com/divelab/OPDLM
+  核心标签   #frozen-ARLM-teacher #diffusion-student #15x-7000x-fewer-tokens
+  一句话总结  冻结ARLM以原生因果模式作为扩散学生的特权teacher；比从零训练DLM少15×–
+             7,000×训练token。
+
+--------------------------------------------------------------------------------
+论文 [148]  AR-OPD — OPSD
+--------------------------------------------------------------------------------
+  标题       Anchored Residual Guidance for Privileged OPD
+  作者       SCUT
+  日期       2026.06 | arXiv:2606.10385 | github.com/vanhowe/AR-OPD
+  核心标签   #hindsight-leakage #partial-privilege-anchor #residual-target
+  一句话总结  用部分特权锚与全特权teacher对比成残差目标来对抗hindsight leakage；
+             shortcut events −21.7%。
+
+--------------------------------------------------------------------------------
+论文 [149]  Feedback Alignment — OPSD
+--------------------------------------------------------------------------------
+  标题       The Role of Feedback Alignment in Self-Distillation
+  作者       Gensyn
+  日期       2026.06 | arXiv:2606.11173 | paper-only
+  核心标签   #privilege-context-type-study #step-aligned-critique #controlled-comparison
+  一句话总结  受控对比特权上下文类型：step-aligned critique比原始参考答案高5.27分、
+             比无反馈GRPO高16.11。
+
+--------------------------------------------------------------------------------
+论文 [150]  When Context Returns — OPSD
+--------------------------------------------------------------------------------
+  标题       Toward Robust Internalization in OPD
+  作者       IIIS, Tsinghua
+  日期       2026.06 | arXiv:2606.11627 | paper-only
+  核心标签   #context-induced-degradation #no-context-anchoring #internalization
+  一句话总结  发现context-induced degradation——训练时内化上下文的模型在测试重引入
+             上下文时反而变差；用no-context anchoring正则修复（11/12设置有效）。
