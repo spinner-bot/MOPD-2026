@@ -1,0 +1,5 @@
+DiffusionOPD 相关链接
+====================
+
+论文:     https://arxiv.org/abs/2605.15055
+代码:     https://github.com/ali-vilab/DiffusionOPD
