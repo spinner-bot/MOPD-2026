@@ -2063,3 +2063,11 @@ AlignDistil的核心贡献是建立了DPO（偏好优化）和策略蒸馏之间
 ### Idea提出角度：**"GRPO只用on-policy数据太浪费——混入off-policy的R1推理轨迹做mixed-policy训练"**
 
 LUFFY提出一个实用改进：标准的GRPO只用学生自己生成的on-policy rollout，但已有的高质量R1推理轨迹（off-policy）就被浪费了。LUFFY的做法是把它们混合——一半on-policy学生数据+一半off-policy R1数据。**这种"不把on-policy/off-policy当作二元对立、而是设计混合策略"的思路，在工业界非常实用——充分利用所有可用数据。** 对大一新生：不必把on-policy和off-policy当作互斥的选择——设计一个合理的混合比例本身就是贡献。
+
+---
+
+## [160] KETCHUP — U. Alberta (2025.04)
+
+### Idea提出角度：**"KD和RL不是两个分离的阶段——用k步Bellman回报把它们统一成一个目标"**
+
+KETCHUP的核心洞察：标准的KD只关心"模仿教师"，RL只关心"最大化回报"，但这两者可以统一——用k步Bellman回报作为KD的目标分布，让蒸馏过程同时考虑"像教师"和"得高分"。**这种"把KD和RL在Bellman方程框架下统一"的思路，本质上是用RL的价值函数来重新定义KD的"好答案"。** 对大一新生：当两个目标看起来冲突时，试着找一个更高层的数学框架（如Bellman方程）来统一它们。
