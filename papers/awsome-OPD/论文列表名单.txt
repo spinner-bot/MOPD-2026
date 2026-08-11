@@ -1972,3 +1972,14 @@
   核心标签   #two-stage #rubric-generator #criterion-level-alignment
   一句话总结  Stage I用OPSD学习rubric生成器，Stage II使teacher条件化该rubric，用判据
              级指导替代单参考对齐。
+
+
+--------------------------------------------------------------------------------
+论文 [153]  SPIN — Iterative Self-Bootstrapping
+--------------------------------------------------------------------------------
+  标题       SPIN — Self-Play Fine-Tuning (ICML 2024)
+  作者       UCLA
+  日期       2024.01 | arXiv:2401.01335 | github.com/uclaml/SPIN
+  核心标签   #self-play #DPO #frozen-previous-checkpoint #iterative
+  一句话总结  teacher=前一个冻结checkpoint，序列级DPO偏好监督；更准确地说是"迭代
+             on-policy DPO"——C1满足但C2非逐token logit形式。
