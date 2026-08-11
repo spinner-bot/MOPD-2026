@@ -2007,3 +2007,15 @@
   一句话总结  论证OPSD推理压缩的瓶颈在prefix support而非teacher质量：先用prompt-
              switched简洁SFT冷启动，再跑CRISP式OPSD；Qwen3-8B MATH-500 86.2%→
              92.0%且长度3,099→1,115 token。
+
+
+--------------------------------------------------------------------------------
+论文 [156]  BOND — OPD-RL混合
+--------------------------------------------------------------------------------
+  标题       BOND: Aligning LLMs with Best-of-N Distillation
+  作者       Google DeepMind
+  日期       2024.07 | arXiv:2407.14622
+  代码       https://arxiv.org/abs/2407.14622
+  核心标签   #Best-of-N #sequence-level #Jeffreys-divergence #iterative
+  一句话总结  将Best-of-N作为目标分布的迭代蒸馏，序列级对齐（非逐token logit KL）；
+             用Jeffreys散度做BoN分布匹配。
