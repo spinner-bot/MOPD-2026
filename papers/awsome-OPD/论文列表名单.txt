@@ -2369,3 +2369,24 @@
   核心标签   #reverse-teacher-signal #divergence-amplification #rebellious-student
   一句话总结  对"学生偏离特权教师但仍成功"的token放大而非抑制；Qwen3-4B-Base avg@16
              +18.0%。
+
+
+--------------------------------------------------------------------------------
+论文 [189]  OSD — 投机解码蒸馏
+--------------------------------------------------------------------------------
+  标题       Online Speculative Decoding
+  作者       UCB / NVIDIA
+  日期       2023.10 | arXiv:2310.07177 | github.com/LiuXiaoxuanPKU/OSD
+  核心标签   #online-SD #rejected-token-KD #seminal
+  一句话总结  投机解码在线/on-policy KD的规范论文，对被拒token做在线蒸馏——投机解码
+             OPD的奠基工作之一。
+
+--------------------------------------------------------------------------------
+论文 [190]  DistillSpec — 投机解码蒸馏
+--------------------------------------------------------------------------------
+  标题       DistillSpec: Improving Speculative Decoding via Knowledge Distillation (ICLR 2024)
+  作者       Google DeepMind
+  日期       2023.10 | arXiv:2310.08461 | paper-only
+  核心标签   #FKL/RKL/JSD/TVD #draft-sample #OPD-for-SD #ICLR2024
+  一句话总结  "用于投机解码的OPD"开创性论文：目标模型在草稿自采样上提供多种散度目标
+             （FKL/RKL/JSD/TVD），可选手。
