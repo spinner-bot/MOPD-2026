@@ -2015,3 +2015,11 @@ RCSD的两阶段设计：Stage I先用OPSD学习一个rubric generator——它�
 ### Idea提出角度：**"用self-play的框架做迭代蒸馏——每个iteration的学生成为下一轮的teacher"**
 
 SPIN是迭代自举的经典论文：当前模型生成样本，用DPO偏好损失对比"当前模型输出 vs 上一轮checkpoint输出"。**SPIN的核心洞察：不需要外部teacher——让模型和自己的过去版本对抗，用self-play驱动持续改进。** 这种"自我博弈"框架后来被rStar、BIRD等大量工作引用和扩展。对大一新生：SPIN证明了一个重要原则——在迭代自改进系统中，"teacher比你强"不是必须的，"teacher和你有差异"就够了。
+
+---
+
+## [154] rStar — Microsoft Research (2025.01)
+
+### Idea提出角度：**"用MCTS做self-play的数据过滤器——只保留那些经过搜索验证的高质量自生成样本"**
+
+rStar/rStar-Math/rStar2-Agent的核心理念：模型自己生成大量候选解→用MCTS+discriminator（PPM）过滤出高质量样本→在这些过滤后的样本上做SFT。**teacher信号不是来自外部模型，而是来自"搜索+验证"过程——MCTS天然提供了step级的置信度评估。** 这种"生成→搜索验证→过滤→自训练"的循环是迭代自改进的标准范式。对大一新生：如果你能让模型生成足够多的候选，然后用一个可靠的验证器来挑选最好的——你就不需要外部teacher。
