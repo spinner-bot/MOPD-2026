@@ -2248,3 +2248,14 @@
   核心标签   #process-signal-shaping #GRPO-middleware #multi-hop-QA
   一句话总结  任意步级过程信号与GRPO之间的范式无关中间件；其OPD/G-OPD实例使多跳QA
              pass@1 +5.50。
+
+
+--------------------------------------------------------------------------------
+论文 [178]  CRAFT — OPD-RL混合
+--------------------------------------------------------------------------------
+  标题       CRAFT — Counterfactual Credit from Free Sibling Rollouts
+  作者       HKUST
+  日期       2026.06 | arXiv:2606.29476 | paper-only
+  核心标签   #counterfactual-token-importance #sibling-rollout-reuse #near-zero-cost
+  一句话总结  复用G−1个兄弟GRPO rollout，把师生差距转为有符号有界逐token信用，几乎
+             零额外算力。
