@@ -2303,3 +2303,14 @@
   核心标签   #contrastive-disagreement #GRPO-advantage-shaping #OPD-as-special-case
   一句话总结  用token级后验-先验log比整形GRPO优势，并证明OPD逆KL是其特例；pass@16
              +7.7%/+8.5%。
+
+
+--------------------------------------------------------------------------------
+论文 [183]  Distilled RL — OPD-RL混合
+--------------------------------------------------------------------------------
+  标题       Distilled RL (teacher as reverse importance ratio on GRPO advantage)
+  作者       Nankai / Zhongguancun Academy / BIT / ZJU / CASIA / HIT
+  日期       2026.07 | arXiv:2607.17247 | github.com/597358816/Distilled-RL
+  核心标签   #reverse-importance-ratio #no-KL-loss #negative-sample-reset
+  一句话总结  完全去掉KL损失，把教师作为GRPO优势上的逆重要性比，配负样本重置与序列
+             级几何归一化。
