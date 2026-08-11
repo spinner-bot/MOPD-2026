@@ -2051,3 +2051,36 @@
   核心标签   #mixed-policy-GRPO #off-policy-R1 #reasoning-traces
   一句话总结  将离策略R1轨迹插入学生rollout的混合策略GRPO（一半on-policy学生+一半
              off-policy R1）。
+
+
+--------------------------------------------------------------------------------
+论文 [160]  KETCHUP — OPD-RL混合
+--------------------------------------------------------------------------------
+  标题       KETCHUP (k-step RL-KD)
+  作者       U. Alberta
+  日期       2025.04 | arXiv:2504.19024
+  代码       https://arxiv.org/abs/2504.19024
+  核心标签   #k-step-Bellman #RL-style-KD #sequence-level
+  一句话总结  基于k步Bellman回报的REINFORCE式RL-KD——更接近"以KD为锚的RL"而非
+             "以RL为辅助的KD"。
+
+--------------------------------------------------------------------------------
+论文 [161]  KDRL — OPD-RL混合
+--------------------------------------------------------------------------------
+  标题       KDRL (Joint Knowledge Distillation + RL)
+  作者       HIT / Huawei
+  日期       2025.06 | arXiv:2506.02208
+  代码       https://arxiv.org/abs/2506.02208
+  核心标签   #joint-KL+GRPO #external-teacher-Skywork-OR1 #unified-objective
+  一句话总结  统一KD+RL目标：外部教师Skywork-OR1的逆KL+GRPO规则奖励，token级与
+             结果级联合优化。
+
+--------------------------------------------------------------------------------
+论文 [162]  SDPO — OPD-RL混合
+--------------------------------------------------------------------------------
+  标题       SDPO — RL via Self-Distillation (Self-Distillation Policy Optimization)
+  作者       ETH / MIT
+  日期       2026.01 | arXiv:2601.20802 | github.com/lasgroup/SDPO
+  核心标签   #feedback-conditioned-self-teacher #token-level #code/tool/science
+  一句话总结  采样学生rollout获得token化反馈，用反馈条件自教师重评并蒸馏纠正后的下一
+             token分布回策略；代码/工具/科学三域验证。
