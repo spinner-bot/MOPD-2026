@@ -2172,3 +2172,13 @@
   日期       2026.03 | arXiv:2603.23871 | paper-only
   核心标签   #privileged-self-distillation #RL-fallback #cliff-prompts
   一句话总结  多数提示走RL；"悬崖"提示生成特权rollout并自蒸馏，作为RL回退。
+
+
+--------------------------------------------------------------------------------
+论文 [171]  RLSD — OPD-RL混合
+--------------------------------------------------------------------------------
+  标题       Self-Distilled RLVR (RLSD) — combining RLVR directions with self-distillation magnitudes
+  作者       Multi-org
+  日期       2026.04 | arXiv:2604.03128 | paper-only
+  核心标签   #self-distilled-RLVR #evidence-ratio #privileged-answer
+  一句话总结  以RLVR方向+教师证据比值调制幅度，同一模型+特权答案；方向与幅度解耦设计。
