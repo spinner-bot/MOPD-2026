@@ -1879,3 +1879,27 @@ OPHSD的差异化在于：它不用文本（如gold answer、critique）作为�
 ### Idea提出角度：**"GRPO有一个hidden的'难度sweet spot'——OPSD丢失了它，但可以用pass-rate权重免费恢复"**
 
 SC-SDPO的洞察：GRPO天然有一种"难度sweet spot"效应——中等难度的prompt获得最多的有效训练信号。OPSD因为对所有prompt均匀加权而丢失了这个特性。SC-SDPO的修复极其优雅：用同一批rollout免费计算√(p̂(1-p̂))（pass-rate的标准差）作为每个prompt的权重——不需要额外推理、不需要外部模型。**这种"发现隐藏属性→用免费统计量恢复"的模式是最高效的论文类型：贡献明确、实现简单、效果可验证。** 对大一新生：当你发现方法A比方法B好时，不要只报告数字——去深挖B在哪里丢失了A的什么好性质，然后提出"恢复这个性质"的简单方案。
+
+---
+
+## [137] CaMOPD — Kuaishou (2026.05)
+
+### Idea提出角度：**"多teacher冲突时，用base checkpoint作为仲裁者"**
+
+CaMOPD洞察：多teacher OPD中，不同领域teacher会给出冲突的监督信号。CaMOPD的解决方案是引入base checkpoint作为"通用锚点"——它不受任何领域特化的影响，可以在recovery（保持通用能力）和preservation（学习领域专长）之间找到平衡。交替更新策略防止某一方主导训练。**这种"引入一个中立的第三方作为仲裁者"的设计在多智能体系统中很常见，但应用到多teacher蒸馏是新的。**
+
+---
+
+## [138] MAIGO — ZJU/Shanghai AI Lab/HUST/Fuzhou/Tencent (2026.05)
+
+### Idea提出角度：**"多轮对话中，学生自己的历史回复是最有毒的上下文"**
+
+MAIGO发现了"lost-in-conversation"现象：在多轮对话中，学生先前的（可能错误的）回复会污染后续轮次的上下文，导致错误累积。MAIGO的修复：在中间轮次，self-teacher去掉学生自己的历史回复，用"干净"的上下文重新运行。**这种"识别自身输出造成的分布偏移→用oracle/teacher重跑来修复"的模式，在多轮蒸馏中是通用策略。** sharded准确率从52.8提升到66.1说明历史污染是多轮OPD的主要瓶颈之一。
+
+---
+
+## [139] CCOPD — ZJU/USTC (2026.05)
+
+### Idea提出角度：**"让学生看到碎片化的污染历史，让teacher看到干净的完整上下文——差距就是训练信号"**
+
+CCOPD的设计：在多轮对话中，学生看到的是被"sharding"污染的分片历史（模拟真实部署场景），而teacher看到的是干净的完整上下文。两者的logit差距恰好指示了"哪里被污染影响最严重"。**这种"故意给学生劣化输入、保留teacher优质输入"的不对称设计，是把distribution shift转化为训练信号的有效方法。** raw-sharded数学从66.0提升到82.5，说明"teacher-student信息不对称"本身就是最有效的训练信号。
