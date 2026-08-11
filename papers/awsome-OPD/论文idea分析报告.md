@@ -1943,3 +1943,53 @@ SafeSteer的极致效率：只在残差流中注入一个activation-level的refu
 ### Idea提出角度：**"用'安全宪法'作为teacher的条件——但先要修复constitution引发的分布塌缩"**
 
 COPSD的核心设计：teacher以"安全宪法"（一套安全规则）为条件，生成constitution-compliant的输出。但直接这样做会导致distributional collapse——teacher变得过于保守。Cross-SFT冷启动先修复这个塌缩，然后再做constitutional OPSD。**这种"先诊断设计引入的副作用→用冷启动修复→再做主流训练"的三步策略，是引入任何新训练范式时的标准安全操作。** 注意：此COPSD(2606.03089)与COPSD Crosslingual(2605.09548)为同名不同论文。
+
+---
+
+## [145] CGTR — PKU/UCAS/Tsinghua (2026.06)
+
+### Idea提出角度：**"teacher不应该每步都更新——应该在隔离期后、确认学生真的有进步时才更新"**
+
+CGTR提出一个关键问题：self-teacher什么时候应该刷新？固定间隔刷新会在第189步导致训练完全塌缩（mean@16从0.806跌到0.000）。CGTR的方案：给teacher加隔离期（quarantine）+ reward提升确认 + 长度尾安全门控。**这种"不盲目刷新、让teacher等学生真的有进步"的策略，防止了teacher-student之间的灾难性共适应。** 对大一新生：在迭代自训练系统中，"什么时候更新teacher"与"teacher给什么信号"同样重要。
+
+---
+
+## [146] DistIL — USC (2026.06)
+
+### Idea提出角度：**"DAgger是off-policy的——Distributional DAgger让forward-CE落在学生自己访问的状态上"**
+
+DistIL改进了经典的DAgger算法：普通DAgger在teacher-induced states上做监督，而Distributional DAgger在学生自己访问的状态上做forward-CE，加上future-aware credit项，并且有单调提升的理论保证。**这种"把经典算法从off-policy升级到on-policy"的模式是发论文的可靠路径——在成熟框架（DAgger）上做关键改进（distributional + on-policy）。**
+
+---
+
+## [147] OPDLM — Texas A&M/UTHealth Houston (2026.06)
+
+### Idea提出角度：**"用冻结的自回归LM作为扩散LM的teacher——AR→Diffusion的跨架构蒸馏"**
+
+OPDLM连接了两个不同的模型范式：冻结的自回归LM（AR）作为teacher，扩散LM作为学生。**这种"跨架构OPD"的idea价值在于：你不必从零训练一个新架构的模型——让一个已经训练好的旧架构模型用OPD来教新架构模型。** 少15×–7,000×训练token的效益说明了这种跨架构知识迁移的巨大潜力。对大一新生：如果你有一种新架构想尝试，不需要从头训练——用OPD让旧架构做teacher。
+
+---
+
+## [148] AR-OPD — SCUT (2026.06)
+
+### Idea提出角度：**"全特权teacher有hindsight leakage——用部分特权锚和全特权teacher的残差来对抗"**
+
+AR-OPD的洞察：当teacher看到完整答案时，它的监督会包含"后见之明"（hindsight leakage）——知道答案后再回头看推理过程会产生不真实的置信度。AR-OPD的修复：设置一个"部分特权锚"（只知道部分信息的teacher），然后用全特权teacher和部分特权锚之间的残差作为监督信号。shortcut events −21.7%。**这种"用残差来隔离hindsight bias"的思路在因果推断中很常见，但应用到OPD特权设计是新的。**
+
+---
+
+## [149] Feedback Alignment — Gensyn (2026.06)
+
+### Idea提出角度：**"不是所有特权上下文都一样好——做一个受控实验来排序各种特权类型"**
+
+Feedback Alignment的贡献不是提出新方法，而是做了一个系统的受控实验：比较不同特权上下文类型（step-aligned critique、原始参考答案、无反馈GRPO）的效果。step-aligned critique比参考答案高5.27分、比GRPO高16.11。**这种"系统对比→发现最优特权类型"的研究虽然简单，但为整个领域提供了设计指南。** 对大一新生：不一定非要提出新方法——做一个好的系统对比研究同样有价值，特别是当社区对不同设计选择的效果还没有共识时。
+
+---
+
+## [150] When Context Returns — IIIS Tsinghua (2026.06)
+
+### Idea提出角度：**"训练时内化了上下文的模型，在测试时重新引入上下文反而变差——这是个反直觉的发现"**
+
+When Context Returns报告了一个反直觉现象：context-induced degradation——训练时用teacher特权上下文做OPSD、学生内化了这些知识后，测试时重新给同样的上下文居然会让性能下降。修复方案：no-context anchoring正则项（11/12设置有效）。**这种"发现一个反直觉现象→分析机制→提出简单修复"的模式，是最有说服力的论文类型之一。** 对大一新生：反直觉的实验结果是最好的论文种子——它意味着你发现了某些被忽视的机制。
+
+COPSD的核心设计：teacher以"安全宪法"（一套安全规则）为条件，生成constitution-compliant的输出。但直接这样做会导致distributional collapse——teacher变得过于保守。Cross-SFT冷启动先修复这个塌缩，然后再做constitutional OPSD。**这种"先诊断设计引入的副作用→用冷启动修复→再做主流训练"的三步策略，是引入任何新训练范式时的标准安全操作。** 注意：此COPSD(2606.03089)与COPSD Crosslingual(2605.09548)为同名不同论文。
