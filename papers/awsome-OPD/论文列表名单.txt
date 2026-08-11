@@ -1708,3 +1708,93 @@
   核心标签   #programmatic-harness #draft-verify #plan-solve-with-oracle
   一句话总结  特权上下文是推理期程序化harness（draft-verify/plan-solve+oracle）而非
              文本提示；HMMT25相对OPSD +10.83%。
+
+--------------------------------------------------------------------------------
+论文 [126]  AntiSD — OPSD
+--------------------------------------------------------------------------------
+  标题       Anti-Self-Distillation via Pointwise Mutual Information
+  作者       Xiaohongshu / CASIA
+  日期       2026.05 | arXiv:2605.11609 | github.com/FloyedShen/AntiSD
+  核心标签   #anti-self-distillation #rising-JSD #entropy-gate #PMI
+  一句话总结  在熵门控下故意"上升"JSD（符号反向）；2–10×更少步达到GRPO峰值，最高+11.5 avg。
+
+--------------------------------------------------------------------------------
+论文 [127]  CREDIT — OPSD
+--------------------------------------------------------------------------------
+  标题       From Generic Correlation to Input-Specific Credit in OPSD
+  作者       Xiaohongshu / CASIA
+  日期       2026.05 | arXiv:2605.11613 | paper-only
+  核心标签   #PMI-increment #Bayesian-filtering #input-generic-baseline
+  一句话总结  证明OPSD的token reward是Bayesian滤波PMI增量，再减去对错配对比输入平均的input-generic基线。
+
+--------------------------------------------------------------------------------
+论文 [128]  Adaptive Teacher Exposure — OPSD
+--------------------------------------------------------------------------------
+  标题       Adaptive Teacher Exposure
+  作者       ByteDance Douyin
+  日期       2026.05 | arXiv:2605.11458 | paper-only
+  核心标签   #Beta-policy-controller #REINFORCE #learning-progress
+  一句话总结  只向teacher暴露参考CoT的可学习部分，曝光率由REINFORCE在学习进度上训练的Beta-policy采样。
+
+--------------------------------------------------------------------------------
+论文 [129]  OGLS-SD — OPSD
+--------------------------------------------------------------------------------
+  标题       Outcome-Guided Logit Steering
+  作者       UNC Chapel Hill / NVIDIA
+  日期       2026.05 | arXiv:2605.12400 | paper-only
+  核心标签   #outcome-guided #logit-contrast #only-error-rollouts
+  一句话总结  分别对验证正确/错误rollout池的teacher logits取平均并对比成steering target，只应用于错误rollout。
+
+--------------------------------------------------------------------------------
+论文 [130]  Multi-Rollout OPD — OPSD
+--------------------------------------------------------------------------------
+  标题       Multi-Rollout OPD via Peer Successes and Failures
+  作者       Microsoft / CMU / Purdue
+  日期       2026.05 | arXiv:2605.12652 | github.com/viviable/mopd_code
+  核心标签   #peer-rollout #success-demo+failure-contrast #self-teacher #AIME25-25.41
+  一句话总结  self-teacher以同组peer rollouts为条件——成功作演示、失败作对比证据；AIME25 mean@8 25.41 vs SDPO 7.81。注意与MOPD Xiaomi(2606.30406)为不同论文。
+
+--------------------------------------------------------------------------------
+论文 [131]  RESD — OPSD
+--------------------------------------------------------------------------------
+  标题       Reflection-Enhanced Self-Distillation
+  作者       UC San Diego / Amazon / Georgia Tech
+  日期       2026.05 | arXiv:2605.12741 | github.com/horizon-llm/RESD
+  核心标签   #reflection+playbook #rare-success #1-rollout-per-prompt
+  一句话总结  给teacher上下文加回顾性反思+持续跨步可复用playbook；1 rollout/prompt下从稀有成功学习。
+
+--------------------------------------------------------------------------------
+论文 [132]  EGRSD — OPSD
+--------------------------------------------------------------------------------
+  标题       Respecting Self-Uncertainty in OPSD
+  作者       SJTU / Tsinghua / Shanghai AI Lab
+  日期       2026.05 | arXiv:2605.13255 | paper-only
+  核心标签   #outcome-reward-direction #log-ratio-magnitude #min-entropy-gating
+  一句话总结  outcome reward定方向、teacher-student log-ratio定幅度，causal-lookahead min-entropy门控保护临时pivot token。
+
+--------------------------------------------------------------------------------
+论文 [133]  VPD — OPSD
+--------------------------------------------------------------------------------
+  标题       Variational Policy Distillation
+  作者       Salesforce AI Research
+  日期       2026.05 | arXiv:2605.15113 | paper-only
+  核心标签   #EM-framework #language-feedback #preference-optimization
+  一句话总结  把语言反馈学习建模为EM：E步用偏好优化训练feedback-conditioned self-teacher，M步蒸馏到学生rollout。
+
+--------------------------------------------------------------------------------
+论文 [134]  OPSA — OPSD
+--------------------------------------------------------------------------------
+  标题       Reducing the Safety Tax with OPSD
+  作者       UC Riverside / ICSI / Microsoft / Berkeley Lab
+  日期       2026.05 | arXiv:2605.15239 | github.com/FYYFU/OPSA
+  核心标签   #safety-alignment #type-conditional #refusal-steering #no-safety-tax
+  一句话总结  按类型条件的特权上下文（有害→拒答steering、良性→有用steering），由teacher flip rate选择；+4.00安全同时+3.04推理，无安全税。
+
+--------------------------------------------------------------------------------
+论文 [135]  EDGE-OPD — OPSD
+--------------------------------------------------------------------------------
+  标题       Evidence Guided OPD
+  作者       EdgeRunner AI
+  日期       2026.05 | arXiv:2605.23493 | paper-only
+  核心标签   #guided-rollout #positive-evidence-mask #negative-result-math
+  一句话总结  引导rollout将特权上下文注入学生采样使稀有行为on-policy，另加positive-evidence mask；数学轴上显式负结果（AIME25 0.392 < base 0.531）。
