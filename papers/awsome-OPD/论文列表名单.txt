@@ -2193,3 +2193,14 @@
   核心标签   #reflective-self-teacher #error-localization #science/tool/math
   一句话总结  自反思器提取纠错思想并定位首个错误span，仅在对齐的错误span上做自蒸馏；
              科学/工具/数学三域验证。
+
+
+--------------------------------------------------------------------------------
+论文 [173]  TGPO — OPD-RL混合
+--------------------------------------------------------------------------------
+  标题       TGPO — Teacher-Guided Policy Optimization
+  作者       NEU NLP / Meituan
+  日期       2026.05 | arXiv:2605.13230 | paper-only
+  核心标签   #teacher-guided-generation #RLVR-trajectory-reward #large-gap
+  一句话总结  教师直接条件于学生上下文进行token级引导，融合RLVR轨迹奖励；面向大师生
+             发散场景。
