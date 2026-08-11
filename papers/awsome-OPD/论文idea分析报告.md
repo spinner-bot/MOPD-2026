@@ -2055,3 +2055,11 @@ Faster WIND是BOND的加速版，核心改进来自博弈论视角：不需要�
 ### Idea提出角度：**"DPO和策略蒸馏在数学上是同一个东西——只是表述不同"**
 
 AlignDistil的核心贡献是建立了DPO（偏好优化）和策略蒸馏之间的等价性：DPO的loss可以重写为对"DPO模型+参考模型logits组合"的策略蒸馏。**这种"证明两个看似不同的方法本质等价"的论文类型，在理论贡献上非常有价值——它统一了领域内的概念。** 对大一新生：如果你发现两个流行方法在loss形式上很相似，试着证明它们的等价性——这种统一性论文在ACL/ICML很受欢迎。
+
+---
+
+## [159] LUFFY — Westlake U. (2025.04)
+
+### Idea提出角度：**"GRPO只用on-policy数据太浪费——混入off-policy的R1推理轨迹做mixed-policy训练"**
+
+LUFFY提出一个实用改进：标准的GRPO只用学生自己生成的on-policy rollout，但已有的高质量R1推理轨迹（off-policy）就被浪费了。LUFFY的做法是把它们混合——一半on-policy学生数据+一半off-policy R1数据。**这种"不把on-policy/off-policy当作二元对立、而是设计混合策略"的思路，在工业界非常实用——充分利用所有可用数据。** 对大一新生：不必把on-policy和off-policy当作互斥的选择——设计一个合理的混合比例本身就是贡献。
