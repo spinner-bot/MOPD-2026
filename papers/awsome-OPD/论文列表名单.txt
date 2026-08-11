@@ -1809,3 +1809,33 @@
   核心标签   #sqrt(p(1-p))-weight #pass-rate #difficulty-sweet-spot
   一句话总结  用同一批rollout免费计算的√(p̂(1-p̂))重加权每个prompt的SDPO loss，恢复
              GRPO式难度sweet spot。
+
+
+--------------------------------------------------------------------------------
+论文 [137]  CaMOPD — OPSD
+--------------------------------------------------------------------------------
+  标题       Counteraction-Aware Multi-Teacher OPD
+  作者       Kuaishou
+  日期       2026.05 | arXiv:2605.27115 | paper-only
+  核心标签   #multi-teacher #base-checkpoint-anchor #recovery-preservation
+  一句话总结  通用teacher是原始base checkpoint、领域teacher是其特化后代，交替更新修复
+             recovery-preservation对抗与弱信号平坦化。
+
+--------------------------------------------------------------------------------
+论文 [138]  MAIGO — OPSD
+--------------------------------------------------------------------------------
+  标题       Mitigating Lost-in-Conversation with History-Cleaned OPSD
+  作者       ZJU / Shanghai AI Lab / HUST / Fuzhou / Tencent
+  日期       2026.05 | arXiv:2605.27186 | paper-only
+  核心标签   #history-cleaned #self-teacher-replay #lost-in-conversation
+  一句话总结  中间轮self-teacher去掉先前自生成回复重跑；sharded准确率52.8→66.1。
+
+--------------------------------------------------------------------------------
+论文 [139]  CCOPD — OPSD
+--------------------------------------------------------------------------------
+  标题       Canonical-Context OPD for Multi-Turn LMs
+  作者       ZJU / USTC
+  日期       2026.05 | arXiv:2605.30251 | paper-only
+  核心标签   #clean-complete-context #sharded-polluted-history #multi-turn
+  一句话总结  学生看被污染的分片历史、teacher看干净完整上下文；raw-sharded数学66.0→
+             82.5。
