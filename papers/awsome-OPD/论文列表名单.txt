@@ -2152,3 +2152,13 @@
   核心标签   #GRPO+OPD #judge-hindsight-prompt #terminal/GUI/SWE/tool
   一句话总结  在一个trainer中统一二元RL与逐token OPD，判断器模型提取后见提示、token
              logprob差作方向性优势；终端/GUI/SWE/工具四域验证。
+
+
+--------------------------------------------------------------------------------
+论文 [169]  ExGRPO — OPD-RL混合
+--------------------------------------------------------------------------------
+  标题       Probing-to-Refine / EI / EXGRPO (Reinforcement Distillation via Explanatory Inversion)
+  作者       UNC / ASU
+  日期       2026.03 | arXiv:2603.19266 | github.com/Zhen-Tan-dmml/ExGRPO
+  核心标签   #explanatory-probe #GRPO #dialogue-structure-reward
+  一句话总结  用解释性探针强制逻辑表述；GRPO+对话结构奖励的强化蒸馏。
