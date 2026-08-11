@@ -2314,3 +2314,14 @@
   核心标签   #reverse-importance-ratio #no-KL-loss #negative-sample-reset
   一句话总结  完全去掉KL损失，把教师作为GRPO优势上的逆重要性比，配负样本重置与序列
              级几何归一化。
+
+
+--------------------------------------------------------------------------------
+论文 [184]  CriPO — OPD-RL混合
+--------------------------------------------------------------------------------
+  标题       CriPO — Enhancing Rubric-based RL via Self-Distillation
+  作者       ZJU / ByteDance
+  日期       2026.07 | arXiv:2607.18082 | paper-only
+  核心标签   #rubric-RL #suppressed-criteria #forward-KL-injection #counterfactual-flip
+  一句话总结  命名Unexplored与Suppressed两类准则，用准则注入前向KL行为注入+反事实
+             优势翻转修复两者。
