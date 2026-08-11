@@ -1636,3 +1636,75 @@
              "诚实"的peek-ahead。不需要任何外部reference solution。是唯一
              在所有4个benchmark上都超越base的方法（SFT和GRPO都在某些benchmark
              上退化）。证明self-future是最干净的特权信息来源。
+
+
+--------------------------------------------------------------------------------
+论文 [119]  TOPD — White-Box OPD
+--------------------------------------------------------------------------------
+  标题       Trace-Based OPD for masked diffusion LMs
+  作者       CASIA / UCAS
+  日期       2026.07 | arXiv:2607.16872 | paper-only
+  核心标签   #masked-diffusion-LM #trace-aligned #dLLM-OPD #4×-rollout
+  一句话总结  只监督能存活到最终答案的trace-aligned去噪决策，避免随机掩码造成的
+             backward-reconstruction状态；MATH500 +5.7，省4× rollout。
+
+--------------------------------------------------------------------------------
+论文 [120]  Prune-OPD — White-Box OPD
+--------------------------------------------------------------------------------
+  标题       Prune-OPD
+  作者       HKUST(GZ) / MBZUAI / UC Merced / SYSU
+  日期       2026.05 | arXiv:2605.07804 | github.com/yangzhch6/Prune-OPD
+  核心标签   #prefix-drift-detection #top-k-overlap #truncation #37-68%-faster
+  一句话总结  逐位置监测teacher/student top-k重叠，在监督不可学习时衰减奖励并截断；
+             省37.6-68.0%训练时间，KAT-Coder-V2.5归功于此机制。
+
+--------------------------------------------------------------------------------
+论文 [121]  PromptSD — OPSD
+--------------------------------------------------------------------------------
+  标题       One Student, Many Teachers
+  作者       UW-Madison / JHU / NTU
+  日期       2026.07 | arXiv:2607.18293 | paper-only
+  核心标签   #learnable-soft-prompt-teacher #parametric-teacher #no-post-hoc
+  一句话总结  提出teacher三要素（thinking-pattern一致性、可吸收能力差、无post-hoc
+             rationalization），指出现有teacher族均违背其一；把teacher做成冻结骨干
+             上的学习soft prompt。
+
+--------------------------------------------------------------------------------
+论文 [122]  PAINT — OPSD
+--------------------------------------------------------------------------------
+  标题       PAINT — Partial-Solution Adaptive Interpolated Training
+  作者       Tsinghua / Beihang
+  日期       2026.04 | arXiv:2604.26573
+  核心标签   #suffix-masked-verification #overlap-adaptive-masking #entropy-gated
+  一句话总结  teacher只看suffix被掩码的验证解，配合重叠自适应掩码+熵门控logit插值；
+             Qwen3-8B较此前OPSD +2.1。
+
+--------------------------------------------------------------------------------
+论文 [123]  PBSD (Preference-Based) — OPSD
+--------------------------------------------------------------------------------
+  标题       Preference-Based Self-Distillation — Beyond KL Matching
+  作者       Penn State / TikTok
+  日期       2026.05 | arXiv:2605.05040 | paper-only
+  核心标签   #preference-based-SD #Bradley-Terry #beyond-KL
+  一句话总结  用reward-regularized Bradley-Terry偏好损失替代KL匹配：特权teacher正样本
+             vs学生on-policy负样本。注意：Agent区另有同名PBSD(2606.09348)为不同论文。
+
+--------------------------------------------------------------------------------
+论文 [124]  vOPD — OPSD
+--------------------------------------------------------------------------------
+  标题       KL for a KL — OPD with Control Variate Baseline
+  作者       Seoul National University
+  日期       2026.05 | arXiv:2605.07865 | github.com/holi-lab/vOPD
+  核心标签   #control-variate #closed-form-baseline #57%-faster
+  一句话总结  将OPD值函数闭式解为逐token负反向KL（前向已算），作为无偏方差削减基线；
+             相对全词表KL省57.7%墙钟时间。
+
+--------------------------------------------------------------------------------
+论文 [125]  OPHSD — OPSD
+--------------------------------------------------------------------------------
+  标题       Training with Harnesses — On-Policy Harness Self-Distillation
+  作者       PKU
+  日期       2026.05 | arXiv:2605.08741 | github.com/zzy1127/OPHSD
+  核心标签   #programmatic-harness #draft-verify #plan-solve-with-oracle
+  一句话总结  特权上下文是推理期程序化harness（draft-verify/plan-solve+oracle）而非
+             文本提示；HMMT25相对OPSD +10.83%。
