@@ -2162,3 +2162,13 @@
   日期       2026.03 | arXiv:2603.19266 | github.com/Zhen-Tan-dmml/ExGRPO
   核心标签   #explanatory-probe #GRPO #dialogue-structure-reward
   一句话总结  用解释性探针强制逻辑表述；GRPO+对话结构奖励的强化蒸馏。
+
+
+--------------------------------------------------------------------------------
+论文 [170]  HDPO — OPD-RL混合
+--------------------------------------------------------------------------------
+  标题       HDPO (Hybrid Distillation Preference Optimization)
+  作者       NVIDIA
+  日期       2026.03 | arXiv:2603.23871 | paper-only
+  核心标签   #privileged-self-distillation #RL-fallback #cliff-prompts
+  一句话总结  多数提示走RL；"悬崖"提示生成特权rollout并自蒸馏，作为RL回退。
