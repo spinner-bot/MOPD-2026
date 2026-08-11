@@ -1950,3 +1950,14 @@
   核心标签   #context-induced-degradation #no-context-anchoring #internalization
   一句话总结  发现context-induced degradation——训练时内化上下文的模型在测试重引入
              上下文时反而变差；用no-context anchoring正则修复（11/12设置有效）。
+
+
+--------------------------------------------------------------------------------
+论文 [151]  HSD — OPSD
+--------------------------------------------------------------------------------
+  标题       Localizing Credit at the Divergence
+  作者       George Washington University
+  日期       2026.06 | arXiv:2606.15576 | paper-only
+  核心标签   #gold-solution+peer-rollout #KL-at-divergence-point #credit-localization
+  一句话总结  teacher见金解+成功peer rollout，KL集中于失败rollout首次偏离该peer的
+             token——精确定位"哪里开始出错了"。
