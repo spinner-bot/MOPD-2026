@@ -1,0 +1,3 @@
+环境验证命令（在 H200 的 vision-opd 环境里执行，一条命令搞定）：
+
+python -c "import torch, transformers, vllm, verl; print('torch', torch.__version__, '| CUDA', torch.cuda.is_available()); print('transformers', transformers.__version__); print('vllm', vllm.__version__); print('verl OK')"
