@@ -65,7 +65,7 @@ def train_model(X, Y, i_dim, o_dim, epochs, lr):
     model.train()
 
     n_samples = X.shape[0]
-    print(f"Training (full-batch) | samples={n_samples} lr={lr:.4f} device={device}")
+    print(f"Training (full-batch) | samples={n_samples} lr={lr:.4f} | {torch.cuda.get_device_name(0)}")
     for epoch in range(epochs):
         t0 = time.time()
         optimizer.zero_grad()
@@ -95,11 +95,15 @@ def test_model(model, X, Y):
     print(f"Total samples : {total}")
     print(f"Correct       : {correct}")
     print(f"Accuracy      : {acc:.2f}%")
-    print(f"Device        : {device}")
+    print(f"Device        : {torch.cuda.get_device_name(0)}")
     return acc
 
 
 if __name__ == "__main__":
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    gpu_name = torch.cuda.get_device_name(0) if torch.cuda.is_available() else "CPU"
+    print(f"Device: {gpu_name} ({device})")
+
     X_train, Y_train, X_test, Y_test, i_dim, class_n = reset()
 
     epochs = int(input("Epochs: "))
