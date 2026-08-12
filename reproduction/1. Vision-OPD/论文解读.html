@@ -1,0 +1,264 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<style>body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;max-width:800px;margin:0 auto;padding:16px;line-height:1.7;color:#1a1a1a;background:#fff}h1{border-bottom:2px solid #2563eb;padding-bottom:8px}h2{color:#2563eb;margin-top:28px}h3{color:#374151}code{background:#f1f5f9;padding:2px 6px;border-radius:4px;font-size:0.9em}pre{background:#1e293b;color:#e2e8f0;padding:12px;border-radius:8px;overflow-x:auto}pre code{background:none;color:inherit;padding:0}table{border-collapse:collapse;width:100%}td,th{border:1px solid #d1d5db;padding:8px 12px;text-align:left}th{background:#f8fafc}blockquote{border-left:4px solid #2563eb;margin:0;padding:0 16px;color:#4b5563;background:#f8fafc}a{color:#2563eb}img{max-width:100%}</style><title>论文解读</title></head><body>
+<h1>Vision-OPD 论文解读</h1>
+<blockquote>
+<p>arXiv: 2605.18740 | 2026年5月 | 中科院软件所 + 国科大 + 小红书
+代码: https://github.com/VisionOPD/Vision-OPD
+权重: https://huggingface.co/collections/yuanqianhao/vision-opd</p>
+</blockquote>
+<hr />
+<h2>一、这篇论文要解决什么问题？</h2>
+<h3>核心发现："区域-全局感知差距"</h3>
+<p>MLLM在看过<strong>裁剪出来的证据区域</strong>后，回答问题的准确率远高于看<strong>完整大图</strong>。这个差距有<strong>18-22个百分点</strong>。</p>
+<table>
+<thead>
+<tr>
+<th>模型</th>
+<th>看完整大图</th>
+<th>看裁剪区域</th>
+<th>差距</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Qwen3.5-9B</td>
+<td>~70%</td>
+<td>~90%</td>
+<td>~20pp</td>
+</tr>
+<tr>
+<td>GLM-4.6V</td>
+<td>~70%</td>
+<td>~88%</td>
+<td>~18pp</td>
+</tr>
+<tr>
+<td>Gemini-3.1-Pro</td>
+<td>~70%</td>
+<td>~90%</td>
+<td>~20pp</td>
+</tr>
+</tbody>
+</table>
+<p><strong>结论</strong>：模型不是"看不清"，而是"不知道应该看哪里"——无法在大图中自动聚焦到关键的小区域。</p>
+<hr />
+<h2>二、方法：一句话总结</h2>
+<blockquote>
+<p>让模型在看完整大图时，自动学到"如果我只盯着这块关键区域看，我会怎么回答"的能力。</p>
+</blockquote>
+<h3>2.1 框架设计</h3>
+<p>Vision-OPD是一个<strong>区域→全局的自蒸馏框架</strong>，核心思路很简洁：</p>
+<pre class="codehilite"><code>                  同一个模型 θ
+                      │
+        ┌─────────────┴─────────────┐
+        ▼                           ▼
+   Teacher（教师）               Student（学生）
+   输入：裁剪证据区域            输入：完整大图（带红框标注）
+   能力：精读模式，准确率极高     能力：泛读模式，需要学会聚焦
+        │                           │
+        │    ┌──────────────────┐    │
+        └───▶│  KL / JSD 散度   │◀───┘
+             │  教师分布 vs 学生分布 │
+             └──────────────────┘
+                      │
+              梯度只更新学生（教师固定/EMA）
+</code></pre>
+
+<h3>2.2 为什么是"自蒸馏"（Self-Distillation）？</h3>
+<ul>
+<li><strong>不需要外部教师模型</strong>：教师和学生是<strong>同一个模型</strong>的两个"分身"</li>
+<li>教师分身的"特权"仅仅是输入了裁剪图</li>
+<li>这叫做 OPSD（On-Policy Self-Distillation，在策略自蒸馏）</li>
+</ul>
+<h3>2.3 训练流程（4步）</h3>
+<pre class="codehilite"><code>Step 1: 学生用完整大图生成回答（On-Policy 采样）
+         y = (y₁, y₂, ..., yₙ) ~ Student(· | 完整大图, 问题)
+
+Step 2: 对回答中的每个 token 位置 n：
+         教师计算：p_T(· | 裁剪图, 问题, y_{&lt;n})  ← &quot;看证据区域时你会说什么&quot;
+         学生计算：p_S(· | 完整大图, 问题, y_{&lt;n})  ← &quot;看大图时你说了什么&quot;
+
+Step 3: 计算两个分布之间的差异（JSD，β=0.5）
+         JSD = 0.5×KL(p_T||M) + 0.5×KL(p_S||M)
+         其中 M = 0.5×(p_T + p_S)
+
+Step 4: 反向传播，只更新学生
+         学生学会：即使只看大图，预测也向&quot;精读模式&quot;对齐
+</code></pre>
+
+<h3>2.4 为什么用JSD而不是KL？</h3>
+<ul>
+<li><strong>KL散度</strong>：非对称 → 可能导致模式坍塌</li>
+<li><strong>JSD（Jensen-Shannon散度）</strong>：对称、有界 → 训练更稳定</li>
+<li>论文实验证明β=0.5的JSD效果最好</li>
+</ul>
+<h3>2.5 EMA正则化（防止教师退化）</h3>
+<p>如果教师和学生一起变化，它们可能"合谋"找到一个偷懒的trivial解。所以：
+- 教师参数 = EMA（指数滑动平均）更新
+- α = 0.05，意味着教师几乎不动
+- 教师始终是一个稳定的"好答案参考系"</p>
+<hr />
+<h2>三、训练数据：Vision-OPD-6K</h2>
+<h3>数据构成</h3>
+<ul>
+<li><strong>6,241条样本</strong>，全部合成</li>
+<li>每条样本包含：</li>
+<li><code>images</code>：带红框标注的完整大图（学生输入）</li>
+<li><code>teacher_images</code>：裁剪出来的证据区域（教师输入）</li>
+<li><code>problem</code>：需要用那个小区域才能回答的问题</li>
+<li><code>answer</code>：参考答案</li>
+</ul>
+<h3>数据是怎么造出来的？</h3>
+<pre class="codehilite"><code>原始图片（无标注）
+    │
+    ├── ① 目标检测/分割 → 找出所有小区域（面积&lt;阈值τ）
+    │
+    ├── ② 大模型出题（如Qwen3.5-397B）
+    │      &quot;针对这个小红框内的物体，问一个必须仔细看这个区域才能回答的问题&quot;
+    │
+    ├── ③ 多次采样答案（从裁剪区域推理）
+    │
+    └── ④ 答案共识过滤：多次答案的一致性 &gt; 0.75 → 保留
+          否则丢弃（说明问题太模糊或区域信息不足）
+</code></pre>
+
+<hr />
+<h2>四、实验结果</h2>
+<h3>4B模型超越超大模型的标杆</h3>
+<table>
+<thead>
+<tr>
+<th>模型</th>
+<th>参数量</th>
+<th>V* Bench</th>
+<th>ZoomBench</th>
+<th>HRBench 4K</th>
+<th>MME-RW Lite</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GPT-5.4</td>
+<td>?</td>
+<td>76.96</td>
+<td>52.66</td>
+<td>84.00</td>
+<td>48.10</td>
+</tr>
+<tr>
+<td>Qwen3.5</td>
+<td>397B</td>
+<td>87.96</td>
+<td>57.16</td>
+<td>89.38</td>
+<td>45.39</td>
+</tr>
+<tr>
+<td>Gemini-3.1-Pro</td>
+<td>?</td>
+<td>87.96</td>
+<td>61.18</td>
+<td>89.63</td>
+<td>49.50</td>
+</tr>
+<tr>
+<td><strong>Vision-OPD</strong></td>
+<td><strong>4B</strong></td>
+<td><strong>92.15</strong></td>
+<td><strong>59.76</strong></td>
+<td><strong>84.50</strong></td>
+<td><strong>55.45</strong></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>V* Bench上4B模型超越了Gemini-3.1-Pro（92.15 vs 87.96）</li>
+<li>仅用了<strong>6.2K训练数据 + 1 epoch训练</strong></li>
+</ul>
+<h3>关键消融发现</h3>
+<ul>
+<li>去掉JSD → 用普通KL → 性能大幅下降</li>
+<li>去掉EMA → 教师退化 → 训练不稳定</li>
+<li>去掉on-policy → 用离线数据 → 效果差</li>
+</ul>
+<hr />
+<h2>五、这个方法为什么好复现？</h2>
+<table>
+<thead>
+<tr>
+<th>要素</th>
+<th>情况</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>代码</td>
+<td>✅ GitHub开源，Apache-2.0</td>
+</tr>
+<tr>
+<td>预训练权重</td>
+<td>✅ HuggingFace公开发布</td>
+</tr>
+<tr>
+<td>训练数据</td>
+<td>✅ HuggingFace公开发布（6.2K）</td>
+</tr>
+<tr>
+<td>训练量</td>
+<td>✅ 仅1 epoch，6.2K数据，单卡可跑</td>
+</tr>
+<tr>
+<td>外部依赖</td>
+<td>✅ 无需外部教师、无需奖励模型、无需verifier</td>
+</tr>
+<tr>
+<td>底座模型</td>
+<td>✅ Qwen3.5-4B/9B，均可免费获取</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>六、核心术语中英对照</h2>
+<table>
+<thead>
+<tr>
+<th>英文</th>
+<th>中文</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>On-Policy Self-Distillation (OPSD)</td>
+<td>在策略自蒸馏</td>
+</tr>
+<tr>
+<td>Regional-to-Global</td>
+<td>区域→全局</td>
+</tr>
+<tr>
+<td>Evidence-Centered Crop</td>
+<td>证据中心裁剪</td>
+</tr>
+<tr>
+<td>Privileged Context</td>
+<td>特权上下文</td>
+</tr>
+<tr>
+<td>Jensen-Shannon Divergence (JSD)</td>
+<td>Jensen-Shannon散度</td>
+</tr>
+<tr>
+<td>Exponential Moving Average (EMA)</td>
+<td>指数滑动平均</td>
+</tr>
+<tr>
+<td>Token-Level KL Divergence</td>
+<td>Token级KL散度</td>
+</tr>
+<tr>
+<td>Fine-Grained Visual Understanding</td>
+<td>细粒度视觉理解</td>
+</tr>
+</tbody>
+</table>
+</body></html>
