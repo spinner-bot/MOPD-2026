@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Part 5 · OPD 统一框架 2026</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/black.min.css">
+<script>window.MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']],displayMath:[['$$','$$'],['\\[','\\]']]},options:{skipHtmlTags:['script','noscript','style','textarea','pre']}};</script>
+<style>
+:root{--bg:#0a0a0f;--surface:rgba(255,255,255,0.04);--border:rgba(255,255,255,0.08);--text:#e8e8f0;--text2:rgba(255,255,255,0.65);--text3:rgba(255,255,255,0.4);--a1:#6c5ce7;--a2:#00d2ff;--a3:#ff6b9d;--a4:#feca57;--a5:#00e676;--purple:#a855f7;--violet:#7c3aed}
+#particle-canvas{position:fixed;inset:0;z-index:0;pointer-events:none}
+.reveal{background:transparent}.reveal .slides{text-align:center;width:100%!important;left:50%!important;margin:0!important}
+.reveal .slides section{padding:30px 50px;height:100%;display:flex!important;flex-direction:column;align-items:center;justify-content:center}
+.reveal .controls{right:12px!important;left:auto!important;bottom:12px!important}
+.reveal .progress,.reveal .slide-number{display:none!important}
+#page-indicator{position:fixed;left:24px;bottom:20px;z-index:100;font-size:13px;color:rgba(255,255,255,0.35);font-family:'JetBrains Mono','Fira Code','Consolas',monospace;letter-spacing:1px;pointer-events:none}
+.glass-card{position:relative;z-index:2;background:var(--surface);backdrop-filter:blur(24px) saturate(180%);border:1px solid var(--border);border-radius:24px;padding:44px 56px;box-shadow:0 20px 60px rgba(0,0,0,0.5);max-width:880px}
+.hero-title{font-size:50px;font-weight:900;letter-spacing:-2px;background:linear-gradient(135deg,var(--purple),var(--a1),var(--violet));background-size:300% 300%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:gS 4s ease infinite;margin:0 0 14px;line-height:1.15}
+@keyframes gS{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+.glow-bar{width:120px;height:3px;background:linear-gradient(90deg,transparent,var(--purple),var(--a1),transparent);border-radius:2px;margin:18px auto;animation:gP 2s ease-in-out infinite}
+@keyframes gP{0%,100%{opacity:0.4;width:120px}50%{opacity:1;width:200px}}
+.tag-row{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:16px}
+.tag{padding:7px 20px;border-radius:20px;font-size:13px;font-weight:600;border:1px solid;letter-spacing:1px;opacity:0;animation:tP 0.6s cubic-bezier(0.34,1.56,0.64,1) forwards}
+.tag:nth-child(1){animation-delay:0.3s;border-color:var(--purple);color:var(--purple)}.tag:nth-child(2){animation-delay:0.5s;border-color:var(--a1);color:var(--a1)}.tag:nth-child(3){animation-delay:0.7s;border-color:var(--violet);color:var(--violet)}
+@keyframes tP{from{opacity:0;transform:scale(.7)translateY(10px)}to{opacity:1;transform:scale(1)translateY(0)}}
+.reveal .slides section .fragment.fade-up{opacity:0;transform:translateY(40px);transition:all 0.8s cubic-bezier(0.25,0.46,0.45,0.94)}
+.reveal .slides section .fragment.fade-up.visible{opacity:1;transform:translateY(0)}
+.two-col{display:flex;gap:22px;flex-wrap:wrap;justify-content:center;max-width:960px}.two-col>div{flex:1;min-width:260px}
+.tri-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;max-width:960px}
+.concept-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:20px 18px;text-align:left;margin-bottom:12px}.concept-card h4{margin:0 0 6px;font-size:14px;color:#fff}.concept-card p{margin:0;font-size:12px;color:var(--text2);line-height:1.7}
+.formula-card{background:rgba(10,10,20,0.92);border:1px solid rgba(168,85,247,0.25);border-radius:18px;padding:22px 28px;max-width:820px;box-shadow:0 12px 40px rgba(0,0,0,0.5)}.formula-card::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--purple),var(--a1),var(--violet))}.formula-card .math-block{font-size:16px;color:#cdd6f4;overflow-x:auto;padding:3px 0}
+.code-window{background:rgba(10,10,20,0.92);border:1px solid var(--border);border-radius:16px;overflow:hidden;text-align:left;font-family:'JetBrains Mono','Fira Code','Consolas',monospace;max-width:700px;box-shadow:0 20px 60px rgba(0,0,0,0.6)}.code-header{background:rgba(255,255,255,0.05);padding:8px 14px;display:flex;gap:8px;align-items:center;border-bottom:1px solid var(--border)}.code-dot{width:11px;height:11px;border-radius:50%}.code-dot.r{background:#ff5f56}.code-dot.y{background:#ffbd2e}.code-dot.g{background:#27c93f}.code-body{padding:16px 20px;font-size:13px;line-height:1.8;color:#cdd6f4}.code-body .kw{color:#cba6f7}.code-body .s{color:#a6e3a1}.code-body .fn{color:#89b4fa}.code-body .cm{color:#6c7086;font-style:italic}
+.summary-table{width:100%;max-width:820px;border-collapse:collapse;font-size:13px;border-radius:16px;overflow:hidden;box-shadow:0 12px 40px rgba(0,0,0,0.4)}.summary-table thead{background:linear-gradient(135deg,rgba(168,85,247,0.3),rgba(124,58,237,0.15))}.summary-table th{padding:11px 14px;text-align:left;font-weight:700;color:#fff;font-size:12px}.summary-table td{padding:10px 14px;border-bottom:1px solid var(--border);color:var(--text2)}.summary-table tbody tr{background:var(--surface);transition:all 0.3s}.summary-table tbody tr:hover{background:rgba(255,255,255,0.06)}.summary-table .pc{font-weight:700;color:#fff}.summary-table .hl{color:var(--purple);font-weight:600}
+.info-tile{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px 18px;max-width:360px;text-align:left}.info-tile h4{margin:0 0 5px;font-size:13px;color:#fff}.info-tile p{margin:0;font-size:12px;color:var(--text2);line-height:1.6}
+.next-badge{display:inline-flex;align-items:center;gap:10px;padding:12px 26px;border-radius:24px;background:rgba(168,85,247,0.08);border:1px solid rgba(168,85,247,0.2);font-size:15px;font-weight:700;color:var(--purple);margin-top:16px;animation:fl 3s ease-in-out infinite}
+@keyframes fl{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.struct-tree-box{font-family:'JetBrains Mono','Fira Code','PingFang SC',monospace;font-size:13px;line-height:1.75;color:var(--text3);background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:18px 24px;max-width:580px;text-align:left}
+.struct-tree-box .cur{color:#fff;font-weight:700;padding-left:12px;margin-left:-15px;display:inline-block;width:calc(100% + 3px)}
+.struct-tree-box .cur.sa{border-left:3px solid var(--purple);background:rgba(168,85,247,0.1)}
+.struct-tree-box .cur.sb{border-left:3px solid var(--a1);background:rgba(108,92,231,0.1)}
+.struct-tree-box .cur.sc{border-left:3px solid var(--a2);background:rgba(0,210,255,0.1)}
+.struct-tree-box .cur.sd{border-left:3px solid var(--a3);background:rgba(255,107,157,0.1)}
+.cell-2x2{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:10px;max-width:800px}
+.cell-2x2 .cell{padding:14px 16px;border-radius:12px;font-size:12px;line-height:1.6;text-align:left}
+.cell.c1{background:rgba(108,92,231,0.06);border:1px solid rgba(108,92,231,0.2);color:var(--a1)}
+.cell.c2{background:rgba(0,210,255,0.04);border:1px solid rgba(0,210,255,0.15);color:var(--a2)}
+.cell.c3{background:rgba(0,230,118,0.04);border:1px solid rgba(0,230,118,0.15);color:var(--a5)}
+.cell.c4{background:rgba(255,107,157,0.04);border:1px solid rgba(255,107,157,0.15);color:var(--a3)}
+@media(max-width:768px){.hero-title{font-size:32px}.glass-card{padding:22px 16px;max-width:100%}.tri-grid{grid-template-columns:1fr}}
+</style></head><body>
+<canvas id="particle-canvas"></canvas><div id="page-indicator"></div>
+<div class="reveal"><div class="slides">
+
+<!-- S1: Title -->
+<section data-transition="zoom"><div class="glass-card fragment fade-up">
+  <p style="font-size:15px;color:var(--purple);letter-spacing:4px;font-weight:700;margin:0;">CHAPTER 5</p>
+  <h1 class="hero-title">OPD 统一框架</h1>
+  <p style="font-size:22px;color:rgba(255,255,255,0.7);margin:0 0 4px;">前缀×KL周期表 · CoPD协同进化 · 2026</p>
+  <div class="glow-bar"></div><p style="font-size:14px;color:var(--text3);margin:0;">从经验试错走向系统理论——OPD的"元素周期表"</p>
+  <div class="tag-row"><span class="tag">#2×2矩阵</span><span class="tag">#协同进化</span><span class="tag">#失效诊断</span></div>
+</div></section>
+
+<!-- S2: DAG Overview -->
+<section data-transition="slide">
+  <h2 style="font-size:26px;font-weight:700;margin-bottom:4px;color:var(--text);">🗺️ Part 5 知识图谱</h2>
+  <div class="glow-bar"></div>
+  <svg viewBox="0 0 1000 350" xmlns="http://www.w3.org/2000/svg" style="max-width:1000px;">
+    <defs><marker id="a" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><path d="M0,0 L7,2.5 L0,5 Z" fill="rgba(255,255,255,0.25)"/></marker></defs>
+    <rect x="320" y="8" width="360" height="28" rx="14" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.12)"/><text x="500" y="27" text-anchor="middle" fill="#fff" font-size="13" font-weight="700" font-family="sans-serif">Part 5: 统一框架的建立 (2026)</text>
+    <path d="M400,36 L170,60" marker-end="url(#a)" stroke="rgba(255,255,255,0.15)" stroke-width="1" fill="none"/><path d="M460,36 L400,60" marker-end="url(#a)" stroke="rgba(255,255,255,0.15)" stroke-width="1" fill="none"/><path d="M540,36 L600,60" marker-end="url(#a)" stroke="rgba(255,255,255,0.15)" stroke-width="1" fill="none"/><path d="M600,36 L830,60" marker-end="url(#a)" stroke="rgba(255,255,255,0.15)" stroke-width="1" fill="none"/>
+    <g><rect x="30" y="65" width="280" height="95" rx="10" fill="rgba(168,85,247,0.08)" stroke="rgba(168,85,247,0.25)"/><text x="170" y="87" text-anchor="middle" fill="#a855f7" font-size="14" font-weight="700" font-family="sans-serif">🟣 A: 前缀×KL周期表</text><text x="170" y="105" text-anchor="middle" fill="rgba(255,255,255,0.6)" font-size="10" font-family="sans-serif">2维解耦→4象限统一</text><text x="170" y="120" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="10" font-family="sans-serif">离线SFT/离线RL/DAgger/OPD</text><text x="170" y="138" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="10" font-family="sans-serif">Forward KL vs Reverse KL</text><text x="170" y="154" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="10" font-family="sans-serif">揭示研究空白②③</text></g>
+    <g><rect x="325" y="65" width="240" height="95" rx="10" fill="rgba(108,92,231,0.08)" stroke="rgba(108,92,231,0.25)"/><text x="445" y="87" text-anchor="middle" fill="#a0a0ff" font-size="14" font-weight="700" font-family="sans-serif">🟣 B: CoPD</text><text x="445" y="105" text-anchor="middle" fill="rgba(255,255,255,0.6)" font-size="10" font-family="sans-serif">打破"教师>学生"假设</text><text x="445" y="120" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="10" font-family="sans-serif">师→生→RL→生→师</text><text x="445" y="138" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="10" font-family="sans-serif">闭环进化·2×收敛</text><text x="445" y="154" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="10" font-family="sans-serif">知识生态自举</text></g>
+    <g><rect x="580" y="65" width="180" height="95" rx="10" fill="rgba(0,210,255,0.06)" stroke="rgba(0,210,255,0.2)"/><text x="670" y="87" text-anchor="middle" fill="#00d2ff" font-size="14" font-weight="700" font-family="sans-serif">🔵 C: 精细修补</text><text x="670" y="108" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="10" font-family="sans-serif">CR-OPD: 反事实路由</text><text x="670" y="126" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="10" font-family="sans-serif">GAE-OPD: 时序信用</text><text x="670" y="144" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="10" font-family="sans-serif">StepOPSD: token→步骤</text></g>
+    <g><rect x="775" y="65" width="190" height="95" rx="10" fill="rgba(255,107,157,0.06)" stroke="rgba(255,107,157,0.2)"/><text x="870" y="87" text-anchor="middle" fill="#ff6b9d" font-size="14" font-weight="700" font-family="sans-serif">🔴 D: 失效诊断</text><text x="870" y="108" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="10" font-family="sans-serif">前缀污染·Top-K偏差</text><text x="870" y="126" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="10" font-family="sans-serif">PI-free margin</text><text x="870" y="144" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="10" font-family="sans-serif">3模式→3修复</text></g>
+    <path d="M170,160 L170,195 L500,195 L500,215" stroke="rgba(255,255,255,0.08)" stroke-width="1" fill="none"/><path d="M445,160 L445,195" stroke="rgba(255,255,255,0.08)" stroke-width="1" fill="none"/><path d="M670,160 L670,195" stroke="rgba(255,255,255,0.08)" stroke-width="1" fill="none"/><path d="M870,160 L870,195 L500,195" stroke="rgba(255,255,255,0.08)" stroke-width="1" fill="none"/>
+    <rect x="350" y="220" width="300" height="30" rx="15" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.15)"/><text x="500" y="240" text-anchor="middle" fill="#fff" font-size="12" font-weight="700" font-family="sans-serif">📋 总结 → Part 6</text>
+  </svg>
+</section>
+
+<!-- ═══════ Section A: 前缀×KL ═══════ -->
+<section data-transition="slide"><div style="text-align:center;"><span style="background:rgba(168,85,247,0.1);color:var(--purple);border:1px solid rgba(168,85,247,0.2);padding:4px 14px;border-radius:12px;font-size:11px;font-weight:700">📍 当前位置</span></div><h2 style="font-size:24px;font-weight:700;margin:10px 0 4px;color:var(--text);">🗺️ Section A — 前缀×KL周期表</h2><div class="glow-bar"></div>
+  <svg viewBox="0 0 1000 200" xmlns="http://www.w3.org/2000/svg" style="max-width:900px;">
+    <rect x="320" y="5" width="360" height="26" rx="13" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.1)"/><text x="500" y="23" text-anchor="middle" fill="#fff" font-size="12" font-weight="700" font-family="sans-serif">Part 5: 统一框架 (2026)</text>
+    <g opacity="1"><rect x="30" y="45" width="210" height="65" rx="10" fill="rgba(168,85,247,0.12)" stroke="rgba(168,85,247,0.4)" stroke-width="2"/><text x="135" y="65" text-anchor="middle" fill="#a855f7" font-size="14" font-weight="700" font-family="sans-serif">🟣 A: 前缀×KL ← 当前</text><text x="135" y="85" text-anchor="middle" fill="rgba(255,255,255,0.6)" font-size="10" font-family="sans-serif">2×2矩阵统一范式</text><text x="135" y="102" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="10" font-family="sans-serif">Forward/Reverse × 教师/学生</text></g>
+    <g opacity="0.2"><rect x="260" y="45" width="200" height="65" rx="10" fill="rgba(108,92,231,0.06)" stroke="rgba(108,92,231,0.2)"/><text x="360" y="65" text-anchor="middle" fill="#a0a0ff" font-size="14" font-weight="700" font-family="sans-serif">🟣 B: CoPD</text><text x="360" y="90" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="10" font-family="sans-serif">协同进化</text></g>
+    <g opacity="0.2"><rect x="480" y="45" width="200" height="65" rx="10" fill="rgba(0,210,255,0.05)" stroke="rgba(0,210,255,0.15)"/><text x="580" y="65" text-anchor="middle" fill="#00d2ff" font-size="14" font-weight="700" font-family="sans-serif">🔵 C: 精细修补</text><text x="580" y="90" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="10" font-family="sans-serif">CR/GAE/StepOPSD</text></g>
+    <g opacity="0.2"><rect x="700" y="45" width="200" height="65" rx="10" fill="rgba(255,107,157,0.05)" stroke="rgba(255,107,157,0.15)"/><text x="800" y="65" text-anchor="middle" fill="#ff6b9d" font-size="14" font-weight="700" font-family="sans-serif">🔴 D: 失效诊断</text><text x="800" y="90" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="10" font-family="sans-serif">3模式→3修复</text></g>
+    <rect x="350" y="135" width="300" height="24" rx="12" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.1)"/><text x="500" y="152" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="11" font-family="sans-serif">📋 总结 → Part 6</text>
+  </svg>
+</section>
+
+<!-- A1: 前缀概念 -->
+<section data-transition="slide">
+  <div style="display:flex;align-items:center;gap:10px;justify-content:center;margin-bottom:4px;"><h2 style="font-size:26px;font-weight:700;color:var(--text);margin:0;">📦 "前缀"和"蒸馏数据"到底是什么？</h2><span style="background:rgba(254,202,87,0.15);border:1px solid rgba(254,202,87,0.3);border-radius:12px;padding:3px 10px;font-size:10px;color:var(--a4);font-weight:700;">💬 Q1</span></div><div class="glow-bar"></div>
+  <div class="two-col">
+    <div class="fragment fade-up"><div class="concept-card" style="border-top:3px solid var(--purple);"><h4>📝 蒸馏数据 ≠ 蒸馏模型</h4><p>我们之前讲的"蒸馏"是指得到一个<strong style="color:var(--purple);">学生模型</strong>。但在训练时，蒸馏依赖具体的<strong style="color:var(--purple);">训练数据</strong>。每条数据 = <strong style="color:#fff;">前缀(Prompt)</strong> + <strong style="color:#fff;">目标(Target)</strong>。<br><br>"前缀"就是给模型的<strong style="color:var(--purple);">问题/上文</strong>，如"请解这道数学题：..."。目标是教师或学生在此前缀下生成的回复（推理链）。</p></div></div>
+    <div class="fragment fade-up"><div class="concept-card" style="border-top:3px solid var(--a1);"><h4>❓ "前缀源"问的是什么？</h4><p><strong style="color:var(--a1);">这个"问题/上文"是谁生成的？</strong><br><br><strong style="color:var(--a1);">教师前缀：</strong>来自标准数据集或教师生成 → 分布固定、高质量<br><br><strong style="color:var(--a1);">学生前缀：</strong>由学生自己在线生成 → 分布随学生策略变化 → 学生就在自己造成的"局面"下学习 → <strong style="color:var(--a1);">在线数据</strong></p></div></div>
+  </div>
+</section>
+
+<!-- A2: 2×2矩阵 -->
+<section data-transition="slide" style="padding-top:14px !important;">
+  <h2 style="font-size:26px;font-weight:700;margin-bottom:2px;color:var(--text);">🔲 2×2 矩阵 — OPD 的"周期表"</h2><div class="glow-bar" style="margin:10px auto;"></div>
+  <p style="font-size:12px;color:var(--text3);margin:0 0 6px;">解耦两个一直被混为一谈的维度 → 一个2×2矩阵统一四种技术</p>
+  <table class="summary-table fragment fade-up" style="margin-bottom:8px;">
+    <thead><tr><th></th><th>Token-Level Forward KL</th><th>Token-Level Reverse KL</th></tr></thead>
+    <tbody>
+      <tr><td class="pc">教师前缀</td><td style="background:rgba(108,92,231,0.08);"><strong style="color:var(--a1);">① 离线SFT / 标准蒸馏</strong><br><span style="font-size:11px;color:var(--text3);">固定数据集+覆盖教师所有输出</span></td><td style="background:rgba(0,210,255,0.05);"><strong style="color:var(--a2);">② 离线RL风格蒸馏</strong><br><span style="font-size:11px;color:var(--text3);">集中在教师最可能token · 研究最少!</span></td></tr>
+      <tr><td class="pc">学生前缀</td><td style="background:rgba(0,230,118,0.05);"><strong style="color:var(--a5);">③ DAgger风格在线SFT</strong><br><span style="font-size:11px;color:var(--text3);">学生自己犯错→请求教师标签</span></td><td style="background:rgba(255,107,157,0.06);"><strong style="color:var(--a3);">④ OPD (在线策略蒸馏)</strong><br><span style="font-size:11px;color:var(--text3);">学生在线+Reverse KL拉回教师</span></td></tr>
+    </tbody>
+  </table>
+  <div class="two-col">
+    <div class="fragment fade-up info-tile" style="max-width:100%;"><h4>📐 Forward KL vs Reverse KL</h4><p><strong>Forward KL:</strong> D_KL(π_T‖π_S) → 学生必须<strong style="color:var(--purple);">覆盖</strong>教师所有高概率token → 多样性。<br><strong>Reverse KL:</strong> D_KL(π_S‖π_T) → 学生把概率<strong style="color:var(--purple);">集中</strong>在教师高概率token → 锐化但可能丢失多样性。</p></div>
+    <div class="fragment fade-up info-tile" style="max-width:100%;"><h4>🔍 研究空白</h4><p>模式②和③研究最少，但它们在<strong style="color:var(--purple);">在线探索和离线稳定</strong>之间占据关键位置——可能是最优结合点。矩阵不仅统一已知技术，还标示出<strong style="color:var(--purple);">未知疆域</strong>。</p></div>
+  </div>
+</section>
+
+<!-- A3: 四象限详解 -->
+<section data-transition="slide">
+  <h2 style="font-size:24px;font-weight:700;margin-bottom:4px;color:var(--text);">🔍 四象限逐一解读</h2><div class="glow-bar"></div>
+  <div class="cell-2x2 fragment fade-up">
+    <div class="cell c1"><strong>① 离线SFT/标准蒸馏</strong><br>前缀: 教师侧(固定数据集)<br>KL: Forward<br>→ 学生模仿教师所有输出<br>→ 最经典的大模型蒸馏范式</div>
+    <div class="cell c2"><strong>② 离线RL风格蒸馏</strong><br>前缀: 教师侧<br>KL: Reverse<br>→ 集中在教师高概率token<br>→ ⚡研究空白: 离线稳定+锐化决策</div>
+    <div class="cell c3"><strong>③ DAgger风格在线SFT</strong><br>前缀: 学生侧(在线采样)<br>KL: Forward<br>→ 学生犯错时请求教师标签<br>→ 解决分布偏移但需实时查询教师</div>
+    <div class="cell c4"><strong>④ OPD (在线策略蒸馏)</strong><br>前缀: 学生侧<br>KL: Reverse<br>→ 学生在线+Reverse KL拉回<br>→ 多任务RL和LLM对齐中的常见模式</div>
+  </div>
+</section>
+
+<!-- ═══════ Section B: CoPD ═══════ -->
+<section data-transition="slide"><div style="text-align:center;"><span style="background:rgba(108,92,231,0.1);color:var(--a1);border:1px solid rgba(108,92,231,0.2);padding:4px 14px;border-radius:12px;font-size:11px;font-weight:700">📍 当前位置</span></div><h2 style="font-size:24px;font-weight:700;margin:10px 0 4px;color:var(--text);">🗺️ Section B — CoPD 协同进化</h2><div class="glow-bar"></div>
+  <svg viewBox="0 0 1000 200" xmlns="http://www.w3.org/2000/svg" style="max-width:900px;">
+    <rect x="320" y="5" width="360" height="26" rx="13" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.1)"/><text x="500" y="23" text-anchor="middle" fill="#fff" font-size="12" font-weight="700" font-family="sans-serif">Part 5: 统一框架 (2026)</text>
+    <g opacity="0.5"><rect x="30" y="45" width="210" height="65" rx="10" fill="rgba(168,85,247,0.06)" stroke="rgba(168,85,247,0.15)"/><text x="135" y="75" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="13" font-weight="700" font-family="sans-serif">🟣 A: 前缀×KL ✓</text></g>
+    <g opacity="1"><rect x="260" y="45" width="200" height="65" rx="10" fill="rgba(108,92,231,0.12)" stroke="rgba(108,92,231,0.4)" stroke-width="2"/><text x="360" y="65" text-anchor="middle" fill="#a0a0ff" font-size="14" font-weight="700" font-family="sans-serif">🟣 B: CoPD ← 当前</text><text x="360" y="85" text-anchor="middle" fill="rgba(255,255,255,0.6)" font-size="10" font-family="sans-serif">打破教师>学生</text><text x="360" y="102" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="10" font-family="sans-serif">闭环进化·2×收敛</text></g>
+    <g opacity="0.2"><rect x="480" y="45" width="200" height="65" rx="10" fill="rgba(0,210,255,0.05)" stroke="rgba(0,210,255,0.15)"/><text x="580" y="75" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="13" font-weight="700" font-family="sans-serif">🔵 C: 精细修补</text></g>
+    <g opacity="0.2"><rect x="700" y="45" width="200" height="65" rx="10" fill="rgba(255,107,157,0.05)" stroke="rgba(255,107,157,0.15)"/><text x="800" y="75" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="13" font-weight="700" font-family="sans-serif">🔴 D: 失效诊断</text></g>
+    <rect x="350" y="135" width="300" height="24" rx="12" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.1)"/><text x="500" y="152" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="11" font-family="sans-serif">📋 总结 → Part 6</text>
+  </svg>
+</section>
+
+<!-- B1: CoPD核心 -->
+<section data-transition="slide">
+  <div style="display:flex;align-items:center;gap:10px;justify-content:center;margin-bottom:4px;"><h2 style="font-size:26px;font-weight:700;color:var(--text);margin:0;">🔄 CoPD — 打破"教师必须更强"</h2><span style="background:rgba(254,202,87,0.15);border:1px solid rgba(254,202,87,0.3);border-radius:12px;padding:3px 10px;font-size:10px;color:var(--a4);font-weight:700;">💬 Q2</span></div><div class="glow-bar"></div>
+  <div class="two-col">
+    <div class="fragment fade-up"><div class="concept-card" style="border-top:3px solid var(--a1);"><h4>🔒 传统OPD假设</h4><p>教师（或中心策略）是<strong style="color:var(--a1);">更强的、相对固定的</strong>知识源。学生被约束不能偏离教师太远 → <strong style="color:var(--a1);">教师能力 = 学生理论上限</strong>。</p></div></div>
+    <div class="fragment fade-up"><div class="concept-card" style="border-top:3px solid var(--a5);"><h4>🔓 CoPD 打破假设</h4><p><strong style="color:var(--a5);">教师也从学生反馈中学习!</strong><br>师→蒸馏→生→RL微调→生→蒸馏→<strong style="color:var(--a5);">新教师</strong>→...<br>形成<strong style="color:var(--a5);">闭环进化系统</strong>。收敛速度 ~2×。</p></div></div>
+  </div>
+  <div class="fragment fade-up" style="margin-top:10px;max-width:800px;background:rgba(168,85,247,0.04);border:1px solid rgba(168,85,247,0.15);border-radius:12px;padding:14px 20px;text-align:left;">
+    <p style="font-size:12px;color:var(--text2);margin:0;line-height:1.7;"><strong style="color:var(--purple);">三步循环：</strong><br>① 师→生：标准OPD蒸馏基础能力<br>② 生→RL：学生与环境交互，RL微调自我提升（可能发现教师不知道的新行为）<br>③ 生→师：提升后的学生把新知识蒸馏回教师 → <strong style="color:var(--purple);">更新教师</strong> → 更新后的教师再指导下一轮学生</p>
+  </div>
+</section>
+
+<!-- B2: CoPD深层意义 -->
+<section data-transition="slide">
+  <h2 style="font-size:26px;font-weight:700;margin-bottom:4px;color:var(--text);">🧬 CoPD 深层意义 — 知识生态系统的自举</h2><div class="glow-bar"></div>
+  <div class="two-col">
+    <div class="fragment fade-up"><div class="concept-card" style="border-top:3px solid var(--purple);"><h4>🔗 与Distral的关系</h4><p>Distral: 多任务间<strong style="color:var(--purple);">横向</strong>双向循环（各πᵢ↔π₀）<br>CoPD: 单任务师生间<strong style="color:var(--purple);">纵向</strong>进化循环（师↔生↔师）<br><br>本质相同：知识在多个实体间流动、汇聚、再分发。CoPD只是把"空间维度"的多任务换成了"时间维度"的代际进化。</p></div></div>
+    <div class="fragment fade-up"><div class="concept-card" style="border-top:3px solid var(--a5);"><h4>🌍 类比人类文明</h4><p>一个种群（师生对）在<strong style="color:var(--a5);">没有绝对权威</strong>的情况下，通过代际教学与反馈，整体能力螺旋上升。<br><br>学生不仅继承，还要<strong style="color:var(--a5);">超越</strong>，并成为下一代的老师。这为<strong style="color:var(--a5);">持续自我进化的AI系统</strong>提供了算法蓝图。<br><br>→ 未来可能实现"无外部监督的永续进步"</p></div></div>
+  </div>
+</section>
+
+<!-- ═══════ Section C: 精细修补 ═══════ -->
+<section data-transition="slide"><div style="text-align:center;"><span style="background:rgba(0,210,255,0.1);color:var(--a2);border:1px solid rgba(0,210,255,0.2);padding:4px 14px;border-radius:12px;font-size:11px;font-weight:700">📍 当前位置</span></div><h2 style="font-size:24px;font-weight:700;margin:10px 0 4px;color:var(--text);">🗺️ Section C — CR/GAE/StepOPSD</h2><div class="glow-bar"></div>
+  <svg viewBox="0 0 1000 160" xmlns="http://www.w3.org/2000/svg" style="max-width:900px;">
+    <rect x="320" y="5" width="360" height="26" rx="13" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.1)"/><text x="500" y="23" text-anchor="middle" fill="#fff" font-size="12" font-weight="700" font-family="sans-serif">Part 5: 统一框架 (2026)</text>
+    <g opacity="0.5"><rect x="30" y="45" width="180" height="50" rx="8" fill="rgba(168,85,247,0.05)" stroke="rgba(168,85,247,0.12)"/><text x="120" y="65" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="12" font-weight="700" font-family="sans-serif">🟣 A ✓</text><text x="120" y="82" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="9" font-family="sans-serif">前缀×KL</text></g>
+    <g opacity="0.5"><rect x="225" y="45" width="180" height="50" rx="8" fill="rgba(108,92,231,0.05)" stroke="rgba(108,92,231,0.12)"/><text x="315" y="65" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="12" font-weight="700" font-family="sans-serif">🟣 B ✓</text><text x="315" y="82" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="9" font-family="sans-serif">CoPD</text></g>
+    <g opacity="1"><rect x="420" y="45" width="220" height="50" rx="8" fill="rgba(0,210,255,0.1)" stroke="rgba(0,210,255,0.35)" stroke-width="2"/><text x="530" y="65" text-anchor="middle" fill="#00d2ff" font-size="13" font-weight="700" font-family="sans-serif">🔵 C: 精细修补 ← 当前</text><text x="530" y="82" text-anchor="middle" fill="rgba(255,255,255,0.6)" font-size="9" font-family="sans-serif">CR·GAE·StepOPSD</text></g>
+    <g opacity="0.2"><rect x="655" y="45" width="180" height="50" rx="8" fill="rgba(255,107,157,0.04)" stroke="rgba(255,107,157,0.1)"/><text x="745" y="75" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="12" font-weight="700" font-family="sans-serif">🔴 D: 失效诊断</text></g>
+    <rect x="350" y="115" width="300" height="24" rx="12" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.1)"/><text x="500" y="132" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="11" font-family="sans-serif">📋 总结 → Part 6</text>
+  </svg>
+</section>
+
+<!-- C1/C2: 三方法 -->
+<section data-transition="slide">
+  <h2 style="font-size:24px;font-weight:700;margin-bottom:4px;color:var(--text);">🔧 CR-OPD / GAE-OPD / StepOPSD</h2><div class="glow-bar"></div>
+  <div class="tri-grid">
+    <div class="fragment fade-up" style="background:rgba(168,85,247,0.05);border:1px solid rgba(168,85,247,0.2);border-radius:16px;padding:20px 16px;text-align:left;">
+      <h4 style="color:var(--purple);margin:0 0 8px;">🎯 CR-OPD: 反事实路由</h4><p style="font-size:12px;color:var(--text2);line-height:1.6;margin:0;"><strong>问题: </strong>大词表上KL散度受无关token微小概率噪声影响<br><strong>创新: </strong>限制KL支持集在<strong style="color:var(--purple);">"合理备选token"</strong>（师生Top-K并集）上<br><strong>效果: </strong>聚焦真正需要决策的分歧点，信号纯度大幅提升</p>
+    </div>
+    <div class="fragment fade-up" style="background:rgba(0,210,255,0.04);border:1px solid rgba(0,210,255,0.18);border-radius:16px;padding:20px 16px;text-align:left;">
+      <h4 style="color:var(--a2);margin:0 0 8px;">⏱️ GAE-OPD: 时序信用</h4><p style="font-size:12px;color:var(--text2);line-height:1.6;margin:0;"><strong>问题: </strong>当前token的KL不仅取决于即时选择，还受之前所有token累积效应影响<br><strong>创新: </strong>引入<strong style="color:var(--a2);">GAE(广义优势估计)</strong>→累积未来KL加权和<br><strong>效果: </strong>关键决策token贡献被增强，填充token信号被压缩</p>
+    </div>
+    <div class="fragment fade-up" style="background:rgba(0,230,118,0.04);border:1px solid rgba(0,230,118,0.15);border-radius:16px;padding:20px 16px;text-align:left;">
+      <h4 style="color:var(--a5);margin:0 0 8px;">📶 StepOPSD: Token→步骤</h4><p style="font-size:12px;color:var(--text2);line-height:1.6;margin:0;"><strong>问题: </strong>长步骤(大量token)主导总损失，淹没简短但关键的逻辑跳跃<br><strong>创新: </strong>将推理链切分为<strong style="color:var(--a5);">有意义的步骤</strong>→每步信用预算归一化<br><strong>效果: </strong>"答案"步骤不被淹没，训练聚焦逻辑结构</p>
+    </div>
+  </div>
+</section>
+
+<!-- C1a: CR-OPD精讲 -->
+<section data-transition="slide">
+  <h2 style="font-size:24px;font-weight:700;margin-bottom:4px;color:var(--text);">🎯 CR-OPD 精讲 — 反事实路由</h2><div class="glow-bar"></div>
+  <p style="font-size:12px;color:var(--text3);margin:0 0 8px;">arXiv 2606.22793 | 核心: 只在"合理备选token"上计算KL</p>
+  <div class="two-col">
+    <div class="fragment fade-up"><div class="concept-card" style="border-top:3px solid var(--purple);"><h4>📐 问题: 大词表噪声</h4>
+      <p style="font-size:12px;line-height:1.7;">词表50k-200k token。教师和学生对于绝大多数token概率≈0，但log比值放大后贡献<strong style="color:var(--purple);">大量噪声项</strong>。微小数值波动→梯度估计方差巨大→淹没真正关键的决策点。</p>
+      <div class="formula-card" style="padding:12px 16px;margin-top:8px;"><div class="math-block" style="font-size:13px;">$$\mathcal{L}_t = \sum_{v \in \mathcal{V}} \pi_S(v|s_t) \log \frac{\pi_S(v|s_t)}{\pi_T(v|s_t)}$$</div></div></div></div>
+    <div class="fragment fade-up"><div class="concept-card" style="border-top:3px solid var(--a5);"><h4>✅ 创新: 动态支持集+重新归一化</h4>
+      <p style="font-size:12px;line-height:1.7;">取师生各自<strong style="color:var(--a5);">Top-K并集</strong>=动态支持集C_t，在此集合上重新归一化→计算KL:<br>
+      C_t = TopK(π_T, K_T) ∪ TopK(π_S, K_S)</p>
+      <div class="formula-card" style="padding:12px 16px;margin-top:8px;"><div class="math-block" style="font-size:13px;">$$\mathcal{L}_t^{\text{CR}} = \sum_{v \in \mathcal{C}_t} \hat{\pi}_S(v) \log \frac{\hat{\pi}_S(v)}{\hat{\pi}_T(v)}$$</div></div>
+      <p style="font-size:11px;color:var(--text3);">"反事实"= 教师认为可能的token才考虑，否则忽略。有效信号提升~3倍。</p></div></div>
+  </div>
+</section>
+
+<!-- C1b: GAE-OPD精讲 -->
+<section data-transition="slide">
+  <h2 style="font-size:24px;font-weight:700;margin-bottom:4px;color:var(--text);">⏱️ GAE-OPD 精讲 — 时序信用分配</h2><div class="glow-bar"></div>
+  <p style="font-size:12px;color:var(--text3);margin:0 0 8px;">arXiv 2606.22793 | 核心: 将未来KL信号向前传播到早期决策token</p>
+  <div class="two-col">
+    <div class="fragment fade-up"><div class="concept-card" style="border-top:3px solid var(--a2);"><h4>📐 问题: 自回归的时间依赖被忽略</h4>
+      <p style="font-size:12px;line-height:1.7;">生成是自回归的: s_t = (x, y_{&lt;t})。前面token决定后面语境。早期关键决策(分支/解法选择)只在自己那一步受轻微KL惩罚，但<strong style="color:var(--a2);">后果影响后续整条链</strong>。标准OPD无法追溯归因。</p></div></div>
+    <div class="fragment fade-up"><div class="concept-card" style="border-top:3px solid var(--a5);"><h4>✅ 创新: GAE累积未来KL加权和</h4>
+      <p style="font-size:12px;line-height:1.7;">每个token的学习目标不是即时d_t，而是<strong style="color:var(--a5);">未来累积KL的GAE估计</strong>G_t:</p>
+      <div class="formula-card" style="padding:12px 16px;margin-top:6px;"><div class="math-block" style="font-size:13px;">$$G_t = \sum_{l=0}^{\infty} (\gamma \lambda)^l \delta_{t+l}$$</div></div>
+      <p style="font-size:11px;color:var(--text3);">后期高KL(推理失败) → 信号向前传播 → 增强早期决策token权重。与CR-OPD结合后效率提升1.5-2×。</p></div></div>
+  </div>
+</section>
+
+<!-- C1c: StepOPSD精讲 -->
+<section data-transition="slide">
+  <h2 style="font-size:24px;font-weight:700;margin-bottom:4px;color:var(--text);">📶 StepOPSD 精讲 — Token级→步骤级</h2><div class="glow-bar"></div>
+  <p style="font-size:12px;color:var(--text3);margin:0 0 8px;">arXiv 2605.27140 | 核心: 每步信用预算归一化，防止长步骤主导损失</p>
+  <div class="two-col">
+    <div class="fragment fade-up"><div class="concept-card" style="border-top:3px solid var(--a3);"><h4>📐 问题: Token数与重要性不成正比</h4>
+      <p style="font-size:12px;line-height:1.7;">人类推理分层级: 题目→理解→列式→计算→验证→答案。一个"答案"步骤可能只有几个token，而"计算"步骤可能占几十个token。<strong style="color:var(--a3);">按token平均加权→长步骤获得不成比例的损失占比→模型过度优化冗长部分</strong>，忽略核心逻辑跳跃。</p></div></div>
+    <div class="fragment fade-up"><div class="concept-card" style="border-top:3px solid var(--a5);"><h4>✅ 创新: 步骤切分+信用预算归一化</h4>
+      <p style="font-size:12px;line-height:1.7;">切分推理链为M个有意义的步骤(规则/分段器)→每步token数L_k:</p>
+      <div class="formula-card" style="padding:10px 16px;margin-top:6px;"><div class="math-block" style="font-size:13px;">$$\mathcal{L} = \sum_{k=1}^{M} w_k \cdot \frac{1}{L_k} \sum_{t \in \text{step}_k} D_{KL}(\pi_S \|\pi_T)$$</div></div>
+      <p style="font-size:11px;color:var(--text3);">w_k可均等或按步骤类型加权(答案步骤给更高权重)。确保每个逻辑步骤对总损失贡献不受token数量影响。</p></div></div>
+  </div>
+</section>
+
+<!-- C-summary: 三层协同 -->
+<section data-transition="slide">
+  <h2 style="font-size:24px;font-weight:700;margin-bottom:4px;color:var(--text);">🔗 三项技术协同 — OPD的三层升级</h2><div class="glow-bar"></div>
+  <div class="tri-grid">
+    <div class="fragment fade-up" style="background:rgba(168,85,247,0.06);border:1px solid rgba(168,85,247,0.2);border-radius:16px;padding:22px 16px;text-align:left;"><h4 style="color:var(--purple);margin:0 0 8px;">🎯 CR-OPD</h4><p style="font-size:12px;color:var(--text2);margin:0;line-height:1.7;">解决: <strong style="color:#fff;">在哪计算损失？</strong><br>信号聚焦维度<br>从全词表→Top-K并集<br>过滤尾部分布噪声</p></div>
+    <div class="fragment fade-up" style="background:rgba(0,210,255,0.05);border:1px solid rgba(0,210,255,0.18);border-radius:16px;padding:22px 16px;text-align:left;"><h4 style="color:var(--a2);margin:0 0 8px;">⏱️ GAE-OPD</h4><p style="font-size:12px;color:var(--text2);margin:0;line-height:1.7;">解决: <strong style="color:#fff;">如何分配信用？</strong><br>时序感知维度<br>未来信号→早期决策<br>追溯归因关键token</p></div>
+    <div class="fragment fade-up" style="background:rgba(0,230,118,0.05);border:1px solid rgba(0,230,118,0.18);border-radius:16px;padding:22px 16px;text-align:left;"><h4 style="color:var(--a5);margin:0 0 8px;">📶 StepOPSD</h4><p style="font-size:12px;color:var(--text2);margin:0;line-height:1.7;">解决: <strong style="color:#fff;">在什么层级聚合？</strong><br>层级粒度维度<br>从token→步骤<br>防止长步骤主导</p></div>
+  </div>
+  <p style="font-size:13px;color:var(--text2);margin-top:12px;max-width:750px;">它们共同将OPD从<strong style="color:var(--purple);">逐token独立KL惩罚</strong>升级为<strong style="color:#fff;">稀疏聚焦·时序感知·步骤等权</strong>的精细蒸馏框架。</p>
+</section>
+
+<!-- ═══════ Section D: 失效诊断 ═══════ -->
+<section data-transition="slide"><div style="text-align:center;"><span style="background:rgba(255,107,157,0.1);color:var(--a3);border:1px solid rgba(255,107,157,0.2);padding:4px 14px;border-radius:12px;font-size:11px;font-weight:700">📍 当前位置</span></div><h2 style="font-size:24px;font-weight:700;margin:10px 0 4px;color:var(--text);">🗺️ Section D — 失效模式诊断</h2><div class="glow-bar"></div>
+  <svg viewBox="0 0 1000 160" xmlns="http://www.w3.org/2000/svg" style="max-width:900px;">
+    <rect x="320" y="5" width="360" height="26" rx="13" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.1)"/><text x="500" y="23" text-anchor="middle" fill="#fff" font-size="12" font-weight="700" font-family="sans-serif">Part 5: 统一框架 (2026)</text>
+    <g opacity="0.5"><rect x="30" y="45" width="160" height="50" rx="8" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.08)"/><text x="110" y="75" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="11" font-weight="700" font-family="sans-serif">🟣 A ✓ 🟣 B ✓</text></g>
+    <g opacity="0.5"><rect x="205" y="45" width="160" height="50" rx="8" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.08)"/><text x="285" y="75" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="11" font-weight="700" font-family="sans-serif">🔵 C ✓</text></g>
+    <g opacity="1"><rect x="380" y="45" width="220" height="50" rx="8" fill="rgba(255,107,157,0.1)" stroke="rgba(255,107,157,0.35)" stroke-width="2"/><text x="490" y="65" text-anchor="middle" fill="#ff6b9d" font-size="13" font-weight="700" font-family="sans-serif">🔴 D: 失效诊断 ← 当前</text><text x="490" y="82" text-anchor="middle" fill="rgba(255,255,255,0.6)" font-size="9" font-family="sans-serif">3模式→3修复</text></g>
+    <rect x="350" y="110" width="300" height="24" rx="12" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.1)"/><text x="500" y="127" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="11" font-family="sans-serif">📋 总结 → Part 6</text>
+  </svg>
+</section>
+
+<!-- D1: 失效模式 -->
+<section data-transition="slide">
+  <h2 style="font-size:24px;font-weight:700;margin-bottom:4px;color:var(--text);">🩺 OPD 三大失效模式 & 修复</h2><div class="glow-bar"></div>
+  <table class="summary-table fragment fade-up">
+    <thead><tr><th>失效模式</th><th>表现</th><th>根因</th><th>修复</th></tr></thead>
+    <tbody>
+      <tr><td class="pc" style="color:var(--a3);">学生前缀扭曲教师</td><td>学生生成低质量前缀→教师"将错就错"→学生学污染信号→恶性循环</td><td>教师输入被学生分布污染</td><td class="hl">Stop-Gradient Top-K KL<br>教师仅对Top-K token蒸馏</td></tr>
+      <tr><td class="pc" style="color:var(--a3);">Top-K +1 偏差</td><td>截断后概率和≠1 → 数学不严谨 → 系统偏差积累</td><td>为效率截断Top-K，忽略剩余概率质量</td><td class="hl">显式加入"其他"类别<br>概率补全→严格有效分布</td></tr>
+      <tr><td class="pc" style="color:var(--a3);">PI-free margin</td><td>学生背下答案模板但未理解推理→分布偏移时立刻失效</td><td>学到表层统计模式，非因果逻辑</td><td class="hl">先RLVR-adapt教师→再SFT-warm学生<br>教师知识经环境压力测试</td></tr>
+    </tbody>
+  </table>
+  <div class="fragment fade-up info-tile" style="max-width:750px;margin-top:10px;"><h4>💡 工程价值</h4><p>UIUC 2026实证分析——这些不是理论上的"可能发生"，而是<strong style="color:var(--a3);">实践中反复出现的真实问题</strong>。每个修复方案都经过了Ablation验证。</p></div>
+</section>
+
+<!-- D1a: 失效模式一 精讲 -->
+<section data-transition="slide">
+  <h2 style="font-size:24px;font-weight:700;margin-bottom:4px;color:var(--text);">🩺 失效一精讲：学生前缀扭曲教师</h2><div class="glow-bar"></div>
+  <div class="two-col">
+    <div class="fragment fade-up"><div class="concept-card" style="border-top:3px solid var(--a3);"><h4>⚠️ 恶性循环</h4><p style="font-size:12px;line-height:1.8;">学生弱 → 生成混乱/低质前缀 → 教师被迫"将错就错"输出 → 学生从污染信号中学习 → <strong style="color:var(--a3);">生成更差的前缀</strong> → 循环加剧。教师被拉入其从未训练过的低质量区域。</p></div></div>
+    <div class="fragment fade-up"><div class="concept-card" style="border-top:3px solid var(--a5);"><h4>✅ 修复两步走</h4><p style="font-size:12px;line-height:1.8;"><strong style="color:var(--a5);">① Stop-Gradient:</strong> 确保梯度不会从学生流向教师——显式切断路径，保证教师输出完全冻结，不受学生污染。<br><strong style="color:var(--a5);">② Top-K KL:</strong> 教师只对学生前缀中自己有把握的Top-K token蒸馏。教师="你这个前缀我只在少数确信的token上给你指导，其余你自己看着办"。</p></div></div>
+  </div>
+</section>
+
+<!-- D1b: 失效模式二 精讲 -->
+<section data-transition="slide">
+  <h2 style="font-size:24px;font-weight:700;margin-bottom:4px;color:var(--text);">🩺 失效二精讲：Top-K +1 偏差 — "截断"破坏了什么？</h2><div class="glow-bar"></div>
+  <div class="two-col">
+    <div class="fragment fade-up"><div class="concept-card" style="border-top:3px solid var(--a3);"><h4>📐 什么是截断？</h4><p style="font-size:12px;line-height:1.8;">词表50k-200k token。全词表KL计算开销巨大 → 工程上取Top-K(如256)近似。直接扔掉剩余概率质量 → <strong style="color:var(--a3);">ΣP≠1</strong>。<br><br><strong>缺失质量偏差:</strong> P_rest被忽略，尾部信息丢失。<br><strong>归一化偏差:</strong> 学生分布在K上重新归一化不一致 → KL估计既不无偏也不一致。长期累积→策略偏离预期。</p></div></div>
+    <div class="fragment fade-up"><div class="concept-card" style="border-top:3px solid var(--a5);"><h4>✅ 修复: 显式"其他"类别</h4><p style="font-size:12px;line-height:1.8;">创建虚拟&lt;other&gt; token，吸收剩余概率质量P_rest。得到<strong style="color:var(--a5);">严格有效的(K+1)分布</strong>:</p><div class="formula-card" style="padding:10px 16px;margin:6px 0;"><div class="math-block" style="font-size:13px;">$$\hat{P}(v) = \begin{cases} P(v) & v \in \mathcal{K} \\ P_{\text{rest}} & v = \text{[other]} \end{cases}$$</div></div><p style="font-size:11px;color:var(--text3);">学生分布同样处理→在(K+1)类上计算KL→数学严格，从根本上消除截断偏差。</p></div></div>
+  </div>
+</section>
+
+<!-- D1c: 失效模式三 精讲 -->
+<section data-transition="slide">
+  <h2 style="font-size:24px;font-weight:700;margin-bottom:4px;color:var(--text);">🩺 失效三精讲：PI-free margin — 背答案≠学推理</h2><div class="glow-bar"></div>
+  <div class="two-col">
+    <div class="fragment fade-up"><div class="concept-card" style="border-top:3px solid var(--a3);"><h4>⚠️ 表象与根因</h4><p style="font-size:12px;line-height:1.8;"><strong>表象:</strong> 训练分布内逼近教师性能，分布偏移后断崖式下跌。<br><br><strong>根因:</strong> 学生找到了<strong style="color:var(--a3);">PI-free margin</strong>(策略不变安全区)。在训练分布内KL≈0，但依赖的是<strong style="color:var(--a3);">表面统计关联</strong>(如"看到'总共'就猜答案在最后"),非因果推理。测试分布改变→关联失效→策略崩溃。</p></div></div>
+    <div class="fragment fade-up"><div class="concept-card" style="border-top:3px solid var(--a5);"><h4>✅ 修复: RLVR-adapt教师+SFT-warm学生</h4><p style="font-size:12px;line-height:1.7;"><strong style="color:var(--a5);">Step 1 RLVR-adapt:</strong> 用可自动验证的奖励(答案对错)对教师RL微调。教师暴露在多样化交互中→输出经环境验证的鲁棒推理链。<br><br><strong style="color:var(--a5);">Step 2 SFT-warm:</strong> 用压力测试后的教师数据对学生SFT热身。学生继承的是"为何如此推理"而非"如此措辞"。</p></div></div>
+  </div>
+  <p style="font-size:11px;color:var(--text3);margin-top:8px;">类比: 原教师=只解标准题的学霸→RLVR=参加模拟考被自动判卷纠正→SFT-warm学生=用修正笔记学习→原学生=抄作业,换题就废。</p>
+</section>
+
+<!-- D1d: 三大失效对比总结 -->
+<section data-transition="slide">
+  <h2 style="font-size:24px;font-weight:700;margin-bottom:4px;color:var(--text);">🩺 三大失效 — 覆盖OPD三层脆弱点</h2><div class="glow-bar"></div>
+  <table class="summary-table fragment fade-up">
+    <thead><tr><th>失效模式</th><th>核心问题</th><th>修复思路</th><th>覆盖层面</th></tr></thead>
+    <tbody>
+      <tr><td class="pc" style="color:var(--a3);">学生前缀扭曲教师</td><td>学生劣质输入污染教师输出</td><td class="hl">Stop-Gradient Top-K KL</td><td>数据质量</td></tr>
+      <tr><td class="pc" style="color:var(--a3);">Top-K +1 偏差</td><td>截断破坏概率归一化</td><td class="hl">显式"其他"类别</td><td>数学严谨性</td></tr>
+      <tr><td class="pc" style="color:var(--a3);">PI-free margin</td><td>学生背答案而非学推理</td><td class="hl">RLVR-adapt师→SFT-warm生</td><td>知识深度</td></tr>
+    </tbody>
+  </table>
+  <p style="font-size:12px;color:var(--text2);margin-top:10px;">从<strong style="color:var(--a3);">数据质量、数学严谨性到知识深度</strong>——三个层面覆盖OPD在LLM推理中的脆弱点，2026年工程落地的重要指南。</p>
+</section>
+
+<!-- Summary + Transition -->
+<section data-transition="slide">
+  <h2 style="font-size:26px;font-weight:700;margin-bottom:4px;color:var(--text);">📋 Part 5 总结</h2><div class="glow-bar"></div>
+  <table class="summary-table fragment fade-up">
+    <thead><tr><th>主题</th><th>核心贡献</th><th>改变什么</th></tr></thead>
+    <tbody>
+      <tr><td class="pc">🔲 2×2周期表</td><td>解耦前缀源×KL方向</td><td>四种技术统一+标示研究空白</td></tr>
+      <tr><td class="pc">🔄 CoPD</td><td>打破教师>学生,闭环进化</td><td>从固定知识源→持续自举系统</td></tr>
+      <tr><td class="pc">🔧 三方法</td><td>CR/GAE/StepOPSD</td><td>从粗粒度token→细粒度步骤+信用</td></tr>
+      <tr><td class="pc">🩺 失效诊断</td><td>3模式→3修复</td><td>从经验试错→可诊断可修复的系统</td></tr>
+    </tbody>
+  </table>
+  <div class="next-badge" style="margin-top:16px;">📖 Part 6 预告<span style="font-size:12px;color:var(--text3);font-weight:400;">行业落地 · 未来方向 · 纪事年表</span></div>
+</section>
+
+</div></div>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.js"></script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<script>(function(){const c=document.getElementById('particle-canvas'),x=c.getContext('2d');let W,H,P;function rs(){W=c.width=window.innerWidth;H=c.height=window.innerHeight}window.addEventListener('resize',rs);rs();class Pt{constructor(){this.reset()}reset(){this.x=Math.random()*W;this.y=Math.random()*H;this.vx=(Math.random()-0.5)*0.6;this.vy=(Math.random()-0.5)*0.6;this.r=Math.random()*2+0.5;this.alpha=Math.random()*0.5+0.1}update(){this.x+=this.vx;this.y+=this.vy;if(this.x<-20||this.x>W+20||this.y<-20||this.y>H+20)this.reset()}draw(c){c.beginPath();c.arc(this.x,this.y,this.r,0,Math.PI*2);c.fillStyle=`rgba(168,85,247,${this.alpha})`;c.fill()}}P=Array.from({length:120},()=>new Pt());function dl(){for(let i=0;i<P.length;i++){for(let j=i+1;j<P.length;j++){const dx=P[i].x-P[j].x,dy=P[i].y-P[j].y,d=Math.sqrt(dx*dx+dy*dy);if(d<120){x.beginPath();x.moveTo(P[i].x,P[i].y);x.lineTo(P[j].x,P[j].y);x.strokeStyle=`rgba(124,58,237,${0.08*(1-d/120)})`;x.lineWidth=0.5;x.stroke()}}}}function lp(){x.clearRect(0,0,W,H);P.forEach(p=>{p.update();p.draw(x)});dl();requestAnimationFrame(lp)}lp()})();</script>
+<script>Reveal.initialize({hash:true,center:true,transition:'slide',transitionSpeed:'slow',backgroundTransition:'zoom',slideNumber:false,progress:false,controls:true,controlsLayout:'bottom-right',controlsBackArrows:'faded',width:1200,height:700,margin:0,minScale:0.2,maxScale:2.0});(function(){const e=document.getElementById('page-indicator');function u(){const t=Reveal.getTotalSlides(),c=Reveal.getSlidePastCount()+1;e.textContent=c+' / '+t}Reveal.on('ready',u);Reveal.on('slidechanged',u)})();</script>
+</body></html>

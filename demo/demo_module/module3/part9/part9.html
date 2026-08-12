@@ -1,0 +1,134 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><title>Module 3 · Part 9: 工业落地与基准</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/black.min.css">
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]}};</script>
+<style>
+:root{--bg:#030206;--surface:rgba(18,16,28,0.7);--border:rgba(124,92,231,0.15);--text:#e0dce8;--text2:rgba(210,200,230,0.7);--text3:rgba(160,145,190,0.45);--core:#7c5ce7;--flare:#e17055;--fuse:#a855f7;--beam:#fdcb6e;--nova:#00cec9}
+#bg-canvas{position:fixed;inset:0;z-index:0;pointer-events:none}.reveal{background:transparent}.reveal .slides{text-align:center;width:100%!important;left:50%!important;margin:0!important}.reveal .slides section{padding:28px 48px;height:100%;display:flex!important;flex-direction:column;align-items:center;justify-content:center}.reveal .controls{right:12px!important;bottom:12px!important}#page-indicator{position:fixed;left:24px;bottom:20px;z-index:100;font-size:13px;color:rgba(255,255,255,0.35);font-family:'JetBrains Mono','Fira Code','Consolas',monospace;letter-spacing:1px;pointer-events:none}
+.core-card{position:relative;z-index:2;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:36px 46px;max-width:860px;box-shadow:0 8px 32px rgba(0,0,0,0.6)}.core-card::before{content:'';height:2px;background:linear-gradient(90deg,transparent,var(--core),var(--flare),var(--nova),transparent);display:block;margin-bottom:12px}.hero-title{font-size:44px;font-weight:800;background:linear-gradient(135deg,var(--core),var(--flare),var(--nova));background-size:300%300%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:gS 5s ease infinite}@keyframes gS{0%,100%{background-position:0%50%}50%{background-position:100%50%}}.core-bar{width:100px;height:2px;background:linear-gradient(90deg,transparent,var(--core),var(--flare),var(--nova),transparent);margin:14px auto}
+.struct-head{font-size:18px;font-weight:700;color:var(--core);margin:0 0 8px;border-bottom:1px solid rgba(124,92,231,0.3);display:inline-block;padding-bottom:4px}.struct-content{font-size:13px;color:var(--text2);line-height:2;text-align:left;max-width:780px}.struct-content strong{color:#fff}
+.two-col{display:flex;gap:18px;flex-wrap:wrap;justify-content:center;max-width:940px}.two-col>div{flex:1;min-width:260px}.tri-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;max-width:940px}
+.concept-block{background:rgba(20,18,30,0.5);border:1px solid var(--border);border-radius:10px;padding:16px 14px;text-align:left}.concept-block h4{font-size:13px;color:var(--core);margin:0 0 5px}.concept-block p{font-size:11px;color:var(--text2);line-height:1.7;margin:0}
+.def-box{background:rgba(124,92,231,0.06);border:1px solid rgba(124,92,231,0.2);border-left:3px solid var(--core);border-radius:0 10px 10px 0;padding:14px 20px;text-align:left;max-width:750px;margin:8px 0}.def-box .label{font-size:11px;color:var(--core);font-weight:700;margin-bottom:4px}.def-box .content{font-size:12px;color:var(--text);line-height:1.8}
+.warn-box{background:rgba(225,112,85,0.06);border:1px solid rgba(225,112,85,0.2);border-left:3px solid var(--flare);border-radius:0 10px 10px 0;padding:14px 20px;text-align:left;max-width:750px;margin:8px 0}.warn-box .label{font-size:11px;color:var(--flare);font-weight:700;margin-bottom:4px}.warn-box .content{font-size:12px;color:var(--text);line-height:1.8}
+.green-box{background:rgba(0,206,201,0.06);border:1px solid rgba(0,206,201,0.2);border-left:3px solid var(--nova);border-radius:0 10px 10px 0;padding:14px 20px;text-align:left;max-width:750px;margin:8px 0}.green-box .label{font-size:11px;color:var(--nova);font-weight:700;margin-bottom:4px}.green-box .content{font-size:12px;color:var(--text);line-height:1.8}
+.summary-table{width:100%;max-width:860px;border-collapse:collapse;font-size:10.5px;border-radius:10px;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,0.5)}.summary-table thead{background:linear-gradient(135deg,rgba(124,92,231,0.25),rgba(225,112,85,0.12))}.summary-table th{padding:9px 12px;font-weight:700;color:var(--beam);font-size:10px}.summary-table td{padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text2)}.summary-table tbody tr{background:rgba(20,18,30,0.4)}.summary-table .pc{font-weight:700;color:var(--beam)}.summary-table .hl{color:var(--nova);font-weight:600}.summary-table .wd{color:var(--flare);font-weight:600}
+.page-badge{display:inline-flex;padding:4px 14px;border-radius:14px;font-size:10px;font-weight:700;background:rgba(124,92,231,0.08);color:var(--core);border:1px solid rgba(124,92,231,0.2);letter-spacing:1px}.cite{font-size:10px;color:var(--core);font-family:monospace}
+.consensus-card{background:linear-gradient(135deg,rgba(253,203,110,0.05),rgba(124,92,231,0.03));border:1px solid rgba(253,203,110,0.18);border-radius:10px;padding:16px 18px;text-align:left;margin-bottom:6px}.consensus-card .n{font-size:10px;color:var(--beam);font-weight:800;margin-bottom:3px}.consensus-card .d{font-size:11px;color:var(--text2);line-height:1.7}
+.reveal .slides section .fragment.fade-up{opacity:0;transform:translateY(30px);transition:all 0.7s}.reveal .slides section .fragment.fade-up.visible{opacity:1;transform:translateY(0)}
+@media(max-width:768px){.hero-title{font-size:28px}.tri-grid{grid-template-columns:1fr}.two-col{flex-direction:column}}
+</style></head><body><canvas id="bg-canvas"></canvas><div id="page-indicator"></div><div class="reveal"><div class="slides">
+
+<!-- ═══════ 标题页 ═══════ -->
+<section data-transition="zoom"><div class="core-card fragment fade-up"><p class="cite">MODULE 3 · PART 9</p><h1 class="hero-title">工业落地与基准</h1><p style="font-size:20px;color:var(--text2);">OPD 从学术到工业 · 7 大机构的部署实践 · 9 类基准体系</p><div class="core-bar"></div><p style="font-size:13px;color:var(--text3);">工业共识：OPD 不再是替代方案，而是 RLVR 的必要补充</p></div></section>
+
+
+<!-- ═══════ DAG 知识图谱 ═══════ -->
+<section data-transition="slide"><h2 style="font-size:24px;font-weight:700;color:var(--core);margin-bottom:8px;">Part 9 知识结构图</h2>
+<svg viewBox="0 0 960 420" xmlns="http://www.w3.org/2000/svg" style="max-width:960px;">
+<defs><marker id="a" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><path d="M0,0 L7,2.5 L0,5 Z" fill="rgba(255,255,255,0.2)"/></marker></defs>
+<rect x="330" y="5" width="300" height="30" rx="15" fill="rgba(124,92,231,0.08)" stroke="rgba(124,92,231,0.2)"/>
+<text x="480" y="25" text-anchor="middle" fill="#fff" font-size="13" font-weight="700" font-family="sans-serif">Part 9: 工业落地与基准</text>
+
+<rect x="30" y="50" width="900" height="30" rx="8" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.06)"/>
+<text x="480" y="70" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="10" font-family="sans-serif">从学术实验到工业部署：谁在用 OPD？怎么用？效果如何？</text>
+
+<!-- 工业部署层 -->
+<rect x="30" y="95" width="900" height="115" rx="10" fill="rgba(253,203,110,0.04)" stroke="rgba(253,203,110,0.12)"/>
+<text x="480" y="115" text-anchor="middle" fill="var(--beam)" font-size="12" font-weight="700" font-family="sans-serif">🏭 工业部署矩阵（7 大机构 · 2025–2026）</text>
+
+<rect x="40" y="125" width="200" height="36" rx="8" fill="rgba(253,203,110,0.06)" stroke="rgba(253,203,110,0.15)"/>
+<text x="140" y="141" text-anchor="middle" fill="var(--beam)" font-size="10" font-weight="700" font-family="sans-serif">Alibaba</text>
+<text x="140" y="155" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="8" font-family="sans-serif">D-OPSD · 扩散模型</text>
+
+<rect x="255" y="125" width="200" height="36" rx="8" fill="rgba(124,92,231,0.06)" stroke="rgba(124,92,231,0.15)"/>
+<text x="355" y="141" text-anchor="middle" fill="var(--core)" font-size="10" font-weight="700" font-family="sans-serif">Tencent</text>
+<text x="355" y="155" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="8" font-family="sans-serif">X-OPD · 语音LLM</text>
+
+<rect x="470" y="125" width="200" height="36" rx="8" fill="rgba(0,206,201,0.06)" stroke="rgba(0,206,201,0.15)"/>
+<text x="570" y="141" text-anchor="middle" fill="var(--nova)" font-size="10" font-weight="700" font-family="sans-serif">NVIDIA</text>
+<text x="570" y="155" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="8" font-family="sans-serif">Nemotron Audex · 30B MoE</text>
+
+<rect x="685" y="125" width="235" height="36" rx="8" fill="rgba(168,85,247,0.06)" stroke="rgba(168,85,247,0.15)"/>
+<text x="802" y="141" text-anchor="middle" fill="var(--fuse)" font-size="10" font-weight="700" font-family="sans-serif">Xiaomi · ByteDance · Google</text>
+<text x="802" y="155" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="8" font-family="sans-serif">PTD-PO · H-OPD · RAL</text>
+
+<rect x="280" y="170" width="400" height="30" rx="8" fill="rgba(0,206,201,0.04)" stroke="rgba(0,206,201,0.1)"/>
+<text x="480" y="190" text-anchor="middle" fill="var(--nova)" font-size="9.5" font-family="sans-serif">AutoArk-AI: Ark-ASR OPD · 数据高效ASR</text>
+
+<path d="M480,210 L480,233" marker-end="url(#a)" stroke="rgba(255,255,255,0.12)" stroke-width="1.5"/>
+
+<!-- 工业共识层 -->
+<rect x="130" y="238" width="700" height="75" rx="10" fill="rgba(0,206,201,0.04)" stroke="rgba(0,206,201,0.12)"/>
+<text x="480" y="258" text-anchor="middle" fill="var(--nova)" font-size="12" font-weight="700" font-family="sans-serif">💡 四大工业共识</text>
+<text x="480" y="275" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="9.5" font-family="sans-serif">OPD=RLVR必要补充 · 黑盒OPD首选 · 数据效率核心卖点 · Reverse KL/ Top-K JSD事实标准</text>
+<text x="480" y="295" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="9" font-family="sans-serif">三阶段Pipeline (SFT→OPD→RLVR) 正被TRL/verl原生支持</text>
+
+<path d="M480,313 L480,338" marker-end="url(#a)" stroke="rgba(255,255,255,0.12)" stroke-width="1.5"/>
+
+<!-- 基准层 -->
+<rect x="80" y="343" width="800" height="48" rx="10" fill="rgba(225,112,85,0.03)" stroke="rgba(225,112,85,0.1)"/>
+<text x="480" y="363" text-anchor="middle" fill="var(--flare)" font-size="11" font-weight="700" font-family="sans-serif">📊 9 大基准类别：通用VLM · 细粒度视觉 · 视频 · 音频推理 · 语音 · 机器人 · 通用推理</text>
+<text x="480" y="382" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="9" font-family="sans-serif">覆盖从基础感知到复杂推理的全谱系 · V-Star · MMMU-Pro · LIBERO · MMAU · VoiceBench</text>
+</svg></section>
+
+
+<!-- ═══════ 工业部署概览 ═══════ -->
+<section data-transition="slide"><div class="core-card fragment fade-up"><p class="page-badge">工业部署</p><h2 style="font-size:26px;font-weight:700;color:var(--beam);margin:8px 0;">🏭 七大机构的 OPD 工业部署</h2><div class="core-bar"></div>
+<table class="summary-table fragment fade-up"><thead><tr><th>机构</th><th>系统/模型</th><th>OPD 用途</th><th>时间</th></tr></thead>
+<tbody>
+<tr><td class="pc">Alibaba (Z-Image)</td><td>D-OPSD</td><td class="hl">步蒸馏扩散模型持续微调</td><td>2026.05</td></tr>
+<tr><td class="pc">Tencent Hunyuan</td><td>X-OPD</td><td class="hl">语音 LLM 跨模态能力对齐</td><td>2026.03</td></tr>
+<tr><td class="pc">NVIDIA</td><td>Nemotron Audex</td><td class="hl">多域统一音频 OPD (30B MoE)</td><td>2026.07</td></tr>
+<tr><td class="pc">Xiaomi</td><td>PTD-PO</td><td>特权辅导 LVLM 策略优化</td><td>2026.06</td></tr>
+<tr><td class="pc">ByteDance</td><td>H-OPD</td><td>异构多教师多模态推理</td><td>2026.07</td></tr>
+<tr><td class="pc">Google (DeepMind)</td><td>RAL</td><td>注意力层级多模态后训练</td><td>2026.02</td></tr>
+<tr><td class="pc">AutoArk-AI</td><td>Ark-ASR OPD</td><td class="hl">数据高效 ASR 蒸馏 (100k hrs)</td><td>2025/2026</td></tr>
+</tbody></table>
+<div class="struct-content" style="margin-top:8px;"><p style="text-align:center;color:var(--nova);">💡 覆盖视觉、语音、音频、生成、机器人五大领域——OPD 已完成从学术概念到工业基础设施的跨越。</p></div></div></section>
+
+
+<!-- ═══════ 四大工业共识 ═══════ -->
+<section data-transition="slide"><div class="core-card fragment fade-up"><p class="page-badge">工业共识</p><h2 style="font-size:26px;font-weight:700;color:var(--nova);margin:8px 0;">💡 四大工业共识</h2><div class="core-bar"></div>
+<div class="consensus-card fragment fade-up"><div class="n">共识 1：OPD 是 RLVR 的必要补充，而非替代</div><div class="d">几乎所有 2026 年工业级多模态后训练 pipeline 都包含 OPD 阶段。三阶段范式 <strong>SFT → OPD → RLVR</strong> 正在被主流框架（TRL、verl）原生支持。OPD 提供密集 token 级信号引导探索，RLVR 提供稀疏序列级目标——两者互补而非竞争。</div></div>
+<div class="consensus-card fragment fade-up"><div class="n">共识 2：黑盒 OPD 是当前工业部署首选</div><div class="d">PRISM 的 MoE 判别器方案证明：<strong>不需要访问教师模型内部</strong>即可实现有效 OPD。这对工业界至关重要——闭源 API（GPT-4o、Gemini）可作为教师，兼容任何模型架构。</div></div>
+<div class="consensus-card fragment fade-up"><div class="n">共识 3：数据效率是核心卖点</div><div class="d">CORD（<strong>80k 合成样本</strong>）和 Ark-ASR（<strong>100k 小时 vs 20M 小时</strong>）证明 OPD 可极大降低数据需求。对中小型团队而言，<strong>OPD + 小数据 > 传统训练 + 大数据</strong>——这是 OPD 最直接的商业价值。</div></div>
+<div class="consensus-card fragment fade-up"><div class="n">共识 4：Reverse KL / Top-K JSD 成为事实标准</div><div class="d">从 Vision-OPD 到 VLA-OPD 到 CORD——跨视觉、音频、机器人三域，<strong>Reverse KL 和 Top-K JSD 已取代 Forward KL</strong> 成为多模态 OPD 的默认散度选择。原因一致：对抗跨模态分布差异导致的熵爆炸。</div></div></div></section>
+
+
+<!-- ═══════ 主要基准 ═══════ -->
+<section data-transition="slide"><div class="core-card fragment fade-up"><p class="page-badge">评估体系</p><h2 style="font-size:26px;font-weight:700;color:var(--flare);margin:8px 0;">📊 九大基准类别</h2><p style="font-size:12px;color:var(--text2);margin:-2px 0 8px;">覆盖从基础感知到复杂推理的全谱系</p>
+<table class="summary-table fragment fade-up"><thead><tr><th>基准类别</th><th>代表性基准</th><th>典型使用论文</th></tr></thead>
+<tbody>
+<tr><td class="pc">通用 VLM 推理</td><td>MMMU-Pro, MathVista, MathVision, LogicVista</td><td class="hl">VOLD, PRISM</td></tr>
+<tr><td class="pc">细粒度视觉</td><td>VStar, HR-4K, HR-8K, ZoomBench, MME-RW, MMStar</td><td class="hl">V-Zero, Vision-OPD</td></tr>
+<tr><td class="pc">视觉空间推理</td><td>VSP (Visual Spatial Perception)</td><td class="hl">Visual-OPSD</td></tr>
+<tr><td class="pc">视频理解</td><td>Charades-TimeLens, ActivityNet-TimeLens, QVHighlights-TimeLens</td><td>Video-OPD</td></tr>
+<tr><td class="pc">视频问答</td><td>VRQABench, OpenWorldQA</td><td>PF-OPSD</td></tr>
+<tr><td class="pc">音频推理</td><td>MMAU Test-mini (Sound), MUSIC-AVQA, AVQA</td><td class="hl">SightSound-R1</td></tr>
+<tr><td class="pc">语音能力</td><td>BIG Bench Audio, Audio Multi-Challenge, VoiceBench</td><td class="hl">X-OPD</td></tr>
+<tr><td class="pc">机器人操作</td><td>LIBERO, RoboTwin2.0, MyoDex, BiDex, OpDex</td><td>VLA-OPD, ACGD</td></tr>
+<tr><td class="pc">通用推理</td><td>11 推理基准 (MMFineReason-123K)</td><td>H-OPD</td></tr>
+</tbody></table>
+<div class="struct-content" style="margin-top:6px;"><p style="text-align:center;color:var(--nova);">💡 基准体系随 OPD 范式演化而扩展——从 VLM 到视频、音频、机器人，OPD 每进入一个新模态就催生新的评估维度。</p></div></div></section>
+
+
+<!-- ═══════ Part 9 小结 ═══════ -->
+<section data-transition="slide"><div class="core-card fragment fade-up"><p class="page-badge">Part 9 小结</p><h2 style="font-size:28px;font-weight:700;color:var(--core);margin:8px 0;">🎯 工业落地：OPD 从学术界走向生产环境</h2><div class="core-bar"></div>
+<div class="struct-content">
+<p>2025–2026 年，OPD 完成了从学术概念到工业基础设施的跨越：</p>
+<p style="margin-left:16px;">
+🏭 <strong>7 大机构已部署</strong>：Alibaba · Tencent · NVIDIA · Xiaomi · ByteDance · Google DeepMind · AutoArk-AI<br/>
+📐 <strong>三阶段 Pipeline 标准化</strong>：SFT → OPD → RLVR 正被 TRL/verl 原生支持<br/>
+🔒 <strong>黑盒 OPD 优先</strong>：PRISM 范式兼容闭源 API，降低工业部署门槛<br/>
+📊 <strong>9 类基准体系</strong>：从通用 VLM 推理到机器人操作，覆盖全模态全任务<br/>
+⚡ <strong>数据效率是杀手级卖点</strong>：CORD (80k) 和 Ark-ASR (100k hrs) 证明 OPD 的经济价值
+</p>
+<p style="font-size:14px;color:var(--nova);text-align:center;margin-top:10px;">核心趋势：<strong>OPD 正在成为多模态模型后训练的默认组件——就像当年的 ImageNet 预训练之于 CV。</strong></p>
+<p style="text-align:center;margin-top:16px;color:var(--nova);font-size:14px;">✦ 接下来：Part 10 — 开放问题与未来方向 ✦</p>
+</div></div></section>
+
+</div></div>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.js"></script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<script>(function(){const c=document.getElementById('bg-canvas'),ctx=c.getContext('2d');let W,H;function rs(){W=c.width=window.innerWidth;H=c.height=window.innerHeight}window.addEventListener('resize',rs);rs();const NUM=71,Z_NEAR=100,Z_FAR=2200,R=180,MAX_A=0.40,BLUR=14;let frame=0;function lp(){ctx.clearRect(0,0,W,H);const t=frame*0.016,F=Math.min(W,H)*0.75,CX=W/2,CY=H/2;const sx=Math.sin(t*0.22)*55+Math.cos(t*0.31)*25;const sy=Math.cos(t*0.28)*45+Math.sin(t*0.19)*30;for(let i=NUM-1;i>=0;i--){const p=i/(NUM-1),z=Z_NEAR+p*(Z_FAR-Z_NEAR);const rot=t*0.35-z*0.0025;const px=(-sx*F)/z+CX,py=(-sy*F)/z+CY,pr=(R*F)/z;const alpha=MAX_A*Math.pow(1-p,0.90);const lw=Math.max(0.08,4.8*Math.pow(Z_NEAR/z,2.35));if(alpha<0.005)continue;const hue=((p*280+t*15)%360+360)%360;ctx.save();ctx.translate(px,py);ctx.beginPath();for(let v=0;v<5;v++){const a=rot+(v*2*Math.PI)/5;v===0?ctx.moveTo(pr*Math.cos(a),pr*Math.sin(a)):ctx.lineTo(pr*Math.cos(a),pr*Math.sin(a))}ctx.closePath();ctx.strokeStyle='hsla('+hue+',100%,50%,'+alpha+')';ctx.lineWidth=lw;ctx.shadowColor='hsla('+hue+',100%,50%,'+(alpha*0.4)+')';ctx.shadowBlur=BLUR;ctx.stroke();ctx.restore()}frame++;requestAnimationFrame(lp)}lp()})();</script>
+<script>Reveal.initialize({hash:true,center:true,transition:'slide',transitionSpeed:'slow',backgroundTransition:'zoom',slideNumber:false,progress:false,controls:true,controlsLayout:'bottom-right',navigationMode:'linear',width:1200,height:700,margin:0,minScale:0.2,maxScale:2.0});(function(){const e=document.getElementById('page-indicator');function u(){const t=Reveal.getTotalSlides(),c=Reveal.getSlidePastCount()+1;e.textContent=c+' / '+t}Reveal.on('ready',u);Reveal.on('slidechanged',u)})();</script></body></html>

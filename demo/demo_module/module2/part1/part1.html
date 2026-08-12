@@ -1,0 +1,364 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><title>Module 2 · Part 1: 奠基与探索期 2020–2022</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/black.min.css">
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]}};</script>
+<style>
+:root{--bg:#030206;--surface:rgba(20,18,30,0.7);--border:rgba(120,100,180,0.15);--text:#e0dce8;--text2:rgba(210,200,230,0.7);--text3:rgba(160,145,190,0.45);--vlm:#b794f4;--vis:#60a5fa;--aud:#4ade80;--vid:#facc15;--gen:#fb7185}
+#bg-canvas{position:fixed;inset:0;z-index:0;pointer-events:none}.reveal{background:transparent}.reveal .slides section{padding:28px 48px;display:flex!important;flex-direction:column;align-items:center;justify-content:center}.reveal .controls{right:12px!important;bottom:12px!important}#page-indicator{position:fixed;left:24px;bottom:20px;z-index:100;font-size:13px;color:rgba(180,160,210,0.4);font-family:'JetBrains Mono',monospace}
+.ac-card{z-index:2;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:36px 46px;max-width:860px;box-shadow:0 8px 32px rgba(0,0,0,0.6)}.hero-title{font-size:46px;font-weight:800;background:linear-gradient(135deg,var(--vlm),var(--vis),var(--aud),var(--vid),var(--gen));background-size:300%300%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:shift 6s ease infinite}@keyframes shift{0%,100%{background-position:0%50%}25%{background-position:100%0%}50%{background-position:100%100%}75%{background-position:0%100%}}.ac-bar{width:100px;height:2px;background:linear-gradient(90deg,transparent,var(--vlm),var(--vis),var(--aud),var(--vid),transparent);margin:14px auto}
+.struct-content{font-size:13px;color:var(--text2);line-height:2;text-align:left;max-width:780px}.struct-content strong{color:#fff}.paper-card{background:linear-gradient(135deg,rgba(30,20,50,0.6),rgba(20,15,35,0.8));border:1px solid var(--border);border-radius:10px;padding:20px 22px;text-align:left;margin-bottom:10px;box-shadow:0 4px 16px rgba(0,0,0,0.4);max-width:780px}
+.two-col{display:flex;gap:20px;flex-wrap:wrap;max-width:940px}.two-col>div{flex:1;min-width:260px}.tri-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;max-width:940px}
+.concept-block{background:rgba(20,18,30,0.5);border:1px solid var(--border);border-radius:10px;padding:14px 12px;text-align:left;margin-bottom:6px}.concept-block h4{font-size:12px;color:var(--vlm);margin:0 0 4px}.concept-block p{font-size:10px;color:var(--text2);line-height:1.6;margin:0}
+.formula-box{background:rgba(8,6,15,0.8);border:1px solid rgba(120,100,180,0.2);border-radius:10px;padding:18px 24px;max-width:780px;text-align:center;margin:8px 0}.formula-box .math-block{font-size:15px;color:#d4c8b0}
+.def-box{background:rgba(120,100,180,0.06);border:1px solid rgba(120,100,180,0.2);border-left:3px solid var(--vlm);border-radius:0 10px 10px 0;padding:14px 20px;text-align:left;max-width:750px;margin:8px 0}.def-box .label{font-size:11px;color:var(--vlm);font-weight:700;margin-bottom:4px}.def-box .content{font-size:12px;color:var(--text);line-height:1.8}
+.summary-table{width:100%;max-width:820px;border-collapse:collapse;font-size:11px;border-radius:10px;overflow:hidden}.summary-table thead{background:linear-gradient(135deg,rgba(183,148,244,0.2),rgba(96,165,250,0.1))}.summary-table th{padding:9px 12px;font-weight:700;color:#fff;font-size:10px}.summary-table td{padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text2)}.summary-table tbody tr{background:rgba(20,18,30,0.4)}.summary-table .pc{font-weight:700;color:var(--wheat)}.summary-table .hl{color:var(--vid);font-weight:600}
+.page-badge{display:inline-flex;padding:4px 14px;border-radius:14px;font-size:10px;font-weight:700;background:rgba(183,148,244,0.08);color:var(--vlm);border:1px solid rgba(183,148,244,0.2);letter-spacing:1px}.cite{font-size:10px;color:var(--vlm);font-family:monospace}
+.reveal .slides section .fragment.fade-up{opacity:0;transform:translateY(30px);transition:all 0.7s}.reveal .slides section .fragment.fade-up.visible{opacity:1;transform:translateY(0)}
+@media(max-width:768px){.hero-title{font-size:28px}.tri-grid{grid-template-columns:1fr}.two-col{flex-direction:column}}
+</style></head><body><canvas id="bg-canvas"></canvas><div id="page-indicator"></div><div class="reveal"><div class="slides">
+
+<!-- 前总 1: 标题 -->
+<section data-transition="zoom"><div class="ac-card fragment fade-up"><p class="cite">MODULE 2 · PART 1</p><h1 class="hero-title">奠基与探索期</h1><p style="font-size:20px;color:var(--text2);">ViT · CLIP · DALL·E · Stable Diffusion · Flamingo · BLIP-2</p><div class="ac-bar"></div><p style="font-size:13px;color:var(--text3);">2020–2022 · 从图像理解到文本生成图像的跨越</p></div></section>
+
+<!-- 前总 2: DAG 关系图 -->
+<section data-transition="slide"><h2 style="font-size:24px;font-weight:700;color:var(--vlm);margin-bottom:8px;">Part 1 知识结构图</h2>
+<svg viewBox="0 0 1000 380" xmlns="http://www.w3.org/2000/svg" style="max-width:1000px;">
+<defs><marker id="a" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><path d="M0,0 L7,2.5 L0,5 Z" fill="rgba(255,255,255,0.3)"/></marker></defs>
+<rect x="350" y="5" width="300" height="30" rx="15" fill="rgba(183,148,244,0.08)" stroke="rgba(183,148,244,0.2)"/>
+<text x="500" y="25" text-anchor="middle" fill="#fff" font-size="13" font-weight="700" font-family="sans-serif">Part 1: 奠基与探索期 (2020–2022)</text>
+
+<!-- ViT -->
+<g><rect x="60" y="55" width="160" height="55" rx="10" fill="rgba(96,165,250,0.08)" stroke="rgba(96,165,250,0.25)"/>
+<text x="140" y="78" text-anchor="middle" fill="#60a5fa" font-size="14" font-weight="700" font-family="sans-serif">ViT</text>
+<text x="140" y="96" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="10" font-family="sans-serif">图像→Patch→Transformer</text>
+<text x="140" y="108" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="9" font-family="sans-serif">2020.10 · Google</text></g>
+
+<!-- CLIP -->
+<g><rect x="280" y="55" width="170" height="55" rx="10" fill="rgba(183,148,244,0.08)" stroke="rgba(183,148,244,0.25)"/>
+<text x="365" y="78" text-anchor="middle" fill="#b794f4" font-size="14" font-weight="700" font-family="sans-serif">CLIP</text>
+<text x="365" y="96" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="10" font-family="sans-serif">对比学习·图文对齐</text>
+<text x="365" y="108" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="9" font-family="sans-serif">2021.01 · OpenAI</text></g>
+
+<!-- DALL·E -->
+<g><rect x="510" y="55" width="170" height="55" rx="10" fill="rgba(251,191,36,0.08)" stroke="rgba(251,191,36,0.25)"/>
+<text x="595" y="78" text-anchor="middle" fill="#facc15" font-size="14" font-weight="700" font-family="sans-serif">DALL·E 1</text>
+<text x="595" y="96" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="10" font-family="sans-serif">dVAE+自回归Transformer</text>
+<text x="595" y="108" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="9" font-family="sans-serif">2021.01 · OpenAI</text></g>
+
+<!-- Stable Diffusion -->
+<g><rect x="740" y="55" width="180" height="55" rx="10" fill="rgba(74,222,128,0.08)" stroke="rgba(74,222,128,0.25)"/>
+<text x="830" y="78" text-anchor="middle" fill="#4ade80" font-size="14" font-weight="700" font-family="sans-serif">Stable Diffusion</text>
+<text x="830" y="96" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="10" font-family="sans-serif">潜空间扩散·消费级GPU</text>
+<text x="830" y="108" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="9" font-family="sans-serif">2022.08 · StabilityAI</text></g>
+
+<!-- Arrows -->
+<path d="M220,82 L280,82" marker-end="url(#a)" stroke="rgba(255,255,255,0.15)" stroke-width="1" fill="none"/>
+<path d="M365,110 L365,130 L500,130 L500,140" marker-end="url(#a)" stroke="rgba(255,255,255,0.12)" stroke-width="1" fill="none"/>
+<path d="M450,82 L510,82" marker-end="url(#a)" stroke="rgba(255,255,255,0.15)" stroke-width="1" fill="none"/>
+
+<!-- 基础概念 -->
+<rect x="160" y="140" width="600" height="36" rx="10" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.08)"/>
+<text x="460" y="163" text-anchor="middle" fill="rgba(255,255,255,0.6)" font-size="11" font-family="sans-serif">🔧 基础概念支线：自回归生成 · 潜空间 · VAE · Codebook · MSE均值回归 · 连续vs离散</text>
+
+<!-- DALL·E 2 -->
+<path d="M460,176 L460,195 L365,195 L365,210" marker-end="url(#a)" stroke="rgba(255,255,255,0.12)" stroke-width="1" fill="none"/>
+<g><rect x="235" y="215" width="175" height="45" rx="10" fill="rgba(251,114,133,0.08)" stroke="rgba(251,114,133,0.2)"/>
+<text x="322" y="236" text-anchor="middle" fill="#fb7185" font-size="13" font-weight="700" font-family="sans-serif">DALL·E 2</text>
+<text x="322" y="252" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="9" font-family="sans-serif">CLIP引导扩散 · 2022.04</text></g>
+
+<!-- Flamingo/BLIP-2 -->
+<path d="M460,176 L460,195 L615,195 L615,210" marker-end="url(#a)" stroke="rgba(255,255,255,0.12)" stroke-width="1" fill="none"/>
+<g><rect x="500" y="215" width="185" height="45" rx="10" fill="rgba(96,165,250,0.06)" stroke="rgba(96,165,250,0.18)"/>
+<text x="592" y="236" text-anchor="middle" fill="#60a5fa" font-size="13" font-weight="700" font-family="sans-serif">Flamingo + BLIP-2</text>
+<text x="592" y="252" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="9" font-family="sans-serif">桥接模式 · 2022–2023</text></g>
+
+<!-- 总结 -->
+<path d="M322,260 L322,280 L460,280 L460,295" marker-end="url(#a)" stroke="rgba(255,255,255,0.1)" stroke-width="1" fill="none"/>
+<path d="M592,260 L592,280 L470,280 L470,295" marker-end="url(#a)" stroke="rgba(255,255,255,0.1)" stroke-width="1" fill="none"/>
+<rect x="350" y="300" width="300" height="30" rx="15" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.1)"/>
+<text x="500" y="320" text-anchor="middle" fill="#fff" font-size="12" font-weight="700" font-family="sans-serif">📋 奠基期总结 → Part 2</text>
+</svg></section>
+
+<!-- 前总 3: 时间线 -->
+<section data-transition="slide"><h2 style="font-size:24px;font-weight:700;color:var(--vlm);margin-bottom:8px;">时间线 · 2020–2022</h2>
+<svg viewBox="0 0 1000 100" xmlns="http://www.w3.org/2000/svg"><line x1="60" y1="50" x2="940" y2="50" stroke="rgba(255,255,255,0.2)" stroke-width="3"/><text x="60" y="80" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="11">2020</text><text x="350" y="80" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="11">2021</text><text x="700" y="80" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="11">2022</text><text x="940" y="80" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="11">2023</text>
+<rect x="60" y="25" width="640" height="50" rx="10" fill="rgba(183,148,244,0.12)" stroke="rgba(183,148,244,0.4)" stroke-width="2"/>
+<text x="380" y="55" text-anchor="middle" fill="#fff" font-size="15" font-weight="700">Part 1: 奠基与探索期</text>
+</svg></section>
+
+<!-- ═══════════ ViT ═══════════ -->
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">ViT · 2020.10</span></div>
+<div class="paper-card fragment fade-up"><div class="cite" style="font-size:10px;">arXiv: 2010.11929 · ICLR 2021 · Google · 引用 50,000+</div>
+<div class="title" style="font-size:16px;font-weight:700;color:#fff;margin:4px 0;">ViT — An Image is Worth 16×16 Words</div>
+<div class="desc" style="font-size:12px;color:var(--text2);line-height:1.7;margin-top:6px;"><strong style="color:var(--vis);">核心贡献：</strong>首次将标准 Transformer 直接应用于图像——把图像切成固定大小的 Patch，当作"视觉单词"序列处理，打破 CV 和 NLP 的架构壁垒。</div></div></section>
+
+<section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--vis);margin-bottom:8px;">ViT 架构：图像 → Patch → Transformer</h2>
+<svg viewBox="0 0 900 240" xmlns="http://www.w3.org/2000/svg" style="max-width:900px;">
+  <!-- 输入图像 -->
+  <rect x="10" y="20" width="120" height="120" rx="8" fill="rgba(96,165,250,0.1)" stroke="rgba(96,165,250,0.3)"/>
+  <text x="70" y="85" text-anchor="middle" fill="#60a5fa" font-size="14" font-weight="700" font-family="sans-serif">🖼️ 224×224</text>
+  <!-- Patch分割箭头 -->
+  <text x="145" y="85" fill="rgba(255,255,255,0.4)" font-size="20">→</text>
+  <!-- 3×3 Patch网格示意 -->
+  <g transform="translate(170,20)">
+    <rect x="0" y="0" width="36" height="36" rx="4" fill="rgba(96,165,250,0.15)" stroke="rgba(96,165,250,0.3)"/><text x="18" y="24" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="9">P1</text>
+    <rect x="40" y="0" width="36" height="36" rx="4" fill="rgba(96,165,250,0.1)" stroke="rgba(96,165,250,0.2)"/><text x="58" y="24" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="9">P2</text>
+    <rect x="80" y="0" width="36" height="36" rx="4" fill="rgba(96,165,250,0.1)" stroke="rgba(96,165,250,0.2)"/><text x="98" y="24" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="9">···</text>
+    <rect x="0" y="40" width="36" height="36" rx="4" fill="rgba(96,165,250,0.1)" stroke="rgba(96,165,250,0.2)"/><text x="18" y="64" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="9">P5</text>
+    <rect x="40" y="40" width="36" height="36" rx="4" fill="rgba(96,165,250,0.08)" stroke="rgba(96,165,250,0.15)"/><text x="58" y="64" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="9">···</text>
+    <rect x="80" y="40" width="36" height="36" rx="4" fill="rgba(96,165,250,0.08)" stroke="rgba(96,165,250,0.15)"/><text x="98" y="64" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="9">···</text>
+    <rect x="0" y="80" width="36" height="36" rx="4" fill="rgba(96,165,250,0.08)" stroke="rgba(96,165,250,0.15)"/><text x="18" y="104" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="9">···</text>
+    <rect x="40" y="80" width="36" height="36" rx="4" fill="rgba(96,165,250,0.08)" stroke="rgba(96,165,250,0.15)"/><text x="58" y="104" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="9">···</text>
+    <rect x="80" y="80" width="36" height="36" rx="4" fill="rgba(96,165,250,0.08)" stroke="rgba(96,165,250,0.15)"/><text x="98" y="104" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="9">Pn</text>
+  </g>
+  <!-- 线性投影+位置编码 -->
+  <text x="310" y="85" fill="rgba(255,255,255,0.4)" font-size="20">→</text>
+  <rect x="330" y="35" width="140" height="30" rx="6" fill="rgba(183,148,244,0.1)" stroke="rgba(183,148,244,0.2)"/>
+  <text x="400" y="55" text-anchor="middle" fill="#b794f4" font-size="11" font-family="sans-serif">线性投影 + 位置编码</text>
+  <text x="400" y="110" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="11" font-family="sans-serif">每个 Patch → 768维向量</text>
+  <!-- Transformer -->
+  <text x="490" y="85" fill="rgba(255,255,255,0.4)" font-size="20">→</text>
+  <rect x="510" y="30" width="160" height="100" rx="10" fill="rgba(183,148,244,0.06)" stroke="rgba(183,148,244,0.2)"/>
+  <text x="590" y="52" text-anchor="middle" fill="#b794f4" font-size="13" font-weight="700" font-family="sans-serif">Transformer Encoder</text>
+  <text x="590" y="75" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="10" font-family="sans-serif">多头自注意力</text>
+  <text x="590" y="95" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="10" font-family="sans-serif">MLP · LayerNorm</text>
+  <text x="590" y="118" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="9" font-family="sans-serif">[CLS] token → 分类</text>
+  <!-- 输出 -->
+  <text x="695" y="85" fill="rgba(255,255,255,0.4)" font-size="20">→</text>
+  <rect x="720" y="60" width="100" height="40" rx="8" fill="rgba(74,222,128,0.1)" stroke="rgba(74,222,128,0.2)"/>
+  <text x="770" y="85" text-anchor="middle" fill="#4ade80" font-size="12" font-weight="700" font-family="sans-serif">分类结果</text>
+  <!-- 底部注释 -->
+  <text x="450" y="165" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="11" font-family="sans-serif">Patch尺寸=16×16 → 14×14=196个视觉token + 1个[CLS] → 送入标准Transformer</text>
+  <!-- 关键数字 -->
+  <text x="450" y="195" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="10" font-family="sans-serif">ViT-L/16: 307M参数 · ImageNet 88.5% · 比CNN更少的归纳偏置</text>
+</svg></section>
+
+<section data-transition="slide"><div class="two-col fragment fade-up"><div class="concept-block" style="border-left:3px solid var(--vis);"><h4>🔑 关键创新</h4><p style="font-size:11px;">图像<strong style="color:var(--vis);">不需要</strong>专门的卷积操作。把图像切成 Patch 后线性投影，变成和文本 token 一样的向量序列——Transformer 自然地就能处理。这打破了 CV 和 NLP 的架构壁垒。</p></div><div class="concept-block" style="border-left:3px solid var(--gen);"><h4>⚠️ 局限</h4><p style="font-size:11px;">ViT 需要<strong style="color:var(--gen);">大量数据</strong>预训练（JFT-300M）才能超越 CNN。缺少卷积的归纳偏置——平移等变性、局部性——在小数据集上不如 ResNet。</p></div></div></section>
+
+<!-- ═══════════ CLIP ═══════════ -->
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">CLIP · 2021.01</span></div>
+<div class="paper-card fragment fade-up"><div class="cite" style="font-size:10px;">arXiv: 2103.00020 · OpenAI · 4亿图文对 · 引用 30,000+</div>
+<div class="title" style="font-size:16px;font-weight:700;color:#fff;margin:4px 0;">CLIP — Contrastive Language–Image Pre-training</div>
+<div class="desc" style="font-size:12px;color:var(--text2);line-height:1.7;margin-top:6px;"><strong style="color:var(--vlm);">核心贡献：</strong>用<strong style="color:#fff;">对比学习</strong>在4亿图文对上训练，将图像和文本映射到<strong style="color:#fff;">同一个语义空间</strong>。"一只狗"的文字和狗的照片在这个空间中距离极近。</div></div></section>
+
+<section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--vlm);margin-bottom:8px;">CLIP 架构：双塔 + 对比学习</h2>
+<svg viewBox="0 0 900 280" xmlns="http://www.w3.org/2000/svg" style="max-width:900px;">
+  <defs><style>.fade{animation:fI 2s ease-in-out infinite alternate}@keyframes fI{from{opacity:0.6}to{opacity:1}}</style></defs>
+  <!-- 图像塔 -->
+  <rect x="20" y="20" width="200" height="140" rx="14" fill="rgba(96,165,250,0.08)" stroke="rgba(96,165,250,0.25)"/>
+  <text x="120" y="50" text-anchor="middle" fill="#60a5fa" font-size="15" font-weight="700" font-family="sans-serif">🖼️ 图像编码器</text>
+  <text x="120" y="75" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="11" font-family="sans-serif">ViT / ResNet</text>
+  <rect x="40" y="90" width="160" height="40" rx="8" fill="rgba(96,165,250,0.12)"/>
+  <text x="120" y="115" text-anchor="middle" fill="#60a5fa" font-size="12" font-weight="700" font-family="sans-serif">图像特征向量 f</text>
+  <text x="120" y="145" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="9">512维 · L2归一化</text>
+  <!-- 文本塔 -->
+  <rect x="680" y="20" width="200" height="140" rx="14" fill="rgba(183,148,244,0.08)" stroke="rgba(183,148,244,0.25)"/>
+  <text x="780" y="50" text-anchor="middle" fill="#b794f4" font-size="15" font-weight="700" font-family="sans-serif">📝 文本编码器</text>
+  <text x="780" y="75" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="11" font-family="sans-serif">Transformer</text>
+  <rect x="700" y="90" width="160" height="40" rx="8" fill="rgba(183,148,244,0.12)"/>
+  <text x="780" y="115" text-anchor="middle" fill="#b794f4" font-size="12" font-weight="700" font-family="sans-serif">文本特征向量 g</text>
+  <text x="780" y="145" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="9">512维 · L2归一化</text>
+  <!-- 共享空间 -->
+  <rect x="320" y="70" width="260" height="100" rx="16" fill="rgba(251,191,36,0.06)" stroke="rgba(251,191,36,0.3)" stroke-dasharray="6 3" class="fade"/>
+  <text x="450" y="95" text-anchor="middle" fill="#facc15" font-size="14" font-weight="700" font-family="sans-serif">🌐 共享语义空间</text>
+  <text x="450" y="120" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="10" font-family="sans-serif">cos(f, g) → 最大化</text>
+  <text x="450" y="140" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="9" font-family="sans-serif">N×N 相似度矩阵</text>
+  <!-- 箭头 -->
+  <path d="M220,90 L320,110" stroke="rgba(96,165,250,0.4)" stroke-width="2" marker-end="url(#a)"/>
+  <path d="M680,90 L580,110" stroke="rgba(183,148,244,0.4)" stroke-width="2" marker-end="url(#a)"/>
+  <!-- 底部公式 -->
+  <text x="450" y="200" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="12" font-family="sans-serif">损失 = 双向交叉熵：正确图文对得分最高，错误配对得分最低</text>
+  <text x="450" y="225" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="10" font-family="sans-serif">训练数据: 4亿 (图像, 文本描述) 对 · 从互联网收集</text>
+</svg></section>
+
+<section data-transition="slide"><!-- ═══════════ DALL·E 1 ═══════════ -->
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">DALL·E 1 · 2021.01</span></div>
+<div class="paper-card fragment fade-up"><div class="cite" style="font-size:10px;">OpenAI · 2021.01 · Zero-Shot Text-to-Image Generation</div>
+<div class="title" style="font-size:16px;font-weight:700;color:#fff;margin:4px 0;">DALL·E — 首个大规模文本→图像生成</div>
+<div class="desc" style="font-size:12px;color:var(--text2);line-height:1.7;margin-top:6px;"><strong style="color:var(--vid);">核心创新：</strong>分两步——① 用dVAE将图像压缩为<strong style="color:#fff;">离散token序列</strong>；② 用<strong style="color:#fff;">自回归Transformer</strong>像GPT一样逐token生成这些图像token。首次证明语言和视觉可在同一token流中统一建模。</div></div></section>
+
+<section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--vid);margin-bottom:6px;">核心问题：如何让 Transformer 生成图像？</h2>
+<div class="def-box fragment fade-up"><div class="label">🎯 根本矛盾</div><div class="content">Transformer 是为一维<strong style="color:var(--vid);">离散序列</strong>（文本token）设计的——每个位置是词表中一个整数索引。但图像是<strong style="color:var(--vid);">二维连续像素值</strong>（256×256×3个数字）。<br><br><strong style="color:#fff;">解决思路：</strong>能不能把图像也变成一串整数索引？就像把中文翻译成数字token一样，把一张图也"翻译"成一串数字。这样Transformer就能用<strong style="color:var(--vid);">完全相同的方式</strong>处理文本和图像。</div></div></section>
+
+<section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--vid);margin-bottom:6px;">dVAE：图像的"翻译器"</h2>
+<svg viewBox="0 0 920 280" xmlns="http://www.w3.org/2000/svg" style="max-width:920px;">
+  <!-- 输入图像 -->
+  <rect x="10" y="40" width="130" height="130" rx="10" fill="rgba(251,191,36,0.08)" stroke="rgba(251,191,36,0.25)"/>
+  <text x="75" y="100" text-anchor="middle" fill="#facc15" font-size="13" font-weight="700">🖼️ 256×256</text>
+  <text x="75" y="120" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="10">RGB图像</text>
+  <text x="75" y="150" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="9">~200k个值</text>
+  <!-- → -->
+  <text x="155" y="110" fill="rgba(255,255,255,0.3)" font-size="18">→</text>
+  <!-- dVAE Encoder -->
+  <rect x="180" y="40" width="150" height="130" rx="12" fill="rgba(183,148,244,0.08)" stroke="rgba(183,148,244,0.25)"/>
+  <text x="255" y="68" text-anchor="middle" fill="#b794f4" font-size="13" font-weight="700">dVAE 编码器</text>
+  <line x1="200" y1="78" x2="310" y2="78" stroke="rgba(255,255,255,0.1)"/>
+  <text x="255" y="98" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="11">压缩成 32×32 网格</text>
+  <text x="255" y="118" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="11">每个位置→连续向量</text>
+  <text x="255" y="140" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="11">最近邻→Codebook索引</text>
+  <text x="255" y="158" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="9">输出: 1024个整数</text>
+  <!-- → -->
+  <text x="345" y="110" fill="rgba(255,255,255,0.3)" font-size="18">→</text>
+  <!-- Codebook -->
+  <rect x="360" y="55" width="160" height="100" rx="12" fill="rgba(96,165,250,0.06)" stroke="rgba(96,165,250,0.2)"/>
+  <text x="440" y="78" text-anchor="middle" fill="#60a5fa" font-size="12" font-weight="700">📖 Codebook</text>
+  <text x="440" y="98" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="10">8192个条目</text>
+  <text x="440" y="115" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="10">每条目=256维向量</text>
+  <text x="440" y="135" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="9">量化: 选最近条目</text>
+  <!-- → -->
+  <text x="535" y="110" fill="rgba(255,255,255,0.3)" font-size="18">→</text>
+  <!-- dVAE Decoder -->
+  <rect x="560" y="40" width="150" height="130" rx="12" fill="rgba(74,222,128,0.06)" stroke="rgba(74,222,128,0.2)"/>
+  <text x="635" y="68" text-anchor="middle" fill="#4ade80" font-size="13" font-weight="700">dVAE 解码器</text>
+  <line x1="580" y1="78" x2="690" y2="78" stroke="rgba(255,255,255,0.1)"/>
+  <text x="635" y="105" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="11">Codebook条目→特征图</text>
+  <text x="635" y="125" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="11">上采样·重建图像</text>
+  <text x="635" y="150" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="9">输出: 256×256 RGB</text>
+  <!-- → -->
+  <text x="725" y="110" fill="rgba(255,255,255,0.3)" font-size="18">→</text>
+  <!-- 输出 -->
+  <rect x="750" y="55" width="100" height="100" rx="10" fill="rgba(74,222,128,0.06)" stroke="rgba(74,222,128,0.15)"/>
+  <text x="800" y="95" text-anchor="middle" fill="#4ade80" font-size="11" font-weight="700">重建图像</text>
+  <text x="800" y="115" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="9">有损压缩</text>
+  <!-- 核心标注 -->
+  <text x="460" y="200" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="12">一张图 → 1024个离散token · 每token ∈ {0,1,…,8191} · 序列长度从~200k缩至1024</text>
+  <text x="460" y="225" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="10">离散token = 图像可以像文本一样用交叉熵训练自回归模型</text>
+</svg></section>
+
+<section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--vid);margin-bottom:6px;">两步流程：dVAE + 自回归 Transformer</h2>
+<svg viewBox="0 0 920 200" xmlns="http://www.w3.org/2000/svg" style="max-width:920px;">
+  <!-- Step 1 -->
+  <rect x="15" y="10" width="430" height="90" rx="14" fill="rgba(183,148,244,0.05)" stroke="rgba(183,148,244,0.2)"/>
+  <text x="40" y="35" fill="#b794f4" font-size="13" font-weight="700">Step 1 训练 dVAE (一次性, 冻结)</text>
+  <text x="40" y="58" fill="rgba(255,255,255,0.5)" font-size="11">图像 → 编码器 → 32×32网格 → Codebook量化 → 解码器重建 → 最小化重建误差</text>
+  <text x="40" y="78" fill="rgba(255,255,255,0.35)" font-size="10">训练完dVAE后，任何图像都可以被编码为1024个整数，也可以从1024个整数解码回图像</text>
+  <!-- Step 2 -->
+  <rect x="15" y="108" width="430" height="85" rx="14" fill="rgba(251,191,36,0.05)" stroke="rgba(251,191,36,0.25)"/>
+  <text x="40" y="132" fill="#facc15" font-size="13" font-weight="700">Step 2 训练自回归 Transformer</text>
+  <text x="40" y="155" fill="rgba(255,255,255,0.5)" font-size="11">输入: [文本token (BPE)] + [图像token (dVAE编码)] → 逐token预测下一个</text>
+  <text x="40" y="175" fill="rgba(255,255,255,0.35)" font-size="10">文本作为条件，自回归生成图像token序列，损失=交叉熵(预测索引 vs 真实索引)</text>
+  <!-- 推理 -->
+  <rect x="470" y="10" width="430" height="183" rx="14" fill="rgba(74,222,128,0.04)" stroke="rgba(74,222,128,0.15)"/>
+  <text x="495" y="35" fill="#4ade80" font-size="13" font-weight="700">🔮 推理 (文本 → 图像)</text>
+  <text x="495" y="60" fill="rgba(255,255,255,0.5)" font-size="11">① 输入文本 "an armchair in the shape of an avocado"</text>
+  <text x="495" y="80" fill="rgba(255,255,255,0.5)" font-size="11">② Transformer自回归生成 1024 个图像token</text>
+  <text x="495" y="100" fill="rgba(255,255,255,0.5)" font-size="11">③ dVAE解码器将1024个token → 256×256图像</text>
+  <text x="495" y="120" fill="#4ade80" font-size="10" font-weight="700">④ 输出：从未见过的组合</text>
+  <text x="495" y="136" fill="rgba(255,255,255,0.35)" font-size="9">"an armchair in the shape of an avocado"</text>
+  <text x="495" y="155" fill="rgba(255,255,255,0.3)" font-size="9">整个过程没用CLIP、没用扩散模型——纯粹的自回归序列生成</text>
+</svg></section>
+
+<section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--vid);margin-bottom:6px;">Codebook 训练细节 &amp; 为什么必须离散化</h2>
+<div class="two-col fragment fade-up"><div class="concept-block" style="border-left:3px solid var(--vid);"><h4>📖 Codebook 如何训练</h4><p style="font-size:11px;line-height:1.8;">① 编码器输出连续向量 z_e → ② 与8192个条目计算距离 → ③ 选择最近的条目e_k → ④ <strong style="color:var(--vid);">argmin不可导</strong>→用<strong style="color:#fff;">直通估计器(STE)</strong>：前向用量化e_k，反向传梯度给编码器 → ⑤ codebook通过<strong style="color:#fff;">指数移动平均(EMA)</strong>更新。条目逐渐变成常见纹理/边缘/色彩模板。</p></div>
+<div class="concept-block" style="border-left:3px solid var(--gen);"><h4>🔑 为什么必须离散化</h4><p style="font-size:11px;line-height:1.8;">如果直接预测连续像素值→MSE损失→输出成为所有可能图像的<strong style="color:var(--gen);">平均值</strong>(模糊)。<br>离散token将生成从<strong style="color:#fff;">"连续回归"</strong>变成<strong style="color:#fff;">"分类问题"</strong>→可用标准交叉熵训练Transformer。<br>代价：量化误差(有损压缩)，但保留语义、剔除噪声。</p></div></div></section>
+
+<!-- ═══════════ 基础概念支线 ═══════════ -->
+<section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--vlm);margin-bottom:6px;">支线：自回归生成 &amp; 潜空间</h2>
+<div class="two-col fragment fade-up"><div class="concept-block" style="border-left:3px solid var(--vis);"><h4>📝 自回归生成</h4><p style="font-size:11px;">模型逐个token生成序列。每步预测下一个token的概率分布→采样→拼回输入→预测再下一个。DALL·E中：先输入文本token，再逐个生成1024个图像token。</p></div>
+<div class="concept-block" style="border-left:3px solid var(--vlm);"><h4>🌐 潜空间 (Latent Space)</h4><p style="font-size:11px;">神经网络的压缩表示空间。VAE将512×512×3图像压缩至64×64×4——数据量<strong style="color:var(--vlm);">1/48</strong>。保留语义信息，剔除高频纹理噪声。</p></div></div></section>
+
+<section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--vlm);margin-bottom:6px;">MSE均值回归 · 四种生成方案</h2>
+<div class="two-col fragment fade-up"><div class="concept-block" style="border-left:3px solid var(--gen);"><h4>⚠️ 均值回归</h4><p style="font-size:11px;">MSE最优解=E[y|x]——期望值。当真实分布多峰时，期望落在峰间→模糊的叠加平均。这是<strong style="color:#fff;">所有确定性损失函数的宿命</strong>。</p></div><div class="concept-block" style="border-left:3px solid var(--aud);"><h4>✅ 四种方案</h4><table style="width:100%;font-size:10px;color:var(--text2);"><tr><td style="color:var(--vis);">VAE</td><td>高斯+KL正则</td><td>偏模糊</td></tr><tr><td style="color:var(--gen);">GAN</td><td>对抗采样</td><td>不稳定</td></tr><tr><td style="color:var(--vid);">扩散</td><td>分步MSE</td><td>慢</td></tr><tr><td style="color:var(--vlm);">离散化</td><td>量化+交叉熵</td><td>量化误差</td></tr></table></div></div></section>
+
+<section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--vlm);margin-bottom:6px;">设计哲学：连续 vs 离散</h2>
+<div class="def-box fragment fade-up"><div class="label">💡 两种哲学，同一个核心目标</div><div class="content"><strong style="color:var(--vlm);">离散搭桥</strong>：连续→离散token→Transformer(交叉熵)→离散→连续。代价=量化误差，收获=稳定训练。<br><strong style="color:var(--vid);">连续分步</strong>：不一步预测，分几百步去噪。每步MSE目标变成确定的高斯噪声→完全避开均值回归。<br><strong style="color:#fff;">共同核心：如何避开"直接预测连续多峰分布"这一灾难。</strong></div></div></section>
+
+<!-- ═══════════ DALL·E 2 + Stable Diffusion ═══════════ -->
+<section data-transition="slide"><div style="text-align:center;margin-bottom:8px;"><span class="page-badge">DALL·E 2 · 2022.04</span></div>
+<div class="paper-card fragment fade-up"><div class="cite" style="font-size:10px;">OpenAI · 2022.04</div><div class="title" style="font-size:16px;font-weight:700;color:#fff;margin:4px 0;">DALL·E 2 — CLIP引导的扩散生成</div><div class="desc" style="font-size:12px;color:var(--text2);line-height:1.7;margin-top:6px;"><strong style="color:var(--gen);">两大升级：</strong>① 用<strong style="color:#fff;">扩散模型</strong>替代自回归生成→质量飞跃；② 用<strong style="color:#fff;">CLIP嵌入</strong>作为语义引导信号→文本相关性大幅提升。</div></div></section>
+
+<section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--gen);margin-bottom:6px;">DALL·E 2 流程</h2>
+<svg viewBox="0 0 920 220" xmlns="http://www.w3.org/2000/svg" style="max-width:920px;">
+  <rect x="10" y="15" width="180" height="55" rx="12" fill="rgba(183,148,244,0.08)" stroke="rgba(183,148,244,0.25)"/>
+  <text x="100" y="40" text-anchor="middle" fill="#b794f4" font-size="13" font-weight="700">📝 文本 Prompt</text>
+  <text x="100" y="58" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="10">" astronaut riding a horse "</text>
+  <text x="200" y="45" fill="rgba(255,255,255,0.3)" font-size="18">→</text>
+  <rect x="220" y="10" width="170" height="65" rx="12" fill="rgba(96,165,250,0.08)" stroke="rgba(96,165,250,0.25)"/>
+  <text x="305" y="35" text-anchor="middle" fill="#60a5fa" font-size="12" font-weight="700">CLIP 文本编码器</text>
+  <text x="305" y="55" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="10">→ 文本嵌入向量</text>
+  <text x="405" y="45" fill="rgba(255,255,255,0.3)" font-size="18">→</text>
+  <rect x="430" y="15" width="170" height="55" rx="12" fill="rgba(251,191,36,0.08)" stroke="rgba(251,191,36,0.3)"/>
+  <text x="515" y="36" text-anchor="middle" fill="#facc15" font-size="12" font-weight="700">先验模型 (扩散)</text>
+  <text x="515" y="54" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="10">文本嵌入→CLIP图像嵌入</text>
+  <text x="615" y="45" fill="rgba(255,255,255,0.3)" font-size="18">→</text>
+  <rect x="640" y="10" width="250" height="65" rx="12" fill="rgba(74,222,128,0.06)" stroke="rgba(74,222,128,0.2)"/>
+  <text x="765" y="35" text-anchor="middle" fill="#4ade80" font-size="12" font-weight="700">扩散解码器</text>
+  <text x="765" y="55" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="10">CLIP图像嵌入+噪声→去噪→图像</text>
+  <!-- 底部关键创新 -->
+  <rect x="80" y="110" width="760" height="50" rx="10" fill="rgba(183,148,244,0.04)" stroke="rgba(183,148,244,0.12)"/>
+  <text x="460" y="133" text-anchor="middle" fill="var(--vlm)" font-size="12" font-weight="700">🔑 关键创新：CLIP 成为"桥" —— 文本向量 指导 扩散过程去噪方向</text>
+  <text x="460" y="153" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="10">CLIP训练的共享语义空间在此首次被用于生成控制</text>
+</svg></section>
+
+<section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--aud);margin-bottom:6px;">Stable Diffusion 三组件</h2>
+<svg viewBox="0 0 920 240" xmlns="http://www.w3.org/2000/svg" style="max-width:920px;">
+  <!-- VAE -->
+  <rect x="20" y="50" width="200" height="100" rx="14" fill="rgba(96,165,250,0.06)" stroke="rgba(96,165,250,0.2)"/>
+  <text x="120" y="78" text-anchor="middle" fill="#60a5fa" font-size="14" font-weight="700">🔵 VAE</text>
+  <text x="120" y="100" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="10">像素 ↔ 潜空间</text>
+  <text x="120" y="120" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="9">512²×3 → 64²×4</text>
+  <text x="120" y="138" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="9">压缩比 1:48</text>
+  <!-- U-Net -->
+  <text x="240" y="100" fill="rgba(255,255,255,0.3)" font-size="18">→</text>
+  <rect x="270" y="30" width="260" height="140" rx="14" fill="rgba(251,191,36,0.06)" stroke="rgba(251,191,36,0.3)"/>
+  <text x="400" y="58" text-anchor="middle" fill="#facc15" font-size="15" font-weight="700">🟡 U-Net 去噪网络</text>
+  <text x="400" y="82" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="10">潜空间逐步去噪</text>
+  <line x1="300" y1="92" x2="500" y2="92" stroke="rgba(255,255,255,0.1)"/>
+  <text x="400" y="112" text-anchor="middle" fill="rgba(255,255,255,0.45)" font-size="10">交叉注意力接收文本条件</text>
+  <text x="400" y="132" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="9">每步：Query=特征, Key/Value=文本嵌入</text>
+  <text x="400" y="152" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="9">"a cat on a table"→引导猫和桌子的位置</text>
+  <!-- CLIP -->
+  <text x="550" y="100" fill="rgba(255,255,255,0.3)" font-size="18">←</text>
+  <rect x="580" y="50" width="200" height="100" rx="14" fill="rgba(183,148,244,0.06)" stroke="rgba(183,148,244,0.2)"/>
+  <text x="680" y="78" text-anchor="middle" fill="#b794f4" font-size="14" font-weight="700">🟣 CLIP 文本编码器</text>
+  <text x="680" y="100" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="10">Prompt → 文本嵌入</text>
+  <text x="680" y="120" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="9">条件注入U-Net</text>
+  <text x="680" y="138" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="9">冻结，不训练</text>
+  <!-- 底部 -->
+  <text x="460" y="210" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="11">🔑 潜空间扩散的核心：在压缩64倍的潜空间上做扩散——单张消费级GPU可运行</text>
+</svg></section>
+
+<section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--aud);margin-bottom:4px;">SD 采样伪代码逐行解释</h2>
+<div class="fragment fade-up" style="background:rgba(10,8,16,0.9);border:1px solid rgba(120,100,180,0.2);border-radius:12px;padding:18px 24px;max-width:780px;text-align:left;font-family:monospace;font-size:12px;color:#d4c8b0;line-height:1.9;">
+  <span style="color:#6c7086;">def</span> <span style="color:#89b4fa;">sd_sampling</span>(prompt, num_steps=50):<br>
+  &nbsp;&nbsp;text_embed = <span style="color:#60a5fa;">CLIP_text_encoder</span>(prompt)&nbsp;&nbsp;<span style="color:#6c7086;"># ① 文本→条件向量</span><br>
+  &nbsp;&nbsp;z = torch.randn(1, 4, 64, 64)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#6c7086;"># ② 随机噪声(潜空间64×64×4)</span><br>
+  &nbsp;&nbsp;<span style="color:#cba6f7;">for</span> t <span style="color:#cba6f7;">in</span> <span style="color:#facc15;">reversed</span>(<span style="color:#facc15;">range</span>(num_steps)):<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;noise_pred = <span style="color:#facc15;">UNet</span>(z, t, text_embed)&nbsp;&nbsp;<span style="color:#6c7086;"># ③ 预测当前噪声(条件=文本)</span><br>
+  &nbsp;&nbsp;&nbsp;&nbsp;z = <span style="color:#4ade80;">denoise_step</span>(z, noise_pred, t)&nbsp;&nbsp;<span style="color:#6c7086;"># ④ 减去噪声 → z更接近干净潜变量</span><br>
+  &nbsp;&nbsp;image = <span style="color:#60a5fa;">VAE_decoder</span>(z)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#6c7086;"># ⑤ 潜空间→像素</span><br>
+  &nbsp;&nbsp;<span style="color:#cba6f7;">return</span> image
+</div>
+<div class="fragment fade-up struct-content" style="margin-top:10px;"><strong style="color:var(--aud);">关键洞察：</strong>每步MSE预测的是<strong style="color:#fff;">噪声(确定性)</strong>,而非最终图像(多峰分布)。将一次生成拆成50步→每步MSE目标都是确定值→完美避开均值回归。</div></section>
+
+<!-- ═══════════ Flamingo + BLIP-2 ═══════════ -->
+<section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--vis);margin-bottom:6px;">桥接模式：视觉 → 语言的理解路径</h2>
+<svg viewBox="0 0 900 180" xmlns="http://www.w3.org/2000/svg" style="max-width:900px;">
+  <rect x="10" y="15" width="150" height="55" rx="12" fill="rgba(96,165,250,0.08)" stroke="rgba(96,165,250,0.25)"/>
+  <text x="85" y="40" text-anchor="middle" fill="#60a5fa" font-size="13" font-weight="700">🖼️ 视觉编码器</text><text x="85" y="56" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="9">ViT (冻结)</text>
+  <text x="175" y="42" fill="rgba(255,255,255,0.3)" font-size="16">→</text>
+  <rect x="200" y="10" width="170" height="65" rx="12" fill="rgba(251,191,36,0.08)" stroke="rgba(251,191,36,0.3)"/>
+  <text x="285" y="32" text-anchor="middle" fill="#facc15" font-size="12" font-weight="700">🔗 桥接模块</text><text x="285" y="50" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="9">Q-Former / Perceiver</text><text x="285" y="65" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="8">压缩 N→64个视觉token</text>
+  <text x="385" y="42" fill="rgba(255,255,255,0.3)" font-size="16">→</text>
+  <rect x="410" y="15" width="150" height="55" rx="12" fill="rgba(183,148,244,0.08)" stroke="rgba(183,148,244,0.25)"/>
+  <text x="485" y="40" text-anchor="middle" fill="#b794f4" font-size="13" font-weight="700">📝 LLM</text><text x="485" y="56" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="9">Chinchilla/OPT (冻结)</text>
+  <text x="575" y="42" fill="rgba(255,255,255,0.3)" font-size="16">→</text>
+  <rect x="600" y="25" width="120" height="40" rx="10" fill="rgba(74,222,128,0.06)" stroke="rgba(74,222,128,0.2)"/>
+  <text x="660" y="50" text-anchor="middle" fill="#4ade80" font-size="12" font-weight="700">文本回答</text>
+  <!-- 核心 -->
+  <rect x="60" y="100" width="780" height="50" rx="10" fill="rgba(96,165,250,0.04)" stroke="rgba(96,165,250,0.12)"/>
+  <text x="450" y="122" text-anchor="middle" fill="var(--vis)" font-size="12" font-weight="700">🔑 核心：不训练ViT，不训练LLM。只训练中间的轻量桥接层 (~100M参数)</text>
+  <text x="450" y="142" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="9">视觉token → 翻译成LLM能理解的"语言" → LLM像往常一样自回归生成</text>
+</svg></section>
+
+<section data-transition="slide"><div class="two-col fragment fade-up">
+<div class="concept-block" style="border-left:3px solid var(--vis);"><h4>Flamingo (2022.04)</h4><p style="font-size:11px;"><strong>Perceiver Resampler：</strong>将变长视觉特征压缩为固定64个token→通过<strong style="color:var(--vis);">交叉注意力</strong>注入LLM每一层。首个大规模VLM，80B参数，强大Few-shot能力。</p></div>
+<div class="concept-block" style="border-left:3px solid var(--vlm);"><h4>BLIP-2 (2023.01)</h4><p style="font-size:11px;"><strong>Q-Former：</strong>轻量Transformer(仅100M参数)。可学习query tokens从ViT特征中提取语言相关信息→输出固定数量视觉token→作为<strong style="color:var(--vlm);">软提示(soft prompt)</strong>输入冻结LLM。</p></div></div></section>
+
+<!-- 后总 -->
+<section data-transition="slide"><div class="ac-card fragment fade-up" style="text-align:center;"><h2 style="font-size:24px;font-weight:700;color:var(--vlm);margin-bottom:10px;">奠基期总结</h2><div class="ac-bar"></div>
+<p style="font-size:13px;color:var(--text2);line-height:2;">ViT打破架构壁垒→CLIP建立图文共享空间→DALL·E开创文本生成图像→Stable Diffusion用潜空间扩散实现大众化→Flamingo/BLIP-2用桥接模式让LLM"看见"世界。<br><strong style="color:var(--vid);">2020–2022三年间，多模态从0到1完成了最关键的奠基。</strong></p></div></section>
+
+<section data-transition="zoom"><div class="ac-card fragment fade-up"><span style="font-size:50px;display:block;">🔭</span><h2 style="font-size:24px;font-weight:700;color:var(--vlm);">→ VLM崛起 (2023)</h2><div class="ac-bar"></div><p style="font-size:14px;color:var(--text2);">GPT-4V · LLaVA · Gemini 1.0——LLM"睁开眼睛"</p></div></section>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.js"></script>
+<script>(function(){const c=document.getElementById('bg-canvas'),x=c.getContext('2d');let W,H,ribbons=[],frame=0;function rs(){W=c.width=window.innerWidth;H=c.height=window.innerHeight}window.addEventListener('resize',rs);rs();class Ribbon{constructor(){this.reset()}reset(){this.points=[];this.y=H*0.3+Math.random()*H*0.7;this.speed=(Math.random()-0.5)*0.25;this.hue=Math.floor(Math.random()*360);this.light=Math.floor(Math.random()*16+20);this.hueDrift=Math.random()*0.35+0.15;this.lightDrift=(Math.random()-0.5)*0.04;this.yDrift=(Math.random()-0.5)*0.15;const a=Math.random()*0.07+0.05;this.alpha=a;this.alphaStr=a*30;for(let i=0;i<=20;i++)this.points.push({x:i*W/20,y:Math.random()*70-35})}update(){this.y+=this.speed+this.yDrift;this.speed+=(Math.random()-0.5)*0.003;if(this.y<H*0.2||this.y>H+80)this.reset();this.hue+=this.hueDrift;if(this.hue<0)this.hue+=360;if(this.hue>=360)this.hue-=360;this.light+=this.lightDrift;if(this.light<20)this.lightDrift=0.05;if(this.light>35)this.lightDrift=-0.05;for(let p of this.points)p.y+=(Math.random()-0.5)*0.6}draw(ctx){const col=`hsla(${Math.floor(this.hue)},100%,${Math.floor(this.light)}%,`;ctx.save();ctx.globalAlpha=this.alpha;ctx.shadowColor=col+'0.35)';ctx.shadowBlur=20;ctx.beginPath();ctx.moveTo(0,this.y);for(let i=0;i<this.points.length;i++){const px=this.points[i].x,py=this.y+this.points[i].y;if(i<this.points.length-1){const nx=this.points[i+1].x,ny=this.y+this.points[i+1].y;ctx.quadraticCurveTo(px,py,(px+nx)/2,(py+ny)/2)}}ctx.lineTo(W,H);ctx.lineTo(0,H);ctx.closePath();ctx.fillStyle=col+this.alphaStr+')';ctx.fill();ctx.shadowBlur=0;ctx.restore()}}ribbons=Array.from({length:8},()=>new Ribbon());function lp(){x.clearRect(0,0,W,H);const grad=x.createRadialGradient(W/2,H/2,0,W/2,H/2,Math.max(W,H)*0.8);grad.addColorStop(0,'rgba(20,12,30,0.35)');grad.addColorStop(0.5,'rgba(8,5,12,0.12)');grad.addColorStop(1,'rgba(2,1,4,0)');x.fillStyle=grad;x.fillRect(0,0,W,H);const bloom=x.createRadialGradient(W/2+Math.sin(frame*0.003)*W*0.08,H/2+Math.cos(frame*0.004)*H*0.06,Math.min(W,H)*0.03,W/2,H/2,Math.min(W,H)*0.45);bloom.addColorStop(0,'rgba(140,110,200,0.05)');bloom.addColorStop(0.4,'rgba(100,140,200,0.02)');bloom.addColorStop(1,'rgba(0,0,0,0)');x.fillStyle=bloom;x.fillRect(0,0,W,H);ribbons.forEach(r=>{r.update();r.draw(x)});frame++;requestAnimationFrame(lp)}lp()})();</script>
+<script>Reveal.initialize({hash:true,center:true,transition:'slide',transitionSpeed:'slow',backgroundTransition:'zoom',slideNumber:false,progress:false,controls:true,controlsLayout:'bottom-right',navigationMode:'linear',width:1200,height:700,margin:0,minScale:0.2,maxScale:2.0});(function(){const e=document.getElementById('page-indicator');function u(){const t=Reveal.getTotalSlides(),c=Reveal.getSlidePastCount()+1;e.textContent=c+' / '+t}Reveal.on('ready',u);Reveal.on('slidechanged',u)})();</script></body></html>

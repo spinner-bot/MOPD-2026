@@ -1,0 +1,233 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><title>Module 3 · Part 2: 视觉域 — VLM的OPD/OPSD</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/black.min.css">
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]}};</script>
+<style>
+:root{--bg:#030206;--surface:rgba(18,16,28,0.7);--border:rgba(124,92,231,0.15);--text:#e0dce8;--text2:rgba(210,200,230,0.7);--text3:rgba(160,145,190,0.45);--core:#7c5ce7;--flare:#e17055;--fuse:#a855f7;--beam:#fdcb6e;--nova:#00cec9}
+#bg-canvas{position:fixed;inset:0;z-index:0;pointer-events:none}.reveal{background:transparent}.reveal .slides{text-align:center;width:100%!important;left:50%!important;margin:0!important}.reveal .slides section{padding:28px 48px;height:100%;display:flex!important;flex-direction:column;align-items:center;justify-content:center}.reveal .controls{right:12px!important;bottom:12px!important}#page-indicator{position:fixed;left:24px;bottom:20px;z-index:100;font-size:13px;color:rgba(255,255,255,0.35);font-family:'JetBrains Mono','Fira Code','Consolas',monospace;letter-spacing:1px;pointer-events:none}
+.core-card{position:relative;z-index:2;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:36px 46px;max-width:860px;box-shadow:0 8px 32px rgba(0,0,0,0.6)}.core-card::before{content:'';height:2px;background:linear-gradient(90deg,transparent,var(--core),var(--flare),var(--nova),transparent);display:block;margin-bottom:12px}.hero-title{font-size:44px;font-weight:800;background:linear-gradient(135deg,var(--core),var(--flare),var(--nova));background-size:300%300%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:gS 5s ease infinite}@keyframes gS{0%,100%{background-position:0%50%}50%{background-position:100%50%}}.core-bar{width:100px;height:2px;background:linear-gradient(90deg,transparent,var(--core),var(--flare),var(--nova),transparent);margin:14px auto}
+.struct-head{font-size:18px;font-weight:700;color:var(--core);margin:0 0 8px;border-bottom:1px solid rgba(124,92,231,0.3);display:inline-block;padding-bottom:4px}.struct-content{font-size:13px;color:var(--text2);line-height:2;text-align:left;max-width:780px}.struct-content strong{color:#fff}
+.two-col{display:flex;gap:18px;flex-wrap:wrap;justify-content:center;max-width:940px}.two-col>div{flex:1;min-width:260px}.tri-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;max-width:940px}
+.concept-block{background:rgba(20,18,30,0.5);border:1px solid var(--border);border-radius:10px;padding:16px 14px;text-align:left}.concept-block h4{font-size:13px;color:var(--core);margin:0 0 5px}.concept-block p{font-size:11px;color:var(--text2);line-height:1.7;margin:0}
+.paper-card{background:linear-gradient(135deg,rgba(124,92,231,0.05),rgba(0,206,201,0.03));border:1px solid rgba(124,92,231,0.15);border-radius:10px;padding:16px 18px;text-align:left;margin-bottom:8px}.paper-card .tag{font-size:9px;font-weight:800;padding:2px 8px;border-radius:8px;letter-spacing:1px;display:inline-block;margin-bottom:6px}.paper-card .t{font-size:14px;font-weight:700;color:#fff;margin:4px 0}.paper-card .d{font-size:11px;color:var(--text2);line-height:1.7}
+.formula-box{background:rgba(8,6,15,0.8);border:1px solid rgba(124,92,231,0.2);border-radius:10px;padding:16px 22px;max-width:780px;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,0.5);margin:8px 0}.formula-box .math-block{font-size:14px;color:#d4c8b0}
+.def-box{background:rgba(124,92,231,0.06);border:1px solid rgba(124,92,231,0.2);border-left:3px solid var(--core);border-radius:0 10px 10px 0;padding:14px 20px;text-align:left;max-width:750px;margin:8px 0}.def-box .label{font-size:11px;color:var(--core);font-weight:700;margin-bottom:4px}.def-box .content{font-size:12px;color:var(--text);line-height:1.8}
+.warn-box{background:rgba(225,112,85,0.06);border:1px solid rgba(225,112,85,0.2);border-left:3px solid var(--flare);border-radius:0 10px 10px 0;padding:14px 20px;text-align:left;max-width:750px;margin:8px 0}.warn-box .label{font-size:11px;color:var(--flare);font-weight:700;margin-bottom:4px}.warn-box .content{font-size:12px;color:var(--text);line-height:1.8}
+.green-box{background:rgba(0,206,201,0.06);border:1px solid rgba(0,206,201,0.2);border-left:3px solid var(--nova);border-radius:0 10px 10px 0;padding:14px 20px;text-align:left;max-width:750px;margin:8px 0}.green-box .label{font-size:11px;color:var(--nova);font-weight:700;margin-bottom:4px}.green-box .content{font-size:12px;color:var(--text);line-height:1.8}
+.summary-table{width:100%;max-width:820px;border-collapse:collapse;font-size:10.5px;border-radius:10px;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,0.5)}.summary-table thead{background:linear-gradient(135deg,rgba(124,92,231,0.25),rgba(225,112,85,0.12))}.summary-table th{padding:9px 12px;font-weight:700;color:var(--beam);font-size:10px}.summary-table td{padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text2)}.summary-table tbody tr{background:rgba(20,18,30,0.4)}.summary-table .pc{font-weight:700;color:var(--beam)}.summary-table .hl{color:var(--nova);font-weight:600}.summary-table .wd{color:var(--flare);font-weight:600}
+.page-badge{display:inline-flex;padding:4px 14px;border-radius:14px;font-size:10px;font-weight:700;background:rgba(124,92,231,0.08);color:var(--core);border:1px solid rgba(124,92,231,0.2);letter-spacing:1px}.cite{font-size:10px;color:var(--core);font-family:monospace}
+.step-flow{display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap;max-width:900px;margin:8px 0}.step{background:rgba(20,18,30,0.5);border:1px solid var(--border);border-radius:8px;padding:10px 14px;text-align:center;min-width:130px;flex:1}.step .sn{font-size:9px;color:var(--core);font-weight:700;margin-bottom:3px}.step .st{font-size:11px;color:#fff;font-weight:600}.step .sd{font-size:9.5px;color:var(--text2);line-height:1.5}.step-arrow{color:var(--text3);font-size:16px;font-weight:700}
+.reveal .slides section .fragment.fade-up{opacity:0;transform:translateY(30px);transition:all 0.7s}.reveal .slides section .fragment.fade-up.visible{opacity:1;transform:translateY(0)}
+@media(max-width:768px){.hero-title{font-size:28px}.tri-grid{grid-template-columns:1fr}.two-col{flex-direction:column}.step-flow{flex-direction:column}.step-arrow{transform:rotate(90deg)}}
+</style></head><body><canvas id="bg-canvas"></canvas><div id="page-indicator"></div><div class="reveal"><div class="slides">
+
+<!-- ═══════ 标题页 ═══════ -->
+<section data-transition="zoom"><div class="core-card fragment fade-up"><p class="cite">MODULE 3 · PART 2</p><h1 class="hero-title">视觉域：VLM 的 OPD/OPSD</h1><p style="font-size:20px;color:var(--text2);">从奠基到防 Shortcut · 15+ 篇论文的系统演进</p><div class="core-bar"></div><p style="font-size:13px;color:var(--text3);">多模态 OPD 中论文最密集、方法论最成熟的子领域</p></div></section>
+
+
+<!-- ═══════ DAG 知识图谱 ═══════ -->
+<section data-transition="slide"><h2 style="font-size:24px;font-weight:700;color:var(--core);margin-bottom:8px;">Part 2 知识结构图</h2>
+<svg viewBox="0 0 960 440" xmlns="http://www.w3.org/2000/svg" style="max-width:960px;">
+<defs><marker id="a" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><path d="M0,0 L7,2.5 L0,5 Z" fill="rgba(255,255,255,0.2)"/></marker></defs>
+<rect x="330" y="5" width="300" height="30" rx="15" fill="rgba(124,92,231,0.08)" stroke="rgba(124,92,231,0.2)"/>
+<text x="480" y="25" text-anchor="middle" fill="#fff" font-size="13" font-weight="700" font-family="sans-serif">Part 2: 视觉域 — VLM 的 OPD/OPSD</text>
+
+<!-- 演进脉络标签 -->
+<rect x="30" y="50" width="900" height="32" rx="8" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.06)"/>
+<text x="480" y="71" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="10" font-family="sans-serif">演进脉络：奠基 → 自蒸馏 → 防 Shortcut → 解耦感知与推理</text>
+
+<!-- 第1层：奠基 -->
+<rect x="350" y="95" width="260" height="48" rx="10" fill="rgba(253,203,110,0.06)" stroke="rgba(253,203,110,0.2)"/>
+<text x="480" y="116" text-anchor="middle" fill="var(--beam)" font-size="12" font-weight="700" font-family="sans-serif">🏛️ 奠基：VOLD (CVPR 2026)</text>
+<text x="480" y="134" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="9" font-family="sans-serif">首次将 on-policy distillation 引入 VLM</text>
+
+<path d="M480,143 L480,165" marker-end="url(#a)" stroke="rgba(255,255,255,0.12)" stroke-width="1.5"/>
+
+<!-- 第2层：自蒸馏双星 -->
+<rect x="80" y="170" width="360" height="50" rx="10" fill="rgba(124,92,231,0.05)" stroke="rgba(124,92,231,0.18)"/>
+<text x="260" y="192" text-anchor="middle" fill="var(--core)" font-size="11" font-weight="700" font-family="sans-serif">Vision-OPD (2026.05)</text>
+<text x="260" y="210" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="9" font-family="sans-serif">区域→全局 · 视觉放大内化 · 零外部依赖</text>
+
+<rect x="520" y="170" width="360" height="50" rx="10" fill="rgba(0,206,201,0.05)" stroke="rgba(0,206,201,0.18)"/>
+<text x="700" y="192" text-anchor="middle" fill="var(--nova)" font-size="11" font-weight="700" font-family="sans-serif">Visual-OPSD (2026.06)</text>
+<text x="700" y="210" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="9" font-family="sans-serif">视觉思维特权 · 14.3×加速 · 学生超越教师</text>
+
+<path d="M350,143 L180,143 L180,165" marker-end="url(#a)" stroke="rgba(255,255,255,0.1)" stroke-width="1" fill="none"/>
+<path d="M610,143 L780,143 L780,165" marker-end="url(#a)" stroke="rgba(255,255,255,0.1)" stroke-width="1" fill="none"/>
+
+<path d="M260,220 L260,245" marker-end="url(#a)" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+<path d="M700,220 L700,245" marker-end="url(#a)" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+
+<!-- 第3层：防Shortcut三连 -->
+<rect x="30" y="250" width="900" height="28" rx="10" fill="rgba(225,112,85,0.04)" stroke="rgba(225,112,85,0.12)"/>
+<text x="480" y="269" text-anchor="middle" fill="var(--flare)" font-size="10" font-weight="700" font-family="sans-serif">⚠️ 防 Shortcut 三连 (2026.06 同期)：教师特权可能引导学生走"文本捷径"</text>
+
+<rect x="30" y="288" width="280" height="46" rx="8" fill="rgba(225,112,85,0.05)" stroke="rgba(225,112,85,0.15)"/>
+<text x="170" y="308" text-anchor="middle" fill="var(--flare)" font-size="10" font-weight="700" font-family="sans-serif">ViGOS</text>
+<text x="170" y="324" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="8.5" font-family="sans-serif">PALR 诊断 · 三教师解耦</text>
+
+<rect x="340" y="288" width="280" height="46" rx="8" fill="rgba(168,85,247,0.05)" stroke="rgba(168,85,247,0.15)"/>
+<text x="480" y="308" text-anchor="middle" fill="var(--fuse)" font-size="10" font-weight="700" font-family="sans-serif">ViCuR</text>
+<text x="480" y="324" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="8.5" font-family="sans-serif">可恢复特权 · 视觉线索替代答案</text>
+
+<rect x="650" y="288" width="280" height="46" rx="8" fill="rgba(0,206,201,0.05)" stroke="rgba(0,206,201,0.15)"/>
+<text x="790" y="308" text-anchor="middle" fill="var(--nova)" font-size="10" font-weight="700" font-family="sans-serif">V-Zero</text>
+<text x="790" y="324" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="8.5" font-family="sans-serif">零答案标签 · 对比证据门</text>
+
+<path d="M170,334 L170,358" marker-end="url(#a)" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+<path d="M480,334 L480,358" marker-end="url(#a)" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+<path d="M790,334 L790,358" marker-end="url(#a)" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+
+<!-- 第4层：解耦感知与推理 -->
+<rect x="180" y="363" width="600" height="38" rx="10" fill="rgba(168,85,247,0.04)" stroke="rgba(168,85,247,0.12)"/>
+<text x="480" y="380" text-anchor="middle" fill="var(--fuse)" font-size="10" font-weight="700" font-family="sans-serif">🔬 解耦感知与推理：PeRL-VL (门控奖励) + Decomposed OPD (VGS 梯度重定向)</text>
+<text x="480" y="396" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="8" font-family="sans-serif">从「教什么」到「怎么学」的完整方案</text>
+</svg></section>
+
+
+<!-- ═══════ VLM OPD 领域概览 ═══════ -->
+<section data-transition="slide"><div class="core-card fragment fade-up"><p class="page-badge">领域概览</p><h2 style="font-size:28px;font-weight:700;color:#fff;margin:8px 0;">VLM OPD：论文最密集的子领域</h2><div class="core-bar"></div>
+<div class="struct-content"><p>截至 2026 年 7 月，视觉域 OPD 已有 <strong>15+ 篇高质量论文</strong>，是多模态 OPD 中<strong>论文最密集、方法论最成熟</strong>的子领域。核心演进脉络：</p></div>
+<div class="tri-grid" style="max-width:900px;margin-top:12px;">
+<div class="concept-block fragment fade-up" style="border-left:3px solid var(--beam);"><h4>🏛️ 第一波：能否做？</h4><p><strong>VOLD</strong> (CVPR 2026) 首次证明文本 LLM 的推理能力可通过 on-policy distillation 迁移到 VLM。关键发现：冷启动 SFT 对齐必不可少。</p></div>
+<div class="concept-block fragment fade-up" style="border-left:3px solid var(--core);"><h4>🟣 第二波：如何做得更好？</h4><p><strong>Vision-OPD</strong> 与 <strong>Visual-OPSD</strong> 开创同模型自蒸馏——零外部依赖，学生从受限视野逼近教师完整视野，甚至超越教师。</p></div>
+<div class="concept-block fragment fade-up" style="border-left:3px solid var(--flare);"><h4>⚠️ 第三波：如何防止做坏？</h4><p><strong>ViGOS · ViCuR · V-Zero</strong> 同期发现文本 shortcut 风险，从特权设计、视觉线索、零标签三个角度分别给出方案。</p></div>
+</div>
+<div class="struct-content" style="margin-top:10px;"><p style="text-align:center;color:var(--nova);">💡 外加 <strong>PeRL-VL</strong> 与 <strong>Decomposed OPD</strong> 从奖励机制和梯度层面解耦感知与推理——形成从「教什么」到「怎么学」的完整方案。</p></div></div></section>
+
+
+<!-- ═══════ VOLD 奠基之作 ═══════ -->
+<section data-transition="slide"><div class="core-card fragment fade-up"><p class="page-badge">奠基之作</p><h2 style="font-size:24px;font-weight:700;color:var(--beam);margin:8px 0;">🏛️ VOLD：文本 → VLM 的推理迁移 (CVPR 2026)</h2><p style="font-size:11px;color:var(--nova);margin:2px 0;font-family:monospace;">Walid Bousselham, Hilde Kuehne, Cordelia Schmid · arXiv:2510.23497</p><div class="core-bar"></div>
+<div class="def-box" style="border-left-color:var(--beam);"><div class="label" style="color:var(--beam);">核心问题</div><div class="content">多模态推理数据<strong>极度稀缺</strong>（图文+推理链标注成本极高），但纯文本推理数据丰富——能否将文本 LLM 的推理能力蒸馏到 VLM？</div></div>
+<div class="def-box"><div class="label">方法：GRPO + On-Policy Distillation</div><div class="content">VLM 学生自采样轨迹 → 文本 LLM 教师在<strong>相同轨迹</strong>上提供 token 级分布监督 → 学生模仿教师的推理分布。关键在于：教师和学生看到的是<strong>同一问题</strong>，但教师只有文本输入、学生有图文输入。</div></div>
+<div class="warn-box"><div class="label">⚠️ 关键发现</div><div class="content"><strong>冷启动 SFT 对齐是必不可少的</strong>——没有它，文本教师的分布与 VLM 学生的采样分布差距过大（模态鸿沟），蒸馏<strong>完全失败</strong>。这是跨模态蒸馏的铁律。</div></div>
+<div class="struct-content" style="margin-top:4px;"><p><strong>基准：</strong>MMMU-Pro · MathVision · MathVista · LogicVista &nbsp;|&nbsp; <strong>意义：</strong>被 CVPR 2026 收录，成为后续所有 VLM OPD 工作的<strong>核心参考点</strong>。</p></div></div></section>
+
+
+<!-- ═══════ Vision-OPD ═══════ -->
+<section data-transition="slide"><div class="core-card fragment fade-up"><p class="page-badge">自蒸馏 · 范式①典范</p><h2 style="font-size:24px;font-weight:700;color:var(--core);margin:8px 0;">🔬 Vision-OPD：区域→全局的自蒸馏 (2026.05)</h2><p style="font-size:11px;color:var(--nova);margin:2px 0;font-family:monospace;">Qianhao Yuan 等 · arXiv:2605.18740</p><div class="core-bar"></div>
+<div class="green-box"><div class="label">核心发现：区域到全局的感知差距</div><div class="content">MLLM 在<strong>证据中心裁剪（crop）</strong>上回答细粒度问题的准确率显著高于全图条件。这意味着模型<strong>具备「看细节」的能力，但不具备在全图上下文中调用该能力的策略</strong>——就像有显微镜但不知道往哪看。</div></div>
+<div class="two-col" style="max-width:900px;margin-top:8px;">
+<div style="background:rgba(124,92,231,0.05);border:1px solid rgba(124,92,231,0.18);border-radius:10px;padding:14px 16px;text-align:left;"><p style="font-size:12px;font-weight:700;color:var(--core);margin:0 0 6px;">👨‍🏫 教师（冻结副本）</p><p style="font-size:11px;color:var(--text2);margin:0;">条件为<strong>裁剪后的证据区域</strong>（privileged crop）——细节清晰可见</p></div>
+<div style="background:rgba(0,206,201,0.05);border:1px solid rgba(0,206,201,0.18);border-radius:10px;padding:14px 16px;text-align:left;"><p style="font-size:12px;font-weight:700;color:var(--nova);margin:0 0 6px;">🎓 学生（训练副本）</p><p style="font-size:11px;color:var(--text2);margin:0;">条件为<strong>完整图像</strong>（标准推理条件）——视野广但细节模糊</p></div>
+</div>
+<div class="struct-content" style="margin-top:6px;"><p style="text-align:center;"><strong>损失：</strong>token 级 KL 散度 · <strong>零外部依赖：</strong>无需外部教师、无需 GT 标签、无需奖励验证器、无需推理时工具</p><p style="text-align:center;color:var(--nova);">💡 证明「视觉放大」能力可通过自蒸馏<strong>内化</strong>到模型中——而非依赖推理时外部工具调用</p></div></div></section>
+
+
+<!-- ═══════ Visual-OPSD ═══════ -->
+<section data-transition="slide"><div class="core-card fragment fade-up"><p class="page-badge">自蒸馏 · 里程碑</p><h2 style="font-size:24px;font-weight:700;color:var(--nova);margin:8px 0;">⚡ Visual-OPSD：14.3× 加速 · 学生超越教师 (2026.06)</h2><p style="font-size:11px;color:var(--nova);margin:2px 0;font-family:monospace;">Pengyu Li 等（西安交大）· arXiv:2606.18974 · github.com/TiezMind/Visual-OPSD</p><div class="core-bar"></div>
+<div class="def-box" style="border-left-color:var(--nova);"><div class="label" style="color:var(--nova);">核心发现（极具洞察力）</div><div class="content">统一多模态模型（UMMs）中，生成式「视觉思维」（Visual Thoughts, VTs）通过多步扩散生成，推理成本≈纯文本的 <strong>14 倍</strong>（142.8s vs 10.0s/sample），但——<strong>移除或扰动 VTs 几乎不改变准确率</strong>。渲染的像素本身不是答案载体，但<strong>生成路径中编码了有效的推理知识</strong>。</div></div>
+<div class="two-col" style="max-width:900px;margin-top:6px;">
+<div style="background:rgba(124,92,231,0.05);border:1px solid rgba(124,92,231,0.15);border-radius:8px;padding:12px;text-align:left;"><p style="font-size:11px;font-weight:700;color:var(--core);margin:0 0 4px;">👨‍🏫 教师</p><p style="font-size:10.5px;color:var(--text2);margin:0;">UMM · 条件为<strong>生成的 VTs</strong>（特权视觉思维，需14步扩散）</p></div>
+<div style="background:rgba(0,206,201,0.05);border:1px solid rgba(0,206,201,0.15);border-radius:8px;padding:12px;text-align:left;"><p style="font-size:11px;font-weight:700;color:var(--nova);margin:0 0 4px;">🎓 学生</p><p style="font-size:10.5px;color:var(--text2);margin:0;">UMM · 条件仅为文本问题（<strong>无视觉思维生成步骤</strong>）</p></div>
+</div>
+<div class="struct-content" style="margin-top:4px;"><p><strong>损失：</strong>token 级 JSD · 沿学生 on-policy 轨迹</p>
+<p style="font-size:15px;color:var(--beam);text-align:center;margin:4px 0;">🎯 <strong>+3.40pp 超越生成式教师</strong> · 14.3× 推理加速 · VSP 基准 +63.83pp</p>
+<p style="text-align:center;">深层启示：多模态推理中，<strong>关键信息比显式像素承载的多得多</strong>——蒸馏可以提取出比教师更强的推理能力。</p></div></div></section>
+
+
+<!-- ═══════ 防Shortcut三连总览 ═══════ -->
+<section data-transition="slide"><div class="core-card fragment fade-up"><p class="page-badge">第三波浪潮</p><h2 style="font-size:26px;font-weight:700;color:var(--flare);margin:8px 0;">⚠️ 防 Shortcut 三连：2026.06 的同频共振</h2><div class="core-bar"></div>
+<div class="struct-content"><p>2026 年 6 月，三篇独立论文<strong>几乎同时</strong>指出多模态 OPSD 的核心风险——<strong>教师特权信息可能引导学生走「文本捷径」而非利用视觉证据</strong>——并各自提出不同方案：</p></div>
+<div class="tri-grid" style="max-width:960px;margin-top:10px;">
+<div class="concept-block fragment fade-up" style="border-left:3px solid var(--flare);"><h4>🔴 ViGOS · 诊断者</h4><p>提出 <strong>PALR 指标</strong>首次量化 Shortcut 严重程度（17–26%），用<strong>三教师解耦</strong>：图像感知教师+特权推理教师+参考教师，让视觉由视觉监督、推理由推理监督。</p></div>
+<div class="concept-block fragment fade-up" style="border-left:3px solid var(--fuse);"><h4>🟣 ViCuR · 重构者</h4><p>重新定义特权设计原则：<strong>「可恢复特权」优于「不可恢复特权」</strong>。将教师特权从「答案侧」替换为「视觉线索」（证据区域标注），建立训练-推理一致性。</p></div>
+<div class="concept-block fragment fade-up" style="border-left:3px solid var(--nova);"><h4>🟢 V-Zero · 激进者</h4><p><strong>完全不需要文本答案标签</strong>——只需图文对。用正/负视觉证据视图的对比差异判断学生回答的视觉基础，门控调节蒸馏强度。5× 快于 SFT、10× 快于 RL。</p></div>
+</div>
+<div class="struct-content" style="margin-top:8px;"><p style="text-align:center;color:var(--nova);">💡 三篇同期论文，三种不同哲学——分别从<strong>诊断、重构、抛弃</strong>三个角度解决了同一个核心问题。</p></div></div></section>
+
+
+<!-- ═══════ ViGOS ═══════ -->
+<section data-transition="slide"><div class="core-card fragment fade-up"><p class="page-badge">防 Shortcut · 诊断者</p><h2 style="font-size:24px;font-weight:700;color:var(--flare);margin:8px 0;">🔴 ViGOS：三教师解耦 + PALR 诊断 (2026.06)</h2><p style="font-size:11px;color:var(--nova);margin:2px 0;font-family:monospace;">Sihan Wang 等（中科院）· arXiv:2606.19120</p><div class="core-bar"></div>
+<div class="warn-box"><div class="label">核心发现：PALR 首次量化 Shortcut 严重程度</div><div class="content"><strong>PALR（Privileged Answer Leakage Rate）</strong>——跨三个基准测量显示 <strong>17–26% 的 token 级监督是「答案驱动」而非「图像驱动」</strong>。首次用数据证明：多模态 OPSD 的教师信号被文本捷径污染了近四分之一。</div></div>
+<div class="struct-content" style="margin-top:8px;"><p><strong>方法：三教师解耦架构</strong></p></div>
+<div class="tri-grid" style="max-width:900px;">
+<div class="concept-block fragment fade-up"><h4>👁️ 仅图像感知教师</h4><p>监督<strong>视觉描述段落</strong>（不接触参考答案）。确保图像内容的描述来自视觉证据，而非文本先验。</p></div>
+<div class="concept-block fragment fade-up"><h4>🧠 特权推理教师</h4><p>监督<strong>推理/答案段落</strong>（接触参考答案），但仅作用于推理段。将文本引导限定在合理范围。</p></div>
+<div class="concept-block fragment fade-up"><h4>🔄 参考教师</h4><p>仅在学生 rollout <strong>无效时介入</strong>，用于格式恢复。不参与正常内容的蒸馏，避免干扰。</p></div>
+</div>
+<div class="struct-content" style="margin-top:6px;"><p style="text-align:center;color:var(--nova);">💡 核心哲学：<strong>让视觉描述由视觉监督，让推理由推理监督</strong>——将 OPSD 的监督信号按来源解耦。</p></div></div></section>
+
+
+<!-- ═══════ ViCuR ═══════ -->
+<section data-transition="slide"><div class="core-card fragment fade-up"><p class="page-badge">防 Shortcut · 重构者</p><h2 style="font-size:24px;font-weight:700;color:var(--fuse);margin:8px 0;">🟣 ViCuR：可恢复特权 — 不告答案，只告「看哪里」(2026.06)</h2><p style="font-size:11px;color:var(--nova);margin:2px 0;font-family:monospace;">Kanghui Tian 等 · arXiv:2606.05718</p><div class="core-bar"></div>
+<div class="green-box"><div class="label">核心洞察</div><div class="content">在多模态 OPD 中，<strong>教师特权的设计与教师强度同等重要</strong>。如果特权信息在推理时不可获得（如参考答案），学生永远无法真正学会在没有特权时表现好。→ <strong>「可恢复特权」优于「不可恢复特权」</strong>。</div></div>
+<div class="two-col" style="max-width:900px;margin-top:10px;">
+<div style="background:rgba(225,112,85,0.06);border:1px solid rgba(225,112,85,0.2);border-radius:8px;padding:14px;text-align:left;"><p style="font-size:12px;font-weight:700;color:var(--flare);margin:0 0 5px;">❌ 旧范式：答案侧特权</p><p style="font-size:10.5px;color:var(--text2);margin:0;">教师看到参考答案/推理链 → 学生无法自己恢复 → 训练-推理不一致 → 特权幻觉</p></div>
+<div style="background:rgba(0,206,201,0.06);border:1px solid rgba(0,206,201,0.2);border-radius:8px;padding:14px;text-align:left;"><p style="font-size:12px;font-weight:700;color:var(--nova);margin:0 0 5px;">✅ 新范式：视觉线索特权</p><p style="font-size:10.5px;color:var(--text2);margin:0;">教师看到图像证据区域（如高亮/边界框）→ 学生通过提升视觉注意力<strong>有可能自己恢复</strong> → 训练-推理一致</p></div>
+</div>
+<div class="struct-content" style="margin-top:6px;"><p style="text-align:center;color:var(--nova);">💡 ViCuR 重新定义了多模态 OPD 的特权设计原则：<strong>特权应该是学生「可能学会自己找到的东西」——而非永远无法企及的外部答案。</strong></p></div></div></section>
+
+
+<!-- ═══════ V-Zero ═══════ -->
+<section data-transition="slide"><div class="core-card fragment fade-up"><p class="page-badge">防 Shortcut · 激进者</p><h2 style="font-size:24px;font-weight:700;color:var(--nova);margin:8px 0;">🟢 V-Zero：不需要答案标签的 OPD (2026.06)</h2><p style="font-size:11px;color:var(--nova);margin:2px 0;font-family:monospace;">Haoxiang Sun 等（川大·北大·TeleAI）· arXiv:2606.25319</p><div class="core-bar"></div>
+<div class="green-box"><div class="label">核心突破</div><div class="content"><strong>完全不需要文本答案标签的 OPD</strong>——只需图文对（问题和图像），无需答案、无需奖励函数。这是多模态 OPD 最激进的范式：连答案都不需要，怎么知道对错？→ <strong>让教师评价学生回答的「视觉基础」强弱。</strong></div></div>
+<div class="def-box"><div class="label">核心思想</div><div class="content">教师虽然没有正确答案，但它有一个特权——<strong>同时看到两种版本的图像</strong>：① 正视图（目标区域裁剪放大）② 负视图（目标被替换/模糊）。如果学生的回答在正视图下概率高、负视图下概率低 → 视觉基础强 → 值得蒸馏；反之 → 可能是蒙的 → 抑制蒸馏。</div></div>
+<div class="struct-content" style="margin-top:6px;"><p style="text-align:center;"><strong>效果：</strong>Qwen3.5-4B +3.1 平均分 &nbsp;|&nbsp; 训练速度 <strong>5× 快于 SFT、10× 快于 RL 基线</strong></p><p style="text-align:center;color:var(--nova);">💡 意义：如果 V-Zero 范式被广泛验证，训练强视觉推理模型只需<strong>海量图文对</strong>——互联网上到处都是——完全不需要人工标注答案。</p></div></div></section>
+
+
+<!-- ═══════ V-Zero 机制详解 ═══════ -->
+<section data-transition="slide"><div class="core-card fragment fade-up"><p class="page-badge">V-Zero 机制</p><h2 style="font-size:22px;font-weight:700;color:var(--nova);margin:8px 0;">🔍 V-Zero：对比证据门 · 逐轨迹选择性蒸馏</h2><div class="core-bar"></div>
+<div class="struct-content"><p style="text-align:center;color:var(--beam);">五步流程</p></div>
+<div class="step-flow" style="max-width:960px;">
+<div class="step"><div class="sn">Step 1</div><div class="st">构造双视图</div><div class="sd">正视图：目标区域裁剪<br/>负视图：无关区域/模糊</div></div>
+<div class="step-arrow">→</div>
+<div class="step"><div class="sn">Step 2</div><div class="st">学生采样</div><div class="sd">只看原始图像<br/>生成回答轨迹</div></div>
+<div class="step-arrow">→</div>
+<div class="step"><div class="sn">Step 3</div><div class="st">教师重放</div><div class="sd">在正/负视图下分别<br/>计算 log-prob</div></div>
+<div class="step-arrow">→</div>
+<div class="step"><div class="sn">Step 4</div><div class="st">对比证据门</div><div class="sd">w(g) = 正视图prob − 负视图prob<br/>差异大→视觉基础强</div></div>
+<div class="step-arrow">→</div>
+<div class="step"><div class="sn">Step 5</div><div class="st">门控蒸馏</div><div class="sd">视觉基础好→放大权重<br/>视觉基础差→抑制/跳过</div></div>
+</div>
+<div class="warn-box" style="margin-top:12px;"><div class="label">技术细节：「无负样本的停梯度对齐」</div><div class="content"><strong>停梯度（stop-gradient）：</strong>教师侧分布作为目标不计算梯度，只更新学生。<strong>无负样本：</strong>不使用对比学习中特意构造的「错误回答」，直接用余弦相似度匹配教师-学生分布。这避免了负样本选择偏差，训练更简洁稳定。</div></div>
+<div class="struct-content" style="margin-top:6px;"><p style="text-align:center;color:var(--nova);">💡 本质：教师说「你刚才的回答如果跟我看到的正确区域匹配，我就好好教你；匹配不上，你这回答估计是蒙的，我不教。」</p></div></div></section>
+
+
+<!-- ═══════ PeRL-VL ═══════ -->
+<section data-transition="slide"><div class="core-card fragment fade-up"><p class="page-badge">解耦感知与推理</p><h2 style="font-size:24px;font-weight:700;color:var(--beam);margin:8px 0;">🟡 PeRL-VL：门控奖励解耦感知与推理 (2025.12)</h2><p style="font-size:11px;color:var(--nova);margin:2px 0;font-family:monospace;">Yoon 等 · arXiv:2512.12487</p><div class="core-bar"></div>
+<div class="def-box" style="border-left-color:var(--beam);"><div class="label" style="color:var(--beam);">核心问题</div><div class="content">RLVR 能让模型学会推理，但存在<strong>奖励黑客（Reward Hacking）</strong>：模型用语法正确但无视觉依据的回答蒙混过关——验证器只看答案对错，不检查视觉依据。</div></div>
+<div class="two-col" style="max-width:900px;margin-top:10px;">
+<div style="background:rgba(124,92,231,0.05);border:1px solid rgba(124,92,231,0.18);border-radius:8px;padding:14px;text-align:left;"><p style="font-size:12px;font-weight:700;color:var(--core);margin:0 0 6px;">📝 两个教师角色</p><p style="font-size:10.5px;color:var(--text2);margin:0 0 4px;"><strong>推理教师：</strong>冻结 VLM，保持文本推理能力</p><p style="font-size:10.5px;color:var(--text2);margin:0;"><strong>描述评判：</strong>评分模块，对视觉描述打两个维度——<strong>忠实性</strong>（无幻觉？）+ <strong>充分性</strong>（信息够不够？）</p></div>
+<div style="background:rgba(253,203,110,0.05);border:1px solid rgba(253,203,110,0.18);border-radius:8px;padding:14px;text-align:left;"><p style="font-size:12px;font-weight:700;color:var(--beam);margin:0 0 6px;">🔑 门控奖励组合</p><p style="font-size:10.5px;color:var(--text2);margin:0;">不是简单相加！<strong>动态调节权重：</strong>视觉描述占比高→描述奖励权重↑；纯文本推理→推理奖励权重↑。这<strong>直接抑制了纯文本 reward hacking 捷径</strong>。</p></div>
+</div>
+<div class="struct-content" style="margin-top:6px;"><p style="text-align:center;"><strong>效果：</strong>Qwen2.5-VL-7B 从 63.3% → 68.8% Pass@1 &nbsp;|&nbsp; 验证了<strong>分解+门控 > 单一奖励+简单聚合</strong></p></div></div></section>
+
+
+<!-- ═══════ Decomposed OPD ═══════ -->
+<section data-transition="slide"><div class="core-card fragment fade-up"><p class="page-badge">解耦感知与推理</p><h2 style="font-size:24px;font-weight:700;color:var(--fuse);margin:8px 0;">🟣 Decomposed OPD：VGS 梯度重定向 (2026)</h2><p style="font-size:11px;color:var(--nova);margin:2px 0;font-family:monospace;">Yoon 等 · Semantic Scholar (2026)</p><div class="core-bar"></div>
+<div class="def-box" style="border-left-color:var(--fuse);"><div class="label" style="color:var(--fuse);">核心问题</div><div class="content">标准在线蒸馏损失（KL 散度）整体计算，<strong>无法区分梯度中「语言先验成分」和「视觉基础成分」</strong>——视觉学习的梯度被语言部分淹没，模型在语言上自我陶醉、忽视看图。</div></div>
+<div class="formula-box"><div class="math-block">$$\nabla_\theta \mathcal{L} = g_{\text{lang}} + g_{\text{vis}}$$</div><p style="font-size:10px;color:var(--text2);margin:4px 0 0;">g_lang：语言模块（LLM注意力、FFN）的梯度分量 · g_vis：视觉模块（编码器、跨模态注意力）的梯度分量</p></div>
+<div class="green-box"><div class="label">VGS（Visual Gradient Steering）— 三步操作</div><div class="content">① 检测当前梯度方向是否<strong>偏向语言子空间</strong> → ② 若偏向语言，<strong>放大 g_vis 范数</strong>或将总梯度向视觉子空间旋转 → ③ 视觉模块获得不成比例的高质量梯度 → <strong>从梯度流动的最底层纠正多模态蒸馏的不平衡</strong>。</div></div>
+<div class="struct-content" style="margin-top:4px;"><p style="text-align:center;color:var(--nova);">💡 相当于训练时不断「提醒」模型：<strong>你的视觉部分还很弱，别老在语言上自我陶醉，多练练看图！</strong></p></div></div></section>
+
+
+<!-- ═══════ PeRL-VL vs Decomposed OPD 对比 ═══════ -->
+<section data-transition="slide"><h2 style="font-size:24px;font-weight:700;color:var(--fuse);margin-bottom:10px;">📊 PeRL-VL vs Decomposed OPD</h2><p style="font-size:12px;color:var(--text2);margin:-4px 0 12px;">从「教什么」到「怎么学」的完整解耦方案</p>
+<table class="summary-table fragment fade-up"><thead><tr><th>维度</th><th>🟡 PeRL-VL</th><th>🟣 Decomposed OPD</th></tr></thead>
+<tbody>
+<tr><td class="pc">解决层面</td><td>奖励信号设计</td><td class="hl">梯度更新方向</td></tr>
+<tr><td class="pc">如何解耦</td><td>显式定义感知奖励 + 推理奖励</td><td class="hl">数学分解梯度为语言/视觉分量</td></tr>
+<tr><td class="pc">核心机制</td><td>门控动态组合两种奖励</td><td class="hl">动态重定向梯度优先更新视觉子空间</td></tr>
+<tr><td class="pc">对抗什么</td><td class="wd">奖励黑客（纯文本蒙混）</td><td class="wd">梯度淹没（语言分量压倒视觉）</td></tr>
+<tr><td class="pc">优点</td><td>易于实现 · 模块化</td><td class="hl">从根本上改变学习动态</td></tr>
+<tr><td class="pc">互补关系</td><td colspan="2" style="text-align:center;color:var(--nova);">PeRL-VL 在<strong>目标函数</strong>层面保证信号来源正确 · Decomposed OPD 在<strong>参数更新</strong>层面保证信号正确利用</td></tr>
+</tbody></table>
+<div class="struct-content" style="margin-top:10px;"><p style="text-align:center;color:var(--nova);">💡 合在一起 = <strong>从「教什么」到「怎么学」的完整方案</strong>：信号层面防止文本捷径污染 + 梯度层面防止视觉学习被淹没。</p></div></section>
+
+
+<!-- ═══════ Part 2 小结 ═══════ -->
+<section data-transition="slide"><div class="core-card fragment fade-up"><p class="page-badge">Part 2 小结</p><h2 style="font-size:28px;font-weight:700;color:var(--core);margin:8px 0;">🎯 VLM OPD：从奠基到解耦</h2><div class="core-bar"></div>
+<div class="struct-content">
+<p>视觉域是多模态 OPD 中<strong>论文最密集（15+）、方法论最成熟</strong>的子领域。过去 9 个月完成了三个阶段的演进：</p>
+<p style="margin-left:16px;">🏛️ <strong>奠基</strong>：VOLD 首次证明文本→VLM 的 on-policy 推理迁移可行——冷启动 SFT 是铁律<br/>🟣 <strong>自蒸馏</strong>：Vision-OPD（crop→full）与 Visual-OPSD（VT→no-VT）实现零外部依赖，后者学生<strong>超越教师</strong><br/>⚠️ <strong>防 Shortcut</strong>：ViGOS（PALR 诊断+三教师）、ViCuR（可恢复特权）、V-Zero（零标签）三路并进</p>
+<p>外加两条解耦路线形成完整闭环：</p>
+<p style="margin-left:16px;">🔹 <strong>PeRL-VL</strong>：门控奖励 → 教什么（信号层面防污染）<br/>🔹 <strong>Decomposed OPD (VGS)</strong>：梯度重定向 → 怎么学（更新层面防淹没）</p>
+<p style="font-size:14px;color:var(--nova);text-align:center;margin-top:10px;">核心规律：<strong>视觉域 OPD 的一切问题最终都指向感知-推理的解耦。</strong></p>
+<p style="text-align:center;margin-top:16px;color:var(--nova);font-size:14px;">✦ 接下来：Part 3 — 视频域：时序 OPD ✦</p>
+</div></div></section>
+
+</div></div>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.js"></script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<script>(function(){const c=document.getElementById('bg-canvas'),ctx=c.getContext('2d');let W,H;function rs(){W=c.width=window.innerWidth;H=c.height=window.innerHeight}window.addEventListener('resize',rs);rs();const NUM=71,Z_NEAR=100,Z_FAR=2200,R=180,MAX_A=0.40,BLUR=14;let frame=0;function lp(){ctx.clearRect(0,0,W,H);const t=frame*0.016,F=Math.min(W,H)*0.75,CX=W/2,CY=H/2;const sx=Math.sin(t*0.22)*55+Math.cos(t*0.31)*25;const sy=Math.cos(t*0.28)*45+Math.sin(t*0.19)*30;for(let i=NUM-1;i>=0;i--){const p=i/(NUM-1),z=Z_NEAR+p*(Z_FAR-Z_NEAR);const rot=t*0.35-z*0.0025;const px=(-sx*F)/z+CX,py=(-sy*F)/z+CY,pr=(R*F)/z;const alpha=MAX_A*Math.pow(1-p,0.90);const lw=Math.max(0.08,4.8*Math.pow(Z_NEAR/z,2.35));if(alpha<0.005)continue;const hue=((p*280+t*15)%360+360)%360;ctx.save();ctx.translate(px,py);ctx.beginPath();for(let v=0;v<5;v++){const a=rot+(v*2*Math.PI)/5;v===0?ctx.moveTo(pr*Math.cos(a),pr*Math.sin(a)):ctx.lineTo(pr*Math.cos(a),pr*Math.sin(a))}ctx.closePath();ctx.strokeStyle='hsla('+hue+',100%,50%,'+alpha+')';ctx.lineWidth=lw;ctx.shadowColor='hsla('+hue+',100%,50%,'+(alpha*0.4)+')';ctx.shadowBlur=BLUR;ctx.stroke();ctx.restore()}frame++;requestAnimationFrame(lp)}lp()})();</script>
+<script>Reveal.initialize({hash:true,center:true,transition:'slide',transitionSpeed:'slow',backgroundTransition:'zoom',slideNumber:false,progress:false,controls:true,controlsLayout:'bottom-right',navigationMode:'linear',width:1200,height:700,margin:0,minScale:0.2,maxScale:2.0});(function(){const e=document.getElementById('page-indicator');function u(){const t=Reveal.getTotalSlides(),c=Reveal.getSlidePastCount()+1;e.textContent=c+' / '+t}Reveal.on('ready',u);Reveal.on('slidechanged',u)})();</script></body></html>

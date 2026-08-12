@@ -1,0 +1,189 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><title>Module 3 · Part 0: 核心问题与研究动机</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/black.min.css">
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]}};</script>
+<style>
+:root{--bg:#030206;--surface:rgba(18,16,28,0.7);--border:rgba(124,92,231,0.15);--text:#e0dce8;--text2:rgba(210,200,230,0.7);--text3:rgba(160,145,190,0.45);--core:#7c5ce7;--flare:#e17055;--fuse:#a855f7;--beam:#fdcb6e;--nova:#00cec9}
+#bg-canvas{position:fixed;inset:0;z-index:0;pointer-events:none}.reveal{background:transparent}.reveal .slides{text-align:center;width:100%!important;left:50%!important;margin:0!important}.reveal .slides section{padding:28px 48px;height:100%;display:flex!important;flex-direction:column;align-items:center;justify-content:center}.reveal .controls{right:12px!important;bottom:12px!important}#page-indicator{position:fixed;left:24px;bottom:20px;z-index:100;font-size:13px;color:rgba(255,255,255,0.35);font-family:'JetBrains Mono','Fira Code','Consolas',monospace;letter-spacing:1px;pointer-events:none}
+.core-card{position:relative;z-index:2;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:36px 46px;max-width:860px;box-shadow:0 8px 32px rgba(0,0,0,0.6)}.core-card::before{content:'';height:2px;background:linear-gradient(90deg,transparent,var(--core),var(--flare),var(--nova),transparent);display:block;margin-bottom:12px}.hero-title{font-size:46px;font-weight:800;background:linear-gradient(135deg,var(--core),var(--flare),var(--nova));background-size:300%300%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:gS 5s ease infinite}@keyframes gS{0%,100%{background-position:0%50%}50%{background-position:100%50%}}.core-bar{width:100px;height:2px;background:linear-gradient(90deg,transparent,var(--core),var(--flare),var(--nova),transparent);margin:14px auto}
+.struct-head{font-size:18px;font-weight:700;color:var(--core);margin:0 0 8px;border-bottom:1px solid rgba(124,92,231,0.3);display:inline-block;padding-bottom:4px}.struct-content{font-size:13px;color:var(--text2);line-height:2;text-align:left;max-width:780px}.struct-content strong{color:#fff}
+.two-col{display:flex;gap:20px;flex-wrap:wrap;justify-content:center;max-width:940px}.two-col>div{flex:1;min-width:260px}.tri-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;max-width:940px}
+.concept-block{background:rgba(20,18,30,0.5);border:1px solid var(--border);border-radius:10px;padding:16px 14px;text-align:left}.concept-block h4{font-size:13px;color:var(--core);margin:0 0 5px}.concept-block p{font-size:11px;color:var(--text2);line-height:1.7;margin:0}
+.bottleneck-card{background:linear-gradient(135deg,rgba(225,112,85,0.08),rgba(124,92,231,0.04));border:1px solid rgba(225,112,85,0.2);border-radius:10px;padding:18px 20px;text-align:left;margin-bottom:10px}.bottleneck-card .n{font-size:11px;color:var(--flare);font-weight:800;margin-bottom:4px}.bottleneck-card .t{font-size:14px;font-weight:700;color:#fff;margin:4px 0}.bottleneck-card .d{font-size:11px;color:var(--text2);line-height:1.7}
+.privilege-card{background:linear-gradient(135deg,rgba(0,206,201,0.06),rgba(168,85,247,0.04));border:1px solid rgba(0,206,201,0.18);border-radius:10px;padding:18px 20px;text-align:left;margin-bottom:10px}.privilege-card .lvl{font-size:10px;color:var(--nova);font-weight:700;margin-bottom:3px}.privilege-card .name{font-size:14px;font-weight:700;color:#fff;margin:3px 0}.privilege-card .desc{font-size:11px;color:var(--text2);line-height:1.7}.privilege-card .risk{font-size:10px;color:var(--flare);margin-top:4px}
+.formula-box{background:rgba(8,6,15,0.8);border:1px solid rgba(124,92,231,0.2);border-radius:10px;padding:18px 24px;max-width:780px;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,0.5);margin:8px 0}.formula-box .math-block{font-size:15px;color:#d4c8b0}
+.def-box{background:rgba(124,92,231,0.06);border:1px solid rgba(124,92,231,0.2);border-left:3px solid var(--core);border-radius:0 10px 10px 0;padding:14px 20px;text-align:left;max-width:750px;margin:8px 0}.def-box .label{font-size:11px;color:var(--core);font-weight:700;margin-bottom:4px}.def-box .content{font-size:12px;color:var(--text);line-height:1.8}
+.summary-table{width:100%;max-width:820px;border-collapse:collapse;font-size:11px;border-radius:10px;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,0.5)}.summary-table thead{background:linear-gradient(135deg,rgba(124,92,231,0.25),rgba(225,112,85,0.12))}.summary-table th{padding:9px 12px;font-weight:700;color:var(--beam);font-size:10px}.summary-table td{padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text2)}.summary-table tbody tr{background:rgba(20,18,30,0.4)}.summary-table .pc{font-weight:700;color:var(--beam)}.summary-table .hl{color:var(--nova);font-weight:600}.summary-table .wd{color:var(--flare);font-weight:600}
+.page-badge{display:inline-flex;padding:4px 14px;border-radius:14px;font-size:10px;font-weight:700;background:rgba(124,92,231,0.08);color:var(--core);border:1px solid rgba(124,92,231,0.2);letter-spacing:1px}.cite{font-size:10px;color:var(--core);font-family:monospace}
+.reveal .slides section .fragment.fade-up{opacity:0;transform:translateY(30px);transition:all 0.7s}.reveal .slides section .fragment.fade-up.visible{opacity:1;transform:translateY(0)}
+@media(max-width:768px){.hero-title{font-size:28px}.tri-grid{grid-template-columns:1fr}.two-col{flex-direction:column}}
+</style></head><body><canvas id="bg-canvas"></canvas><div id="page-indicator"></div><div class="reveal"><div class="slides">
+
+<!-- ═══════ 标题页 ═══════ -->
+<section data-transition="zoom"><div class="core-card fragment fade-up"><p class="cite">MODULE 3 · PART 0</p><h1 class="hero-title">核心问题与研究动机</h1><p style="font-size:20px;color:var(--text2);">多模态 RL 后训练的困境 · OPD/OPSD 的崛起</p><div class="core-bar"></div><p style="font-size:13px;color:var(--text3);">2025–2026 · 三大瓶颈 → 在线策略蒸馏的必然出场</p></div></section>
+
+<!-- ═══════ DAG 知识图谱 ═══════ -->
+<section data-transition="slide"><h2 style="font-size:24px;font-weight:700;color:var(--core);margin-bottom:8px;">Part 0 知识结构图</h2>
+<svg viewBox="0 0 960 400" xmlns="http://www.w3.org/2000/svg" style="max-width:960px;">
+<defs><marker id="a" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><path d="M0,0 L7,2.5 L0,5 Z" fill="rgba(255,255,255,0.25)"/></marker></defs>
+<rect x="330" y="5" width="300" height="30" rx="15" fill="rgba(124,92,231,0.08)" stroke="rgba(124,92,231,0.2)"/>
+<text x="480" y="25" text-anchor="middle" fill="#fff" font-size="13" font-weight="700" font-family="sans-serif">Part 0: 核心问题与研究动机</text>
+
+<rect x="40" y="55" width="860" height="50" rx="10" fill="rgba(225,112,85,0.04)" stroke="rgba(225,112,85,0.12)"/>
+<text x="480" y="75" text-anchor="middle" fill="#e17055" font-size="12" font-weight="700" font-family="sans-serif">⚠️ 三大瓶颈：RL 后训练在多模态领域的根本性困境</text>
+
+<g><rect x="40" y="115" width="260" height="65" rx="10" fill="rgba(225,112,85,0.06)" stroke="rgba(225,112,85,0.2)"/>
+<text x="170" y="140" text-anchor="middle" fill="#e17055" font-size="12" font-weight="700" font-family="sans-serif">① 稀疏奖励</text>
+<text x="170" y="158" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="10" font-family="sans-serif">仅对最终答案打分</text>
+<text x="170" y="173" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="9" font-family="sans-serif">信用分配（Credit Assignment）失效</text></g>
+
+<g><rect x="350" y="115" width="260" height="65" rx="10" fill="rgba(225,112,85,0.06)" stroke="rgba(225,112,85,0.2)"/>
+<text x="480" y="140" text-anchor="middle" fill="#e17055" font-size="12" font-weight="700" font-family="sans-serif">② 感知-推理耦合退化</text>
+<text x="480" y="158" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="10" font-family="sans-serif">RL 牺牲视觉感知换文本推理得分</text>
+<text x="480" y="173" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="9" font-family="sans-serif">模型学会「蒙答案」而非「读图」</text></g>
+
+<g><rect x="660" y="115" width="260" height="65" rx="10" fill="rgba(225,112,85,0.06)" stroke="rgba(225,112,85,0.2)"/>
+<text x="790" y="140" text-anchor="middle" fill="#e17055" font-size="12" font-weight="700" font-family="sans-serif">③ 分布漂移</text>
+<text x="790" y="158" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="10" font-family="sans-serif">SFT（静态数据）→ RLVR（自采样）</text>
+<text x="790" y="173" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="9" font-family="sans-serif">训练不稳定 · 灾难性遗忘</text></g>
+
+<path d="M170,180 L170,210 L480,210 L480,225" marker-end="url(#a)" stroke="rgba(255,255,255,0.12)" stroke-width="1" fill="none"/>
+<path d="M480,180 L480,225" marker-end="url(#a)" stroke="rgba(255,255,255,0.12)" stroke-width="1" fill="none"/>
+<path d="M790,180 L790,210 L490,210 L490,225" marker-end="url(#a)" stroke="rgba(255,255,255,0.12)" stroke-width="1" fill="none"/>
+
+<rect x="280" y="230" width="400" height="45" rx="12" fill="rgba(0,206,201,0.06)" stroke="rgba(0,206,201,0.25)"/>
+<text x="480" y="250" text-anchor="middle" fill="#00cec9" font-size="14" font-weight="700" font-family="sans-serif">💡 OPD / OPSD：在线策略蒸馏</text>
+<text x="480" y="267" text-anchor="middle" fill="rgba(255,255,255,0.45)" font-size="10" font-family="sans-serif">逐 token 密集监督 · 替代稀疏序列级奖励</text>
+
+<rect x="280" y="285" width="400" height="35" rx="10" fill="rgba(8,6,15,0.6)" stroke="rgba(124,92,231,0.15)"/>
+<text x="480" y="308" text-anchor="middle" fill="#d4c8b0" font-size="13" font-weight="700" font-family="sans-serif">ℒ = Σ D_KL( p_teacher(·|x_priv) ‖ p_student(·|x_student) )</text>
+
+<path d="M480,320 L480,345" marker-end="url(#a)" stroke="rgba(255,255,255,0.12)" stroke-width="1" fill="none"/>
+
+<rect x="40" y="350" width="260" height="42" rx="10" fill="rgba(124,92,231,0.04)" stroke="rgba(124,92,231,0.15)"/>
+<text x="170" y="368" text-anchor="middle" fill="#7c5ce7" font-size="10" font-weight="700" font-family="sans-serif">🟣 标准答案/推理链</text>
+<text x="170" y="383" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="9" font-family="sans-serif">直接但高风险 · 捷径学习</text>
+
+<rect x="350" y="350" width="260" height="42" rx="10" fill="rgba(168,85,247,0.04)" stroke="rgba(168,85,247,0.15)"/>
+<text x="480" y="368" text-anchor="middle" fill="#a855f7" font-size="10" font-weight="700" font-family="sans-serif">🟣 视觉线索 ViCuR</text>
+<text x="480" y="383" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="9" font-family="sans-serif">不告答案 · 只告「看哪里」</text>
+
+<rect x="660" y="350" width="260" height="42" rx="10" fill="rgba(0,206,201,0.04)" stroke="rgba(0,206,201,0.15)"/>
+<text x="790" y="368" text-anchor="middle" fill="#00cec9" font-size="10" font-weight="700" font-family="sans-serif">🟢 局部感知 Vision-OPD</text>
+<text x="790" y="383" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="9" font-family="sans-serif">零外部依赖 · 最优雅</text>
+</svg></section>
+
+<!-- ═══════ RL 后训练时代背景 ═══════ -->
+<section data-transition="slide"><div class="core-card fragment fade-up"><p class="page-badge">时代背景</p><h2 style="font-size:28px;font-weight:700;color:#fff;margin:8px 0;">RL 后训练：从文本到多模态的迁移</h2><div class="core-bar"></div>
+<div class="struct-content"><p>2025–2026 年间，<strong>GRPO、DAPO、PPO</strong> 等强化学习方法在纯文本 LLM 上取得显著推理能力提升：</p>
+<p style="margin-left:16px;">🔹 <strong>DeepSeek-R1</strong>：纯 RL 驱动的推理涌现<br/>🔹 <strong>Qwen3</strong>：RLVR 规模化验证</p>
+<p>然而，当这些范式<strong>迁移到多模态模型（MLLM / LVLM / LALM）</strong>时——遇到了三个根本性瓶颈。</p></div></div></section>
+
+<!-- ═══════ 三大瓶颈总览 ═══════ -->
+<section data-transition="slide"><h2 style="font-size:28px;font-weight:700;color:var(--flare);margin-bottom:16px;">⚠️ 三大瓶颈：RL 后训练在多模态的困境</h2>
+<div class="tri-grid" style="max-width:960px;">
+<div class="bottleneck-card fragment fade-up"><div class="n">瓶颈 1</div><div class="t">稀疏奖励<br/>Sparse Reward</div><div class="d">可验证奖励仅对最终答案打分，失败 rollout 中每个 token 获得相同惩罚 → <strong>信用分配失效</strong>，模型无法区分「看错」vs「推错」</div></div>
+<div class="bottleneck-card fragment fade-up"><div class="n">瓶颈 2</div><div class="t">感知-推理耦合退化<br/>Entanglement</div><div class="d">RL 优化可能<strong>牺牲视觉感知</strong>换取文本推理的奖励提升 → 模型学会「蒙答案」而非「读图」→ shortcut learning</div></div>
+<div class="bottleneck-card fragment fade-up"><div class="n">瓶颈 3</div><div class="t">分布漂移<br/>Distribution Drift</div><div class="d">SFT 基于静态数据，RL 基于<strong>自采样轨迹</strong> → 两分布 gap 导致训练不稳定，甚至灾难性遗忘</div></div>
+</div></section>
+
+<!-- ═══════ 瓶颈 1 详解 ═══════ -->
+<section data-transition="slide"><div class="core-card fragment fade-up"><p class="page-badge">瓶颈 1 深度分析</p><h2 style="font-size:24px;font-weight:700;color:var(--flare);margin:8px 0;">稀疏奖励 → 信用分配失效</h2><div class="core-bar"></div>
+<div class="struct-content"><p>RL 后训练的标准范式是 <strong>RLVR（RL with Verifiable Rewards）</strong>：模型生成完整 rollout，用验证器给最终答案打分。但——</p>
+<p style="margin-left:16px;">❌ <strong>每条失败的 rollout 中，每个 token 获得相同的惩罚信号</strong></p>
+<p>这导致根本性的<strong>信用分配（Credit Assignment）问题</strong>：</p>
+<p style="margin-left:16px;">🔸 模型不知道是「<strong>看错了</strong>」（视觉编码器提取了错误的特征）<br/>🔸 还是「<strong>推错了</strong>」（语言解码器在正确特征上推理失败）</p>
+<p>对于纯文本 LLM，这还可以接受（只有一种模态）；但对于 MLLM，<strong>视觉感知的错误和文本推理的错误被混为一谈</strong>，优化信号完全模糊。</p></div></div></section>
+
+<!-- ═══════ 瓶颈 2 详解 ═══════ -->
+<section data-transition="slide"><div class="core-card fragment fade-up"><p class="page-badge">瓶颈 2 深度分析</p><h2 style="font-size:24px;font-weight:700;color:var(--flare);margin:8px 0;">感知-推理耦合退化 → Shortcut Learning</h2><div class="core-bar"></div>
+<div class="struct-content"><p>RL 优化的目标是<strong>最大化最终答案奖励</strong>。在多模态场景下，这产生了一个危险的捷径：</p>
+<p style="margin-left:16px;font-size:14px;color:var(--beam);">模型可以通过「猜测」正确答案的文本质地<br/>来获得高奖励，而不真正依赖图像内容</p>
+<p><strong>具体机制：</strong></p>
+<p style="margin-left:16px;">🔸 RL 梯度倾向于增强<strong>「奖励最大化的路径」</strong><br/>🔸 如果文本先验（language prior）已足够强 → 图像信号被边缘化<br/>🔸 最终：模型在 benchmark 上分数可能不降，<strong>但视觉基础（visual grounding）完全丧失</strong></p>
+<p>这是笔记 03 中讨论的 <strong>shortcut learning</strong> 问题在 RL 阶段的复现——而且<strong>比 SFT 阶段更隐蔽</strong>，因为 RL 的探索机制会主动寻找这类捷径。</p></div></div></section>
+
+<!-- ═══════ 瓶颈 3 详解 ═══════ -->
+<section data-transition="slide"><div class="core-card fragment fade-up"><p class="page-badge">瓶颈 3 深度分析</p><h2 style="font-size:24px;font-weight:700;color:var(--flare);margin:8px 0;">分布漂移 → SFT → RLVR 的鸿沟</h2><div class="core-bar"></div>
+<div class="struct-content"><p>主流的 MLLM 后训练 pipeline 是<strong>两阶段串行</strong>：</p>
+<p style="margin-left:16px;">📌 <strong>第一阶段 SFT</strong>：在静态标注数据上监督微调，数据分布固定<br/>📌 <strong>第二阶段 RLVR</strong>：模型<strong>自采样轨迹</strong>，用奖励模型打分</p>
+<p>两个阶段的数据分布之间存在<strong>本质 gap</strong>：</p>
+<p style="margin-left:16px;">🔸 SFT 阶段：模型「阅读」人类写好的教材<br/>🔸 RL 阶段：模型「自己解题」，但题目来自它自己的生成分布</p>
+<p><strong>后果：</strong>训练不稳定、loss 剧烈震荡、灾难性遗忘（RL 阶段损失 SFT 已学到的能力）。这一 gap 在多模态模型中<strong>比纯文本模型更大</strong>——因为模态间的对齐本身就很脆弱。</p></div></div></section>
+
+<!-- ═══════ OPD 作为解决方案 ═══════ -->
+<section data-transition="slide"><div class="core-card fragment fade-up"><p class="page-badge">解决方案</p><h2 style="font-size:28px;font-weight:700;color:var(--nova);margin:8px 0;">💡 OPD / OPSD 的核心洞见</h2><div class="core-bar"></div>
+<div class="def-box"><div class="label">核心理念</div><div class="content"><strong>学生用自己的策略生成轨迹 → 教师在相同轨迹上提供逐 token 密集监督 → 对齐两者的分布。</strong></div></div>
+<div class="struct-content" style="margin-top:12px;"><p>与传统 RL 的<strong>稀疏序列级奖励</strong>不同，OPD 提供：</p>
+<p style="margin-left:16px;">✅ <strong>逐 token 的密集信号</strong> → 信用分配问题被自然解决<br/>✅ <strong>教师与学生共享轨迹</strong> → 感知-推理耦合可被诊断和分离<br/>✅ <strong>分布匹配而非奖励最大化</strong> → 缓解 SFT→RLVR 的分布漂移</p>
+<p>在多模态语境下，<strong>教师和学生通常是同一模型的冻结副本和训练副本</strong>——区别仅在于教师看到了<strong>特权信息（privileged information）</strong>。</p></div></div></section>
+
+<!-- ═══════ OPD 数学公式 ═══════ -->
+<section data-transition="slide"><div class="core-card fragment fade-up"><p class="page-badge">数学框架</p><h2 style="font-size:24px;font-weight:700;color:var(--nova);margin:8px 0;">OPD 的核心公式</h2><div class="core-bar"></div>
+<p style="font-size:14px;color:var(--text2);margin-bottom:4px;">在 on-policy 轨迹上的分布匹配：</p>
+<div class="formula-box"><div class="math-block">$$\mathcal{L}_{\text{OPD}} = \sum_{t} D_{\text{KL}}\big(p_{\theta_{\text{old}}}(\cdot|x_{\text{priv}}, y_{&lt;t}) \;\|\; p_\theta(\cdot|x_{\text{student}}, y_{&lt;t})\big)$$</div></div>
+<div class="struct-content"><p>其中：</p>
+<p style="margin-left:16px;">🔸 <strong>p_θold</strong>：教师（冻结副本），条件为 $x_{\text{priv}}$ = 含特权信息的输入<br/>🔸 <strong>p_θ</strong>：学生（训练副本），条件为 $x_{\text{student}}$ = 标准推理输入<br/>🔸 <strong>D_KL</strong>：KL 散度（Forward KL / Reverse KL / JSD 视场景而定）<br/>🔸 <strong>y_&lt;t</strong>：前缀 token 序列（学生自采样的轨迹上下文）</p>
+<p>本质上，这是在<strong>学生自己走出的路上</strong>，用教师的分布作为参照——而非让教师划定一条最优路径让学生盲从。</p></div></div></section>
+
+<!-- ═══════ 自蒸馏与特权信息 ═══════ -->
+<section data-transition="slide"><div class="core-card fragment fade-up"><p class="page-badge">自蒸馏本质</p><h2 style="font-size:28px;font-weight:700;color:var(--fuse);margin:8px 0;">为什么多模态 OPD 偏爱自蒸馏？</h2><div class="core-bar"></div>
+<div class="struct-content"><p>多模态 OPD 中，<strong>教师和学生通常是同一个模型的冻结副本和训练副本</strong>——这被称为 <strong>OPSD（On-Policy Self-Distillation）</strong>。</p>
+<p><strong>为什么是自蒸馏？</strong></p>
+<p style="margin-left:16px;">✅ <strong>效率</strong>：无需依赖更大的外部模型（外部多模态教师稀缺）<br/>✅ <strong>数据瓶颈</strong>：多模态推理数据极度稀缺，自蒸馏可利用无标签图文对<br/>✅ <strong>跨模态对齐</strong>：同一模型架构保证教师-学生之间的特征空间兼容</p>
+<p><strong>教师与学生的唯一区别：</strong></p>
+<p style="margin-left:16px;font-size:14px;color:var(--beam);">教师看到了「特权信息」——训练时可用、推理时无法获取的额外信息</p></div></div></section>
+
+<!-- ═══════ 特权信息：什么是它？ ═══════ -->
+<section data-transition="slide"><div class="core-card fragment fade-up"><p class="page-badge">特权信息</p><h2 style="font-size:28px;font-weight:700;color:var(--beam);margin:8px 0;">👑 什么是"特权信息"？</h2><div class="core-bar"></div>
+<div class="def-box"><div class="label">定义</div><div class="content"><strong>特权信息（Privileged Information）</strong>是<strong>只在训练时可用、推理时无法获取的"开卷答案"</strong>。在标准教师-学生框架中，教师和学生看到同样的输入；而在特权教师设定中，教师能额外获得训练时独有的信息——就像老师拿着标准答案批改作业，考试时谁都看不到答案。</div></div>
+<div class="struct-content" style="margin-top:8px;"><p><strong>特权信息在 OPD 中的角色：</strong></p>
+<p style="margin-left:16px;">🔸 提供更高质量、信息更丰富的监督信号<br/>🔸 提升学生模型的学习上限<br/>🔸 但如果使用不当 → <strong>特权幻觉（Privilege Illusion）</strong></p></div></div></section>
+
+<!-- ═══════ 特权幻觉 ═══════ -->
+<section data-transition="slide"><div class="core-card fragment fade-up"><p class="page-badge">风险警示</p><h2 style="font-size:26px;font-weight:700;color:var(--flare);margin:8px 0;">⚠️ 特权幻觉（Privilege Illusion）</h2><div class="core-bar"></div>
+<div class="struct-content"><p>如果特权信息设计不当，会引发一系列连锁问题：</p></div>
+<div class="tri-grid" style="max-width:900px;margin-top:6px;">
+<div class="concept-block fragment fade-up"><h4>🔸 能力假象</h4><p>教师的高性能源于信息不对称，而非真正的推理能力</p></div>
+<div class="concept-block fragment fade-up"><h4>🔸 学习偏差</h4><p>学生模仿的是利用特权的「捷径」，而非可迁移的推理能力</p></div>
+<div class="concept-block fragment fade-up"><h4>🔸 泛化失败</h4><p>学到的能力依赖特权 → 推理时无法获得 → 完全失效</p></div>
+<div class="concept-block fragment fade-up"><h4>🔸 训练崩溃</h4><p>模型过早收敛（熵崩塌），甚至后期性能下降</p></div>
+<div class="concept-block fragment fade-up"><h4>🔸 抑制探索</h4><p>学生被"喂答案" → 主动探索能力被摧毁</p></div>
+<div class="concept-block fragment fade-up"><h4>🔸 灾难性遗忘</h4><p>特权移除后，模型性能断崖式下跌</p></div>
+</div></div></section>
+
+<!-- ═══════ 三种特权方式详解 ═══════ -->
+<section data-transition="slide"><h2 style="font-size:26px;font-weight:700;color:var(--beam);margin-bottom:12px;">🔑 特权信息的三种获取方式</h2>
+<div class="two-col" style="max-width:960px;gap:14px;">
+<div class="privilege-card fragment fade-up" style="border-left:3px solid var(--flare);"><div class="lvl">方式一 · 高风险</div><div class="name">📝 标准答案 / 推理链</div><div class="desc">教师直接使用<strong>标准答案（Ground Truth）</strong>或完整推理链（CoT）作为特权。教师「看着答案说理由」，表现虚高。</div><div class="risk">⚠️ 致命陷阱：学生学到的是「如何映射到答案分布」而非「如何看图理解」→ 熵崩塌 · 捷径学习</div></div>
+<div class="privilege-card fragment fade-up" style="border-left:3px solid var(--fuse);"><div class="lvl">方式二 · 中风险</div><div class="name">👁️ 视觉线索 · ViCuR</div><div class="desc"><strong>不告诉答案，只告诉「看哪里」</strong>——教师看到图像 + 高亮区域/边界框，学生仅看完整原图。</div><div class="risk">✅ 优势：学生学会「自动聚焦」能力 → 训练-推理较一致<br/>⚠️ 风险：需区域标注，可能过度依赖视觉分支</div></div>
+<div class="privilege-card fragment fade-up" style="border-left:3px solid var(--nova);"><div class="lvl">方式三 · 零风险</div><div class="name">🔬 局部感知 · Vision-OPD</div><div class="desc"><strong>完全不引入外部数据或标签</strong>。教师看裁剪的局部特写（细节清晰），学生看模糊全局图（视野广但细节丢失）。学生从全局中恢复教师从局部提取的特征。</div><div class="risk" style="color:var(--nova);">✅ 最优：零外部依赖 · 训练推理完全对齐 · 强迫空间注意力缩放机制</div></div>
+</div></section>
+
+<!-- ═══════ 三种方式对比表 ═══════ -->
+<section data-transition="slide"><h2 style="font-size:24px;font-weight:700;color:var(--beam);margin-bottom:12px;">📊 三种特权方式的全面对比</h2>
+<table class="summary-table fragment fade-up"><thead><tr><th>维度</th><th>🟡 标准答案</th><th>🟣 视觉线索 ViCuR</th><th>🟢 局部感知 Vision-OPD</th></tr></thead>
+<tbody>
+<tr><td class="pc">特权来源</td><td>外部数据集标签</td><td>外部检测/分割标签</td><td class="hl">图像自身的空间尺度缩放</td></tr>
+<tr><td class="pc">是否依赖标注</td><td class="wd">严重依赖</td><td>中度依赖</td><td class="hl">✅ 完全不依赖</td></tr>
+<tr><td class="pc">推理一致性</td><td class="wd">极差（严重捷径）</td><td>较好（学特征非答案）</td><td class="hl">✅ 极高（自洽）</td></tr>
+<tr><td class="pc">主要风险</td><td class="wd">特权幻觉 · 熵崩塌</td><td>过度依赖视觉分支</td><td class="hl">需较复杂尺度调度</td></tr>
+<tr><td class="pc">代表范式</td><td>早期 LLM 蒸馏</td><td>ViCuR (2026.06)</td><td class="hl">Vision-OPD (2026.05)</td></tr>
+<tr><td class="pc">训练效率</td><td>中等</td><td>中等</td><td class="hl">✅ 高（无外部瓶颈）</td></tr>
+</tbody></table>
+<div class="struct-content" style="margin-top:10px;max-width:820px;"><p style="text-align:center;color:var(--nova);">💡 设计特权信息的关键：<strong>平衡「强大」与「可迁移」——理想的特权并非越强越好，而是要避免特权幻觉</strong></p></div></section>
+
+<!-- ═══════ Part 0 小结 ═══════ -->
+<section data-transition="slide"><div class="core-card fragment fade-up"><p class="page-badge">Part 0 小结</p><h2 style="font-size:28px;font-weight:700;color:var(--core);margin:8px 0;">🎯 从问题到方法</h2><div class="core-bar"></div>
+<div class="struct-content">
+<p><strong>三大瓶颈</strong>迫使多模态社区重新思考 RL 后训练范式：</p>
+<p style="margin-left:16px;">① 稀疏奖励 → 信用分配失效<br/>② 感知-推理耦合退化 → 视觉基础丧失<br/>③ 分布漂移 → 训练不稳定</p>
+<p><strong>OPD / OPSD</strong> 用<strong>逐 token 分布匹配</strong>替代稀疏序列级奖励——核心在于特权信息的精心设计。</p>
+<p><strong>三种特权范式</strong>从「给答案」演进到「给线索」再到「用自身尺度优势」——最终指向 <strong>Vision-OPD 式的零外部依赖自蒸馏</strong>。</p>
+<p style="text-align:center;margin-top:16px;color:var(--nova);font-size:14px;">✦ 接下来：Part 1 — 多模态 OPD 的四大范式与时间线 ✦</p>
+</div></div></section>
+
+</div></div>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.js"></script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<script>(function(){const c=document.getElementById('bg-canvas'),ctx=c.getContext('2d');let W,H;function rs(){W=c.width=window.innerWidth;H=c.height=window.innerHeight}window.addEventListener('resize',rs);rs();const NUM=71,Z_NEAR=100,Z_FAR=2200,R=180,MAX_A=0.40,BLUR=14;let frame=0;function lp(){ctx.clearRect(0,0,W,H);const t=frame*0.016,F=Math.min(W,H)*0.75,CX=W/2,CY=H/2;const sx=Math.sin(t*0.22)*55+Math.cos(t*0.31)*25;const sy=Math.cos(t*0.28)*45+Math.sin(t*0.19)*30;for(let i=NUM-1;i>=0;i--){const p=i/(NUM-1),z=Z_NEAR+p*(Z_FAR-Z_NEAR);const rot=t*0.35-z*0.0025;const px=(-sx*F)/z+CX,py=(-sy*F)/z+CY,pr=(R*F)/z;const alpha=MAX_A*Math.pow(1-p,0.90);const lw=Math.max(0.08,4.8*Math.pow(Z_NEAR/z,2.35));if(alpha<0.005)continue;const hue=((p*280+t*15)%360+360)%360;ctx.save();ctx.translate(px,py);ctx.beginPath();for(let v=0;v<5;v++){const a=rot+(v*2*Math.PI)/5;v===0?ctx.moveTo(pr*Math.cos(a),pr*Math.sin(a)):ctx.lineTo(pr*Math.cos(a),pr*Math.sin(a))}ctx.closePath();ctx.strokeStyle='hsla('+hue+',100%,50%,'+alpha+')';ctx.lineWidth=lw;ctx.shadowColor='hsla('+hue+',100%,50%,'+(alpha*0.4)+')';ctx.shadowBlur=BLUR;ctx.stroke();ctx.restore()}frame++;requestAnimationFrame(lp)}lp()})();</script>
+<script>Reveal.initialize({hash:true,center:true,transition:'slide',transitionSpeed:'slow',backgroundTransition:'zoom',slideNumber:false,progress:false,controls:true,controlsLayout:'bottom-right',navigationMode:'linear',width:1200,height:700,margin:0,minScale:0.2,maxScale:2.0});(function(){const e=document.getElementById('page-indicator');function u(){const t=Reveal.getTotalSlides(),c=Reveal.getSlidePastCount()+1;e.textContent=c+' / '+t}Reveal.on('ready',u);Reveal.on('slidechanged',u)})();</script></body></html>

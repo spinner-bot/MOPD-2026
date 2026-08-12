@@ -1,0 +1,87 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><title>Module 2 · Part 1+: CLIP 生态全景</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/black.min.css">
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]}};</script>
+<style>
+:root{--bg:#030206;--surface:rgba(20,18,30,0.7);--border:rgba(120,100,180,0.15);--text:#e0dce8;--text2:rgba(210,200,230,0.7);--text3:rgba(160,145,190,0.45);--vlm:#b794f4;--vis:#60a5fa;--aud:#4ade80;--vid:#facc15;--gen:#fb7185}
+#bg-canvas{position:fixed;inset:0;z-index:0;pointer-events:none}.reveal{background:transparent}.reveal .slides section{padding:28px 48px;display:flex!important;flex-direction:column;align-items:center;justify-content:center}.reveal .controls{right:12px!important;bottom:12px!important}#page-indicator{position:fixed;left:24px;bottom:20px;z-index:100;font-size:13px;color:rgba(180,160,210,0.4);font-family:'JetBrains Mono',monospace}
+.ac-card{z-index:2;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:36px 46px;max-width:860px;box-shadow:0 8px 32px rgba(0,0,0,0.6)}.hero-title{font-size:46px;font-weight:800;background:linear-gradient(135deg,var(--vlm),var(--vis),var(--aud),var(--vid),var(--gen));background-size:300%300%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:shift 6s ease infinite}@keyframes shift{0%,100%{background-position:0%50%}25%{background-position:100%0%}50%{background-position:100%100%}75%{background-position:0%100%}}.ac-bar{width:100px;height:2px;background:linear-gradient(90deg,transparent,var(--vlm),var(--vis),var(--aud),var(--vid),transparent);margin:14px auto}
+.struct-content{font-size:13px;color:var(--text2);line-height:2;text-align:left;max-width:780px}.struct-content strong{color:#fff}
+.concept-block{background:rgba(20,18,30,0.5);border:1px solid var(--border);border-radius:10px;padding:14px 12px;text-align:left;margin-bottom:6px}.concept-block h4{font-size:12px;color:var(--vlm);margin:0 0 4px}.concept-block p{font-size:10px;color:var(--text2);line-height:1.6;margin:0}
+.def-box{background:rgba(120,100,180,0.06);border:1px solid rgba(120,100,180,0.2);border-left:3px solid var(--vlm);border-radius:0 10px 10px 0;padding:14px 20px;text-align:left;max-width:750px;margin:8px 0}.def-box .label{font-size:11px;color:var(--vlm);font-weight:700;margin-bottom:4px}.def-box .content{font-size:12px;color:var(--text);line-height:1.8}
+.page-badge{display:inline-flex;padding:4px 14px;border-radius:14px;font-size:10px;font-weight:700;background:rgba(183,148,244,0.08);color:var(--vlm);border:1px solid rgba(183,148,244,0.2)}.cite{font-size:10px;color:var(--vlm);font-family:monospace}
+.reveal .slides section .fragment.fade-up{opacity:0;transform:translateY(30px);transition:all 0.7s}.reveal .slides section .fragment.fade-up.visible{opacity:1;transform:translateY(0)}
+/* 横向滚屏容器 */
+.dag-scroll{width:100%;text-align:center}
+.dag-scroll svg{max-width:100%;height:auto}
+.dag-hl{width:100%;overflow:hidden;position:relative}
+.dag-hl svg{transition:transform 0.6s ease}
+@media(max-width:768px){.hero-title{font-size:28px}}
+</style></head><body><canvas id="bg-canvas"></canvas><div id="page-indicator"></div><div class="reveal"><div class="slides">
+
+<!-- 标题 -->
+<section data-transition="zoom"><div class="ac-card fragment fade-up"><p class="cite">MODULE 2 · PART 1+</p><h1 class="hero-title">CLIP 生态全景</h1><p style="font-size:20px;color:var(--text2);">从单模型到完整技术栈 · 笔记06 深度补充</p><div class="ac-bar"></div></div></section>
+
+<!-- DAG全景(横向滚屏) -->
+<section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--vlm);margin-bottom:4px;">内容结构图</h2><p style="font-size:11px;color:var(--text3);margin:0 0 8px;">横向浏览 → 在进入每个部分前高亮当前位置</p>
+<div class="dag-scroll"><svg viewBox="0 0 1100 260" xmlns="http://www.w3.org/2000/svg" style="max-width:1100px;">
+<defs><marker id="a" markerWidth="5" markerHeight="4" refX="5" refY="2" orient="auto"><path d="M0,0 L5,2 L0,4 Z" fill="rgba(255,255,255,0.3)"/></marker></defs>
+<!-- 1 -->
+<rect x="10" y="100" width="120" height="46" rx="10" fill="rgba(96,165,250,0.08)" stroke="rgba(96,165,250,0.25)"/><text x="60" y="120" text-anchor="middle" fill="#60a5fa" font-size="12" font-weight="700" font-family="sans-serif">1. 历史</text><text x="60" y="138" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="8" font-family="sans-serif">CLIP未公开</text>
+<text x="115" y="123" fill="rgba(255,255,255,0.25)" font-size="14">→</text>
+<!-- 2-1 -->
+<rect x="130" y="40" width="110" height="46" rx="10" fill="rgba(74,222,128,0.08)" stroke="rgba(74,222,128,0.25)"/><text x="195" y="60" text-anchor="middle" fill="#4ade80" font-size="12" font-weight="700" font-family="sans-serif">2-1. DataComp</text><text x="195" y="78" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="8" font-family="sans-serif">筛选基准</text>
+<text x="250" y="63" fill="rgba(255,255,255,0.25)" font-size="14">→</text>
+<!-- 2-2 -->
+<rect x="130" y="155" width="170" height="90" rx="10" fill="rgba(251,191,36,0.08)" stroke="rgba(251,191,36,0.25)"/><text x="225" y="178" text-anchor="middle" fill="#facc15" font-size="13" font-weight="700" font-family="sans-serif">2-2. MetaCLIP</text><text x="225" y="198" text-anchor="middle" fill="rgba(255,255,255,0.45)" font-size="9" font-family="sans-serif">逆向工程·概念平衡</text><line x1="190" y1="205" x2="330" y2="205" stroke="rgba(255,255,255,0.08)"/><text x="225" y="220" text-anchor="middle" fill="#b794f4" font-size="9" font-family="sans-serif">2-2a 概念平衡 | 2-2b 精讲 | 2-2rs 三结论</text>
+<text x="250" y="200" fill="rgba(255,255,255,0.25)" font-size="14">→</text>
+<!-- 3 SigLIP -->
+<rect x="320" y="60" width="240" height="130" rx="12" fill="rgba(251,114,133,0.08)" stroke="rgba(251,114,133,0.25)"/><text x="440" y="88" text-anchor="middle" fill="#fb7185" font-size="14" font-weight="700" font-family="sans-serif">3. SigLIP</text><text x="440" y="108" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="9" font-family="sans-serif">sigmoid替代softmax</text><line x1="430" y1="115" x2="650" y2="115" stroke="rgba(255,255,255,0.08)"/><text x="440" y="133" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="9" font-family="sans-serif">3pre softmax/sigmoid · 3pre2 B²二分类</text><text x="440" y="150" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="9" font-family="sans-serif">3plus 行业地位</text>
+<text x="560" y="125" fill="rgba(255,255,255,0.25)" font-size="14">→</text>
+<!-- 4 -->
+<rect x="580" y="80" width="260" height="90" rx="12" fill="rgba(74,222,128,0.08)" stroke="rgba(74,222,128,0.3)"/><text x="710" y="105" text-anchor="middle" fill="#4ade80" font-size="14" font-weight="700" font-family="sans-serif">4. EVA-CLIP 与缩放定律</text><text x="710" y="128" text-anchor="middle" fill="rgba(255,255,255,0.45)" font-size="9" font-family="sans-serif">4-1→4-2→4-9 精讲</text><text x="710" y="148" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="9" font-family="sans-serif">核心洞察：数据质量>模型规模</text>
+<text x="840" y="125" fill="rgba(255,255,255,0.25)" font-size="14">→</text>
+<!-- 5 -->
+<rect x="860" y="100" width="120" height="46" rx="10" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.15)"/><text x="920" y="120" text-anchor="middle" fill="#fff" font-size="12" font-weight="700" font-family="sans-serif">5. 小结</text><text x="920" y="138" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="8" font-family="sans-serif">链表串联</text>
+<!-- 标题 -->
+<text x="600" y="20" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="10" font-family="sans-serif">讲解顺序 → 从左到右</text>
+</svg></div></section>
+
+<!-- 节点1: 历史背景 -->
+<section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--vis);margin-bottom:6px;">1. CLIP 未公开的数据管线</h2>
+<div class="fragment fade-up struct-content">OpenAI 在 CLIP 论文中描述了使用<strong style="color:var(--vis);">4亿图文对</strong>进行训练，但<strong style="color:#fff;">从未公开数据收集和筛选的具体方法</strong>。开源社区面临核心问题：<strong style="color:var(--vis);">如何复现甚至超越 CLIP？</strong><br><br>两条路径：① 大规模数据筛选基准 (DataComp) ② 逆向工程 OpenAI 的数据管线 (MetaCLIP)。</div></section>
+
+<!-- 节点2-1: DataComp -->
+<section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--aud);margin-bottom:6px;">2-1. DataComp (2023)</h2>
+<div class="fragment fade-up struct-content"><strong style="color:var(--aud);">核心贡献：</strong>建立<strong style="color:#fff;">大规模多模态数据筛选的标准化基准</strong>。DataComp 不是一种数据筛选方法，而是一个<strong style="color:var(--aud);">竞赛平台</strong>——提供统一的原始数据池和评估协议，让不同筛选算法在公平条件下比较。<br><br>关键发现：<strong style="color:#fff;">数据筛选算法的重要性远超模型架构</strong>——最好的筛选策略用较小模型就能达到甚至超越 CLIP 的性能。</div></section>
+
+<!-- 节点2-2: MetaCLIP -->
+<section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--vid);margin-bottom:6px;">2-2. MetaCLIP — 逆向工程 OpenAI 数据管线</h2>
+<div class="fragment fade-up struct-content"><strong style="color:var(--vid);">核心方法：</strong>使用<strong style="color:#fff;">元数据驱动的策展 (Metadata-driven Curation)</strong>——从 Wikidata/WordNet 获取概念词条，按概念平衡采样，而非简单的网络爬取。<strong style="color:var(--vid);">在相同数据量下超越原始 CLIP。</strong><br><br>关键在于<strong style="color:#fff;">"概念平衡"</strong>：原始网络爬取会导致高频概念（如"狗"、"车"）占据大量训练样本，而稀有概念（如"鸭嘴兽"）几乎不可见。MetaCLIP 确保了每个概念都有足够的训练样本。</div></section>
+
+<!-- 节点2-2a: 概念平衡 -->
+<section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--vlm);margin-bottom:6px;">2-2a. 什么是概念平衡？</h2>
+<div class="two-col fragment fade-up"><div class="concept-block" style="border-left:3px solid var(--vid);"><h4>⚖️ 概念平衡采样的含义</h4><p style="font-size:11px;">不按<strong style="color:var(--vid);">数据出现频率</strong>采样，而是按<strong style="color:var(--vid);">概念多样性</strong>采样。每个概念（来自 Wikidata 的数万个条目）获得大致相等的样本配额。这避免了模型被高频概念主导，强制学习长尾知识。</p></div><div class="concept-block" style="border-left:3px solid var(--aud);"><h4>📊 三个核心结论 (2-2rs)</h4><p style="font-size:11px;">① <strong style="color:var(--aud);">概念平衡显著提升零样本迁移</strong>——尤其对稀有类别<br>② <strong style="color:var(--aud);">数据量不是越多越好</strong>——平衡的4亿样本超越不平衡的10亿<br>③ <strong style="color:var(--aud);">元数据策展成本极低</strong>——Wikidata/WordNet 是免费知识库</p></div></div></section>
+
+<!-- 2-2b MetaCLIP精讲 -->
+<section data-transition="slide"><h2 style="font-size:20px;font-weight:700;color:var(--vid);margin-bottom:4px;">2-2b. MetaCLIP 核心方法精讲</h2>
+<div class="fragment fade-up struct-content"><strong style="color:var(--vid);">三步管线：</strong>① 从 Wikidata/WordNet 获取<strong style="color:#fff;">数十万概念词条</strong>作为查询 → ② 对每个概念查询网络数据，<strong style="color:#fff;">按配额采样</strong>（每概念约5000样本）→ ③ 用平衡后的数据集训练 CLIP。<br><br><strong style="color:var(--vid);">关键洞察：</strong>OpenAI 的"4亿图文对"并非随机网络爬取——MetaCLIP 通过逆向工程发现，其优越性来自<strong style="color:#fff;">隐式的概念平衡策展</strong>。这解释了为什么简单扩大网络爬取数据（如 LAION-5B）并不能线性提升性能。</div></section>
+
+<!-- 3 SigLIP -->
+<section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--gen);margin-bottom:6px;">3. SigLIP — sigmoid 替代 softmax</h2>
+<div class="fragment fade-up struct-content"><strong style="color:var(--gen);">核心创新：</strong>将 CLIP 的对比损失从<strong style="color:#fff;">softmax（全局归一化）</strong>替换为<strong style="color:#fff;">sigmoid（逐对独立）</strong>。<br><br>CLIP: 对每个样本，计算它与批次中所有其他样本的 softmax 概率（需全局归一化，batch size 敏感）。<br>SigLIP: 对每个图文对 (i,j)，独立判断它们是否匹配——一个<strong style="color:var(--gen);">二分类问题</strong>（0=不匹配, 1=匹配），不再需要 batch 内全局归一化。</div></section>
+
+<!-- 3pre softmax vs sigmoid -->
+<section data-transition="slide"><h2 style="font-size:20px;font-weight:700;color:var(--vis);margin-bottom:6px;">3pre. softmax vs sigmoid</h2>
+<div class="two-col fragment fade-up"><div class="concept-block" style="border-left:3px solid var(--gen);"><h4>softmax (CLIP)</h4><p style="font-size:11px;">$$\mathcal{L}=-\frac{1}{N}\sum_i\log\frac{\exp(s_{ii})}{\sum_j\exp(s_{ij})}$$所有 N 个候选竞争一个"正确"位置。需要大 batch，且 batch size 直接影响性能。</p></div>
+<div class="concept-block" style="border-left:3px solid var(--aud);"><h4>sigmoid (SigLIP)</h4><p style="font-size:11px;">$$\mathcal{L}=-\frac{1}{B^2}\sum_{i,j}[y_{ij}\log\sigma(s_{ij})+(1-y_{ij})\log(1-\sigma(s_{ij}))]$$每个 (i,j) 对独立二分类。本质：将对比学习<strong style="color:var(--aud);">解耦为 B² 个独立的二分类问题</strong>。</p></div></div></section>
+
+<!-- 4 EVA-CLIP -->
+<section data-transition="slide"><h2 style="font-size:22px;font-weight:700;color:var(--aud);margin-bottom:6px;">4. EVA-CLIP 与缩放定律</h2>
+<div class="fragment fade-up struct-content"><strong style="color:var(--aud);">EVA-CLIP 的核心工作：</strong>系统研究 CLIP 训练的<strong style="color:#fff;">缩放行为</strong>——模型大小、数据量、训练计算量三者如何影响最终性能。<br><br><strong style="color:var(--aud);">精讲要点 (4-1 → 4-2 → 4-9)：</strong><br>• <strong>4-1：</strong>在给定计算预算下，<strong style="color:#fff;">更大的模型 + 更少的 epoch</strong>优于小模型多轮训练<br>• <strong>4-2：</strong>数据质量和多样性比数据量更重要——呼应 MetaCLIP 的发现<br>• <strong>4-9 核心洞察：</strong>CLIP 训练的<strong style="color:#fff;">最优数据量随模型规模呈幂律增长</strong></div></section>
+
+<!-- 5 小结 -->
+<section data-transition="slide"><div class="ac-card fragment fade-up" style="text-align:center;"><h2 style="font-size:24px;font-weight:700;color:var(--vlm);margin-bottom:10px;">5. CLIP 生态全景 · 小结</h2><div class="ac-bar"></div><p style="font-size:13px;color:var(--text2);line-height:2;">CLIP未公开管线 → DataComp建立基准 → MetaCLIP逆向概念平衡 → SigLIP用sigmoid解耦 → EVA-CLIP量化缩放定律。<br><strong style="color:var(--vid);">核心主线：数据质量 > 模型架构 > 训练技巧。</strong>CLIP 的真正秘密不在于双塔对比学习，而在于其未公开的数据策展。</p></div></section>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.js"></script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<script>(function(){const c=document.getElementById('bg-canvas'),x=c.getContext('2d');let W,H,ribbons=[],frame=0;function rs(){W=c.width=window.innerWidth;H=c.height=window.innerHeight}window.addEventListener('resize',rs);rs();class Ribbon{constructor(){this.reset()}reset(){this.points=[];this.y=H*0.3+Math.random()*H*0.7;this.speed=(Math.random()-0.5)*0.25;this.hue=Math.floor(Math.random()*360);this.light=Math.floor(Math.random()*16+20);this.hueDrift=Math.random()*0.35+0.15;this.lightDrift=(Math.random()-0.5)*0.04;this.yDrift=(Math.random()-0.5)*0.15;const a=Math.random()*0.07+0.05;this.alpha=a;this.alphaStr=a*30;for(let i=0;i<=20;i++)this.points.push({x:i*W/20,y:Math.random()*70-35})}update(){this.y+=this.speed+this.yDrift;this.speed+=(Math.random()-0.5)*0.003;if(this.y<H*0.2||this.y>H+80)this.reset();this.hue+=this.hueDrift;if(this.hue<0)this.hue+=360;if(this.hue>=360)this.hue-=360;this.light+=this.lightDrift;if(this.light<20)this.lightDrift=0.05;if(this.light>35)this.lightDrift=-0.05;for(let p of this.points)p.y+=(Math.random()-0.5)*0.6}draw(ctx){const col=`hsla(${Math.floor(this.hue)},100%,${Math.floor(this.light)}%,`;ctx.save();ctx.globalAlpha=this.alpha;ctx.shadowColor=col+'0.35)';ctx.shadowBlur=20;ctx.beginPath();ctx.moveTo(0,this.y);for(let i=0;i<this.points.length;i++){const px=this.points[i].x,py=this.y+this.points[i].y;if(i<this.points.length-1){const nx=this.points[i+1].x,ny=this.y+this.points[i+1].y;ctx.quadraticCurveTo(px,py,(px+nx)/2,(py+ny)/2)}}ctx.lineTo(W,H);ctx.lineTo(0,H);ctx.closePath();ctx.fillStyle=col+this.alphaStr+')';ctx.fill();ctx.shadowBlur=0;ctx.restore()}}ribbons=Array.from({length:8},()=>new Ribbon());function lp(){x.clearRect(0,0,W,H);const grad=x.createRadialGradient(W/2,H/2,0,W/2,H/2,Math.max(W,H)*0.8);grad.addColorStop(0,'rgba(20,12,30,0.35)');grad.addColorStop(0.5,'rgba(8,5,12,0.12)');grad.addColorStop(1,'rgba(2,1,4,0)');x.fillStyle=grad;x.fillRect(0,0,W,H);const bloom=x.createRadialGradient(W/2+Math.sin(frame*0.003)*W*0.08,H/2+Math.cos(frame*0.004)*H*0.06,Math.min(W,H)*0.03,W/2,H/2,Math.min(W,H)*0.45);bloom.addColorStop(0,'rgba(140,110,200,0.05)');bloom.addColorStop(0.4,'rgba(100,140,200,0.02)');bloom.addColorStop(1,'rgba(0,0,0,0)');x.fillStyle=bloom;x.fillRect(0,0,W,H);ribbons.forEach(r=>{r.update();r.draw(x)});frame++;requestAnimationFrame(lp)}lp()})();</script>
+<script>Reveal.initialize({hash:true,center:true,transition:'slide',transitionSpeed:'slow',backgroundTransition:'zoom',slideNumber:false,progress:false,controls:true,controlsLayout:'bottom-right',navigationMode:'linear',width:1200,height:700,margin:0,minScale:0.2,maxScale:2.0});(function(){const e=document.getElementById('page-indicator');function u(){const t=Reveal.getTotalSlides(),c=Reveal.getSlidePastCount()+1;e.textContent=c+' / '+t}Reveal.on('ready',u);Reveal.on('slidechanged',u)})();</script></body></html>
