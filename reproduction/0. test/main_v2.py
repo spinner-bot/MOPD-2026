@@ -95,6 +95,7 @@ def test_model(model, X, Y):
     print(f"Total samples : {total}")
     print(f"Correct       : {correct}")
     print(f"Accuracy      : {acc:.2f}%")
+    print(f"Device        : {device}")
     return acc
 
 
