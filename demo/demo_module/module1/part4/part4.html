@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Part 4 · LLM时代的OPD革命 2024–2026</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/black.min.css">
+<script>window.MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']],displayMath:[['$$','$$'],['\\[','\\]']]},options:{skipHtmlTags:['script','noscript','style','textarea','pre']}};</script>
+<style>
+:root{
+  --bg:#0a0a0f;--surface:rgba(255,255,255,0.04);--border:rgba(255,255,255,0.08);
+  --text:#e8e8f0;--text2:rgba(255,255,255,0.65);--text3:rgba(255,255,255,0.4);
+  --a1:#6c5ce7;--a2:#00d2ff;--a3:#ff6b9d;--a4:#feca57;--a5:#00e676;
+  --red:#ff4444;--orange:#ff8c42;--hot:#ff3366;
+}
+#particle-canvas{position:fixed;inset:0;z-index:0;pointer-events:none}
+.reveal{background:transparent}
+.reveal .slides{text-align:center;width:100%!important;left:50%!important;margin:0!important}
+.reveal .slides section{padding:32px 52px;height:100%;display:flex!important;flex-direction:column;align-items:center;justify-content:center}
+.reveal .controls{right:12px!important;left:auto!important;bottom:12px!important}
+.reveal .progress,.reveal .slide-number{display:none!important}
+#page-indicator{position:fixed;left:24px;bottom:20px;z-index:100;font-size:13px;color:rgba(255,255,255,0.35);font-family:'JetBrains Mono','Fira Code','Consolas',monospace;letter-spacing:1px;pointer-events:none}
+
+.glass-card{position:relative;z-index:2;background:var(--surface);backdrop-filter:blur(24px) saturate(180%);border:1px solid var(--border);border-radius:24px;padding:44px 56px;box-shadow:0 20px 60px rgba(0,0,0,0.5);max-width:880px}
+.hero-title{font-size:52px;font-weight:900;letter-spacing:-2px;background:linear-gradient(135deg,var(--red),var(--orange),var(--hot));background-size:300% 300%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:gS 4s ease infinite;margin:0 0 14px;line-height:1.15}
+@keyframes gS{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+.glow-bar{width:120px;height:3px;background:linear-gradient(90deg,transparent,var(--red),var(--orange),transparent);border-radius:2px;margin:18px auto;animation:gP 2s ease-in-out infinite}
+@keyframes gP{0%,100%{opacity:0.4;width:120px}50%{opacity:1;width:200px}}
+
+.tag-row{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:16px}
+.tag{padding:7px 20px;border-radius:20px;font-size:13px;font-weight:600;border:1px solid;letter-spacing:1px;opacity:0;animation:tP 0.6s cubic-bezier(0.34,1.56,0.64,1) forwards}
+.tag:nth-child(1){animation-delay:0.3s;border-color:var(--red);color:var(--red)}
+.tag:nth-child(2){animation-delay:0.5s;border-color:var(--orange);color:var(--orange)}
+.tag:nth-child(3){animation-delay:0.7s;border-color:var(--hot);color:var(--hot)}
+@keyframes tP{from{opacity:0;transform:scale(.7)translateY(10px)}to{opacity:1;transform:scale(1)translateY(0)}}
+
+.reveal .slides section .fragment.fade-up{opacity:0;transform:translateY(40px);transition:all 0.8s cubic-bezier(0.25,0.46,0.45,0.94)}
+.reveal .slides section .fragment.fade-up.visible{opacity:1;transform:translateY(0)}
+
+.two-col{display:flex;gap:22px;flex-wrap:wrap;justify-content:center;max-width:960px}
+.two-col>div{flex:1;min-width:260px}
+.tri-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;max-width:960px}
+
+.concept-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:20px 18px;text-align:left;margin-bottom:12px}
+.concept-card h4{margin:0 0 6px;font-size:14px;color:#fff}
+.concept-card p{margin:0;font-size:12px;color:var(--text2);line-height:1.7}
+
+.formula-card{background:rgba(10,10,20,0.92);border:1px solid rgba(255,68,68,0.25);border-radius:18px;padding:22px 28px;max-width:820px;box-shadow:0 12px 40px rgba(0,0,0,0.5);position:relative}
+.formula-card::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--red),var(--orange),var(--hot))}
+.formula-card .math-block{font-size:16px;color:#cdd6f4;overflow-x:auto;padding:3px 0}
+
+.code-window{background:rgba(10,10,20,0.92);border:1px solid var(--border);border-radius:16px;overflow:hidden;text-align:left;font-family:'JetBrains Mono','Fira Code','Consolas',monospace;max-width:700px;box-shadow:0 20px 60px rgba(0,0,0,0.6)}
+.code-header{background:rgba(255,255,255,0.05);padding:8px 14px;display:flex;gap:8px;align-items:center;border-bottom:1px solid var(--border)}
+.code-dot{width:11px;height:11px;border-radius:50%}.code-dot.r{background:#ff5f56}.code-dot.y{background:#ffbd2e}.code-dot.g{background:#27c93f}
+.code-body{padding:16px 20px;font-size:13px;line-height:1.8;color:#cdd6f4}
+.code-body .kw{color:#cba6f7}.code-body .s{color:#a6e3a1}.code-body .fn{color:#89b4fa}.code-body .cm{color:#6c7086;font-style:italic}
+
+.summary-table{width:100%;max-width:820px;border-collapse:collapse;font-size:13px;border-radius:16px;overflow:hidden;box-shadow:0 12px 40px rgba(0,0,0,0.4)}
+.summary-table thead{background:linear-gradient(135deg,rgba(255,68,68,0.3),rgba(255,140,66,0.15))}
+.summary-table th{padding:11px 14px;text-align:left;font-weight:700;color:#fff;font-size:12px}
+.summary-table td{padding:10px 14px;border-bottom:1px solid var(--border);color:var(--text2)}
+.summary-table tbody tr{background:var(--surface);transition:all 0.3s}
+.summary-table tbody tr:hover{background:rgba(255,255,255,0.06)}
+.summary-table .pc{font-weight:700;color:#fff}.summary-table .hl{color:var(--orange);font-weight:600}
+
+.info-tile{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px 18px;max-width:360px;text-align:left}
+.info-tile h4{margin:0 0 5px;font-size:13px;color:#fff}
+.info-tile p{margin:0;font-size:12px;color:var(--text2);line-height:1.6}
+
+.pipeline-box{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:center;padding:14px;background:rgba(255,68,68,0.04);border:1px solid rgba(255,68,68,0.15);border-radius:16px;font-size:12px}
+.pipeline-step{padding:10px 14px;border-radius:10px;font-weight:700;text-align:center;min-width:80px}
+.ps-a{background:rgba(108,92,231,0.1);color:var(--a1);border:1px solid rgba(108,92,231,0.2)}
+.ps-b{background:rgba(255,68,68,0.1);color:var(--red);border:1px solid rgba(255,68,68,0.2)}
+.ps-c{background:rgba(0,210,255,0.1);color:var(--a2);border:1px solid rgba(0,210,255,0.2)}
+.ps-d{background:rgba(0,230,118,0.1);color:var(--a5);border:1px solid rgba(0,230,118,0.2)}
+.ps-e{background:rgba(255,140,66,0.1);color:var(--orange);border:1px solid rgba(255,140,66,0.2)}
+.pipe-arrow{font-size:18px;color:rgba(255,255,255,0.3)}
+
+.section-badge{display:inline-flex;align-items:center;gap:8px;padding:6px 16px;border-radius:16px;font-size:12px;font-weight:700;letter-spacing:2px}
+.sb-a{background:rgba(255,68,68,0.1);color:var(--red);border:1px solid rgba(255,68,68,0.2)}
+.sb-b{background:rgba(255,140,66,0.1);color:var(--orange);border:1px solid rgba(255,140,66,0.2)}
+.sb-c{background:rgba(254,202,87,0.1);color:var(--a4);border:1px solid rgba(254,202,87,0.2)}
+.sb-d{background:rgba(0,230,118,0.1);color:var(--a5);border:1px solid rgba(0,230,118,0.2)}
+.sb-e{background:rgba(0,210,255,0.1);color:var(--a2);border:1px solid rgba(0,210,255,0.2)}
+
+.next-badge{display:inline-flex;align-items:center;gap:10px;padding:12px 26px;border-radius:24px;background:rgba(255,68,68,0.08);border:1px solid rgba(255,68,68,0.2);font-size:15px;font-weight:700;color:var(--red);margin-top:16px;animation:fl 3s ease-in-out infinite}
+@keyframes fl{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+
+/* 结构树高亮 */
+.struct-tree{font-size:13px;font-family:'JetBrains Mono','PingFang SC',monospace;line-height:2;text-align:left;display:inline-block}
+.struct-tree .hl{color:var(--red);font-weight:700}
+.struct-tree .dim{color:var(--text3)}
+.struct-tree .cur{background:rgba(255,68,68,0.08);border-left:2px solid var(--red);padding-left:8px;display:inline-block;width:100%}
+
+.struct-tree-box{font-family:'JetBrains Mono','Fira Code','PingFang SC',monospace;font-size:15px;line-height:2.2;color:var(--text3);background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:28px 36px;max-width:650px;text-align:left}
+.struct-tree-box .cur{color:#fff;font-weight:700;padding-left:12px;margin-left:-15px;display:inline-block;width:calc(100% + 3px)}
+.struct-tree-box .cur.sa{border-left:3px solid var(--red);background:rgba(255,68,68,0.1)}
+.struct-tree-box .cur.sb{border-left:3px solid var(--orange);background:rgba(255,140,66,0.1)}
+.struct-tree-box .cur.sc{border-left:3px solid var(--a4);background:rgba(254,202,87,0.1)}
+.struct-tree-box .cur.sd{border-left:3px solid var(--a5);background:rgba(0,230,118,0.1)}
+.struct-tree-box .cur.se{border-left:3px solid var(--a2);background:rgba(0,210,255,0.1)}
+@media(max-width:768px){.hero-title{font-size:32px}.glass-card{padding:22px 16px;max-width:100%}.tri-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<canvas id="particle-canvas"></canvas><div id="page-indicator"></div>
+<div class="reveal"><div class="slides">
+
+<!-- ═══════════ SLIDE 1: 标题 ═══════════ -->
+<section data-transition="zoom">
+  <div class="glass-card fragment fade-up">
+    <p style="font-size:15px;color:var(--red);letter-spacing:4px;font-weight:700;margin:0;">CHAPTER 4 ★</p>
+    <h1 class="hero-title">LLM 时代的 OPD 革命</h1>
+    <p style="font-size:22px;color:rgba(255,255,255,0.7);margin:0 0 4px;">DeepSeek-R1 · GRPO · REOPOLD · GAR · 2024–2026</p>
+    <div class="glow-bar"></div>
+    <p style="font-size:14px;color:var(--text3);margin:0;">从"蒸馏动作"到"蒸馏思维"——OPD 从小众 RL 技术走向 AI 中心舞台</p>
+    <div class="tag-row">
+      <span class="tag">#推理链蒸馏</span>
+      <span class="tag">#隐式OPD</span>
+      <span class="tag">#RL discovers</span>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ SLIDE 2: 整体结构树 ═══════════ -->
+<section data-transition="slide">
+  <h2 style="font-size:28px;font-weight:700;margin-bottom:4px;color:var(--text);">🗺️ Part 4 结构总览 — 6 个 Section</h2>
+  <div class="glow-bar"></div>
+  <div style="max-width:900px;"><svg viewBox="0 0 900 480" xmlns="http://www.w3.org/2000/svg">
+    <defs><marker id="a" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="rgba(255,255,255,0.25)"/></marker></defs>
+    <rect x="250" y="8" width="400" height="32" rx="16" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.12)"/>
+    <text x="450" y="29" text-anchor="middle" class="dag-label title" font-size="14">Part 4: LLM时代的OPD革命 (2024–2026)</text>
+
+    <!-- Root -->
+    <rect x="320" y="55" width="260" height="38" rx="8" fill="rgba(255,68,68,0.08)" stroke="rgba(255,68,68,0.25)"/>
+    <text x="450" y="79" text-anchor="middle" class="dag-label title" fill="#ff4444">🔴 范式转变：从动作到思维</text>
+
+    <path d="M350,93 L250,120" marker-end="url(#a)" stroke="rgba(255,255,255,0.12)" stroke-width="1.5" fill="none"/>
+    <path d="M450,93 L450,120" marker-end="url(#a)" stroke="rgba(255,255,255,0.12)" stroke-width="1.5" fill="none"/>
+    <path d="M550,93 L650,120" marker-end="url(#a)" stroke="rgba(255,255,255,0.12)" stroke-width="1.5" fill="none"/>
+
+    <!-- 5 Sections -->
+    <g><rect x="60" y="125" width="170" height="60" rx="8" fill="rgba(255,140,66,0.06)" stroke="rgba(255,140,66,0.2)"/>
+    <text x="145" y="148" text-anchor="middle" class="dag-label title" fill="#ff8c42">🟠 B: GRPO</text>
+    <text x="145" y="166" text-anchor="middle" class="dag-label sub">隐式OPD·公式拆解</text>
+    <text x="145" y="180" text-anchor="middle" class="dag-label sub">强模型如何诞生</text></g>
+
+    <g><rect x="260" y="125" width="180" height="60" rx="8" fill="rgba(254,202,87,0.06)" stroke="rgba(254,202,87,0.2)"/>
+    <text x="350" y="148" text-anchor="middle" class="dag-label title" fill="#feca57">🟡 C: REOPOLD</text>
+    <text x="350" y="166" text-anchor="middle" class="dag-label sub">三个核心问题</text>
+    <text x="350" y="180" text-anchor="middle" class="dag-label sub">重尾·近零·熵崩塌</text></g>
+
+    <g><rect x="470" y="125" width="180" height="60" rx="8" fill="rgba(0,230,118,0.06)" stroke="rgba(0,230,118,0.2)"/>
+    <text x="560" y="148" text-anchor="middle" class="dag-label title" fill="#00e676">🟢 D: PW-OPSD</text>
+    <text x="560" y="166" text-anchor="middle" class="dag-label sub">位置加权</text>
+    <text x="560" y="180" text-anchor="middle" class="dag-label sub">AUROC 0.83</text></g>
+
+    <g><rect x="680" y="125" width="170" height="60" rx="8" fill="rgba(0,210,255,0.06)" stroke="rgba(0,210,255,0.2)"/>
+    <text x="765" y="148" text-anchor="middle" class="dag-label title" fill="#00d2ff">🔵 E: GAR</text>
+    <text x="765" y="166" text-anchor="middle" class="dag-label sub">对抗推理</text>
+    <text x="765" y="180" text-anchor="middle" class="dag-label sub">判别器·切片评估</text></g>
+
+    <!-- Arrows down -->
+    <path d="M145,190 L145,210 L350,210 L350,225" marker-end="url(#a)" stroke="rgba(255,255,255,0.1)" stroke-width="1" fill="none"/>
+    <path d="M350,190 L350,225" marker-end="url(#a)" stroke="rgba(255,255,255,0.1)" stroke-width="1" fill="none"/>
+    <path d="M560,190 L560,210 L400,210 L400,225" marker-end="url(#a)" stroke="rgba(255,255,255,0.1)" stroke-width="1" fill="none"/>
+    <path d="M765,190 L765,210 L480,210 L480,225" marker-end="url(#a)" stroke="rgba(255,255,255,0.1)" stroke-width="1" fill="none"/>
+
+    <rect x="300" y="230" width="300" height="34" rx="17" fill="rgba(255,68,68,0.06)" stroke="rgba(255,68,68,0.2)"/>
+    <text x="450" y="252" text-anchor="middle" class="dag-label title" fill="#fff">📋 总结: 问题-方案矩阵 → Part 5</text>
+  </svg></div>
+  <p style="font-size:11px;color:var(--text3);margin-top:8px;">核心转变：过去蒸馏"如何做动作" → 现在蒸馏"如何思考"</p>
+</section>
+
+<!-- ═══════════ DAG高亮: Section A ═══════════ -->
+<section data-transition="slide">
+  <h2 style="font-size:22px;font-weight:700;margin-bottom:4px;color:var(--text);">🗺️ 当前位置：🔴 Section A — 范式转变</h2>
+  <div class="glow-bar"></div>
+  <svg viewBox="0 0 1000 340" xmlns="http://www.w3.org/2000/svg" style="max-width:1000px;">
+    <defs><marker id="dh" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><path d="M0,0 L7,2.5 L0,5 Z" fill="rgba(255,255,255,0.3)"/></marker></defs>
+    <!-- Title -->
+    <rect x="320" y="8" width="360" height="28" rx="14" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.12)"/>
+    <text x="500" y="27" text-anchor="middle" fill="#fff" font-size="13" font-weight="700" font-family="sans-serif">Part 4: LLM时代的OPD革命 (2024-2026)</text>
+    <!-- Root→Sections -->
+    <path d="M400,36 L120,60" marker-end="url(#dh)" stroke="rgba(255,255,255,0.2)" stroke-width="1" fill="none"/>
+    <path d="M440,36 L300,60" marker-end="url(#dh)" stroke="rgba(255,255,255,0.2)" stroke-width="1" fill="none"/>
+    <path d="M500,36 L500,60" marker-end="url(#dh)" stroke="rgba(255,255,255,0.2)" stroke-width="1" fill="none"/>
+    <path d="M560,36 L700,60" marker-end="url(#dh)" stroke="rgba(255,255,255,0.2)" stroke-width="1" fill="none"/>
+    <path d="M600,36 L880,60" marker-end="url(#dh)" stroke="rgba(255,255,255,0.2)" stroke-width="1" fill="none"/>
+
+    <!-- Sec A: HIGHLIGHTED -->
+    <g opacity="1"><rect x="30" y="65" width="175" height="82" rx="10" fill="rgba(255,68,68,0.12)" stroke="rgba(255,68,68,0.4)" stroke-width="2"/>
+      <text x="117" y="84" text-anchor="middle" fill="#ff4444" font-size="13" font-weight="700" font-family="sans-serif">🔴 A: 范式转变</text>
+      <text x="117" y="102" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-size="10" font-family="sans-serif">推理链详解</text>
+      <text x="117" y="116" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-size="10" font-family="sans-serif">LLM打破OPD假设</text>
+      <text x="117" y="130" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-size="10" font-family="sans-serif">R1五阶段Pipeline</text>
+      <text x="117" y="144" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-size="10" font-family="sans-serif">强策略→弱策略</text></g>
+    <!-- Sec B -->
+    <g opacity="0.2"><rect x="215" y="65" width="170" height="82" rx="10" fill="rgba(255,140,66,0.08)" stroke="rgba(255,140,66,0.25)"/>
+      <text x="300" y="84" text-anchor="middle" fill="#ff8c42" font-size="13" font-weight="700" font-family="sans-serif">🟠 B: GRPO</text>
+      <text x="300" y="104" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="10" font-family="sans-serif">公式拆解·隐式OPD</text>
+      <text x="300" y="120" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="10" font-family="sans-serif">RL vs 蒸馏对比</text>
+      <text x="300" y="136" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="10" font-family="sans-serif">强模型如何诞生?</text></g>
+    <!-- Sec C -->
+    <g opacity="0.2"><rect x="395" y="65" width="170" height="82" rx="10" fill="rgba(254,202,87,0.06)" stroke="rgba(254,202,87,0.2)"/>
+      <text x="480" y="84" text-anchor="middle" fill="#feca57" font-size="13" font-weight="700" font-family="sans-serif">🟡 C: REOPOLD</text>
+      <text x="480" y="104" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="10" font-family="sans-serif">松弛+在线/离线</text>
+      <text x="480" y="120" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="10" font-family="sans-serif">重尾·近零·熵崩塌</text>
+      <text x="480" y="136" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="10" font-family="sans-serif">三问题→三解法</text></g>
+    <!-- Sec D -->
+    <g opacity="0.2"><rect x="575" y="65" width="165" height="82" rx="10" fill="rgba(0,230,118,0.05)" stroke="rgba(0,230,118,0.18)"/>
+      <text x="657" y="84" text-anchor="middle" fill="#00e676" font-size="13" font-weight="700" font-family="sans-serif">🟢 D: PW-OPSD</text>
+      <text x="657" y="108" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="10" font-family="sans-serif">位置加权 w(t)</text>
+      <text x="657" y="126" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="10" font-family="sans-serif">AUROC 0.83</text></g>
+    <!-- Sec E -->
+    <g opacity="0.2"><rect x="750" y="65" width="170" height="82" rx="10" fill="rgba(0,210,255,0.05)" stroke="rgba(0,210,255,0.18)"/>
+      <text x="835" y="84" text-anchor="middle" fill="#00d2ff" font-size="13" font-weight="700" font-family="sans-serif">🔵 E: GAR</text>
+      <text x="835" y="108" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="10" font-family="sans-serif">Reasoner↔Discrim.</text>
+      <text x="835" y="126" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="10" font-family="sans-serif">局部切片评估</text></g>
+
+    <!-- Section→Summary edges -->
+    <path d="M117,147 L117,190 L500,190 L500,265" stroke="rgba(255,68,68,0.4)" stroke-width="1.5" fill="none" marker-end="url(#dh)"/>
+    <path d="M300,147 L300,190" stroke="rgba(255,255,255,0.06)" stroke-width="1" fill="none"/>
+    <path d="M480,147 L480,210" stroke="rgba(255,255,255,0.06)" stroke-width="1" fill="none"/>
+    <path d="M657,147 L657,190" stroke="rgba(255,255,255,0.06)" stroke-width="1" fill="none"/>
+    <path d="M835,147 L835,210 L500,210 L500,265" stroke="rgba(255,255,255,0.06)" stroke-width="1" fill="none"/>
+
+    <!-- Summary -->
+    <rect x="360" y="270" width="280" height="30" rx="15" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.15)"/>
+    <text x="500" y="290" text-anchor="middle" fill="#fff" font-size="12" font-weight="700" font-family="sans-serif">📋 Section F: 总结 → Part 5</text>
+  </svg>
+</section>
+
+<!-- ═══════════ SECTION A: 范式转变 ═══════════ -->
+<section data-transition="slide">
+  <div style="text-align:center;"><span class="section-badge sb-a">🔴 SECTION A</span></div>
+  <h2 style="font-size:30px;font-weight:700;margin:14px 0 4px;color:var(--red);">范式转变：基础概念</h2>
+  <div class="glow-bar"></div>
+  <div class="struct-tree" style="margin-top:12px;">
+    <div class="cur">🔴 Section A: 范式转变 ← <strong>当前</strong></div>
+    <div class="dim">🟠 Section B: GRPO 与隐式 OPD</div>
+    <div class="dim">🟡 Section C: REOPOLD — 三个核心问题</div>
+    <div class="dim">🟢 Section D: PW-OPSD — 位置加权</div>
+    <div class="dim">🔵 Section E: GAR — 对抗推理</div>
+    <div class="dim">📋 Section F: 总结</div>
+  </div>
+</section>
+
+<!-- A1: 推理链详解 ★核心 -->
+<section data-transition="slide">
+  <h2 style="font-size:26px;font-weight:700;margin-bottom:4px;color:var(--text);">🧠 什么是"推理链" (Chain-of-Thought)？</h2>
+  <div class="glow-bar"></div>
+  <div style="max-width:800px;text-align:left;font-size:13px;color:var(--text2);line-height:1.8;margin-bottom:12px;">
+    <p style="margin:0 0 8px;">推理链 = <strong style="color:var(--red);">不仅给出最终答案，还给出中间推导步骤</strong>的文本序列。它是 LLM "思考过程"的文字化。</p>
+  </div>
+  <div class="code-window fragment fade-up" style="max-width:750px;">
+    <div class="code-header"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span><span style="color:rgba(255,255,255,0.4);font-size:11px;margin-left:10px;">推理链示例</span></div>
+    <div class="code-body" style="font-size:12px;line-height:1.9;">
+      <span class="cm">// 问题：小明有5个苹果，吃掉2个，又买了3个，还剩几个？</span><br>
+      <span style="color:var(--orange);">推理链：</span><br>
+      &nbsp;&nbsp;<span style="color:#fff;">① 小明最初有</span> <span class="kw">5个</span> 苹果<br>
+      &nbsp;&nbsp;<span style="color:#fff;">② 吃掉2个 → 剩下</span> <span class="kw">5−2=3个</span><br>
+      &nbsp;&nbsp;<span style="color:#fff;">③ 再买3个 → 变成</span> <span class="kw">3+3=6个</span><br>
+      &nbsp;&nbsp;<span style="color:#fff;">④ 所以最终答案是</span> <span class="kw" style="color:var(--a5);">6</span><br>
+      <span class="cm">// 中间步骤 = 推理框架：分解/引用/检查/回溯</span>
+    </div>
+  </div>
+  <div class="fragment fade-up" style="margin-top:12px;max-width:750px;text-align:left;background:rgba(255,68,68,0.04);border:1px solid rgba(255,68,68,0.15);border-radius:12px;padding:12px 18px;">
+    <p style="font-size:13px;color:var(--text2);margin:0;">
+      <strong style="color:var(--red);">为什么推理链成为OPD的新焦点？</strong><br>
+      传统OPD：蒸馏的知识载体 = <strong style="color:#fff;">动作概率分布</strong> π(a|s)<br>
+      LLM OPD：蒸馏的知识载体 = <strong style="color:#fff;">推理文本本身</strong><br>
+      → 我们不再只让学生学会"选正确动作"，而是让它学会<strong style="color:var(--red);">如何思考</strong>。
+    </p>
+  </div>
+</section>
+
+<!-- A2: LLM场景打破OPD假设 -->
+<section data-transition="slide">
+  <div style="display:flex;align-items:center;gap:10px;justify-content:center;margin-bottom:4px;">
+    <h2 style="font-size:26px;font-weight:700;color:var(--text);margin:0;">💥 为什么LLM场景打破了传统OPD假设？</h2>
+    <span style="background:rgba(254,202,87,0.15);border:1px solid rgba(254,202,87,0.3);border-radius:12px;padding:3px 10px;font-size:10px;color:var(--a4);font-weight:700;">💬 Q0</span>
+  </div>
+  <div class="glow-bar"></div>
+  <div class="two-col">
+    <div class="fragment fade-up"><div class="concept-card" style="border-top:3px solid var(--a5);"><h4>✅ 传统OPD假设</h4><p>• 状态/动作空间<strong style="color:var(--a5);">小或连续</strong>（Atari~18动作，MuJoCo连续力矩）<br>• 奖励<strong style="color:var(--a5);">相对稠密</strong>：每步都有反馈<br>• 轨迹<strong style="color:var(--a5);">长度适中</strong>：几百步内随机探索能碰好运<br>• 师生面对<strong style="color:var(--a5);">同一个MDP</strong>：状态动作空间完全对齐</p></div></div>
+    <div class="fragment fade-up"><div class="concept-card" style="border-top:3px solid var(--red);"><h4>❌ LLM推理场景的现实</h4><p>• <strong style="color:var(--red);">动作空间极大且离散</strong>：每token是词表中几万类之一<br>• <strong style="color:var(--red);">奖励极度稀疏</strong>：只有最终答案对/错的0/1信号<br>• <strong style="color:var(--red);">序列极长</strong>：推理链上千token，累积误差严重<br>• <strong style="color:var(--red);">状态是已生成的token序列</strong>：随序列增长不断变化</p></div></div>
+  </div>
+  <div class="fragment fade-up" style="margin-top:10px;max-width:800px;text-align:left;background:rgba(255,68,68,0.04);border:1px solid rgba(255,68,68,0.15);border-radius:12px;padding:12px 18px;">
+    <p style="font-size:12px;color:var(--text2);margin:0;">→ 传统在线OPD（学生采样自身轨迹+KL拉近教师）几乎失效——梯度场不存在问题<strong style="color:var(--red);">被放大到极致</strong>。催生：教师轨迹离线数据、位置加权、仅蒸馏高熵token、两阶段训练等新设计。</p>
+  </div>
+</section>
+
+<!-- A3: DeepSeek-R1 五阶段Pipeline -->
+<section data-transition="slide">
+  <h2 style="font-size:26px;font-weight:700;margin-bottom:4px;color:var(--text);">🐋 DeepSeek-R1 — 蒸馏革命的引爆点</h2>
+  <div class="glow-bar"></div>
+  <p style="font-size:12px;color:var(--text3);margin:0 0 10px;">R1证明了：大模型通过RL发现推理能力 → 蒸馏 → 小模型继承。两者解耦，各司其职。</p>
+  <div class="pipeline-box fragment fade-up" style="margin-bottom:12px;">
+    <div class="pipeline-step ps-a">Stage 1<br>❄️ Cold-Start SFT<br><span style="font-size:9px;font-weight:400;">人工写长思维链→SFT</span></div><span class="pipe-arrow">→</span>
+    <div class="pipeline-step ps-b">Stage 2<br>🎯 Reasoning RL<br><span style="font-size:9px;font-weight:400;">GRPO·正确性+格式奖励</span></div><span class="pipe-arrow">→</span>
+    <div class="pipeline-step ps-c">Stage 3<br>🔄 Rejection<br><span style="font-size:9px;font-weight:400;">只保留正确答案→精选SFT</span></div><span class="pipe-arrow">→</span>
+    <div class="pipeline-step ps-d">Stage 4<br>🛡️ Alignment<br><span style="font-size:9px;font-weight:400;">安全/有用性/指令遵循</span></div><span class="pipe-arrow">→</span>
+    <div class="pipeline-step ps-e">Stage 5<br>🎓 Distillation<br><span style="font-size:9px;font-weight:400;">R1教师+推理链→小模型</span></div>
+  </div>
+  <div class="two-col">
+    <div class="fragment fade-up"><div class="concept-card" style="border-left:3px solid var(--red);"><h4>🔥 R1之前 vs R1之后</h4><p><strong style="color:var(--red);">之前：</strong>SFT蒸馏 = 行为克隆，不涉及RL。<br><strong style="color:var(--red);">R1之后：</strong>先RL探索推理能力 → 再把推理链蒸馏给小模型。定义了新范式。</p></div></div>
+    <div class="fragment fade-up"><div class="concept-card" style="border-left:3px solid var(--orange);"><h4>📐 范式核心</h4><p><strong style="color:var(--orange);">大模型</strong>：通过RL"发现"推理能力（探索）<br><strong style="color:var(--orange);">小模型</strong>：通过蒸馏"稳定高效继承"（利用）<br>两者解耦，各司其职。</p></div></div>
+  </div>
+</section>
+
+<!-- A4: 推理链当教师 -->
+<section data-transition="slide">
+  <div style="display:flex;align-items:center;gap:10px;justify-content:center;margin-bottom:4px;">
+    <h2 style="font-size:26px;font-weight:700;color:var(--text);margin:0;">👨‍🏫 "把推理链当成教师" 是什么意思？</h2>
+    <span style="background:rgba(254,202,87,0.15);border:1px solid rgba(254,202,87,0.3);border-radius:12px;padding:3px 10px;font-size:10px;color:var(--a4);font-weight:700;">💬 Q1.1</span>
+  </div>
+  <div class="glow-bar"></div>
+  <div class="two-col">
+    <div class="fragment fade-up"><div style="background:rgba(108,92,231,0.06);border:1px solid rgba(108,92,231,0.2);border-radius:16px;padding:20px;"><h4 style="color:var(--a1);margin:0 0 8px;">传统OPD的教师</h4><p style="font-size:13px;color:var(--text2);line-height:1.7;margin:0;">教师 = <strong style="color:var(--a1);">一个策略网络</strong> π_T(a|s)<br>给定状态 → 输出动作概率分布<br>学生模仿的是<strong style="color:var(--a1);">动作分布</strong></p></div></div>
+    <div class="fragment fade-up"><div style="background:rgba(255,68,68,0.06);border:1px solid rgba(255,68,68,0.2);border-radius:16px;padding:20px;"><h4 style="color:var(--red);margin:0 0 8px;">LLM蒸馏的教师</h4><p style="font-size:13px;color:var(--text2);line-height:1.7;margin:0;">教师 = <strong style="color:var(--red);">一堆预先生成的推理链文本</strong><br>教师的输出不是实时的动作概率<br>而是<strong style="color:var(--red);">预先写好的、包含推理步骤的文本序列</strong><br>学生通过SFT（下一个token预测）来模仿</p></div></div>
+  </div>
+  <div class="fragment fade-up info-tile" style="max-width:750px;margin-top:10px;"><h4>💡 本质</h4><p>教师被"冻结"为一组静态推理范例。蒸馏 = 模仿这些范例中的token生成模式。知识载体从<strong style="color:var(--red);">动作分布</strong>变成了<strong style="color:var(--red);">推理文本本身</strong>。</p></div>
+</section>
+
+<!-- A5: 强策略→弱策略 -->
+<section data-transition="slide">
+  <div style="display:flex;align-items:center;gap:10px;justify-content:center;margin-bottom:4px;">
+    <h2 style="font-size:26px;font-weight:700;color:var(--text);margin:0;">💪→🧒 强策略 → 弱策略</h2>
+    <span style="background:rgba(254,202,87,0.15);border:1px solid rgba(254,202,87,0.3);border-radius:12px;padding:3px 10px;font-size:10px;color:var(--a4);font-weight:700;">💬 Q1.2</span>
+  </div>
+  <div class="glow-bar"></div>
+  <div class="two-col">
+    <div class="fragment fade-up"><div class="concept-card" style="border-top:3px solid var(--red);"><h4>🔴 强策略（教师）</h4><p>已训练好的大模型（如DeepSeek-R1）<br>• 参数量巨大<br>• 推理能力极强<br>• 能生成高质量推理链</p></div></div>
+    <div class="fragment fade-up"><div class="concept-card" style="border-top:3px solid var(--a2);"><h4>🔵 弱策略（学生）</h4><p>我们希望得到的小模型（如Qwen-32B）<br>• 参数量小<br>• 自身探索能力不足<br>• 通过蒸馏继承推理能力</p></div></div>
+  </div>
+  <div class="fragment fade-up" style="margin-top:12px;max-width:780px;background:rgba(255,68,68,0.04);border:1px solid rgba(255,68,68,0.15);border-radius:14px;padding:16px;text-align:left;">
+    <p style="font-size:13px;color:var(--text2);margin:0;line-height:1.7;">
+      <strong style="color:var(--red);">"约束"的含义变了：</strong><br>
+      传统OPD：KL惩罚动态拉拽 → "别离中心策略太远"<br>
+      LLM蒸馏：通过SFT/蒸馏损失<strong style="color:var(--red);">固定限制</strong>弱策略的学习目标 → "直接复制强者的思维模板"<br>
+      这里的蒸馏方向是<strong style="color:var(--red);">单向的</strong>（大→小），与OPD双向循环不同，但核心理念一致：<strong style="color:#fff;">从强策略提取知识，约束弱策略</strong>。
+    </p>
+  </div>
+</section>
+
+<!-- ═══════════ DAG高亮: Section B ═══════════ -->
+<section data-transition="slide">
+  <h2 style="font-size:22px;font-weight:700;margin-bottom:4px;color:var(--text);">🗺️ 当前位置：🟠 Section B — GRPO与隐式OPD</h2>
+  <div class="glow-bar"></div>
+  <svg viewBox="0 0 1000 340" xmlns="http://www.w3.org/2000/svg" style="max-width:1000px;">
+    <defs><marker id="dhb" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><path d="M0,0 L7,2.5 L0,5 Z" fill="rgba(255,255,255,0.3)"/></marker></defs>
+    <rect x="320" y="8" width="360" height="28" rx="14" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.12)"/><text x="500" y="27" text-anchor="middle" fill="#fff" font-size="13" font-weight="700" font-family="sans-serif">Part 4: LLM时代的OPD革命 (2024-2026)</text>
+    <path d="M400,36 L120,60" stroke="rgba(255,255,255,0.06)" stroke-width="1" fill="none"/>
+    <path d="M440,36 L300,60" marker-end="url(#dhb)" stroke="rgba(255,255,255,0.2)" stroke-width="1" fill="none"/>
+    <path d="M500,36 L500,60" stroke="rgba(255,255,255,0.06)" stroke-width="1" fill="none"/>
+    <path d="M560,36 L700,60" stroke="rgba(255,255,255,0.06)" stroke-width="1" fill="none"/>
+    <path d="M600,36 L880,60" stroke="rgba(255,255,255,0.06)" stroke-width="1" fill="none"/>
+    <g opacity="0.2"><rect x="30" y="65" width="175" height="82" rx="10" fill="rgba(255,68,68,0.08)" stroke="rgba(255,68,68,0.2)"/><text x="117" y="84" text-anchor="middle" fill="#ff4444" font-size="13" font-weight="700" font-family="sans-serif">🔴 A: 范式转变</text><text x="117" y="108" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="10" font-family="sans-serif">推理链·LLM假设</text><text x="117" y="126" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="10" font-family="sans-serif">R1五阶段</text></g>
+    <g opacity="1"><rect x="215" y="65" width="170" height="82" rx="10" fill="rgba(255,140,66,0.12)" stroke="rgba(255,140,66,0.4)" stroke-width="2"/><text x="300" y="84" text-anchor="middle" fill="#ff8c42" font-size="13" font-weight="700" font-family="sans-serif">🟠 B: GRPO与隐式OPD</text><text x="300" y="102" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-size="10" font-family="sans-serif">GRPO公式逐项拆解</text><text x="300" y="116" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-size="10" font-family="sans-serif">隐式OPD数学本质</text><text x="300" y="130" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-size="10" font-family="sans-serif">RL vs 蒸馏对比</text><text x="300" y="144" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-size="10" font-family="sans-serif">强模型如何诞生?</text></g>
+    <g opacity="0.2"><rect x="395" y="65" width="170" height="82" rx="10" fill="rgba(254,202,87,0.06)" stroke="rgba(254,202,87,0.2)"/><text x="480" y="84" text-anchor="middle" fill="#feca57" font-size="13" font-weight="700" font-family="sans-serif">🟡 C: REOPOLD</text><text x="480" y="112" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="10" font-family="sans-serif">三问题→三解法</text></g>
+    <g opacity="0.2"><rect x="575" y="65" width="165" height="82" rx="10" fill="rgba(0,230,118,0.05)" stroke="rgba(0,230,118,0.18)"/><text x="657" y="84" text-anchor="middle" fill="#00e676" font-size="13" font-weight="700" font-family="sans-serif">🟢 D: PW-OPSD</text><text x="657" y="114" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="10" font-family="sans-serif">位置加权</text></g>
+    <g opacity="0.2"><rect x="750" y="65" width="170" height="82" rx="10" fill="rgba(0,210,255,0.05)" stroke="rgba(0,210,255,0.18)"/><text x="835" y="84" text-anchor="middle" fill="#00d2ff" font-size="13" font-weight="700" font-family="sans-serif">🔵 E: GAR</text><text x="835" y="114" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="10" font-family="sans-serif">对抗推理</text></g>
+    <path d="M117,147 L117,210 L500,210 L500,265" stroke="rgba(255,255,255,0.04)" stroke-width="1" fill="none"/>
+    <path d="M300,147 L300,190 L500,190 L500,265" stroke="rgba(255,140,66,0.4)" stroke-width="1.5" fill="none" marker-end="url(#dhb)"/>
+    <path d="M480,147 L480,210" stroke="rgba(255,255,255,0.04)" stroke-width="1" fill="none"/>
+    <path d="M657,147 L657,190" stroke="rgba(255,255,255,0.04)" stroke-width="1" fill="none"/>
+    <path d="M835,147 L835,210" stroke="rgba(255,255,255,0.04)" stroke-width="1" fill="none"/>
+    <rect x="360" y="270" width="280" height="30" rx="15" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.15)"/><text x="500" y="290" text-anchor="middle" fill="#fff" font-size="12" font-weight="700" font-family="sans-serif">📋 Section F: 总结 → Part 5</text>
+  </svg>
+</section>
+
+<!-- ═══════════ SECTION B: GRPO ═══════════ -->
+<section data-transition="slide">
+  <div style="text-align:center;"><span class="section-badge sb-b">🟠 SECTION B</span></div>
+  <h2 style="font-size:30px;font-weight:700;margin:14px 0 4px;color:var(--orange);">GRPO 与隐式 OPD</h2>
+  <div class="glow-bar"></div>
+  <div class="struct-tree" style="margin-top:12px;">
+    <div class="dim">🔴 Section A: 范式转变 ✓</div>
+    <div class="cur">🟠 Section B: GRPO 与隐式 OPD ← <strong>当前</strong></div>
+    <div class="dim">🟡 Section C: REOPOLD — 三个核心问题</div>
+    <div class="dim">🟢 Section D: PW-OPSD — 位置加权</div>
+    <div class="dim">🔵 Section E: GAR — 对抗推理</div>
+    <div class="dim">📋 Section F: 总结</div>
+  </div>
+</section>
+
+<!-- B1: GRPO公式拆解 -->
+<section data-transition="slide">
+  <div style="display:flex;align-items:center;gap:10px;justify-content:center;margin-bottom:4px;">
+    <h2 style="font-size:24px;font-weight:700;color:var(--text);margin:0;">🔬 GRPO 公式逐项拆解</h2>
+    <span style="background:rgba(254,202,87,0.15);border:1px solid rgba(254,202,87,0.3);border-radius:12px;padding:3px 10px;font-size:10px;color:var(--a4);font-weight:700;">💬 Q2.1</span>
+  </div>
+  <div class="glow-bar"></div>
+  <div class="formula-card fragment fade-up" style="margin-bottom:12px;"><div class="math-block">
+    $$\mathcal{L}_{\text{GRPO}} = -\frac{1}{G}\sum_{i=1}^{G} \frac{1}{|o_i|}\sum_{t=1}^{|o_i|} \min\left(\rho_t \hat{A}_{i,t},\; \text{clip}(\rho_t)\hat{A}_{i,t}\right) \;-\; \beta D_{KL}(\pi_\theta \|\pi_{\text{ref}})$$
+  </div></div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:900px;font-size:11px;" class="fragment fade-up">
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px;"><strong style="color:var(--a2);">G = 组大小</strong><br><span style="color:var(--text3);">同一prompt生成G条响应<br>组内比较，无需Critic网络</span></div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px;"><strong style="color:var(--orange);">Â_{i,t} = 组内优势</strong><br><span style="color:var(--text3);">每条响应总奖励组内标准化<br>然后分配给每个token</span></div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px;"><strong style="color:var(--a1);">ρ_t = 概率比</strong><br><span style="color:var(--text3);">π_θ/π_θold<br>衡量策略更新幅度</span></div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px;"><strong style="color:var(--a5);">min(clip) = PPO裁剪</strong><br><span style="color:var(--text3);">ρ_t超过1+ε后不获更多奖励<br>防止步子太大</span></div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px;"><strong style="color:var(--red);">β·D_KL = 隐式OPD</strong><br><span style="color:var(--text3);">惩罚偏离π_ref<br>保证不丧失基础语言能力</span></div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px;"><strong style="color:var(--a4);">|o_i| = 序列长度</strong><br><span style="color:var(--text3);">第i条响应的token数<br>对每个token位置求平均</span></div>
+  </div>
+</section>
+
+<!-- B2: 隐式OPD -->
+<section data-transition="slide">
+  <div style="display:flex;align-items:center;gap:10px;justify-content:center;margin-bottom:4px;">
+    <h2 style="font-size:26px;font-weight:700;color:var(--text);margin:0;">🔍 为什么称它为"隐式OPD"？</h2>
+    <span style="background:rgba(254,202,87,0.15);border:1px solid rgba(254,202,87,0.3);border-radius:12px;padding:3px 10px;font-size:10px;color:var(--a4);font-weight:700;">💬 Q2.2</span>
+  </div>
+  <div class="glow-bar"></div>
+  <div class="two-col">
+    <div class="fragment fade-up">
+      <div class="formula-card" style="padding:16px 22px;margin-bottom:10px;"><p style="font-size:11px;color:var(--text3);margin:0 0 4px;">GRPO 损失中加上 KL 项后，最优策略的闭式解自动变成：</p><div class="math-block" style="font-size:14px;">$$\pi^* \propto \pi_{\text{ref}}^\alpha \exp(Q/\beta)$$</div></div>
+      <div class="info-tile" style="max-width:100%;"><h4>📐 这就是OPD核心公式！</h4><p>与Distral中πᵢ ∝ π₀^α·exp(Qᵢ/β) <strong style="color:var(--red);">完全一致</strong>。π_ref = 中心策略π₀, π_θ = 任务策略πᵢ。</p></div>
+    </div>
+    <div class="fragment fade-up">
+      <div class="concept-card" style="border-left:3px solid var(--orange);"><h4>🟠 "隐式"的含义</h4><p>GRPO<strong style="color:var(--orange);">没有显式说</strong>"我们要从某个教师蒸馏"。但加上KL项后，<strong style="color:var(--orange);">数学结构自动等价于</strong>以π_ref为先验的策略蒸馏。<br><br>任何带KL惩罚的RL目标都<strong style="color:var(--orange);">隐含着一个OPD过程</strong>——π_ref就起到了中心策略π₀的作用，把探索约束在安全范围内。</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- B3: RL vs 蒸馏对比 -->
+<section data-transition="slide" style="padding-top:20px !important;">
+  <div style="display:flex;align-items:center;gap:10px;justify-content:center;margin-bottom:4px;">
+    <h2 style="font-size:24px;font-weight:700;color:var(--text);margin:0;">⚡ RL vs 蒸馏 — 决定性的数据对比</h2>
+    <span style="background:rgba(254,202,87,0.15);border:1px solid rgba(254,202,87,0.3);border-radius:12px;padding:3px 10px;font-size:10px;color:var(--a4);font-weight:700;">💬 Q3</span>
+  </div>
+  <div class="glow-bar"></div>
+  <table class="summary-table fragment fade-up" style="margin-bottom:12px;">
+    <thead><tr><th>模型</th><th>训练方式</th><th>AIME 2024</th><th>MATH-500</th></tr></thead>
+    <tbody>
+      <tr><td class="pc">R1-Zero-Qwen-32B</td><td>纯 RL (GRPO)</td><td>47.0</td><td>91.6</td></tr>
+      <tr><td class="pc" style="color:var(--red);">R1-Distill-Qwen-32B</td><td style="color:var(--red);">蒸馏 from R1</td><td class="hl">72.6</td><td class="hl">94.3</td></tr>
+      <tr style="background:rgba(255,68,68,0.06);"><td class="pc">差距</td><td></td><td style="color:var(--red);font-weight:900;">+25.6 分！</td><td>+2.7</td></tr>
+    </tbody>
+  </table>
+  <div class="two-col">
+    <div class="fragment fade-up"><div class="concept-card" style="border-left:3px solid var(--red);"><h4>🔴 纯RL (R1-Zero)</h4><p>以Qwen-32B为基础，<strong style="color:var(--red);">没有SFT推理数据</strong>，完全靠GRPO自己在数学题上探索。能涌现推理行为，但<strong style="color:var(--red);">不稳定</strong>——易混乱、语言混杂。</p></div></div>
+    <div class="fragment fade-up"><div class="concept-card" style="border-left:3px solid var(--a5);"><h4>🟢 蒸馏 (R1-Distill)</h4><p>用已训练好的<strong style="color:var(--a5);">强R1模型</strong>生成高质量推理链 → SFT蒸馏到Qwen-32B。直接克隆了R1的<strong style="color:var(--a5);">推理模板和结构</strong>，性能飞跃。</p></div></div>
+  </div>
+</section>
+
+<!-- B4: 对比: 传统OPD vs LLM蒸馏 -->
+<section data-transition="slide">
+  <div style="display:flex;align-items:center;gap:10px;justify-content:center;margin-bottom:4px;">
+    <h2 style="font-size:26px;font-weight:700;color:var(--text);margin:0;">🔄 传统OPD(指导) vs LLM蒸馏(复制)</h2>
+    <span style="background:rgba(254,202,87,0.15);border:1px solid rgba(254,202,87,0.3);border-radius:12px;padding:3px 10px;font-size:10px;color:var(--a4);font-weight:700;">💬 Q3/Q4</span>
+  </div>
+  <div class="glow-bar"></div>
+  <div class="two-col">
+    <div class="fragment fade-up"><div style="background:rgba(108,92,231,0.06);border:1px solid rgba(108,92,231,0.2);border-radius:16px;padding:18px;"><h4 style="color:var(--a1);">传统OPD = 指导</h4><p style="font-size:12px;line-height:1.7;">教师<strong style="color:var(--a1);">仍在训练中</strong>或预训练好<br>学生需要<strong style="color:var(--a1);">与环境交互</strong>、接收环境奖励<br>教师=辅助教练<br>蒸馏+RL<strong style="color:var(--a1);">结合</strong></p></div></div>
+    <div class="fragment fade-up"><div style="background:rgba(255,68,68,0.06);border:1px solid rgba(255,68,68,0.2);border-radius:16px;padding:18px;"><h4 style="color:var(--red);">LLM蒸馏 = 复制</h4><p style="font-size:12px;line-height:1.7;">教师被<strong style="color:var(--red);">冻结</strong>，生成大量推理链<br>学生<strong style="color:var(--red);">不与环境交互</strong>，在静态数据上SFT<br>教师=标准答案<br>蒸馏+RL<strong style="color:var(--red);">解耦</strong></p></div></div>
+  </div>
+  <div class="fragment fade-up" style="margin-top:10px;max-width:750px;background:rgba(255,140,66,0.05);border:1px solid rgba(255,140,66,0.15);border-radius:12px;padding:12px 18px;">
+    <p style="font-size:12px;color:var(--text2);margin:0;"><strong style="color:var(--orange);">为什么偏向"复制"？</strong> 奖励极度稀疏 → RL从零探索极难发现有效推理策略 → 大模型已通过海量数据学会推理 → 直接复制其思维过程最经济。<strong style="color:#fff;">RL = 高效探索（大模型），蒸馏 = 高效复制（小模型）。</strong></p>
+  </div>
+</section>
+
+<!-- B5: 强模型如何诞生 -->
+<section data-transition="slide">
+  <div style="display:flex;align-items:center;gap:10px;justify-content:center;margin-bottom:4px;">
+    <h2 style="font-size:26px;font-weight:700;color:var(--text);margin:0;">🤔 探索这么难，强模型最初怎么来的？</h2>
+    <span style="background:rgba(254,202,87,0.15);border:1px solid rgba(254,202,87,0.3);border-radius:12px;padding:3px 10px;font-size:10px;color:var(--a4);font-weight:700;">💬 Q0.3</span>
+  </div>
+  <div class="glow-bar"></div>
+  <div class="two-col">
+    <div class="fragment fade-up"><div class="concept-card" style="border-top:3px solid var(--a2);"><h4>🏗️ 预训练基础</h4><p>大模型先在<strong style="color:var(--a2);">海量语料上预训练</strong>，获得了极强的语言理解和基础推理能力。从大量人类文本中<strong style="color:var(--a2);">隐式学到了推理模式</strong>——相当于完成了巨大的"无监督预蒸馏"。</p></div></div>
+    <div class="fragment fade-up"><div class="concept-card" style="border-top:3px solid var(--orange);"><h4>💪 大规模RL探索</h4><p>大模型参数量巨大 → <strong style="color:var(--orange);">表示能力极强</strong>。即便奖励稀疏，通过生成<strong style="color:var(--orange);">海量样本</strong>（数万条）也能偶然碰上正确推理链 → RL强化稀有成功经验 → <strong style="color:var(--orange);">逐渐涌现稳定推理能力</strong>。</p></div></div>
+  </div>
+  <div class="fragment fade-up" style="margin-top:10px;max-width:750px;text-align:center;background:rgba(255,68,68,0.04);border:1px solid rgba(255,68,68,0.12);border-radius:14px;padding:14px;">
+    <p style="font-size:15px;color:#fff;margin:0;"><strong style="color:var(--red);">"RL discovers, distillation transfers"</strong><br><span style="font-size:13px;color:var(--text2);">强模型 = 大力出奇迹（预训练+海量RL探索）→ 然后通过蒸馏把能力传递给小模型。</span></p>
+  </div>
+</section>
+
+<!-- ═══════════ DAG高亮: Section C ═══════════ -->
+<section data-transition="slide">
+  <h2 style="font-size:22px;font-weight:700;margin-bottom:4px;color:var(--text);">🗺️ 当前位置：🟡 Section C — REOPOLD 三问题</h2>
+  <div class="glow-bar"></div>
+  <svg viewBox="0 0 1000 340" xmlns="http://www.w3.org/2000/svg" style="max-width:1000px;">
+    <defs><marker id="dhc" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><path d="M0,0 L7,2.5 L0,5 Z" fill="rgba(255,255,255,0.3)"/></marker></defs>
+    <rect x="320" y="8" width="360" height="28" rx="14" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.12)"/><text x="500" y="27" text-anchor="middle" fill="#fff" font-size="13" font-weight="700" font-family="sans-serif">Part 4: LLM时代的OPD革命 (2024-2026)</text>
+    <path d="M400,36 L120,60" stroke="rgba(255,255,255,0.06)" stroke-width="1" fill="none"/><path d="M440,36 L300,60" stroke="rgba(255,255,255,0.06)" stroke-width="1" fill="none"/><path d="M500,36 L500,60" marker-end="url(#dhc)" stroke="rgba(255,255,255,0.2)" stroke-width="1" fill="none"/><path d="M560,36 L700,60" stroke="rgba(255,255,255,0.06)" stroke-width="1" fill="none"/><path d="M600,36 L880,60" stroke="rgba(255,255,255,0.06)" stroke-width="1" fill="none"/>
+    <g opacity="0.3"><rect x="30" y="65" width="175" height="82" rx="10" fill="rgba(255,68,68,0.05)" stroke="rgba(255,68,68,0.15)"/><text x="117" y="95" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="12" font-weight="700" font-family="sans-serif">🔴 A: 范式转变 ✓</text></g>
+    <g opacity="0.3"><rect x="215" y="65" width="170" height="82" rx="10" fill="rgba(255,140,66,0.05)" stroke="rgba(255,140,66,0.15)"/><text x="300" y="95" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="12" font-weight="700" font-family="sans-serif">🟠 B: GRPO ✓</text></g>
+    <g opacity="1"><rect x="395" y="65" width="170" height="82" rx="10" fill="rgba(254,202,87,0.12)" stroke="rgba(254,202,87,0.4)" stroke-width="2"/><text x="480" y="84" text-anchor="middle" fill="#feca57" font-size="13" font-weight="700" font-family="sans-serif">🟡 C: REOPOLD</text><text x="480" y="102" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-size="10" font-family="sans-serif">松弛+在线/离线</text><text x="480" y="116" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-size="10" font-family="sans-serif">重尾负奖励→钳位</text><text x="480" y="130" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-size="10" font-family="sans-serif">近零奖励→熵采样</text><text x="480" y="144" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-size="10" font-family="sans-serif">熵崩塌→两阶段</text></g>
+    <g opacity="0.2"><rect x="575" y="65" width="165" height="82" rx="10" fill="rgba(0,230,118,0.05)" stroke="rgba(0,230,118,0.18)"/><text x="657" y="95" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="12" font-weight="700" font-family="sans-serif">🟢 D: PW-OPSD</text></g>
+    <g opacity="0.2"><rect x="750" y="65" width="170" height="82" rx="10" fill="rgba(0,210,255,0.05)" stroke="rgba(0,210,255,0.18)"/><text x="835" y="95" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="12" font-weight="700" font-family="sans-serif">🔵 E: GAR</text></g>
+    <path d="M480,147 L480,190 L500,190 L500,265" stroke="rgba(254,202,87,0.4)" stroke-width="1.5" fill="none" marker-end="url(#dhc)"/>
+    <rect x="360" y="270" width="280" height="30" rx="15" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.15)"/><text x="500" y="290" text-anchor="middle" fill="#fff" font-size="12" font-weight="700" font-family="sans-serif">📋 Section F: 总结 → Part 5</text>
+  </svg>
+</section>
+
+<!-- ═══════════ SECTION C: REOPOLD ═══════════ -->
+<section data-transition="slide">
+  <div style="text-align:center;"><span class="section-badge sb-c">🟡 SECTION C</span></div>
+  <h2 style="font-size:30px;font-weight:700;margin:14px 0 4px;color:var(--a4);">REOPOLD — 三个核心问题</h2>
+  <div class="glow-bar"></div>
+  <div class="struct-tree" style="margin-top:12px;">
+    <div class="dim">🔴 Section A: 范式转变 ✓</div>
+    <div class="dim">🟠 Section B: GRPO ✓</div>
+    <div class="cur">🟡 Section C: REOPOLD — 三个核心问题 ← <strong>当前</strong></div>
+    <div class="dim">🟢 Section D: PW-OPSD</div>
+    <div class="dim">🔵 Section E: GAR</div>
+    <div class="dim">📋 Section F: 总结</div>
+  </div>
+</section>
+
+<!-- C1: 松弛+在线/离线 -->
+<section data-transition="slide">
+  <div style="display:flex;align-items:center;gap:10px;justify-content:center;margin-bottom:4px;">
+    <h2 style="font-size:26px;font-weight:700;color:var(--text);margin:0;">🔓 "松弛"在哪里？+ 在线/离线数据</h2>
+    <span style="background:rgba(254,202,87,0.15);border:1px solid rgba(254,202,87,0.3);border-radius:12px;padding:3px 10px;font-size:10px;color:var(--a4);font-weight:700;">💬 Q5/Q5.1</span>
+  </div>
+  <div class="glow-bar"></div>
+  <div class="two-col">
+    <div class="fragment fade-up"><div class="concept-card" style="border-top:3px solid var(--a4);"><h4>🔒 传统在线OPD（严格）</h4><p>学生<strong style="color:var(--a4);">必须</strong>在自己当前采样到的状态上模仿教师。但学生推理链质量差 → 教师在烂链上无指导意义（与梯度场不存在同根）。</p></div></div>
+    <div class="fragment fade-up"><div class="concept-card" style="border-top:3px solid var(--a5);"><h4>🔓 REOPOLD（松弛）</h4><p><strong style="color:var(--a5);">混合使用</strong>教师轨迹（离线数据）和学生轨迹（在线数据）。学生既能得到教师成功范例的引导，又不会完全被自己的差分布带偏。</p></div></div>
+  </div>
+  <div class="fragment fade-up" style="margin-top:10px;display:flex;gap:16px;flex-wrap:wrap;justify-content:center;">
+    <div class="info-tile" style="flex:1;min-width:200px;"><h4>📡 在线数据</h4><p>当前策略π_θ自己与环境交互生成。数据分布随策略更新而改变。</p></div>
+    <div class="info-tile" style="flex:1;min-width:200px;"><h4>💾 离线数据</h4><p>由教师/历史策略生成并固定。教师轨迹存入D_T，训练时不再运行教师。</p></div>
+    <div class="info-tile" style="flex:1;min-width:200px;"><h4>🔗 与梯度场不存在</h4><p>根源相同：打破"状态必须来自学生"。使用教师离线数据强制引入高质量状态。松弛 = 延续此思路。</p></div>
+  </div>
+</section>
+
+<!-- C2: 问题一 重尾负奖励 -->
+<section data-transition="slide">
+  <h2 style="font-size:24px;font-weight:700;margin-bottom:4px;color:var(--text);">💥 问题一：重尾负奖励 → 梯度爆炸</h2>
+  <div class="glow-bar"></div>
+  <div class="two-col">
+    <div class="fragment fade-up"><div class="concept-card" style="border-top:3px solid var(--red);"><h4>⚠️ 现象</h4><p>学生生成教师认为<strong style="color:var(--red);">概率为0</strong>（或极低）的token时：<br>$R_t = \log\pi_T - \log\pi_\theta \to -\infty$<br>→ KL散度爆炸 → <strong style="color:var(--red);">梯度爆炸</strong></p></div></div>
+    <div class="fragment fade-up"><div class="concept-card" style="border-top:3px solid var(--a5);"><h4>✅ 解决：奖励裁剪 (钳位)</h4><p>设定阈值 ε：当 $\frac{\pi_T}{\pi_S} < \epsilon$ 时 → 裁剪到 ε<br>$\hat{R}_{i,t}^\lambda = \max(R_{i,t}, \frac{\log \lambda}{1-\lambda})$<br>λ来自<strong style="color:var(--a5);">师生混合分布分位数</strong>动态计算</p></div></div>
+  </div>
+  <div class="fragment fade-up" style="margin-top:10px;max-width:750px;text-align:left;background:rgba(255,140,66,0.05);border:1px solid rgba(255,140,66,0.12);border-radius:12px;padding:12px 18px;">
+    <p style="font-size:12px;color:var(--text2);margin:0;"><strong style="color:var(--orange);">混合分布分位数：</strong>构造 P_mix = α·π_T + (1−α)·π_S，取该分布token概率的某分位数（如10%）作阈值ε。随上下文动态调整，比固定阈值更平滑。</p>
+  </div>
+</section>
+
+<!-- C3: 问题二 近零奖励 -->
+<section data-transition="slide">
+  <div style="display:flex;align-items:center;gap:10px;justify-content:center;margin-bottom:4px;">
+    <h2 style="font-size:24px;font-weight:700;color:var(--text);margin:0;">🫥 问题二：近零奖励 → 信号被稀释</h2>
+    <span style="background:rgba(254,202,87,0.15);border:1px solid rgba(254,202,87,0.3);border-radius:12px;padding:3px 10px;font-size:10px;color:var(--a4);font-weight:700;">💬 Q6.2</span>
+  </div>
+  <div class="glow-bar"></div>
+  <div class="two-col">
+    <div class="fragment fade-up"><div class="concept-card" style="border-top:3px solid var(--red);"><h4>⚠️ 现象</h4><p>推理链中大量token是<strong style="color:var(--red);">常识填充词</strong>（"的""了""首先""因为"）。对这些词，师生分布几乎一样 → <strong style="color:var(--red);">KL≈0</strong>。<br>它们占计算的<strong style="color:var(--red);">70–90%</strong>，却贡献极小的学习信号 → 关键信号被稀释。</p></div></div>
+    <div class="fragment fade-up"><div class="concept-card" style="border-top:3px solid var(--a5);"><h4>✅ 解决：熵引导动态Token采样</h4><p>只选择学生策略<strong style="color:var(--a5);">熵较高</strong>的token计算蒸馏损失。<br><br><strong style="color:var(--a5);">高熵token</strong> = 有多种选择、需推理决策的位置（选择运算符、判断逻辑分支）→ <strong style="color:var(--a5);">浓缩了大部分决策信息</strong>。<br>跳过70–90%的低信息量token → 信号密度大幅提升。</p></div></div>
+  </div>
+</section>
+
+<!-- C4: 问题三 熵崩塌 -->
+<section data-transition="slide">
+  <div style="display:flex;align-items:center;gap:10px;justify-content:center;margin-bottom:4px;">
+    <h2 style="font-size:24px;font-weight:700;color:var(--text);margin:0;">📉 问题三：熵崩塌 → 失去多样性</h2>
+    <span style="background:rgba(254,202,87,0.15);border:1px solid rgba(254,202,87,0.3);border-radius:12px;padding:3px 10px;font-size:10px;color:var(--a4);font-weight:700;">💬 Q6.3</span>
+  </div>
+  <div class="glow-bar"></div>
+  <div class="two-col">
+    <div class="fragment fade-up"><div class="concept-card" style="border-top:3px solid var(--red);"><h4>⚠️ 现象</h4><p>使用反向KL D_KL(π_S‖π_T)蒸馏时，学生会追求<strong style="color:var(--red);">"模式追寻"</strong>——把概率集中在教师概率最高的几个token上 → 分布越来越尖锐 → <strong style="color:var(--red);">失去多样性</strong> → 无法探索其他合理路径。</p></div></div>
+    <div class="fragment fade-up"><div class="concept-card" style="border-top:3px solid var(--a5);"><h4>✅ 解决：两阶段训练</h4><p><strong style="color:var(--a2);">Phase 1 (Exploration)：</strong>过滤强负奖励，保留更多探索，保持熵。<br><br><strong style="color:var(--orange);">Phase 2 (Refinement)：</strong>聚焦高熵token，锐化关键决策，同时防止整体熵崩塌。<br><br><strong style="color:var(--a5);">本质：</strong>探索与精炼的平衡——既要掌握确定性模式，又不丧失生成多样化推理路径的能力。</p></div></div>
+  </div>
+</section>
+
+<!-- ═══════════ DAG高亮: Section D ═══════════ -->
+<section data-transition="slide">
+  <h2 style="font-size:22px;font-weight:700;margin-bottom:4px;color:var(--text);">🗺️ 当前位置：🟢 Section D — PW-OPSD 位置加权</h2>
+  <div class="glow-bar"></div>
+  <svg viewBox="0 0 1000 340" xmlns="http://www.w3.org/2000/svg" style="max-width:1000px;">
+    <defs><marker id="dhd" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><path d="M0,0 L7,2.5 L0,5 Z" fill="rgba(255,255,255,0.3)"/></marker></defs>
+    <rect x="320" y="8" width="360" height="28" rx="14" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.12)"/><text x="500" y="27" text-anchor="middle" fill="#fff" font-size="13" font-weight="700" font-family="sans-serif">Part 4: LLM时代的OPD革命 (2024-2026)</text>
+    <path d="M400,36 L120,60" stroke="rgba(255,255,255,0.06)" stroke-width="1" fill="none"/><path d="M440,36 L300,60" stroke="rgba(255,255,255,0.06)" stroke-width="1" fill="none"/><path d="M500,36 L500,60" stroke="rgba(255,255,255,0.06)" stroke-width="1" fill="none"/><path d="M560,36 L700,60" marker-end="url(#dhd)" stroke="rgba(255,255,255,0.2)" stroke-width="1" fill="none"/><path d="M600,36 L880,60" stroke="rgba(255,255,255,0.06)" stroke-width="1" fill="none"/>
+    <g opacity="0.3"><rect x="30" y="65" width="175" height="82" rx="10" fill="rgba(255,68,68,0.05)" stroke="rgba(255,68,68,0.15)"/><text x="117" y="95" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="12" font-weight="700" font-family="sans-serif">🔴 A ✓</text></g>
+    <g opacity="0.3"><rect x="215" y="65" width="170" height="82" rx="10" fill="rgba(255,140,66,0.05)" stroke="rgba(255,140,66,0.15)"/><text x="300" y="95" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="12" font-weight="700" font-family="sans-serif">🟠 B ✓</text></g>
+    <g opacity="0.3"><rect x="395" y="65" width="170" height="82" rx="10" fill="rgba(254,202,87,0.04)" stroke="rgba(254,202,87,0.12)"/><text x="480" y="95" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="12" font-weight="700" font-family="sans-serif">🟡 C ✓</text></g>
+    <g opacity="1"><rect x="575" y="65" width="165" height="82" rx="10" fill="rgba(0,230,118,0.12)" stroke="rgba(0,230,118,0.4)" stroke-width="2"/><text x="657" y="84" text-anchor="middle" fill="#00e676" font-size="13" font-weight="700" font-family="sans-serif">🟢 D: PW-OPSD</text><text x="657" y="102" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-size="10" font-family="sans-serif">位置加权 w(t)</text><text x="657" y="118" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-size="10" font-family="sans-serif">AUROC 0.83</text><text x="657" y="136" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-size="10" font-family="sans-serif">后期token更可靠</text></g>
+    <g opacity="0.2"><rect x="750" y="65" width="170" height="82" rx="10" fill="rgba(0,210,255,0.05)" stroke="rgba(0,210,255,0.18)"/><text x="835" y="95" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="12" font-weight="700" font-family="sans-serif">🔵 E: GAR</text></g>
+    <path d="M657,147 L657,190 L500,190 L500,265" stroke="rgba(0,230,118,0.4)" stroke-width="1.5" fill="none" marker-end="url(#dhd)"/>
+    <rect x="360" y="270" width="280" height="30" rx="15" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.15)"/><text x="500" y="290" text-anchor="middle" fill="#fff" font-size="12" font-weight="700" font-family="sans-serif">📋 Section F: 总结 → Part 5</text>
+  </svg></section>
+
+<!-- ═══════════ SECTION D: PW-OPSD ═══════════ -->
+<section data-transition="slide">
+  <div style="text-align:center;"><span class="section-badge sb-d">🟢 SECTION D</span></div>
+  <h2 style="font-size:30px;font-weight:700;margin:14px 0 4px;color:var(--a5);">PW-OPSD — 位置加权</h2>
+  <div class="glow-bar"></div>
+  <div class="struct-tree" style="margin-top:12px;">
+    <div class="dim">🔴 A ✓ 🟠 B ✓ 🟡 C ✓</div>
+    <div class="cur">🟢 Section D: PW-OPSD — 位置加权 ← <strong>当前</strong></div>
+    <div class="dim">🔵 Section E: GAR — 对抗推理</div>
+    <div class="dim">📋 Section F: 总结</div>
+  </div>
+</section>
+
+<!-- D1: 位置加权公式 -->
+<section data-transition="slide">
+  <div style="display:flex;align-items:center;gap:10px;justify-content:center;margin-bottom:4px;">
+    <h2 style="font-size:24px;font-weight:700;color:var(--text);margin:0;">📍 位置加权 — 为什么后期token更可靠？</h2>
+    <span style="background:rgba(254,202,87,0.15);border:1px solid rgba(254,202,87,0.3);border-radius:12px;padding:3px 10px;font-size:10px;color:var(--a4);font-weight:700;">💬 Q7/Q7.1/Q7.3</span>
+  </div>
+  <div class="glow-bar"></div>
+  <div class="formula-card fragment fade-up" style="margin-bottom:12px;"><div class="math-block">$$\mathcal{L}_{\text{PW}} = \sum_{t=1}^T w(t) \cdot D_{KL}(\pi_\theta \|\pi_T)$$</div><p style="font-size:11px;color:var(--text3);margin:4px 0 0;">w(t) = 单调递增权重函数（如线性：w(t) = α + (1−α)·t/T）</p></div>
+  <div class="two-col">
+    <div class="fragment fade-up"><div class="concept-card" style="border-left:3px solid var(--a5);"><h4>🔑 核心发现</h4><p>Token的<strong style="color:var(--a5);">位置</strong>是教师可靠性的<strong style="color:var(--a5);">最强预测器</strong>：<br><strong style="color:var(--a5);">AUROC 0.83</strong> vs 熵方法 0.57<br><br>推理是<strong style="color:var(--a5);">累积性</strong>的——错误往往在早期（一步错步步错），越往后逻辑越收敛，教师输出越可靠。</p></div></div>
+    <div class="fragment fade-up"><div class="concept-card" style="border-left:3px solid var(--a2);"><h4>📐 AUROC 是什么？</h4><p><strong style="color:var(--a2);">Area Under ROC Curve</strong>——衡量二分类器排序能力的指标，最大=1。这里用它评价"位置"能否区分教师输出是否正确。<br>0.83 = 仅靠位置就能相当准地预测教师是否犯错，远超其他指标。</p></div></div>
+  </div>
+  <div class="fragment fade-up" style="margin-top:8px;max-width:750px;text-align:center;background:rgba(0,230,118,0.04);border:1px solid rgba(0,230,118,0.12);border-radius:12px;padding:10px;"><p style="font-size:12px;color:var(--text2);margin:0;">给后期token更高权重 → 模型更重视模仿教师推理<strong style="color:var(--a5);">后期的关键步骤</strong>，忽略早期可能带噪声的引导。</p></div>
+</section>
+
+<!-- ═══════════ DAG高亮: Section E ═══════════ -->
+<section data-transition="slide">
+  <h2 style="font-size:22px;font-weight:700;margin-bottom:4px;color:var(--text);">🗺️ 当前位置：🔵 Section E — GAR 对抗推理</h2>
+  <div class="glow-bar"></div>
+  <svg viewBox="0 0 1000 340" xmlns="http://www.w3.org/2000/svg" style="max-width:1000px;">
+    <defs><marker id="dhe" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><path d="M0,0 L7,2.5 L0,5 Z" fill="rgba(255,255,255,0.3)"/></marker></defs>
+    <rect x="320" y="8" width="360" height="28" rx="14" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.12)"/><text x="500" y="27" text-anchor="middle" fill="#fff" font-size="13" font-weight="700" font-family="sans-serif">Part 4: LLM时代的OPD革命 (2024-2026)</text>
+    <path d="M400,36 L120,60" stroke="rgba(255,255,255,0.06)" stroke-width="1" fill="none"/><path d="M440,36 L300,60" stroke="rgba(255,255,255,0.06)" stroke-width="1" fill="none"/><path d="M500,36 L500,60" stroke="rgba(255,255,255,0.06)" stroke-width="1" fill="none"/><path d="M560,36 L700,60" stroke="rgba(255,255,255,0.06)" stroke-width="1" fill="none"/><path d="M600,36 L880,60" marker-end="url(#dhe)" stroke="rgba(255,255,255,0.2)" stroke-width="1" fill="none"/>
+    <g opacity="0.3"><rect x="30" y="65" width="175" height="82" rx="10" fill="rgba(255,68,68,0.05)" stroke="rgba(255,68,68,0.15)"/><text x="117" y="95" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="12" font-weight="700" font-family="sans-serif">🔴 A ✓</text></g>
+    <g opacity="0.3"><rect x="215" y="65" width="170" height="82" rx="10" fill="rgba(255,140,66,0.05)" stroke="rgba(255,140,66,0.15)"/><text x="300" y="95" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="12" font-weight="700" font-family="sans-serif">🟠 B ✓</text></g>
+    <g opacity="0.3"><rect x="395" y="65" width="170" height="82" rx="10" fill="rgba(254,202,87,0.04)" stroke="rgba(254,202,87,0.12)"/><text x="480" y="95" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="12" font-weight="700" font-family="sans-serif">🟡 C ✓</text></g>
+    <g opacity="0.3"><rect x="575" y="65" width="165" height="82" rx="10" fill="rgba(0,230,118,0.04)" stroke="rgba(0,230,118,0.12)"/><text x="657" y="95" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="12" font-weight="700" font-family="sans-serif">🟢 D ✓</text></g>
+    <g opacity="1"><rect x="750" y="65" width="170" height="82" rx="10" fill="rgba(0,210,255,0.12)" stroke="rgba(0,210,255,0.4)" stroke-width="2"/><text x="835" y="84" text-anchor="middle" fill="#00d2ff" font-size="13" font-weight="700" font-family="sans-serif">🔵 E: GAR</text><text x="835" y="104" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-size="10" font-family="sans-serif">Reasoner↔Discrim.</text><text x="835" y="120" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-size="10" font-family="sans-serif">局部切片评估</text><text x="835" y="136" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-size="10" font-family="sans-serif">密集细粒度反馈</text></g>
+    <path d="M835,147 L835,210 L500,210 L500,265" stroke="rgba(0,210,255,0.4)" stroke-width="1.5" fill="none" marker-end="url(#dhe)"/>
+    <rect x="360" y="270" width="280" height="30" rx="15" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.15)"/><text x="500" y="290" text-anchor="middle" fill="#fff" font-size="12" font-weight="700" font-family="sans-serif">📋 Section F: 总结 → Part 5</text>
+  </svg></section>
+
+<!-- ═══════════ SECTION E: GAR ═══════════ -->
+<section data-transition="slide">
+  <div style="text-align:center;"><span class="section-badge sb-e">🔵 SECTION E</span></div>
+  <h2 style="font-size:30px;font-weight:700;margin:14px 0 4px;color:var(--a2);">GAR — 对抗推理</h2>
+  <div class="glow-bar"></div>
+  <div class="struct-tree" style="margin-top:12px;">
+    <div class="dim">🔴 A ✓ 🟠 B ✓ 🟡 C ✓ 🟢 D ✓</div>
+    <div class="cur">🔵 Section E: GAR — 对抗推理 ← <strong>当前</strong></div>
+    <div class="dim">📋 Section F: 总结</div>
+  </div>
+</section>
+
+<!-- E1: GAR架构 -->
+<section data-transition="slide">
+  <div style="display:flex;align-items:center;gap:10px;justify-content:center;margin-bottom:4px;">
+    <h2 style="font-size:24px;font-weight:700;color:var(--text);margin:0;">⚔️ GAR — 用对抗训练评估推理过程</h2>
+    <span style="background:rgba(254,202,87,0.15);border:1px solid rgba(254,202,87,0.3);border-radius:12px;padding:3px 10px;font-size:10px;color:var(--a4);font-weight:700;">💬 Q8/Q8.1/Q8.2</span>
+  </div>
+  <div class="glow-bar"></div>
+  <div class="two-col">
+    <div class="fragment fade-up"><div class="concept-card" style="border-top:3px solid var(--a2);"><h4>🏗️ 架构</h4><p><strong style="color:var(--a2);">Reasoner（生成器）：</strong>生成推理链<br><strong style="color:var(--a2);">Discriminator（判别器）：</strong>评估<strong style="color:var(--a2);">局部切片</strong>（几个token片段）是否连贯、正确</p><p style="margin-top:8px;">Reasoner试图生成骗过判别器的推理链；判别器区分教师切片 vs Reasoner切片。→ <strong style="color:var(--a2);">密集、细粒度的反馈</strong>。</p></div></div>
+    <div class="fragment fade-up"><div class="concept-card" style="border-top:3px solid var(--a5);"><h4>🎯 与传统蒸馏的区别</h4><p><strong style="color:var(--a5);">传统：</strong>只评估最终答案或整序列概率 → 稀疏反馈<br><strong style="color:var(--a5);">GAR：</strong>评估推理链<strong style="color:var(--a5);">中间步骤</strong>的连贯性 → 密集反馈<br>判别器捕捉逻辑连贯性、语法、常识等特征。</p><p style="margin-top:8px;"><strong>结果：</strong>R1-Distill-Qwen-7B AIME24 54.0→<strong style="color:var(--a5);">61.3</strong>(+7.3)<br>R1-Distill-Llama-8B 43.7→<strong style="color:var(--a5);">53.7</strong>(+10.0)</p></div></div>
+  </div>
+  <div class="fragment fade-up" style="margin-top:8px;max-width:750px;text-align:center;background:rgba(0,210,255,0.04);border:1px solid rgba(0,210,255,0.12);border-radius:12px;padding:10px;"><p style="font-size:12px;color:var(--text2);margin:0;"><strong style="color:var(--a2);">判别器评估标准：</strong>输入推理链的连续片段 → 输出"该片段是否来自真实教师"的概率。捕捉<strong style="color:#fff;">逻辑连贯性、语法正确性、常识一致性</strong>——不只看最终答案。</p></div>
+</section>
+
+<!-- ═══════════ SECTION F: 总结 ═══════════ -->
+<section data-transition="slide">
+  <div style="text-align:center;"><span class="section-badge sb-a">📋 SECTION F</span></div>
+  <h2 style="font-size:28px;font-weight:700;margin:14px 0 4px;color:var(--text);">总结与过渡</h2>
+  <div class="glow-bar"></div>
+  <div class="struct-tree" style="margin-top:12px;">
+    <div class="dim">🔴 A ✓ 🟠 B ✓ 🟡 C ✓ 🟢 D ✓ 🔵 E ✓</div>
+    <div class="cur">📋 Section F: 总结 ← <strong>当前</strong></div>
+  </div>
+</section>
+
+<!-- F1: 问题-方案矩阵 -->
+<section data-transition="slide">
+  <h2 style="font-size:26px;font-weight:700;margin-bottom:4px;color:var(--text);">📊 Part 4 问题-方案矩阵</h2>
+  <div class="glow-bar"></div>
+  <table class="summary-table fragment fade-up">
+    <thead><tr><th>挑战</th><th>根因</th><th>解决方案</th><th>方法</th></tr></thead>
+    <tbody>
+      <tr><td class="pc">LLM打破OPD假设</td><td>长序列/离散/稀疏奖励</td><td>推理链静态蒸馏+离线数据</td><td>R1 Pipeline</td></tr>
+      <tr><td class="pc">GRPO需约束</td><td>不能丧失基础语言能力</td><td>KL惩罚项 → 隐式OPD</td><td>β·D_KL(π‖π_ref)</td></tr>
+      <tr><td class="pc" style="color:var(--red);">重尾负奖励</td><td>log(π_T/π_S)→−∞</td><td>奖励裁剪(钳位)</td><td>REOPOLD 问题一</td></tr>
+      <tr><td class="pc" style="color:var(--red);">近零奖励</td><td>70-90%填充词KL≈0</td><td>熵引导动态Token采样</td><td>REOPOLD 问题二</td></tr>
+      <tr><td class="pc" style="color:var(--red);">熵崩塌</td><td>Reverse KL模式追寻</td><td>两阶段训练(探索→精炼)</td><td>REOPOLD 问题三</td></tr>
+      <tr><td class="pc" style="color:var(--a5);">前期token不可靠</td><td>推理累积性</td><td>位置加权 w(t)递增</td><td>PW-OPSD</td></tr>
+      <tr><td class="pc" style="color:var(--a2);">仅评估最终答案</td><td>稀疏反馈</td><td>判别器评估局部切片</td><td>GAR</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- F2: 过渡 -->
+<section data-transition="zoom">
+  <div class="glass-card fragment fade-up">
+    <span style="font-size:56px;display:block;animation:float 3s ease-in-out infinite;">🔥</span>
+    <h2 style="font-size:24px;font-weight:700;color:var(--text);margin-bottom:16px;">
+      <strong style="color:var(--red);">"RL discovers, distillation transfers"</strong><br>
+      OPD 已从小众 RL 技术 →<br>
+      <strong style="color:var(--orange);">AI 领域通用范式</strong>
+    </h2>
+    <div class="glow-bar"></div>
+    <p style="font-size:14px;color:var(--text3);">统一框架 (2026)：前缀源×KL方向 · CoPD协同进化 · CR/GAE/StepOPSD</p>
+    <div class="next-badge">📖 Part 5 预告<span style="font-size:12px;color:var(--text3);font-weight:400;">统一框架 · 2026前沿</span></div>
+  </div>
+</section>
+
+</div></div>
+
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.js"></script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<script>
+(function(){const c=document.getElementById('particle-canvas'),x=c.getContext('2d');let W,H,P;function rs(){W=c.width=window.innerWidth;H=c.height=window.innerHeight}window.addEventListener('resize',rs);rs();class Pt{constructor(){this.reset()}reset(){this.x=Math.random()*W;this.y=Math.random()*H;this.vx=(Math.random()-0.5)*0.6;this.vy=(Math.random()-0.5)*0.6;this.r=Math.random()*2+0.5;this.alpha=Math.random()*0.5+0.1}update(){this.x+=this.vx;this.y+=this.vy;if(this.x<-20||this.x>W+20||this.y<-20||this.y>H+20)this.reset()}draw(c){c.beginPath();c.arc(this.x,this.y,this.r,0,Math.PI*2);c.fillStyle=`rgba(255,68,68,${this.alpha})`;c.fill()}}P=Array.from({length:120},()=>new Pt());function dl(){for(let i=0;i<P.length;i++){for(let j=i+1;j<P.length;j++){const dx=P[i].x-P[j].x,dy=P[i].y-P[j].y,d=Math.sqrt(dx*dx+dy*dy);if(d<120){x.beginPath();x.moveTo(P[i].x,P[i].y);x.lineTo(P[j].x,P[j].y);x.strokeStyle=`rgba(255,140,66,${0.08*(1-d/120)})`;x.lineWidth=0.5;x.stroke()}}}}function lp(){x.clearRect(0,0,W,H);P.forEach(p=>{p.update();p.draw(x)});dl();requestAnimationFrame(lp)}lp()})();
+</script>
+<script>
+Reveal.initialize({hash:true,center:true,transition:'slide',transitionSpeed:'slow',backgroundTransition:'zoom',slideNumber:false,progress:false,controls:true,controlsLayout:'bottom-right',controlsBackArrows:'faded',width:1200,height:700,margin:0,minScale:0.2,maxScale:2.0});
+(function(){const e=document.getElementById('page-indicator');function u(){const t=Reveal.getTotalSlides(),c=Reveal.getSlidePastCount()+1;e.textContent=c+' / '+t}Reveal.on('ready',u);Reveal.on('slidechanged',u)})();
+</script>
+</body>
+</html>
