@@ -1,0 +1,13 @@
+Vision-OPD 权重下载命令（在 H200 的 vision-opd 环境里执行）
+
+第一步：设置 HuggingFace 国内镜像（加速）
+export HF_ENDPOINT=https://hf-mirror.com
+
+第二步：查看 Vision-OPD 权重合集里有哪些模型（确认准确名称）
+huggingface-cli collection view yuanqianhao/vision-opd 2>/dev/null || python -c "import json,urllib.request; data=json.load(urllib.request.urlopen('https://hf-mirror.com/api/collections/yuanqianhao/vision-opd')); [print(i['id']) for i in data.get('items',[])]"
+
+第三步：下载 4B 预训练权重（先下小的，约 8GB）
+mkdir -p ~/models
+huggingface-cli download yuanqianhao/Vision-OPD-4B --local-dir ~/models/Vision-OPD-4B
+
+如果 4B 名字不对，把第二步的输出发我，我告诉你准确名称。
