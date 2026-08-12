@@ -1,0 +1,16 @@
+下载 flash_attn wheel 的命令（在 H200 的 vision-opd 环境里执行）
+
+先进入代码目录：
+cd ~/spinner-bot/reproduction/1.\ Vision-OPD/code
+
+【方法A】ghfast.top 代理：
+wget -O flash_attn.whl "https://ghfast.top/https://github.com/Dao-AILab/flash-attention/releases/download/v2.8.3.post1/flash_attn-2.8.3.post1+cu12torch2.10cxx11abiTRUE-cp312-cp312-linux_x86_64.whl"
+
+【方法B】gh-proxy.net 代理：
+wget -O flash_attn.whl "https://gh-proxy.net/https://github.com/Dao-AILab/flash-attention/releases/download/v2.8.3.post1/flash_attn-2.8.3.post1+cu12torch2.10cxx11abiTRUE-cp312-cp312-linux_x86_64.whl"
+
+【方法C】直接下载（重试，可能瞬时网络问题）：
+wget -O flash_attn.whl "https://github.com/Dao-AILab/flash-attention/releases/download/v2.8.3.post1/flash_attn-2.8.3.post1+cu12torch2.10cxx11abiTRUE-cp312-cp312-linux_x86_64.whl"
+
+任意一个下载成功后，安装：
+pip install flash_attn.whl
