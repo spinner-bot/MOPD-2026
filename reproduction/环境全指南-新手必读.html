@@ -1,0 +1,422 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<style>body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;max-width:800px;margin:0 auto;padding:16px;line-height:1.7;color:#1a1a1a;background:#fff}h1{border-bottom:2px solid #2563eb;padding-bottom:8px}h2{color:#2563eb;margin-top:28px}h3{color:#374151}code{background:#f1f5f9;padding:2px 6px;border-radius:4px;font-size:0.9em}pre{background:#1e293b;color:#e2e8f0;padding:12px;border-radius:8px;overflow-x:auto}pre code{background:none;color:inherit;padding:0}table{border-collapse:collapse;width:100%}td,th{border:1px solid #d1d5db;padding:8px 12px;text-align:left}th{background:#f8fafc}blockquote{border-left:4px solid #2563eb;margin:0;padding:0 16px;color:#4b5563;background:#f8fafc}a{color:#2563eb}img{max-width:100%}</style><title>环境全指南-新手必读</title></head><body>
+<h1>多模态 OPD 复现 —— 环境全指南（新手必读）</h1>
+<blockquote>
+<p>写给初次独立承担科研任务的同学。本文档从头解释所有你需要知道的"环境"相关知识。
+配合 <code>1. Vision-OPD/环境搭建详解.md</code> 一起阅读效果更好（那篇讲了具体操作，这篇讲全局架构）。</p>
+</blockquote>
+<hr />
+<h2>〇、先看全景：你的电脑是怎么工作的</h2>
+<p>在深入细节之前，先用一张图理解整体架构：</p>
+<pre class="codehilite"><code>┌─────────────────────────────────────────────────────────────────┐
+│                     你的 Windows 笔记本                           │
+│  CPU: i7/i9 | GPU: RTX 5060 8GB | RAM: 16/32GB                   │
+│                                                                  │
+│  用途：写代码、看论文、git 管理、轻量测试                          │
+│  不能做的事：训练大模型（显存太小）                                 │
+│                                                                  │
+│  ┌──────────────────┐    SSH (通过跳板机)    ┌──────────────────┐ │
+│  │  MobaXterm       │──────────────────────▶│  H200 服务器      │ │
+│  │  (SSH 客户端)     │                       │  8×H200 80GB×8   │ │
+│  │                  │                       │  CUDA 12.x       │ │
+│  │  VS Code         │                       │  Conda 预装       │ │
+│  │  写代码/编辑文档  │                       │                  │ │
+│  └──────────────────┘                       │  用途：训练+推理   │ │
+│                                             └──────────────────┘ │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+
+<p><strong>核心理念</strong>：笔记本是你的"办公室"，H200 是你的"工厂"。在办公室设计图纸（写代码），送到工厂去生产（跑训练）。</p>
+<hr />
+<h2>一、硬件环境：两台机器，两种角色</h2>
+<h3>1.1 你的本地机器：Windows 11 + RTX 5060 Laptop (8GB)</h3>
+<table>
+<thead>
+<tr>
+<th>组件</th>
+<th>规格</th>
+<th>能做什么</th>
+<th>不能做什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CPU</td>
+<td>Intel/AMD 笔记本处理器</td>
+<td>运行编辑器、git、轻量 Python</td>
+<td>大规模并行计算</td>
+</tr>
+<tr>
+<td>GPU</td>
+<td>RTX 5060 8GB</td>
+<td>跑几行测试代码、<code>import torch</code> 检查语法</td>
+<td>训练/推理大模型（需 20-80GB 显存）</td>
+</tr>
+<tr>
+<td>RAM</td>
+<td>16/32GB</td>
+<td>开多个程序</td>
+<td>加载大模型权重</td>
+</tr>
+<tr>
+<td>磁盘</td>
+<td>SSD 512GB/1TB</td>
+<td>存代码、文档、小数据集</td>
+<td>存所有模型权重（一个就要几十GB）</td>
+</tr>
+</tbody>
+</table>
+<p><strong>本地机器只用来做三件事</strong>：
+1. 写代码和文档（用 VS Code 或任何编辑器）
+2. 用 git 管理版本
+3. 通过 SSH 连接到 H200 服务器</p>
+<p><strong>绝对不要在本地跑训练</strong> —— RTX 5060 的 8GB 显存连最小的 Qwen3.5-4B 模型都加载不了（需要约 8-16GB）。</p>
+<h3>1.2 远程服务器：8×H200 (80GB × 8 = 640GB 总显存)</h3>
+<p>H200 是 NVIDIA 的<strong>数据中心级 GPU</strong>，2024年发布。和你的 RTX 5060 对比：</p>
+<table>
+<thead>
+<tr>
+<th>特性</th>
+<th>RTX 5060 Laptop</th>
+<th>H200</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>定位</td>
+<td>消费级游戏/轻薄本</td>
+<td>数据中心训练/推理</td>
+</tr>
+<tr>
+<td>显存</td>
+<td>8GB GDDR7</td>
+<td>80GB HBM3e（10倍）</td>
+</tr>
+<tr>
+<td>显存带宽</td>
+<td>~256 GB/s</td>
+<td>4.8 TB/s（~19倍）</td>
+</tr>
+<tr>
+<td>张量核心</td>
+<td>有，但少</td>
+<td>密集，专为 Transformer 优化</td>
+</tr>
+<tr>
+<td>价格</td>
+<td>笔记本的一部分</td>
+<td>~$30,000/张</td>
+</tr>
+<tr>
+<td>你拥有的数量</td>
+<td>1 张</td>
+<td><strong>8 张</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>8×H200 能做什么？</strong>
+- 加载 Qwen3.5-9B（需要 ~18GB）+ vLLM 推理服务
+- 用 FSDP 分片训练 4B-9B 的多模态模型
+- 同时跑多个实验</p>
+<p><strong>为什么是 8 张？</strong> 因为分布式训练会把模型切分到多张卡上。8 张 H200 用 FSDP（Fully Sharded Data Parallel）可以高效训练 9B 参数的模型。</p>
+<hr />
+<h2>二、网络环境：你怎么连上 H200</h2>
+<h3>2.1 SSH 是什么？</h3>
+<p>SSH（Secure Shell）是一种<strong>加密的远程登录协议</strong>。简单说：你在笔记本上打字，命令在 H200 上执行，结果传回来显示。</p>
+<pre class="codehilite"><code>你在 MobaXterm 输入 → SSH 加密传输 → H200 执行 → 结果加密传回 → MobaXterm 显示
+</code></pre>
+
+<h3>2.2 你的连接路径（跳板机架构）</h3>
+<p>大学服务器通常不直接暴露在公网。你需要先连到一个"跳板机"（jump host），再从跳板机跳到 H200。</p>
+<pre class="codehilite"><code>你的笔记本 (家里/宿舍)
+    │
+    │ SSH (端口 22)
+    ▼
+跳板机 (210.45.76.135:22, 用户 2001ljy)
+    │
+    │ SSH (内网转发)
+    ▼
+H200 服务器 (114.214.244.8:22, 用户 shiqiushi)
+</code></pre>
+
+<p>你的 SSH 配置（<code>C:\Users\han\.ssh\config</code>）已经配好了这个路径：</p>
+<pre class="codehilite"><code>Host H200
+    HostName 114.214.244.8
+    User shiqiushi
+    Port 22
+    IdentityFile C:\Users\han\.ssh\id_rsa
+    ProxyCommand ssh -q -W %h:%p jump   ← 这一行实现&quot;先过跳板机&quot;
+</code></pre>
+
+<p><strong>连接方式</strong>：在 MobaXterm 中新建 Session，选择 Host = <code>H200</code>（或直接在终端输入 <code>ssh H200</code>）。</p>
+<h3>2.3 SSH 密钥是什么？</h3>
+<p>SSH 密钥是一对文件：
+- <strong>私钥</strong> (<code>id_rsa</code>)：你保管，绝对不要发给任何人（相当于你的密码）
+- <strong>公钥</strong> (<code>id_rsa.pub</code>)：放在服务器上（相当于门锁）</p>
+<p>连接时，服务器用公钥加密一段随机数据，只有拥有私钥的你才能解密并回应。这样就不需要每次输入密码了。</p>
+<p><strong>当前状态</strong>：你的公钥 (<code>C:\Users\han\.ssh\id_rsa.pub</code>) 需要服务器管理员添加到 H200 的 <code>~/.ssh/authorized_keys</code> 文件中。这应该是你已经解决了的（你提到用 MobaXterm 成功连上了）。</p>
+<h3>2.4 GitHub SSH 密钥</h3>
+<p>GitHub push 也需要 SSH 密钥认证。你的 <code>id_rsa.pub</code> 内容需要添加到 GitHub 账户的设置中：</p>
+<ol>
+<li>打开 https://github.com/settings/keys</li>
+<li>点击 "New SSH Key"</li>
+<li>粘贴 <code>C:\Users\han\.ssh\id_rsa.pub</code> 的全部内容</li>
+<li>保存</li>
+</ol>
+<p><strong>当前状态</strong>：⚠️ 尚未添加，导致 <code>git push</code> 失败（Permission denied (publickey)）。需要你登录 GitHub 账户 <code>spinner-bot</code> 手动添加。</p>
+<hr />
+<h2>三、Python 环境：为什么不能"装一个 Python 就跑"</h2>
+<h3>3.1 Python 版本冲突问题</h3>
+<p>不同论文依赖不同版本的 Python 和库：</p>
+<pre class="codehilite"><code>Vision-OPD:  Python 3.12 + torch 2.10.0 + transformers 5.5.0 + flash-attn
+V-Zero:      Python 3.12 + torch (latest) + verl + liger-kernel
+PRISM:       Python 3.12 + torch (latest) + patched transformers 4.57.0
+DiffusionOPD: Python 3.12 + torch 2.6.0 + diffusers 0.33.1
+</code></pre>
+
+<p>如果你把所有库装在同一个 Python 里 → 版本冲突 → 各种奇怪的报错 → 浪费时间 debug。</p>
+<h3>3.2 Conda：独立环境的解决方案</h3>
+<p>Conda 给每个论文创建<strong>完全独立的 Python 环境</strong>：</p>
+<pre class="codehilite"><code>H200 服务器
+├── conda 环境: vision-opd    (python 3.12, torch 2.10.0, vllm 0.18.0)
+├── conda 环境: v-zero        (python 3.12, torch latest, uv)
+├── conda 环境: prism         (python 3.12, patched transformers 4.57.0)
+└── conda 环境: diffusion-opd (python 3.12, torch 2.6.0, diffusers 0.33.1)
+</code></pre>
+
+<p>激活哪个环境，就是在哪个"小厨房"里工作。环境之间完全隔离，不会互相影响。</p>
+<p><strong>常用命令</strong>：</p>
+<pre class="codehilite"><code class="language-bash">conda create -n 环境名 python=3.12 -y   # 创建环境
+conda activate 环境名                     # 激活（进入）
+conda deactivate                         # 退出
+conda env list                           # 列出所有环境
+conda remove -n 环境名 --all              # 删除环境（出问题时的重置方法）
+</code></pre>
+
+<h3>3.3 关于本地 venv</h3>
+<p>你在本地也创建了 venv（<code>python -m venv venv</code>），但这些 venv <strong>只装了个 CPU 版本的 torch</strong>，纯粹用来验证代码没有语法错误。它们<strong>不能用来跑模型</strong>。</p>
+<pre class="codehilite"><code>本地 venv 的作用：
+✅ import torch（检查 torch 语法正确）
+✅ import transformers（检查导入路径正确）
+❌ 加载模型权重
+❌ 训练/推理
+❌ GPU 计算
+</code></pre>
+
+<hr />
+<h2>四、GPU 相关概念：你需要知道的关键术语</h2>
+<h3>4.1 显存（VRAM / GPU Memory）</h3>
+<p>显存是 GPU 上的"工作台"。模型权重、优化器状态、中间激活值都存在显存里。</p>
+<p><strong>模型需要多少显存？（粗略估算）</strong>
+- 1B 参数 ≈ 2GB（fp16）或 4GB（fp32）
+- Qwen3.5-4B ≈ 8GB（仅权重）→ 训练时需要 2-4倍（优化器+梯度+激活） ≈ <strong>24-32GB</strong>
+- Qwen3.5-9B ≈ 18GB（仅权重）→ 训练时 ≈ <strong>50-80GB</strong>
+- SD3.5-Medium ≈ 5GB（仅权重）→ 训练时 ≈ <strong>20-40GB</strong></p>
+<p>这就是为什么需要 H200（80GB）：单张卡就能装下整个训练过程。</p>
+<h3>4.2 CUDA</h3>
+<p>CUDA 是 NVIDIA 的 GPU 编程平台。简单理解：PyTorch 里的 <code>tensor.cuda()</code> 就是把数据从 CPU 内存搬到 GPU 显存，然后用 CUDA 加速计算。</p>
+<pre class="codehilite"><code class="language-python">x = torch.randn(1000, 1000)     # 在 CPU 上
+x = x.cuda()                     # 搬到 GPU 上 → 矩阵乘法快 100+ 倍
+</code></pre>
+
+<p><code>nvidia-smi</code> 命令可以查看 GPU 使用情况（显存占用、温度、利用率）。</p>
+<h3>4.3 分布式训练：多张 GPU 一起工作</h3>
+<p>8 张 H200 不是各自独立跑不同的任务，而是<strong>协同完成同一个训练任务</strong>。主要有几种策略：</p>
+<h4>FSDP (Fully Sharded Data Parallel)</h4>
+<ul>
+<li>把模型参数切碎，每张卡存一份碎片</li>
+<li>前向/反向传播时，按需从其他卡拿参数</li>
+<li>Vision-OPD 和 V-Zero 主要使用 FSDP</li>
+</ul>
+<pre class="codehilite"><code>模型有 9B 参数 ≈ 18GB
+不用 FSDP: 每张卡都要存完整的 18GB → 浪费
+用 FSDP:  每张卡只存 18÷8≈2.25GB → 省显存
+</code></pre>
+
+<h4>DeepSpeed ZeRO</h4>
+<ul>
+<li>微软开发的优化库，比 FSDP 更细粒度</li>
+<li>ZeRO-1：切分优化器状态</li>
+<li>ZeRO-2：切分优化器+梯度</li>
+<li>ZeRO-3：切分优化器+梯度+参数（等同于 FSDP）</li>
+<li>PRISM 使用 DeepSpeed ZeRO-2</li>
+</ul>
+<h4>梯度累积 (Gradient Accumulation)</h4>
+<p>论文里说的 "batch size 96" 不代表一次喂 96 个样本。通常：
+- 每张卡一次只能处理 1-2 个样本（显存限制）
+- 跑 1 步，累积梯度，不清零
+- 累积到 96 个等效样本后，才更新一次参数</p>
+<pre class="codehilite"><code>真实 batch size = per_device_batch_size × num_gpus × gradient_accumulation_steps
+96 = 2 × 8 × 6
+</code></pre>
+
+<h3>4.4 vLLM：高效推理引擎</h3>
+<p>训练是"学习"，推理是"使用学到的知识回答问题"。</p>
+<p>vLLM 是一个专为大模型推理优化的引擎。核心创新：
+- <strong>PagedAttention</strong>：像操作系统的虚拟内存一样管理 KV-cache，大幅节省显存
+- <strong>Continuous Batching</strong>：动态合并请求，提高 GPU 利用率</p>
+<p>Vision-OPD 和 V-Zero 的训练代码都使用 vLLM 做 rollout（训练过程中让模型生成回答的步骤）。</p>
+<hr />
+<h2>五、包管理：pip vs conda vs uv</h2>
+<h3>5.1 pip</h3>
+<p>Python 官方包管理器。从 PyPI（python.org 的包仓库）下载并安装库。</p>
+<pre class="codehilite"><code class="language-bash">pip install torch               # 安装最新版
+pip install torch==2.10.0       # 安装指定版本
+pip install -r requirements.txt # 按清单批量安装
+</code></pre>
+
+<h3>5.2 conda install</h3>
+<p>Conda 自带的包管理器，从 Anaconda 的仓库下载。<strong>优先使用 pip</strong>，除非 pip 装不上（某些包只有 conda 渠道有）。</p>
+<h3>5.3 uv</h3>
+<p>Rust 写的极速 pip 替代品。V-Zero 的 H200 部署脚本使用 <code>uv pip install</code>。速度比 pip 快 10-100 倍。如果服务器上有 uv 就用，没有就用 pip —— 结果一样。</p>
+<h3>5.4 <code>pip install -e .</code> 是什么？</h3>
+<p><code>-e</code> 代表 editable（可编辑模式）。不会把代码复制到 Python 库目录，而是创建一个指向当前目录的"符号链接"。</p>
+<p>好处：<strong>你改了代码 → 不需要重新 pip install → 改动直接生效</strong>。</p>
+<p>四个论文的代码都使用这种安装方式（<code>pyproject.toml</code> 或 <code>setup.py</code> 定义了包名）。</p>
+<hr />
+<h2>六、4 篇论文的统一部署流程</h2>
+<p>每篇论文在 H200 上的部署都遵循相同模式：</p>
+<pre class="codehilite"><code>Step 1: 上传代码到 H200
+    (用 MobaXterm 的 SFTP 或 git clone)
+
+Step 2: 运行 H200部署.sh
+    ├── conda create -n &lt;环境名&gt; python=3.12    创建独立环境
+    ├── conda activate &lt;环境名&gt;                   激活环境
+    ├── pip install -r requirements.txt           安装依赖
+    ├── pip install -e .                          可编辑安装项目
+    └── pip install flash-attn / causal-conv1d    安装加速库
+
+Step 3: 验证
+    python -c &quot;import torch; print(torch.cuda.device_count())&quot;
+    → 输出: 8  ← 确认 8 张 GPU 都可见
+
+Step 4: 下载权重
+    从 HuggingFace 下载预训练模型（用 huggingface-cli 或 git clone）
+
+Step 5: 运行
+    bash scripts/xxx.sh 启动训练/推理
+</code></pre>
+
+<h3>各论文的环境名和关键依赖</h3>
+<table>
+<thead>
+<tr>
+<th>论文</th>
+<th>conda 环境名</th>
+<th>Python</th>
+<th>关键依赖</th>
+<th>特殊注意</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Vision-OPD</td>
+<td>vision-opd</td>
+<td>3.12</td>
+<td>torch 2.10, vllm 0.18, flash-attn, causal-conv1d</td>
+<td>flash-attn 需从源码编译</td>
+</tr>
+<tr>
+<td>V-Zero</td>
+<td>v-zero</td>
+<td>3.12</td>
+<td>torch latest, uv, liger-kernel</td>
+<td>使用 uv 替代 pip</td>
+</tr>
+<tr>
+<td>PRISM</td>
+<td>prism</td>
+<td>3.12</td>
+<td>patched transformers 4.57.0, vllm</td>
+<td>必须用修改版 transformers</td>
+</tr>
+<tr>
+<td>DiffusionOPD</td>
+<td>diffusion-opd</td>
+<td>3.12</td>
+<td>torch 2.6, diffusers 0.33.1, deepspeed</td>
+<td>需额外装 mmcv/mmdetection/PaddleOCR</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>七、Git 工作流</h2>
+<h3>7.1 基本原则</h3>
+<pre class="codehilite"><code>写代码 → git add &lt;文件&gt; → git commit -m &quot;消息&quot; → [积累一些后] git push
+</code></pre>
+
+<ul>
+<li><strong>commit</strong> = 保存一个"快照"，记录你做了什么改动</li>
+<li><strong>push</strong> = 把本地的所有 commit 上传到 GitHub（远程备份）</li>
+<li><strong>每个最小可运行单元完成后立刻 commit</strong>（例如：写完一个函数、修好一个 bug）</li>
+</ul>
+<h3>7.2 你的当前状态</h3>
+<p>你的本地仓库有 <strong>65 个 commit 尚未推送</strong>到 GitHub。原因：GitHub SSH 密钥未配置（见 2.4 节）。</p>
+<p><strong>你需要做的</strong>：
+1. 把 <code>C:\Users\han\.ssh\id_rsa.pub</code> 的内容添加到 GitHub 账户
+2. 运行 <code>git push origin main</code> 推送所有积压的 commit</p>
+<hr />
+<h2>八、你接下来要做的事（按优先级）</h2>
+<pre class="codehilite"><code>优先级 1: 阅读论文
+  ├── 仔细读 Vision-OPD 的 论文解读.md（最完整）
+  ├── 读 V-Zero、PRISM、DiffusionOPD 的 论文简介.md（了解概况）
+  └── 浏览每篇论文的原始 PDF（在 papers/ 目录下）
+
+优先级 2: 修复 push
+  └── 添加 SSH 公钥到 GitHub → git push
+
+优先级 3: 在 H200 上部署环境（按顺序）
+  ├── 1. Vision-OPD（最简单、文档最全、有预训练权重）
+  ├── 2. V-Zero（简单、训练快）
+  ├── 3. PRISM（中等难度、三阶段流水线）
+  └── 4. DiffusionOPD（中等难度、需先训练教师模型、GPU 需求高）
+
+优先级 4: 复现训练
+  └── 从 Vision-OPD 开始，按照它的 复现计划.md 一步步来
+</code></pre>
+
+<hr />
+<h2>九、常见问题速查</h2>
+<table>
+<thead>
+<tr>
+<th>问题</th>
+<th>答案</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>为什么不在本地跑？</td>
+<td>RTX 5060 8GB 显存不够加载任何模型</td>
+</tr>
+<tr>
+<td>H200 上能同时跑多个论文吗？</td>
+<td>可以但建议一次一个，避免显存冲突</td>
+</tr>
+<tr>
+<td>怎么把代码传到 H200？</td>
+<td>MobaXterm 自带 SFTP 拖拽上传，或 <code>scp</code> 命令，或 <code>git clone</code></td>
+</tr>
+<tr>
+<td>环境装坏了怎么办？</td>
+<td><code>conda remove -n 环境名 --all</code> 然后重跑 H200部署.sh</td>
+</tr>
+<tr>
+<td>HuggingFace 下载太慢？</td>
+<td><code>export HF_ENDPOINT=https://hf-mirror.com</code> 使用国内镜像</td>
+</tr>
+<tr>
+<td>训练要多久？</td>
+<td>Vision-OPD ~2-3h, V-Zero ~1-2h, PRISM ~4-6h, DiffusionOPD ~12h</td>
+</tr>
+<tr>
+<td>训练中能关 MobaXterm 吗？</td>
+<td>用 <code>tmux</code> 或 <code>screen</code> 保持会话，否则关了终端训练就断了</td>
+</tr>
+<tr>
+<td>怎么看 GPU 使用情况？</td>
+<td><code>nvidia-smi</code> 或 <code>watch -n 1 nvidia-smi</code>（每秒刷新）</td>
+</tr>
+</tbody>
+</table>
+</body></html>
