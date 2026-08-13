@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Vision-OPD 代码详解</title>
+<style>
+  :root { --code-bg:#0f172a; --code-fg:#e2e8f0; --accent:#2563eb; }
+  * { box-sizing:border-box; }
+  body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC',sans-serif; margin:0; padding:0; color:#1a1a1a; background:#fff; line-height:1.7; }
+  header { background:linear-gradient(135deg,#1e3a8a,#2563eb); color:#fff; padding:32px 24px; }
+  header h1 { margin:0 0 8px; font-size:1.6rem; }
+  header p { margin:4px 0; opacity:.92; font-size:.95rem; }
+  main { max-width:1200px; margin:0 auto; padding:24px 16px; }
+  h2 { color:#1e3a8a; border-bottom:3px solid #2563eb; padding-bottom:6px; margin-top:44px; }
+  h3 { color:#374151; margin-top:28px; }
+  /* 左右对照布局：左代码，右讲解 */
+  .pair { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin:18px 0; align-items:start; }
+  .code { background:var(--code-bg); color:var(--code-fg); padding:16px; border-radius:10px; font-family:'JetBrains Mono','Consolas',monospace; font-size:.85rem; overflow-x:auto; white-space:pre; line-height:1.6; }
+  .code .ln { color:#64748b; user-select:none; margin-right:10px; }
+  .explain { background:#f8fafc; border-left:4px solid var(--accent); border-radius:8px; padding:14px 16px; line-height:1.9; }
+  .explain b { color:#1e3a8a; }
+  .explain .tag { display:inline-block; background:#dbeafe; color:#1e40af; border-radius:4px; padding:1px 8px; font-size:.8rem; margin-right:6px; }
+  .formula { background:#eff6ff; border:1px solid #bfdbfe; border-radius:8px; padding:10px 14px; margin:10px 0; font-family:monospace; overflow-x:auto; }
+  .note { background:#fef3c7; border:1px solid #fbbf24; border-radius:8px; padding:10px 14px; margin:12px 0; }
+  .key { background:#dcfce7; border:1px solid #4ade80; border-radius:8px; padding:10px 14px; margin:12px 0; }
+  table { border-collapse:collapse; width:100%; margin:14px 0; font-size:.92rem; }
+  th,td { border:1px solid #d1d5db; padding:8px 12px; text-align:left; vertical-align:top; }
+  th { background:#f1f5f9; }
+  @media (max-width:800px){ .pair { grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+<header>
+  <h1>Vision-OPD 代码详解（对照讲解）</h1>
+  <p>论文：Vision-OPD — Learning to See Fine Details for Multimodal LLMs via On-Policy Self-Distillation</p>
+  <p>arXiv 2605.18740 · 中科院软件所 + 国科大 + 小红书 · 复现代码路径：<code>1. Vision-OPD/code/</code></p>
+</header>
+<main>
+
+<!-- ============ 0. 总览 ============ -->
+<h2>〇、一句话理解整篇论文与代码</h2>
+<p>论文发现一个现象：<b>多模态大模型看「完整大图」时，比看「裁剪出的关键区域」准确率低 18~22 个百分点</b>——不是看不清，是「不知道该往哪看」。</p>
+<p>于是提出<b>区域→全局自蒸馏</b>：让同一个模型同时扮演两个角色——</p>
+<div class="formula">
+教师（Teacher）= 输入<b>裁剪证据区域</b>（精读，准确率高，权重被 EMA 冻结）<br>
+学生（Student）= 输入<b>完整大图</b>（泛读，要学「该聚焦哪里」，权重被梯度更新）<br>
+损失 = 学生分布 与 教师分布 的<b>广义 JSD 散度</b>（token 级）
+</div>
+<p>下面按「数据 → 配置 → 教师机制 → 核心损失」四层，逐一对照代码讲。</p>
+
+<!-- ============ 1. 数据 ============ -->
+<h2>一、数据准备 <code>scripts/prepare_data.py</code></h2>
+<p>核心：把每个样本打包成「一张完整大图 + 一张裁剪证据图」，这正是「区域→全局」的物质基础。</p>
+
+<div class="pair">
+<div class="code">def build_record(item, data_dir):
+    image_rel  = item["images"][0]          # 完整大图
+    teacher_rel = item["teacher_images"][0] # 裁剪证据区域
+    image_path   = os.path.join(data_dir, image_rel)
+    teacher_path = os.path.join(data_dir, teacher_rel)
+    question = clean_question(item["problem"])
+
+    return {
+        "prompt": [{"role":"user","content":item["problem"]}],
+        "images":       [{"path": image_path}],    # 学生看的图
+        "bbox_images":  [{"path": teacher_path}],  # 教师看的图
+        "reward_model": {"style":"none", "ground_truth": item["answer"]},
+        "extra_info":   {"answer": item["answer"], "question": question},
+    }</div>
+<div class="explain">
+  <span class="tag">核心概念</span>
+  <p><b>关键就在这两个字段的命名</b>：</p>
+  <p><code>images</code> → 完整大图，喂给<b>学生</b>（Student）。</p>
+  <p><code>bbox_images</code> → 裁剪出来的证据区域（即论文里的"红框标注区域"），喂给<b>教师</b>（Teacher）。</p>
+  <p><b>为什么这样设计？</b>教师只看那块关键小区域，所以它「自然就知道答案」；学生要看完整大图自己「找」那个区域。两者的行为差异，就是蒸馏要消灭的差距。</p>
+  <p><code>reward_model.style = "none"</code> 表示<b>没有真正的奖励模型</b>——这正是论文卖点之一：不需要外部奖励模型或验证器，ground_truth 只作为辅助信息存在。</p>
+</div>
+</div>
+
+<div class="key">
+<b>记忆点</b>：数据集里每个样本是「一对图」——<code>images</code>（大图，学生）+ <code>bbox_images</code>（裁剪，教师）。理解这个「一对图」结构，后面全部代码都通了。
+</div>
+
+<!-- ============ 2. 配置 ============ -->
+<h2>二、训练启动 <code>scripts/run_vision_opd.sh</code></h2>
+<p>这是一个 bash 脚本，把所有超参数拼成一条 verl 训练命令。不用逐行看，抓关键几个：</p>
+
+<table>
+  <tr><th>配置项</th><th>值</th><th>含义 / 为什么</th></tr>
+  <tr><td><code>MODEL_PATH</code></td><td>Qwen/Qwen3.5-4B</td><td>基座模型（训练从这里开始）</td></tr>
+  <tr><td><code>policy_loss.loss_mode</code></td><td><code>vopd</code></td><td>启用 Vision-OPD 自蒸馏损失（而非普通 PPO）</td></tr>
+  <tr><td><code>teacher_regularization</code></td><td><code>ema</code></td><td>教师权重用 EMA 平滑更新</td></tr>
+  <tr><td><code>teacher_update_rate</code></td><td><code>0.05</code></td><td>EMA 系数 α，教师「慢慢跟着学生动」</td></tr>
+  <tr><td><code>alpha</code></td><td><code>0.5</code></td><td>广义 JSD 的混合系数（学生/教师各占一半）</td></tr>
+  <tr><td><code>distillation_topk</code></td><td><code>100</code></td><td>只对词表里 top-100 的概率做蒸馏，省显存</td></tr>
+  <tr><td><code>is_clip</code></td><td><code>2.0</code></td><td>重要性采样权重裁剪上界</td></tr>
+  <tr><td><code>adv_estimator</code></td><td><code>grpo</code></td><td>用 GRPO 做优势估计（不需要 critic）</td></tr>
+  <tr><td><code>teacher_image_key</code></td><td><code>bbox_images</code></td><td>教师读哪张图 → 就是刚才数据的裁剪图字段</td></tr>
+  <tr><td><code>param_offload / optimizer_offload</code></td><td><code>True</code></td><td>FSDP 把参数/优化器卸载到 CPU，省显存</td></tr>
+</table>
+
+<div class="note">
+<b>注意</b>：<code>TRAINER_N_GPUS_PER_NODE=8</code> 表示需要 8 张卡，FSDP 把 4B 模型切到 8 卡上。这就是为什么我们要等 GPU 全空。
+</div>
+
+<!-- ============ 3. 教师 EMA ============ -->
+<h2>三、教师机制 <code>verl/workers/actor/dp_actor.py</code> — EMA 更新</h2>
+<p>这是「自蒸馏」里「自」字的实现：<b>教师和学生是同一个模型的两份权重</b>，教师不直接学，而是靠 EMA 慢慢「追」学生。</p>
+
+<div class="pair">
+<div class="code">def _update_teacher(self):
+    ...
+    if teacher_regularization == "ema":
+        update_rate = getattr(cfg, "teacher_update_rate", 0.0)
+        if update_rate == 0.0:
+            return
+        for teacher_param, student_param in zip(
+            self.teacher_module.parameters(),   # 教师权重（被更新）
+            self.actor_module.parameters(),      # 学生权重（来源）
+        ):
+            student_data = student_param.data.to(teacher_param.device)
+            teacher_param.data.mul_(1.0 - update_rate)  \
+                          .add_(student_data, alpha=update_rate)
+        return</div>
+<div class="explain">
+  <span class="tag">EMA 公式</span>
+  <p>核心就是这一行：</p>
+  <div class="formula">θ_teacher ← (1 − α)·θ_teacher + α·θ_student<br>其中 α = 0.05</div>
+  <p><b>拆解这行代码</b>：</p>
+  <p><code>mul_(1.0 - 0.05)</code> → 先把教师权重整体乘以 0.95（保留 95% 旧值）。</p>
+  <p><code>.add_(student_data, alpha=0.05)</code> → 再加上 5% 的学生当前权重。</p>
+  <p><b>为什么教师「慢半拍」？</b>因为 EMA 让教师成为学生的「历史平均」——它比学生更稳定、更平滑，能提供一个高质量、低噪声的蒸馏目标。教师不直接做梯度下降，所以它「不会跑偏」。</p>
+  <p><b>只有学生收梯度</b>：注意这段只改 <code>teacher_param</code>，反向传播时教师权重 <code>requires_grad=False</code>，梯度只流回学生。这就是「自蒸馏」——同一个模型教自己。</p>
+</div>
+</div>
+
+<div class="key">
+<b>记忆点</b>：教师 = 学生权重的 EMA（滑动平均）。教师「稳定但落后」，学生「激进但前进」，两者形成良性循环。
+</div>
+
+<!-- ============ 4. 核心损失 ============ -->
+<h2>四、核心损失 <code>verl/trainer/ppo/core_algos.py</code> — 广义 JSD</h2>
+<p>这是全代码的<b>心脏</b>：<code>compute_self_distillation_loss</code> 函数。它计算学生分布与教师分布的差异，作为训练信号。</p>
+
+<div class="pair">
+<div class="code">def compute_self_distillation_loss(
+    student_log_probs, teacher_log_probs,
+    response_mask, self_distillation_config, ...
+):
+    loss_mask = response_mask
+    if self_distillation_mask is not None:
+        loss_mask = loss_mask * self_distillation_mask.unsqueeze(1)
+
+    if self_distillation_config.full_logit_distillation:
+        # ... 取 top-k 或全词表 log prob ...
+        if self_distillation_config.alpha == 0.0:
+            kl_loss = F.kl_div(student, teacher, log_target=True)
+        elif self_distillation_config.alpha == 1.0:
+            kl_loss = F.kl_div(teacher, student, log_target=True)
+        else:
+            # alpha=0.5 → 广义 Jensen-Shannon 散度
+            mixture = torch.logsumexp(
+                torch.stack([
+                    student + log(1-alpha),
+                    teacher + log(alpha)
+                ]), dim=0)
+            kl_teacher = F.kl_div(mixture, teacher, log_target=True)
+            kl_student = F.kl_div(mixture, student, log_target=True)
+            kl_loss = torch.lerp(kl_student, kl_teacher, alpha)
+
+        raw_per_token_loss = kl_loss.sum(-1)</div>
+<div class="explain">
+  <span class="tag">三种散度</span>
+  <p>代码用参数 <code>alpha</code> 统一了三种散度：</p>
+  <table>
+    <tr><th>alpha</th><th>损失</th><th>含义</th></tr>
+    <tr><td>0.0</td><td>KL(学生‖教师)</td><td>正向 KL，学生「追」教师</td></tr>
+    <tr><td>1.0</td><td>KL(教师‖学生)</td><td>反向 KL，学生「抄」教师</td></tr>
+    <tr><td><b>0.5</b></td><td><b>广义 JSD</b></td><td>正反 KL 各一半，最均衡</td></tr>
+  </table>
+  <p><b>广义 JSD 的核心数学</b>：先构造一个「混合分布」M = (1−α)·学生 + α·教师（代码里用 <code>logsumexp</code> 在 log 空间实现混合，数值更稳），然后分别算 M 到学生、M 到教师的 KL，再用 <code>lerp</code>（线性插值）按 α 加权。</p>
+  <div class="formula">JSD_α = (1−α)·KL(M‖学生) + α·KL(M‖教师)，α=0.5</div>
+  <p><b>为什么用 JSD 而不是 KL？</b>KL 不对称、且当两个分布不重叠时会发散到无穷大（梯度爆炸）。JSD 对称、有界、更平滑，训练更稳定。论文正是用它做 token 级蒸馏。</p>
+</div>
+</div>
+
+<div class="pair">
+<div class="code">    # 重要性采样裁剪（IS clipping）
+    is_clip = self_distillation_config.is_clip
+    if is_clip is not None:
+        negative_approx_kl = (student_log_probs - old_log_probs).detach()
+        negative_approx_kl = clamp(negative_approx_kl, -20, 20)
+        ratio = torch.exp(negative_approx_kl).clamp(max=is_clip)
+        weighted_per_token_loss = weighted_per_token_loss * ratio
+
+    # 按 token 聚合求最终损失
+    loss = agg_loss(
+        loss_mat=weighted_per_token_loss,
+        loss_mask=loss_mask,
+        loss_agg_mode="token-mean", ...)
+    return loss, metrics</div>
+<div class="explain">
+  <span class="tag">IS 裁剪</span>
+  <p><b>为什么要裁剪？</b>训练是 on-policy（在线采样），但一个 batch 会复用几次（off-policy 程度增大）。新旧策略差异过大时，需要限制每个 token 的贡献权重，防止单步更新过猛。</p>
+  <p><code>ratio = exp(student - old_log_prob)</code> 是重要性采样比，<code>.clamp(max=2.0)</code> 把它压在 2.0 以下。</p>
+  <p><b>聚合</b>：<code>token-mean</code> 表示把所有有效 token 的损失求平均，得到标量 loss，反传给学生。</p>
+  <p><b>metrics</b>：函数还会输出 <code>raw_jsd_token_mean</code> 等指标，供 tensorboard 画曲线监控。</p>
+</div>
+</div>
+
+<!-- ============ 5. 串起来 ============ -->
+<h2>五、整体数据流（把四块串成一条链）</h2>
+<div class="formula">
+① 数据(prepare_data.py)：每个样本 = 大图(images) + 裁剪(bbox_images)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;↓<br>
+② 前向：学生吃大图 → 输出 logits；教师吃裁剪图 → 输出 logits<br>
+&nbsp;&nbsp;&nbsp;&nbsp;↓<br>
+③ 损失(core_algos.py)：算学生/教师的广义 JSD（α=0.5, top-100）<br>
+&nbsp;&nbsp;&nbsp;&nbsp;↓<br>
+④ 反传：梯度只更新学生（教师 requires_grad=False）<br>
+&nbsp;&nbsp;&nbsp;&nbsp;↓<br>
+⑤ 教师更新(dp_actor.py)：θ_teacher ← 0.95·θ_teacher + 0.05·θ_student<br>
+&nbsp;&nbsp;&nbsp;&nbsp;↓<br>
+⑥ 循环 ②~⑤，直到学生学会「看完整大图也能自动聚焦关键区域」
+</div>
+
+<div class="key">
+<b>给导师讲时的主线</b>：一句话讲清「区域→全局自蒸馏」→ 用数据的一对图结构做铺垫 → 用 EMA 解释「自」→ 用 JSD 解释「蒸馏」→ 用 IS 裁剪解释「稳定」。
+</div>
+
+</main>
+</body>
+</html>
