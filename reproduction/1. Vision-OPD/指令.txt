@@ -1,58 +1,35 @@
 ========================================
- Vision-OPD 训练启动手册（2026-08-25）
+ Vision-OPD 训练启动（当前步骤）
 ========================================
+环境已就绪。新终端按下面 1→4 顺序跑即可。
 
-目标：在 GPU 5、7 上启动训练。
-一次性准备（模型下载、nvcc 安装）已完成。之后每个新终端只需按下面 0→3 顺序跑。
+1) 进环境
+   conda activate vision-opd
+   export WORLD_SIZE=1
+   export HF_ENDPOINT=https://hf-mirror.com
+   export LD_LIBRARY_PATH=$CONDA_PREFIX/lib:$LD_LIBRARY_PATH
 
-========================================
- 0. 开 tmux 防断连
-========================================
-tmux new -s vopd
-
-========================================
- 1. 进环境 + 设置（每个新终端都要跑）
-========================================
-conda activate vision-opd
-export WORLD_SIZE=1
-export HF_ENDPOINT=https://hf-mirror.com
-export LD_LIBRARY_PATH=$CONDA_PREFIX/lib:$LD_LIBRARY_PATH
-
-# 新 nvcc(CUDA 12.x) 放 PATH 最前 —— 必须，否则 FlashInfer 编译报 c++20 错误
-NVCC_BIN=$(python -c "import nvidia.cuda_nvcc, os; print(os.path.join(os.path.dirname(nvidia.cuda_nvcc.__file__), 'bin'))")
-export PATH=$NVCC_BIN:$PATH
-nvcc --version | grep release   # 应显示 12.x
-
-========================================
- 2. 启动训练（卡 5、7）
-========================================
-CUDA_VISIBLE_DEVICES=5,7 bash scripts/run_vision_opd.sh \
-  actor_rollout_ref.model.path=$HOME/vopd/models/Qwen3.5-4B \
-  trainer.n_gpus_per_node=2 data.train_batch_size=24 \
-  actor_rollout_ref.actor.ppo_mini_batch_size=24 \
-  actor_rollout_ref.rollout.agent.num_workers=2 data.dataloader_num_workers=2 \
-  actor_rollout_ref.rollout.gpu_memory_utilization=0.5 \
-  +actor_rollout_ref.model.override_config.attn_implementation=sdpa \
-  actor_rollout_ref.model.trust_remote_code=True data.trust_remote_code=True \
-  2>&1 | tee train.log
-
-========================================
- 3. 确认已进入训练
-========================================
-按 Ctrl+B，松开，再按 D（脱离 tmux）
-tail -40 ~/vopd/train.log
-
-正常标志：日志出现连续推进的 step + loss，或 GPU 5/7 利用率升高。
-训练要跑几小时，看到 step+loss 推进就可以走人。
-若 5-10 分钟没动静或报错，把 tail -40 ~/vopd/train.log 发我。
-
-========================================
- 附录：一次性准备（已完成，重建环境时才需要）
-========================================
-① 下载模型到本地目录（避免离线加载报词表错误，断线重跑可续传）：
-   python -c "from huggingface_hub import snapshot_download; snapshot_download('Qwen/Qwen3.5-4B', local_dir='models/Qwen3.5-4B')"
-
-② 装 CUDA 12.x nvcc（系统只有 11.8，FlashInfer JIT 编译 c++20 内核需要）：
+2) 启用 CUDA 12.x nvcc（先装一次，以后每终端只跑 export 两行）
    pip install nvidia-cuda-nvcc-cu12
+   NVCC_BIN=$(python -c "import nvidia.cuda_nvcc, os; print(os.path.join(os.path.dirname(nvidia.cuda_nvcc.__file__), 'bin'))")
+   export PATH=$NVCC_BIN:$PATH
+   nvcc --version | grep release      # 应显示 12.x
 
-③ 训练需开 trust_remote_code（Qwen3.5 模型/tokenizer 需要远程代码）。
+3) 启动训练（卡 5、7）
+   CUDA_VISIBLE_DEVICES=5,7 bash scripts/run_vision_opd.sh \
+     actor_rollout_ref.model.path=$HOME/vopd/models/Qwen3.5-4B \
+     trainer.n_gpus_per_node=2 data.train_batch_size=24 \
+     actor_rollout_ref.actor.ppo_mini_batch_size=24 \
+     actor_rollout_ref.rollout.agent.num_workers=2 data.dataloader_num_workers=2 \
+     actor_rollout_ref.rollout.gpu_memory_utilization=0.5 \
+     +actor_rollout_ref.model.override_config.attn_implementation=sdpa \
+     actor_rollout_ref.model.trust_remote_code=True data.trust_remote_code=True \
+     2>&1 | tee train.log
+
+4) 确认进入训练（等 3-5 分钟）
+   tail -40 ~/vopd/train.log
+   看到连续 step+loss = 已进训练，走人即可。
+   报错或卡住 → 把 tail -40 ~/vopd/train.log 发我。
+
+注：训练要跑几小时。若你的 SSH 可能中途断开，记得在持久会话（如 tmux/screen）里跑，
+否则断开会把训练一起杀掉。
