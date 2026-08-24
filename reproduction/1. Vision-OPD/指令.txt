@@ -59,9 +59,9 @@ cuda:0 且没指定卡，属正常。下面在空闲卡上再确认一次完整�
 echo "===== 当前 GPU 占用 ====="
 nvidia-smi --query-gpu=index,memory.used,utilization.gpu --format=csv
 
-【从上面挑一张空闲卡（比如 5），把它替换到下面 CUDA_VISIBLE_DEVICES= 后面】
+【现在空闲卡只有 5、7。在卡 5 上确认 vLLM 完整启动】
 export LD_LIBRARY_PATH=$CONDA_PREFIX/lib:$LD_LIBRARY_PATH
-timeout 60 env CUDA_VISIBLE_DEVICES=5 python3 -m vllm.entrypoints.openai.api_server --model Qwen/Qwen3.5-4B --port 8003 --gpu-memory-utilization 0.5 2>&1 | grep -E "ERROR|Error|error|ImportError|GPU:|ModelConfig|Init engine" | head -10
+timeout 90 env CUDA_VISIBLE_DEVICES=5 python3 -m vllm.entrypoints.openai.api_server --model Qwen/Qwen3.5-4B --port 8003 --gpu-memory-utilization 0.5 2>&1 | grep -E "ERROR|Error|error|ImportError|GPU:|ModelConfig|Init engine|served_model_name" | head -10
 echo "===== 空闲卡重测结束 ====="
 
 【正常标志】出现 GPU: / 模型加载成功，无 ERROR。把这段输出发我。
@@ -83,17 +83,18 @@ conda activate vision-opd
 export WORLD_SIZE=1
 export LD_LIBRARY_PATH=$CONDA_PREFIX/lib:$LD_LIBRARY_PATH
 
-CUDA_VISIBLE_DEVICES=1,5,6 bash scripts/run_vision_opd.sh \
-  trainer.n_gpus_per_node=3 \
-  data.train_batch_size=36 \
-  actor_rollout_ref.actor.ppo_mini_batch_size=36 \
-  actor_rollout_ref.rollout.agent.num_workers=3 \
-  data.dataloader_num_workers=3 \
+CUDA_VISIBLE_DEVICES=5,7 bash scripts/run_vision_opd.sh \
+  trainer.n_gpus_per_node=2 \
+  data.train_batch_size=24 \
+  actor_rollout_ref.actor.ppo_mini_batch_size=24 \
+  actor_rollout_ref.rollout.agent.num_workers=2 \
+  data.dataloader_num_workers=2 \
   actor_rollout_ref.rollout.gpu_memory_utilization=0.5 \
   +actor_rollout_ref.model.override_config.attn_implementation=sdpa \
   2>&1 | tee train.log
 
 【说明】开始训练，日志在 ~/vopd/train.log。
+【警告】共享服务器 GPU 变动大，若训练中卡 5/7 被抢走可能崩溃，属正常现象。
 如果报错，把最后 40 行发我。
 
 
