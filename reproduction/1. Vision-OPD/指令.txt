@@ -7,8 +7,9 @@
 挂起不代表训练会挂）。直接用空闲卡 5、7 启动训练。
 
 【当前状态·2026-08-25】词表问题已解决（模型+tokenizer 已正常加载，训练能跑到真实
-rollout）。当前卡点：FlashInfer 运行时 JIT 编译内核时，系统 /usr/local/cuda 的 nvcc
-太老不认识 -std=c++20。解决：改用 flash-attn 后端，见第 2.5 步。
+rollout）。当前卡点：FlashInfer JIT 编译内核时，系统 nvcc 只有 CUDA 11.8，不认识
+-std=c++20。FLASH_ATTN 后端在这个 vLLM 上对 H200+Qwen3.5 不生效（回退 flashinfer）。
+解决：pip 装 CUDA 12.x 的 nvcc，见第 2.5 步。
 
 【历史修复备忘】
 ① Qwen3.5-4B 分词器需远程代码 → 开 trust_remote_code。
@@ -47,21 +48,21 @@ for f in ['vocab.json','merges.txt','tokenizer.json','tokenizer_config.json','co
 # 正常应全部存在且大小>0。若有 MISSING/0，重跑上面的 snapshot_download。
 
 ========================================
- 第 2.5 步：绕过 FlashInfer（一次修改，根治 nvcc 太老的问题）
+ 第 2.5 步：给 FlashInfer 换一个能编译 c++20 的新 nvcc（CUDA 12.x）
 ========================================
-【为什么】训练跑到 rollout 时，FlashInfer JIT 编译报
-"nvcc fatal: Value 'c++20' is not defined for option 'std'"。因为 /usr/local/cuda
-的 nvcc 太老。改用 flash-attn 后端，不触发 JIT 编译。
+【为什么】系统只有 CUDA 11.8，nvcc 不认识 -std=c++20，FlashInfer JIT 编译必挂。
+FLASH_ATTN 后端不生效（这个 vLLM 对 H200+Qwen3.5 回退 flashinfer）。所以直接装
+一个 CUDA 12.x 的 nvcc，纯 pip、轻量。
 
-# 把 run 脚本里的 unset 改成 export（脚本会清掉环境变量，必须先改）
-sed -i 's/unset VLLM_ATTENTION_BACKEND/export VLLM_ATTENTION_BACKEND=FLASH_ATTN/' ~/vopd/scripts/run_vision_opd.sh
+# 1) 装 CUDA 12.x 的 nvcc
+pip install nvidia-cuda-nvcc-cu12
 
-# 确认改成功（应显示 FLASH_ATTN）
-grep VLLM_ATTENTION_BACKEND ~/vopd/scripts/run_vision_opd.sh
+# 2) 找到它并放到 PATH 最前，验证版本
+NVCC_BIN=$(python -c "import nvidia.cuda_nvcc, os; print(os.path.join(os.path.dirname(nvidia.cuda_nvcc.__file__), 'bin'))")
+export PATH=$NVCC_BIN:$PATH
+nvcc --version | grep release     # 必须显示 release 12.x
 
-# 若想根治 nvcc（可选）：查一下可用版本，发我
-nvcc --version 2>&1 | grep release
-ls $CONDA_PREFIX/bin/nvcc 2>/dev/null && $CONDA_PREFIX/bin/nvcc --version 2>&1 | grep release
+# 必须在同一终端（保留上面的 PATH）再跑第 2 步训练。
 
 ========================================
  第 2 步：启动训练（卡 5、7，batch 24，指向本地模型）
