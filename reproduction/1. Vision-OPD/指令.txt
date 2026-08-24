@@ -1,37 +1,115 @@
 ========================================
- Vision-OPD 复现 —— 当前操作指令
+ Vision-OPD 复现 —— 训练启动指令（新版）
  日期：2026-08-25
 ========================================
 
-【背景】
-图片已下载完整（31.3GB），但解压报错：
-tar: Archive is compressed. Use -z option
-原因：gz 压缩包，tar 命令要加 -z。tar 文件还在，不用重新下载。
+【背景·重要】
+- 报错 LexerNoViableAltException：项目路径 "1. Vision-OPD" 有空格，Hydra 无法解析。
+- 解法：把代码复制到无空格路径 ~/vopd，数据用软链接指回原处（不重下 28GB）。
+- GPU 0/2/3/4/7 被占，用 1/5/6 三张卡；batch 缩到 36、worker 缩到 3。
+
+========================================
+ 第 1 步：复制代码到无空格路径（只需一次）
+========================================
+
+mkdir -p ~/vopd
+
+cd ~/spinner-bot/reproduction/1.\ Vision-OPD/code
+tar --exclude='./data' -cf - . | tar -xf - -C ~/vopd/
+
+ln -s ~/spinner-bot/reproduction/1.\ Vision-OPD/code/data ~/vopd/data
+
+echo "复制完成，数据已软链接"; ls ~/vopd/data/train.parquet
+
+【预期】最后一行显示 train.parquet 存在 = 成功。
 
 
 ========================================
- 第 1 步：重新解压学生图片（加 -z）
+ 第 1.5 步：修复 libstdc++ / ICU 版本冲突
 ========================================
 
-cd ~/spinner-bot/reproduction/1.\ Vision-OPD/code/data/images
+【背景】已定位根因：conda 环境 ICU 78 需要新版 libstdc++(CXXABI_1.3.15)，
+但服务器用了系统老版 libstdc++。修法：给环境装新版 libgcc，并优先用环境的库。
 
-cat images.tar.gz* | tar -xzf -
+conda activate vision-opd
+conda install -c conda-forge libgcc -y
 
-rm -f images.tar.gz*
+export LD_LIBRARY_PATH=$CONDA_PREFIX/lib:$LD_LIBRARY_PATH
 
-cd ../..
-
-echo "images 数量:"; ls data/images | wc -l
-
-【预期】最后一行 images 数量 = 6241，即成功。
+【说明】若 conda install 报 channel 错，可去掉 -c conda-forge 只留：
+conda install libgcc -y
 
 
 ========================================
- 第 2 步：确认图片数量正确后，查看 GPU 和日志
+ 第 1.6 步：重测 vLLM 能否正常启动
 ========================================
+
+cd ~/vopd
+conda activate vision-opd
+export HF_ENDPOINT=https://hf-mirror.com
+export LD_LIBRARY_PATH=$CONDA_PREFIX/lib:$LD_LIBRARY_PATH
+
+timeout 60 python3 -m vllm.entrypoints.openai.api_server --model Qwen/Qwen3.5-4B --port 8002 --gpu-memory-utilization 0.3 2>&1 | grep -E "Error|error|ImportError|vocab|Tokenizer|Processor|ModelConfig|GPU" | head -20
+
+echo "===== 重测结束 ====="
+
+【结论】CXXABI 已修复。若还是上面那种"Free memory 不足"错，是因为测试用了被占的
+cuda:0 且没指定卡，属正常。下面在空闲卡上再确认一次完整启动。
+
+echo "===== 当前 GPU 占用 ====="
+nvidia-smi --query-gpu=index,memory.used,utilization.gpu --format=csv
+
+【从上面挑一张空闲卡（比如 5），把它替换到下面 CUDA_VISIBLE_DEVICES= 后面】
+export LD_LIBRARY_PATH=$CONDA_PREFIX/lib:$LD_LIBRARY_PATH
+timeout 60 env CUDA_VISIBLE_DEVICES=5 python3 -m vllm.entrypoints.openai.api_server --model Qwen/Qwen3.5-4B --port 8003 --gpu-memory-utilization 0.5 2>&1 | grep -E "ERROR|Error|error|ImportError|GPU:|ModelConfig|Init engine" | head -10
+echo "===== 空闲卡重测结束 ====="
+
+【正常标志】出现 GPU: / 模型加载成功，无 ERROR。把这段输出发我。
+
+
+========================================
+ 第 2 步：在 tmux 里开新会话（防断连）
+========================================
+
+tmux new -s vopd
+
+
+========================================
+ 第 3 步：启动训练（在 ~/vopd 里跑，无空格）
+========================================
+
+cd ~/vopd
+conda activate vision-opd
+export WORLD_SIZE=1
+export LD_LIBRARY_PATH=$CONDA_PREFIX/lib:$LD_LIBRARY_PATH
+
+CUDA_VISIBLE_DEVICES=1,5,6 bash scripts/run_vision_opd.sh \
+  trainer.n_gpus_per_node=3 \
+  data.train_batch_size=36 \
+  actor_rollout_ref.actor.ppo_mini_batch_size=36 \
+  actor_rollout_ref.rollout.agent.num_workers=3 \
+  data.dataloader_num_workers=3 \
+  actor_rollout_ref.rollout.gpu_memory_utilization=0.5 \
+  +actor_rollout_ref.model.override_config.attn_implementation=sdpa \
+  2>&1 | tee train.log
+
+【说明】开始训练，日志在 ~/vopd/train.log。
+如果报错，把最后 40 行发我。
+
+
+========================================
+ 第 4 步：脱离 tmux（让训练后台继续）
+========================================
+
+按 Ctrl+B ，松开，再按 D
+
+
+========================================
+ 第 5 步：查看训练是否正常启动
+========================================
+
+tail -40 ~/vopd/train.log
 
 nvidia-smi --query-gpu=index,memory.used,utilization.gpu --format=csv
 
-tail -30 ~/spinner-bot/reproduction/1.\ Vision-OPD/code/train.log
-
-【说明】把这两条的输出发给助手，判断能否开训。
+【正常标志】train.log 出现 step/loss 滚动，GPU 1/5/6 利用率变高。
