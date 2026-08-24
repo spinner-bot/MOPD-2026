@@ -1,40 +1,27 @@
 ========================================
- Vision-OPD 训练 —— 只需照做两步
+ Vision-OPD 训练 —— 直接启动
  日期：2026-08-25
 ========================================
 
-【已完成，不用重做】复制代码到 ~/vopd、装 libgcc、转 LF 换行。
-
-【当前可用卡】只有 5、7 空闲（0% 利用率）。用这两张卡。
-
-========================================
- 第 1 步：在空闲卡 5 上确认 vLLM 能启动（约 1 分钟）
-========================================
-
-在服务器终端粘贴下面整块，回车：
-
-cd ~/vopd
-conda activate vision-opd
-export HF_ENDPOINT=https://hf-mirror.com
-export LD_LIBRARY_PATH=$CONDA_PREFIX/lib:$LD_LIBRARY_PATH
-timeout 90 env CUDA_VISIBLE_DEVICES=5 python3 -m vllm.entrypoints.openai.api_server --model Qwen/Qwen3.5-4B --port 8003 --gpu-memory-utilization 0.5 2>&1 | grep -E "ERROR|Error|error|ImportError|GPU:|ModelConfig|Init engine|served_model_name" | head -10
-echo "=== 第1步结束 ==="
-
-【把输出发我。正常会看到 GPU: 或模型加载信息，没有 ERROR。】
+【说明】已修复 CXXABI 根因。跳过 vLLM 单测（它和训练用两套代码路径，
+挂起不代表训练会挂）。直接用空闲卡 5、7 启动训练。
 
 ========================================
- 第 2 步：确认第 1 步没问题后，启动正式训练
+ 第 1 步：开 tmux 防断连
 ========================================
 
-先开 tmux 防断连：
 tmux new -s vopd
 
-然后粘贴下面整块，回车：
+========================================
+ 第 2 步：启动训练（卡 5、7，batch 24）
+========================================
 
 cd ~/vopd
 conda activate vision-opd
 export WORLD_SIZE=1
+export HF_ENDPOINT=https://hf-mirror.com
 export LD_LIBRARY_PATH=$CONDA_PREFIX/lib:$LD_LIBRARY_PATH
+
 CUDA_VISIBLE_DEVICES=5,7 bash scripts/run_vision_opd.sh \
   trainer.n_gpus_per_node=2 \
   data.train_batch_size=24 \
@@ -45,5 +32,16 @@ CUDA_VISIBLE_DEVICES=5,7 bash scripts/run_vision_opd.sh \
   +actor_rollout_ref.model.override_config.attn_implementation=sdpa \
   2>&1 | tee train.log
 
-【开始训练后，按 Ctrl+B 再按 D 脱离，训练后台继续】
-【把日志前 40 行发我确认是否正常】
+【开始训练后，等 2-3 分钟，再看第 3 步确认是否正常启动】
+
+========================================
+ 第 3 步：脱离 tmux + 查看是否正常
+========================================
+
+按 Ctrl+B ，松开，再按 D
+
+然后查看日志尾部：
+tail -40 ~/vopd/train.log
+
+【正常标志】日志出现 step/loss、或 GPU 5/7 利用率升高。
+【若 5-10 分钟日志都没动静】把 train.log 尾部发我。
