@@ -9,11 +9,11 @@
    export HF_ENDPOINT=https://hf-mirror.com
    export LD_LIBRARY_PATH=$CONDA_PREFIX/lib:$LD_LIBRARY_PATH
 
-2) 装 CUDA 12.x nvcc（先装一次，以后每终端只跑 conda activate）
-   conda install -n vision-opd -c nvidia cuda-toolkit=12.4 -y
+2) 装 CUDA 12.x nvcc（已装好 12.9，以后每终端只跑 conda activate）
+   conda install -n vision-opd -c nvidia cuda-toolkit=12.9 -y
    # 装完后同一终端验证：
    conda activate vision-opd
-   nvcc --version | grep release      # 应显示 12.4
+   nvcc --version | grep release      # 应显示 12.9
 
 3) 启动训练（卡 5、7）
    CUDA_VISIBLE_DEVICES=5,7 bash scripts/run_vision_opd.sh \
