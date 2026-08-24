@@ -9,10 +9,10 @@
    export HF_ENDPOINT=https://hf-mirror.com
    export LD_LIBRARY_PATH=$CONDA_PREFIX/lib:$LD_LIBRARY_PATH
 
-2) 启用 CUDA 12.x nvcc（先装一次，以后每终端只跑 export 两行）
+2) 启用 CUDA 12.x nvcc（先装一次，以后每终端只跑 export 三行）
    pip install nvidia-cuda-nvcc-cu12
-   NVCC_BIN=$(python -c "import nvidia.cuda_nvcc, os; print(os.path.join(os.path.dirname(nvidia.cuda_nvcc.__file__), 'bin'))")
-   export PATH=$NVCC_BIN:$PATH
+   SP=$(python -c "import sysconfig; print(sysconfig.get_paths()['purelib'])")
+   export PATH="$SP/nvidia/cuda_nvcc/bin:$PATH"
    nvcc --version | grep release      # 应显示 12.x
 
 3) 启动训练（卡 5、7）
