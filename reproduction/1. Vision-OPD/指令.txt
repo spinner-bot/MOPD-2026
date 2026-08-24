@@ -6,6 +6,14 @@
 【说明】已修复 CXXABI 根因。跳过 vLLM 单测（它和训练用两套代码路径，
 挂起不代表训练会挂）。直接用空闲卡 5、7 启动训练。
 
+【当前状态·2026-08-25】词表问题已解决（模型+tokenizer 已正常加载，训练能跑到真实
+rollout）。当前卡点：FlashInfer 运行时 JIT 编译内核时，系统 /usr/local/cuda 的 nvcc
+太老不认识 -std=c++20。解决：改用 flash-attn 后端，见第 2.5 步。
+
+【历史修复备忘】
+① Qwen3.5-4B 分词器需远程代码 → 开 trust_remote_code。
+② 模型走网络解析断网报词表错误 → 下到本地目录 models/Qwen3.5-4B，训练指向它。
+
 ========================================
  第 1 步：开 tmux 防断连
 ========================================
@@ -13,7 +21,50 @@
 tmux new -s vopd
 
 ========================================
- 第 2 步：启动训练（卡 5、7，batch 24）
+ 第 1.5 步：把模型全量下载到本地目录（一次性，可断线重试）
+========================================
+【为什么】模型默认走网络解析（huggingface_hub model_info 访问 Qwen/Qwen3.5-4B），
+网络一断就报词表错误。下到明确本地目录后训练全程本地加载，不碰网络。
+
+cd ~/vopd && conda activate vision-opd
+export HF_ENDPOINT=https://hf-mirror.com
+export HF_HUB_DISABLE_SYMLINKS_WARNING=1
+
+python -c "
+from huggingface_hub import snapshot_download
+snapshot_download('Qwen/Qwen3.5-4B', local_dir='models/Qwen3.5-4B')
+"
+# 若中途断线，重跑上面这条即可续传。
+
+# 确认关键文件齐全、非 0 字节：
+python -c "
+import os
+d = 'models/Qwen3.5-4B'
+for f in ['vocab.json','merges.txt','tokenizer.json','tokenizer_config.json','config.json']:
+    fp = os.path.join(d, f)
+    print(f, os.path.getsize(fp) if os.path.exists(fp) else 'MISSING')
+"
+# 正常应全部存在且大小>0。若有 MISSING/0，重跑上面的 snapshot_download。
+
+========================================
+ 第 2.5 步：绕过 FlashInfer（一次修改，根治 nvcc 太老的问题）
+========================================
+【为什么】训练跑到 rollout 时，FlashInfer JIT 编译报
+"nvcc fatal: Value 'c++20' is not defined for option 'std'"。因为 /usr/local/cuda
+的 nvcc 太老。改用 flash-attn 后端，不触发 JIT 编译。
+
+# 把 run 脚本里的 unset 改成 export（脚本会清掉环境变量，必须先改）
+sed -i 's/unset VLLM_ATTENTION_BACKEND/export VLLM_ATTENTION_BACKEND=FLASH_ATTN/' ~/vopd/scripts/run_vision_opd.sh
+
+# 确认改成功（应显示 FLASH_ATTN）
+grep VLLM_ATTENTION_BACKEND ~/vopd/scripts/run_vision_opd.sh
+
+# 若想根治 nvcc（可选）：查一下可用版本，发我
+nvcc --version 2>&1 | grep release
+ls $CONDA_PREFIX/bin/nvcc 2>/dev/null && $CONDA_PREFIX/bin/nvcc --version 2>&1 | grep release
+
+========================================
+ 第 2 步：启动训练（卡 5、7，batch 24，指向本地模型）
 ========================================
 
 cd ~/vopd
@@ -23,6 +74,7 @@ export HF_ENDPOINT=https://hf-mirror.com
 export LD_LIBRARY_PATH=$CONDA_PREFIX/lib:$LD_LIBRARY_PATH
 
 CUDA_VISIBLE_DEVICES=5,7 bash scripts/run_vision_opd.sh \
+  actor_rollout_ref.model.path=$HOME/vopd/models/Qwen3.5-4B \
   trainer.n_gpus_per_node=2 \
   data.train_batch_size=24 \
   actor_rollout_ref.actor.ppo_mini_batch_size=24 \
@@ -30,6 +82,8 @@ CUDA_VISIBLE_DEVICES=5,7 bash scripts/run_vision_opd.sh \
   data.dataloader_num_workers=2 \
   actor_rollout_ref.rollout.gpu_memory_utilization=0.5 \
   +actor_rollout_ref.model.override_config.attn_implementation=sdpa \
+  actor_rollout_ref.model.trust_remote_code=True \
+  data.trust_remote_code=True \
   2>&1 | tee train.log
 
 【开始训练后，等 2-3 分钟，再看第 3 步确认是否正常启动】
