@@ -9,14 +9,11 @@
    export HF_ENDPOINT=https://hf-mirror.com
    export LD_LIBRARY_PATH=$CONDA_PREFIX/lib:$LD_LIBRARY_PATH
 
-2) 启用 CUDA 12.x nvcc（先装一次，然后定位它）
-   pip install nvidia-cuda-nvcc-cu12
-   # 找出 nvcc 在哪：
-   NVCC=$(find /user_mount/home/shiqiushi/.conda/envs/vision-opd -name "nvcc" -type f 2>/dev/null | head -1)
-   echo "NVCC=$NVCC"
-   # 如果 NVCC= 有路径，把它加到 PATH：
-   export PATH="$(dirname "$NVCC"):$PATH"
-   nvcc --version | grep release      # 应显示 12.x
+2) 装 CUDA 12.x nvcc（先装一次，以后每终端只跑 conda activate）
+   conda install -n vision-opd -c nvidia cuda-toolkit=12.4 -y
+   # 装完后同一终端验证：
+   conda activate vision-opd
+   nvcc --version | grep release      # 应显示 12.4
 
 3) 启动训练（卡 5、7）
    CUDA_VISIBLE_DEVICES=5,7 bash scripts/run_vision_opd.sh \
