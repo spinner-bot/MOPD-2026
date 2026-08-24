@@ -16,6 +16,10 @@
    nvcc --version | grep release      # 应显示 12.9
 
 3) 启动训练（卡 5、7）
+   # 让链接器能找到 libcuda.so（conda CUDA toolkit 不含驱动库，需指向系统）
+   export LIBRARY_PATH=/usr/local/cuda-11.8/targets/x86_64-linux/lib/stubs:$LIBRARY_PATH
+   export LD_LIBRARY_PATH=/usr/local/cuda-11.8/targets/x86_64-linux/lib/stubs:$LD_LIBRARY_PATH
+
    CUDA_VISIBLE_DEVICES=5,7 bash scripts/run_vision_opd.sh \
      actor_rollout_ref.model.path=$HOME/vopd/models/Qwen3.5-4B \
      trainer.n_gpus_per_node=2 data.train_batch_size=24 \
