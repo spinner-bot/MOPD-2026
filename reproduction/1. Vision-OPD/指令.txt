@@ -1,88 +1,40 @@
 ========================================
- Vision-OPD 复现 —— 训练启动指令（新版）
+ Vision-OPD 训练 —— 只需照做两步
  日期：2026-08-25
 ========================================
 
-【背景·重要】
-- 报错 LexerNoViableAltException：项目路径 "1. Vision-OPD" 有空格，Hydra 无法解析。
-- 解法：把代码复制到无空格路径 ~/vopd，数据用软链接指回原处（不重下 28GB）。
-- GPU 0/2/3/4/7 被占，用 1/5/6 三张卡；batch 缩到 36、worker 缩到 3。
+【已完成，不用重做】复制代码到 ~/vopd、装 libgcc、转 LF 换行。
+
+【当前可用卡】只有 5、7 空闲（0% 利用率）。用这两张卡。
 
 ========================================
- 第 1 步：复制代码到无空格路径（只需一次）
+ 第 1 步：在空闲卡 5 上确认 vLLM 能启动（约 1 分钟）
 ========================================
 
-mkdir -p ~/vopd
-
-cd ~/spinner-bot/reproduction/1.\ Vision-OPD/code
-tar --exclude='./data' -cf - . | tar -xf - -C ~/vopd/
-
-ln -s ~/spinner-bot/reproduction/1.\ Vision-OPD/code/data ~/vopd/data
-
-echo "复制完成，数据已软链接"; ls ~/vopd/data/train.parquet
-
-【预期】最后一行显示 train.parquet 存在 = 成功。
-
-
-========================================
- 第 1.5 步：修复 libstdc++ / ICU 版本冲突
-========================================
-
-【背景】已定位根因：conda 环境 ICU 78 需要新版 libstdc++(CXXABI_1.3.15)，
-但服务器用了系统老版 libstdc++。修法：给环境装新版 libgcc，并优先用环境的库。
-
-conda activate vision-opd
-conda install -c conda-forge libgcc -y
-
-export LD_LIBRARY_PATH=$CONDA_PREFIX/lib:$LD_LIBRARY_PATH
-
-【说明】若 conda install 报 channel 错，可去掉 -c conda-forge 只留：
-conda install libgcc -y
-
-
-========================================
- 第 1.6 步：重测 vLLM 能否正常启动
-========================================
+在服务器终端粘贴下面整块，回车：
 
 cd ~/vopd
 conda activate vision-opd
 export HF_ENDPOINT=https://hf-mirror.com
 export LD_LIBRARY_PATH=$CONDA_PREFIX/lib:$LD_LIBRARY_PATH
-
-timeout 60 python3 -m vllm.entrypoints.openai.api_server --model Qwen/Qwen3.5-4B --port 8002 --gpu-memory-utilization 0.3 2>&1 | grep -E "Error|error|ImportError|vocab|Tokenizer|Processor|ModelConfig|GPU" | head -20
-
-echo "===== 重测结束 ====="
-
-【结论】CXXABI 已修复。若还是上面那种"Free memory 不足"错，是因为测试用了被占的
-cuda:0 且没指定卡，属正常。下面在空闲卡上再确认一次完整启动。
-
-echo "===== 当前 GPU 占用 ====="
-nvidia-smi --query-gpu=index,memory.used,utilization.gpu --format=csv
-
-【现在空闲卡只有 5、7。在卡 5 上确认 vLLM 完整启动】
-export LD_LIBRARY_PATH=$CONDA_PREFIX/lib:$LD_LIBRARY_PATH
 timeout 90 env CUDA_VISIBLE_DEVICES=5 python3 -m vllm.entrypoints.openai.api_server --model Qwen/Qwen3.5-4B --port 8003 --gpu-memory-utilization 0.5 2>&1 | grep -E "ERROR|Error|error|ImportError|GPU:|ModelConfig|Init engine|served_model_name" | head -10
-echo "===== 空闲卡重测结束 ====="
+echo "=== 第1步结束 ==="
 
-【正常标志】出现 GPU: / 模型加载成功，无 ERROR。把这段输出发我。
-
+【把输出发我。正常会看到 GPU: 或模型加载信息，没有 ERROR。】
 
 ========================================
- 第 2 步：在 tmux 里开新会话（防断连）
+ 第 2 步：确认第 1 步没问题后，启动正式训练
 ========================================
 
+先开 tmux 防断连：
 tmux new -s vopd
 
-
-========================================
- 第 3 步：启动训练（在 ~/vopd 里跑，无空格）
-========================================
+然后粘贴下面整块，回车：
 
 cd ~/vopd
 conda activate vision-opd
 export WORLD_SIZE=1
 export LD_LIBRARY_PATH=$CONDA_PREFIX/lib:$LD_LIBRARY_PATH
-
 CUDA_VISIBLE_DEVICES=5,7 bash scripts/run_vision_opd.sh \
   trainer.n_gpus_per_node=2 \
   data.train_batch_size=24 \
@@ -93,24 +45,5 @@ CUDA_VISIBLE_DEVICES=5,7 bash scripts/run_vision_opd.sh \
   +actor_rollout_ref.model.override_config.attn_implementation=sdpa \
   2>&1 | tee train.log
 
-【说明】开始训练，日志在 ~/vopd/train.log。
-【警告】共享服务器 GPU 变动大，若训练中卡 5/7 被抢走可能崩溃，属正常现象。
-如果报错，把最后 40 行发我。
-
-
-========================================
- 第 4 步：脱离 tmux（让训练后台继续）
-========================================
-
-按 Ctrl+B ，松开，再按 D
-
-
-========================================
- 第 5 步：查看训练是否正常启动
-========================================
-
-tail -40 ~/vopd/train.log
-
-nvidia-smi --query-gpu=index,memory.used,utilization.gpu --format=csv
-
-【正常标志】train.log 出现 step/loss 滚动，GPU 1/5/6 利用率变高。
+【开始训练后，按 Ctrl+B 再按 D 脱离，训练后台继续】
+【把日志前 40 行发我确认是否正常】
