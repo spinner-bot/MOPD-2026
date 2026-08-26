@@ -1,33 +1,19 @@
 ========================================
- Vision-OPD 训练启动（当前步骤）
+ Vision-OPD 训练启动命令
 ========================================
-环境已就绪。新终端按下面 1→4 顺序跑即可。
 
 1) 进环境
+   cd ~/vopd
    conda activate vision-opd
    export WORLD_SIZE=1
    export HF_ENDPOINT=https://hf-mirror.com
    export LD_LIBRARY_PATH=$CONDA_PREFIX/lib:$LD_LIBRARY_PATH
 
-2) 装 CUDA 12.x nvcc（已装好 12.9，以后每终端只跑 conda activate）
-   conda install -n vision-opd -c nvidia cuda-toolkit=12.9 -y
-   # 装完后同一终端验证：
-   conda activate vision-opd
-   nvcc --version | grep release      # 应显示 12.9
-
-3) 装 flash_attn（训练阶段 actor 模型需要，编译约 20-30 分钟）
-   pip install ninja packaging psutil
-   pip install flash-attn --no-build-isolation
-
-   装完验证：
-   python -c "import flash_attn; print('OK:', flash_attn.__version__)"
-   python -c "from flash_attn.bert_padding import index_first_axis, pad_input, rearrange, unpad_input; print('bert_padding OK')"
-
-4) 启动训练（卡 1,2,3,4,5）
-   # 让链接器能找到 libcuda.so（conda CUDA toolkit 不含驱动库，需指向系统）
+2) 启用 CUDA 12.x nvcc
    export LIBRARY_PATH=/usr/local/cuda-11.8/targets/x86_64-linux/lib/stubs:$LIBRARY_PATH
    export LD_LIBRARY_PATH=/usr/local/cuda-11.8/targets/x86_64-linux/lib/stubs:$LD_LIBRARY_PATH
 
+3) 启动训练（卡 1,2,3,4,5）
    CUDA_VISIBLE_DEVICES=1,2,3,4,5 bash scripts/run_vision_opd.sh \
      actor_rollout_ref.model.path=$HOME/vopd/models/Qwen3.5-4B \
      trainer.n_gpus_per_node=5 data.train_batch_size=24 \
@@ -38,10 +24,6 @@
      actor_rollout_ref.model.trust_remote_code=True data.trust_remote_code=True \
      2>&1 | tee train.log
 
-5) 确认进入训练（等 3-5 分钟）
+4) 确认进入训练（等 3-5 分钟）
    tail -40 ~/vopd/train.log
-   看到连续 step+loss = 已进训练，走人即可。
-   报错或卡住 → 把 tail -40 ~/vopd/train.log 发我。
-
-注：训练要跑几小时。若你的 SSH 可能中途断开，记得在持久会话（如 tmux/screen）里跑，
-否则断开会把训练一起杀掉。
+   看到连续 step+loss = 已进训练。
