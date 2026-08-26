@@ -15,8 +15,6 @@
 2) 启用 CUDA 12.x nvcc
    export LIBRARY_PATH=/usr/local/cuda-11.8/targets/x86_64-linux/lib/stubs:$LIBRARY_PATH
    export LD_LIBRARY_PATH=/usr/local/cuda-11.8/targets/x86_64-linux/lib/stubs:$LD_LIBRARY_PATH
-
-3) 启动训练（卡 1，后台运行）
    CUDA_VISIBLE_DEVICES=1 bash scripts/run_vision_opd.sh \
      actor_rollout_ref.model.path=$HOME/vopd/models/Qwen3.5-4B \
      trainer.n_gpus_per_node=1 data.train_batch_size=24 \
