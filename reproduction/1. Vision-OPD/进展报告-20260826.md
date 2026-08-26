@@ -1,6 +1,5 @@
 # Vision-OPD 复现进展报告
 
-> 汇报人：张锐寒（浪兮）  
 > 日期：2026-08-26  
 > 项目：Vision-OPD 论文复现（arXiv: 2605.18740）
 
@@ -112,37 +111,3 @@
 Vision-OPD 复现项目已完成环境搭建、数据准备、训练调试，**成功实现稳定训练**。过程中解决了多个环境依赖问题（词表加载、CUDA 版本、驱动库链接、flash-attn 编译），积累了 H200 服务器部署经验。训练持续运行中，后续将完成评估与结果分析。
 
 ---
-
-## 附录：关键命令
-
-**训练启动**：
-```bash
-cd ~/vopd
-conda activate vision-opd
-export WORLD_SIZE=1
-export HF_ENDPOINT=https://hf-mirror.com
-export LD_LIBRARY_PATH=$CONDA_PREFIX/lib:$LD_LIBRARY_PATH
-export LIBRARY_PATH=/usr/local/cuda-11.8/targets/x86_64-linux/lib/stubs:$LIBRARY_PATH
-export LD_LIBRARY_PATH=/usr/local/cuda-11.8/targets/x86_64-linux/lib/stubs:$LD_LIBRARY_PATH
-
-CUDA_VISIBLE_DEVICES=5,7 bash scripts/run_vision_opd.sh \
-  actor_rollout_ref.model.path=$HOME/vopd/models/Qwen3.5-4B \
-  trainer.n_gpus_per_node=2 data.train_batch_size=24 \
-  actor_rollout_ref.actor.ppo_mini_batch_size=24 \
-  actor_rollout_ref.rollout.agent.num_workers=2 data.dataloader_num_workers=2 \
-  actor_rollout_ref.rollout.gpu_memory_utilization=0.5 \
-  +actor_rollout_ref.model.override_config.attn_implementation=sdpa \
-  actor_rollout_ref.model.trust_remote_code=True data.trust_remote_code=True \
-  2>&1 | tee train.log
-```
-
-**查看训练进度**：
-```bash
-tail -40 ~/vopd/train.log
-```
-
-**评估**（训练完成后）：
-```bash
-bash scripts/merge_checkpoint.sh
-bash eval/run_eval.sh
-```
