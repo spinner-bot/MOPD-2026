@@ -23,14 +23,14 @@
    python -c "import flash_attn; print('OK:', flash_attn.__version__)"
    python -c "from flash_attn.bert_padding import index_first_axis, pad_input, rearrange, unpad_input; print('bert_padding OK')"
 
-4) 启动训练（卡 1,2,3,4,5）
+4) 启动训练（卡 1,2）
    # 让链接器能找到 libcuda.so（conda CUDA toolkit 不含驱动库，需指向系统）
    export LIBRARY_PATH=/usr/local/cuda-11.8/targets/x86_64-linux/lib/stubs:$LIBRARY_PATH
    export LD_LIBRARY_PATH=/usr/local/cuda-11.8/targets/x86_64-linux/lib/stubs:$LD_LIBRARY_PATH
 
-   CUDA_VISIBLE_DEVICES=1,2,3,4,5 bash scripts/run_vision_opd.sh \
+   CUDA_VISIBLE_DEVICES=1,2 bash scripts/run_vision_opd.sh \
      actor_rollout_ref.model.path=$HOME/vopd/models/Qwen3.5-4B \
-     trainer.n_gpus_per_node=5 data.train_batch_size=24 \
+     trainer.n_gpus_per_node=2 data.train_batch_size=24 \
      actor_rollout_ref.actor.ppo_mini_batch_size=24 \
      actor_rollout_ref.rollout.agent.num_workers=2 data.dataloader_num_workers=2 \
      actor_rollout_ref.rollout.gpu_memory_utilization=0.5 \
