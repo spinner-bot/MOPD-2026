@@ -15,10 +15,15 @@
    conda activate vision-opd
    nvcc --version | grep release      # 应显示 12.9
 
-   # 装 flash_attn（训练阶段 actor 模型需要）
+3) 装 flash_attn（训练阶段 actor 模型需要，编译约 20-30 分钟）
+   pip install ninja packaging psutil
    pip install flash-attn --no-build-isolation
 
-3) 启动训练（卡 5、7）
+   装完验证：
+   python -c "import flash_attn; print('OK:', flash_attn.__version__)"
+   python -c "from flash_attn.bert_padding import index_first_axis, pad_input, rearrange, unpad_input; print('bert_padding OK')"
+
+4) 启动训练（卡 5、7）
    # 让链接器能找到 libcuda.so（conda CUDA toolkit 不含驱动库，需指向系统）
    export LIBRARY_PATH=/usr/local/cuda-11.8/targets/x86_64-linux/lib/stubs:$LIBRARY_PATH
    export LD_LIBRARY_PATH=/usr/local/cuda-11.8/targets/x86_64-linux/lib/stubs:$LD_LIBRARY_PATH
@@ -33,7 +38,7 @@
      actor_rollout_ref.model.trust_remote_code=True data.trust_remote_code=True \
      2>&1 | tee train.log
 
-4) 确认进入训练（等 3-5 分钟）
+5) 确认进入训练（等 3-5 分钟）
    tail -40 ~/vopd/train.log
    看到连续 step+loss = 已进训练，走人即可。
    报错或卡住 → 把 tail -40 ~/vopd/train.log 发我。
