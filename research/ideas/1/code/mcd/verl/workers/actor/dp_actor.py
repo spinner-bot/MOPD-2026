@@ -1119,6 +1119,57 @@ class DataParallelPPOActor(BasePPOActor):
                         loss_compute_time = time.perf_counter() - loss_compute_start
                         stage_wall_time_totals["timing_s/update_actor/loss_compute"] += loss_compute_time
 
+                        # MCDC: If Text teacher is available, compute MCDC distillation loss
+                        if self.text_teacher is not None and outputs.get("logits") is not None:
+                            with torch.no_grad():
+                                # Text teacher forward (pure text, no images)
+                                text_input_ids = model_inputs["input_ids"].clone()
+                                text_attention_mask = model_inputs["attention_mask"].clone()
+
+                                # Run Text teacher
+                                text_teacher_outputs = self.text_teacher(
+                                    input_ids=text_input_ids,
+                                    attention_mask=text_attention_mask,
+                                )
+                                text_teacher_logits = text_teacher_outputs.logits
+
+                                # Get student and VL teacher logits
+                                student_logits = outputs["logits"]
+
+                                # Get VL teacher logits
+                                vl_teacher_logits = teacher_outputs.get("logits")
+                                if vl_teacher_logits is None:
+                                    # Recompute VL teacher logits if not available
+                                    with torch.no_grad():
+                                        vl_teacher_out = self._forward_micro_batch(
+                                            teacher_inputs,
+                                            temperature=temperature,
+                                            calculate_entropy=False,
+                                            return_all_logps=False,
+                                            distill_topk=None,
+                                            module=teacher_model,
+                                        )
+                                        vl_teacher_logits = vl_teacher_out.get("logits")
+
+                            if vl_teacher_logits is not None:
+                                # Compute MCDC distillation loss
+                                mcd_config = {
+                                    'alpha': self_distillation_cfg.get('mcd_alpha', 0.5),
+                                    'beta': self_distillation_cfg.get('mcd_beta', 0.5),
+                                    'tau': self_distillation_cfg.get('mcd_tau', 1.0),
+                                    'epsilon': self_distillation_cfg.get('mcd_epsilon', 0.1),
+                                }
+                                mcd_loss, mcd_metrics = mcd_distillation_loss(
+                                    student_logits=student_logits,
+                                    vl_teacher_logits=vl_teacher_logits,
+                                    text_teacher_logits=text_teacher_logits,
+                                    config=mcd_config,
+                                )
+
+                                # Replace vopd_loss with mcd_loss
+                                vopd_loss = mcd_loss
+                                vopd_metrics.update({f'mcd/{k}': v for k, v in mcd_metrics.items()})
+
                         vopd_metrics["self_distillation/empty_target_batch"] = self_distillation_mask.sum().item() == 0
                         micro_batch_metrics.update(vopd_metrics)
 
