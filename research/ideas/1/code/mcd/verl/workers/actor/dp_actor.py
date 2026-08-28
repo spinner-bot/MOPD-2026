@@ -132,6 +132,38 @@ class DataParallelPPOActor(BasePPOActor):
                 f"{self.use_fused_kernels=} or {self.use_prefix_grouper=} for now."
             )
 
+        # MCDC: Load Text teacher (pure text model)
+        self_distillation_cfg = getattr(self.config, "self_distillation", None)
+        text_teacher_path = None
+        if self_distillation_cfg:
+            text_teacher_path = getattr(self_distillation_cfg, "text_teacher_path", None)
+
+        self.text_teacher = None
+        self.text_teacher_tokenizer = None
+        if text_teacher_path:
+            from transformers import AutoModelForCausalLM, AutoTokenizer
+
+            if torch.distributed.get_rank() == 0:
+                print(f"Loading MCDC Text teacher from {text_teacher_path}")
+
+            self.text_teacher = AutoModelForCausalLM.from_pretrained(
+                text_teacher_path,
+                torch_dtype=self.param_dtype,
+                device_map="auto",
+                trust_remote_code=True,
+            )
+            self.text_teacher_tokenizer = AutoTokenizer.from_pretrained(
+                text_teacher_path,
+                trust_remote_code=True,
+            )
+            self.text_teacher.eval()
+            # Freeze Text teacher parameters
+            for param in self.text_teacher.parameters():
+                param.requires_grad = False
+
+            if torch.distributed.get_rank() == 0:
+                print(f"MCDC Text teacher loaded: {self.text_teacher.__class__.__name__}")
+
     def _update_teacher(self) -> None:
         self_distillation_cfg = getattr(self.config, "self_distillation", None)
         loss_mode = self.config.policy_loss.get("loss_mode", "vanilla")
