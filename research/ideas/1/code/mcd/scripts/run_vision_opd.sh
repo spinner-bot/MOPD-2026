@@ -129,6 +129,11 @@ python3 -m verl.trainer.main_ppo --config-name "$CONFIG_NAME" \
     actor_rollout_ref.actor.self_distillation.teacher_regularization=$TEACHER_REGULARIZATION \
     actor_rollout_ref.actor.self_distillation.teacher_update_rate=$TEACHER_UPDATE_RATE \
     actor_rollout_ref.actor.self_distillation.teacher_image_key=bbox_images \
+    actor_rollout_ref.actor.self_distillation.text_teacher_path=$TEXT_TEACHER_PATH \
+    actor_rollout_ref.actor.self_distillation.mcd_alpha=$MCD_ALPHA \
+    actor_rollout_ref.actor.self_distillation.mcd_beta=$MCD_BETA \
+    actor_rollout_ref.actor.self_distillation.mcd_tau=$MCD_TAU \
+    actor_rollout_ref.actor.self_distillation.mcd_epsilon=$MCD_EPSILON \
     algorithm.rollout_correction.rollout_is=token \
     algorithm.rollout_correction.rollout_is_threshold=2.0 \
     algorithm.adv_estimator=grpo \
