@@ -18,6 +18,14 @@ TEACHER_MODEL_SOURCE="legacy"
 TEACHER_REGULARIZATION="ema"
 TEACHER_UPDATE_RATE=0.05
 
+# MCDC: Text teacher path (pure text model for multimodal confidence-aware distillation)
+TEXT_TEACHER_PATH="${PROJECT_ROOT}/models/Qwen2.5-7B-Instruct"
+# MCDC hyperparameters
+MCD_ALPHA=0.5
+MCD_BETA=0.5
+MCD_TAU=1.0
+MCD_EPSILON=0.1
+
 TRAIN_BATCH_SIZE=96
 PPO_MIMI_BATCH_SIZE=96
 ROLLOUT_N=8
