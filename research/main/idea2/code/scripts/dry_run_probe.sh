@@ -74,7 +74,7 @@ python3 -m verl.trainer.main_ppo --config-name vopd \
     actor_rollout_ref.actor.self_distillation.teacher_regularization=ema \
     actor_rollout_ref.actor.self_distillation.teacher_update_rate=0.05 \
     actor_rollout_ref.actor.self_distillation.teacher_image_key=bbox_images \
-    actor_rollout_ref.actor.self_distillation.text_teacher_path=$TEXT_TEACHER_PATH \
+    +actor_rollout_ref.actor.self_distillation.text_teacher_path=$TEXT_TEACHER_PATH \
     actor_rollout_ref.actor.self_distillation.mcd_alpha=0.5 \
     actor_rollout_ref.actor.self_distillation.mcd_beta=0.5 \
     actor_rollout_ref.actor.self_distillation.mcd_tau=1.0 \
