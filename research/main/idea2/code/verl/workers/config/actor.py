@@ -32,7 +32,25 @@ __all__ = [
     "ActorConfig",
     "FSDPActorConfig",
     "McoreActorConfig",
+    "ProbeLoggingConfig",
 ]
+
+
+@dataclass
+class ProbeLoggingConfig(BaseConfig):
+    """Configuration for probe logging (cross-modal teacher alignment analysis).
+
+    Args:
+        enabled (bool): Whether to enable probe logging.
+        interval (int): Run probe every N steps.
+        probe_batch_path (str): Path to probe batch JSONL file.
+        output_dir (str): Output directory for probe logs.
+    """
+
+    enabled: bool = False
+    interval: int = 10
+    probe_batch_path: str = "./probe_data/probe_batch.jsonl"
+    output_dir: str = "./probe_logs"
 
 
 @dataclass
@@ -437,6 +455,7 @@ class FSDPActorConfig(ActorConfig):
     use_rollout_log_probs: bool = False
     calculate_sum_pi_squared: bool = False
     sum_pi_squared_checkpointing: bool = False
+    probe_logging: ProbeLoggingConfig = field(default_factory=ProbeLoggingConfig)
 
     def __post_init__(self):
         """Validate FSDP actor configuration parameters."""
