@@ -5,6 +5,9 @@
 
 set -euo pipefail
 
+# Use GPU 7 (free)
+export CUDA_VISIBLE_DEVICES=7
+
 PROJECT_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 
 # Use smaller models available on server
