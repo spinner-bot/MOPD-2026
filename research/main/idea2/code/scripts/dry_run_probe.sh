@@ -16,7 +16,7 @@ DATA_DIR="${PROJECT_ROOT}/data"
 mkdir -p "$DATA_DIR"
 
 echo "Creating minimal test data..."
-python3 << 'EOF'
+python3 << EOF
 import pandas as pd
 import os
 
@@ -28,9 +28,9 @@ data = {
 }
 
 df = pd.DataFrame(data)
-os.makedirs('${DATA_DIR}', exist_ok=True)
-df.to_parquet('${DATA_DIR}/train.parquet', index=False)
-print(f"Created test data at ${DATA_DIR}/train.parquet")
+os.makedirs('$DATA_DIR', exist_ok=True)
+df.to_parquet('$DATA_DIR/train.parquet', index=False)
+print(f"Created test data at $DATA_DIR/train.parquet")
 EOF
 
 echo "Starting dry run with probe logging..."
