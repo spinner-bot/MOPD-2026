@@ -48,3 +48,14 @@ calculate_sum_pi_squared: False
 
 # Enable gradient checkpointing for sum_pi_squared computation (saves memory)
 sum_pi_squared_checkpointing: False
+
+# Probe logging configuration for cross-modal teacher alignment analysis
+probe_logging:
+  # Enable probe logging
+  enabled: true
+  # Run probe every N steps
+  interval: 10
+  # Path to probe batch JSONL file
+  probe_batch_path: ./probe_data/probe_batch.jsonl
+  # Output directory for probe logs
+  output_dir: ./probe_logs
