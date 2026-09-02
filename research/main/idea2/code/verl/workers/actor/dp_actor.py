@@ -164,6 +164,118 @@ class DataParallelPPOActor(BasePPOActor):
             if torch.distributed.get_rank() == 0:
                 print(f"MCDC Text teacher loaded: {self.text_teacher.__class__.__name__}")
 
+    def _run_probe_logging(self, global_step: int) -> None:
+        """
+        运行 probe logging：在固定的 probe batch 上计算 VL 教师和 Text 教师的对齐度
+        """
+        import json
+        import os
+
+        # 只在 rank 0 执行
+        if torch.distributed.get_rank() != 0:
+            return
+
+        # 检查是否启用了 probe logging
+        probe_cfg = getattr(self.config, "probe_logging", None)
+        if probe_cfg is None:
+            return
+
+        probe_interval = getattr(probe_cfg, "interval", 10)
+        if global_step % probe_interval != 0:
+            return
+
+        probe_batch_path = getattr(probe_cfg, "probe_batch_path", None)
+        probe_output_dir = getattr(probe_cfg, "output_dir", "./probe_logs")
+
+        if probe_batch_path is None or not os.path.exists(probe_batch_path):
+            print(f"WARN: probe_batch_path not found: {probe_batch_path}")
+            return
+
+        # 创建输出目录
+        os.makedirs(probe_output_dir, exist_ok=True)
+
+        # 加载 probe batch
+        with open(probe_batch_path, 'r') as f:
+            probe_samples = [json.loads(line) for line in f]
+
+        print(f"[Probe] Step {global_step}: running probe on {len(probe_samples)} samples")
+
+        # 设置为 eval 模式
+        self.actor_module.eval()
+        if self.teacher_module is not None:
+            self.teacher_module.eval()
+        if self.text_teacher is not None:
+            self.text_teacher.eval()
+
+        probe_results = []
+
+        with torch.no_grad():
+            for sample_idx, sample in enumerate(probe_samples):
+                # 准备输入
+                input_ids = torch.tensor(sample['input_ids']).unsqueeze(0).to(self.actor_module.device)
+                attention_mask = torch.tensor(sample['attention_mask']).unsqueeze(0).to(self.actor_module.device)
+
+                # VL 教师 forward（teacher_module 是 VL 教师）
+                if self.teacher_module is not None:
+                    vl_outputs = self.teacher_module(input_ids=input_ids, attention_mask=attention_mask)
+                    vl_logits = vl_outputs.logits if hasattr(vl_outputs, 'logits') else vl_outputs[0]
+                else:
+                    # 如果没有 teacher_module，用 actor_module 作为 VL 教师
+                    vl_outputs = self.actor_module(input_ids=input_ids, attention_mask=attention_mask)
+                    vl_logits = vl_outputs.logits if hasattr(vl_outputs, 'logits') else vl_outputs[0]
+
+                # Text 教师 forward
+                if self.text_teacher is not None:
+                    text_outputs = self.text_teacher(input_ids=input_ids, attention_mask=attention_mask)
+                    text_logits = text_outputs.logits if hasattr(text_outputs, 'logits') else text_outputs[0]
+                else:
+                    # 如果没有 text_teacher，跳过
+                    continue
+
+                # 计算 JS 散度（对每个 token）
+                # vl_logits, text_logits: [1, seq_len, vocab_size]
+                vl_probs = torch.softmax(vl_logits, dim=-1)
+                text_probs = torch.softmax(text_logits, dim=-1)
+                m_probs = 0.5 * (vl_probs + text_probs)
+
+                eps = 1e-8
+                vl_probs = torch.clamp(vl_probs, min=eps)
+                text_probs = torch.clamp(text_probs, min=eps)
+                m_probs = torch.clamp(m_probs, min=eps)
+
+                kl_vl_m = torch.sum(vl_probs * torch.log(vl_probs / m_probs), dim=-1)  # [1, seq_len]
+                kl_text_m = torch.sum(text_probs * torch.log(text_probs / m_probs), dim=-1)
+                js_div = 0.5 * (kl_vl_m + kl_text_m)  # [1, seq_len]
+
+                # Top-1 一致率
+                vl_argmax = torch.argmax(vl_logits, dim=-1)  # [1, seq_len]
+                text_argmax = torch.argmax(text_logits, dim=-1)
+                top1_agree = (vl_argmax == text_argmax).float()  # [1, seq_len]
+
+                # 保存到结果
+                probe_results.append({
+                    'step': global_step,
+                    'sample_id': sample.get('id', sample_idx),
+                    'js_divergence_mean': js_div.mean().item(),
+                    'js_divergence_max': js_div.max().item(),
+                    'js_divergence_min': js_div.min().item(),
+                    'top1_agree_rate': top1_agree.mean().item(),
+                    'seq_len': js_div.shape[-1],
+                })
+
+        # 保存结果
+        output_file = os.path.join(probe_output_dir, f"step_{global_step:06d}.jsonl")
+        with open(output_file, 'w') as f:
+            for result in probe_results:
+                f.write(json.dumps(result) + '\n')
+
+        print(f"[Probe] Step {global_step}: saved {len(probe_results)} results to {output_file}")
+
+        # 恢复 train 模式
+        self.actor_module.train()
+        if self.teacher_module is not None:
+            self.teacher_module.train()
+
     def _update_teacher(self) -> None:
         self_distillation_cfg = getattr(self.config, "self_distillation", None)
         loss_mode = self.config.policy_loss.get("loss_mode", "vanilla")
@@ -877,6 +989,11 @@ class DataParallelPPOActor(BasePPOActor):
     @GPUMemoryLogger(role="dp actor", logger=logger)
     def update_policy(self, data: DataProto):
         self._current_global_steps = data.meta_info.get("global_steps")
+
+        # 运行 probe logging（如果配置了）
+        if self._current_global_steps is not None:
+            self._run_probe_logging(self._current_global_steps)
+
         # make sure we are in training mode
         self.actor_module.train()
 
