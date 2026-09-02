@@ -114,6 +114,12 @@ class SelfDistillationConfig(BaseConfig):
     )
     fallback_to_policy_loss_on_missing_teacher: bool = False
     log_prob_dump_dir: Optional[str] = None
+    # Idea2: MCDC (Multimodal Confidence-aware Dynamic Control) parameters
+    text_teacher_path: Optional[str] = None
+    mcd_alpha: float = 0.5
+    mcd_beta: float = 0.5
+    mcd_tau: float = 1.0
+    mcd_epsilon: float = 0.1
 
     def __post_init__(self):
         if not 0.0 <= self.alpha <= 1.0:
