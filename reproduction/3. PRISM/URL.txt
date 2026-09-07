@@ -1,6 +1,0 @@
-PRISM 相关链接
-====================
-
-论文:     https://arxiv.org/abs/2604.28123
-代码:     https://github.com/XIAO4579/PRISM
-深度分析: ../papers/PRISM与Uni-OPD深度分析报告.md

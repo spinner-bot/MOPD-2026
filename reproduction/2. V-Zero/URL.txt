@@ -1,6 +1,0 @@
-V-Zero 相关链接
-====================
-
-论文:     https://arxiv.org/abs/2606.25319
-代码:     https://github.com/eVI-group-SCU/V-Zero
-权重:     https://huggingface.co/hao05/v-zero-4b
