@@ -10,16 +10,15 @@ from typing import Any
 class PromptCase:
     name: str
     use_original_question: bool = True
-    use_bbox_image: bool = False
-    use_grounding_question: bool = False
-    use_teacher_image: bool = False
+    use_separator_question: bool = False
+    use_grounding_separator: bool = False
 
 
 CASES: dict[str, PromptCase] = {
     "orig": PromptCase(name="orig"),
-    "orig_bbox": PromptCase(name="orig_bbox", use_bbox_image=True),
-    "orig_ground": PromptCase(name="orig_ground", use_grounding_question=True),
-    "all": PromptCase(name="all", use_bbox_image=True, use_grounding_question=True, use_teacher_image=True),
+    "separator": PromptCase(name="separator", use_separator_question=True),
+    "grounding": PromptCase(name="grounding", use_grounding_separator=True),
+    "all_text": PromptCase(name="all_text", use_separator_question=True, use_grounding_separator=True),
 }
 
 
@@ -33,32 +32,47 @@ def outputs_dir() -> Path:
     return out
 
 
-def build_grounding_question(question: str, bbox: list[int] | None, problem: str | None = None) -> str:
-    """Build a grounding-aware variant from the dataset's original problem.
-
-    The dataset already defines the target semantics: only the object inside the
-    red box should be used. We preserve the original stem and choices, remove
-    the image placeholder, and add normalized spatial/box metadata derived only
-    from the native bbox and image-independent coordinates.
-    """
+def _clean_problem(question: str, problem: str | None = None) -> str:
     source = (problem or question).replace("<image>", "", 1).strip()
     source = re.sub(r"\n\s*Only focus on the objects inside the red bounding box in the image to answer this question\.\s*", "\n", source).strip()
-    if not bbox or len(bbox) != 4:
-        return source
-    x1, y1, x2, y2 = [int(v) for v in bbox]
-    lead = (
-        "Ground the answer only in the object or region specified by the dataset annotation. "
-        f"The annotated box in the original image is [{x1}, {y1}, {x2}, {y2}]. "
-        "Ignore evidence outside this region.\n\n"
+    return source
+
+
+def _stem(question: str, problem: str | None = None) -> str:
+    source = _clean_problem(question, problem)
+    return re.split(r"\n\s*A\.\s", source, maxsplit=1)[0].strip()
+
+
+def build_separator_question(question: str, problem: str | None = None) -> str:
+    """Create a text-only intermediate question from the original dataset item.
+
+    This is deliberately answer-neutral: it asks the model to identify the
+    queried target and the requested attribute before selecting an option.
+    """
+    return (
+        "Separator question: before answering the multiple-choice question, "
+        f"what visual target does this question ask you to inspect, and what property of that target must be determined? "
+        f"Question: {_stem(question, problem)}"
     )
-    return lead + source
 
 
-def build_prompt(question: str, grounding_question: str | None, case: PromptCase) -> str:
-    q = grounding_question if case.use_grounding_question and grounding_question else question
-    parts = [q.strip()]
-    if case.use_bbox_image:
-        parts.append("The second image is the same scene with a red box marking the relevant region.")
-    if case.use_teacher_image:
-        parts.append("The last image is a crop of the relevant region.")
+def build_grounding_separator(question: str, bbox: list[int] | None, problem: str | None = None) -> str:
+    """Create the dataset-aware grounding separator without adding an image."""
+    target = build_separator_question(question, problem)
+    region = "the evidence region selected for this dataset item"
+    if bbox and len(bbox) == 4:
+        region += f" (native annotation box [{int(bbox[0])}, {int(bbox[1])}, {int(bbox[2])}, {int(bbox[3])}])"
+    return (
+        "Grounding separator question: which specific visual evidence inside "
+        f"{region} is needed to answer the question? Inspect that evidence first, "
+        "then answer the original question using only the given choices.\n" + target
+    )
+
+
+def build_prompt(question: str, separator: str | None, grounding: str | None, case: PromptCase) -> str:
+    parts = [question.strip()]
+    if case.use_separator_question and separator:
+        parts.append(separator.strip())
+    if case.use_grounding_separator and grounding:
+        parts.append(grounding.strip())
     return "\n".join(parts).strip()
