@@ -9,7 +9,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
 from spinner_bot.dataio import load_jsonl
-from spinner_bot.experiment import build_grounding_question
+from spinner_bot.experiment import build_grounding_separator, build_separator_question
 
 
 def main() -> None:
@@ -23,8 +23,9 @@ def main() -> None:
     with out.open("w", encoding="utf-8") as f:
         for i, row in enumerate(rows):
             question = row.get("extra_info", {}).get("question", "")
-            grounded = build_grounding_question(question, row.get("bbox"), row.get("problem"))
-            f.write(json.dumps({"index": i, "bbox": row.get("bbox"), "original_question": question, "grounding_question": grounded}, ensure_ascii=False) + "\n")
+            separator = build_separator_question(question, row.get("problem"))
+            grounded = build_grounding_separator(question, row.get("bbox"), row.get("problem"))
+            f.write(json.dumps({"index": i, "bbox": row.get("bbox"), "original_question": question, "separator_question": separator, "grounding_separator_question": grounded}, ensure_ascii=False) + "\n")
     print(f"wrote {len(rows)} grounding prompts to {out}")
 
 
