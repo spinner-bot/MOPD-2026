@@ -46,14 +46,9 @@ def build_grounding_question(question: str, bbox: list[int] | None, problem: str
     if not bbox or len(bbox) != 4:
         return source
     x1, y1, x2, y2 = [int(v) for v in bbox]
-    cx, cy = (x1 + x2) / 2, (y1 + y2) / 2
-    # Coordinates are retained as the exact native annotation; coarse labels
-    # provide a resolution-agnostic grounding cue without inventing content.
-    horiz = "left" if cx < 0.33 * max(x2, 1) else "right" if cx > 0.66 * max(x2, 1) else "center"
-    vert = "upper" if cy < 0.33 * max(y2, 1) else "lower" if cy > 0.66 * max(y2, 1) else "middle"
     lead = (
         "Ground the answer only in the object or region specified by the dataset annotation. "
-        f"The annotated box is [{x1}, {y1}, {x2}, {y2}], approximately in the {vert}-{horiz} part of the image. "
+        f"The annotated box in the original image is [{x1}, {y1}, {x2}, {y2}]. "
         "Ignore evidence outside this region.\n\n"
     )
     return lead + source
