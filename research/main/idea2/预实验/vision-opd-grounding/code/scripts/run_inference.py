@@ -17,7 +17,7 @@ if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
 from spinner_bot.dataio import ensure_dataset, images_available, load_jsonl, maybe_extract_archives, pick_paths  # noqa: E402
-from spinner_bot.experiment import CASES, PromptCase, build_grounding_question, build_prompt  # noqa: E402
+from spinner_bot.experiment import CASES, PromptCase, build_grounding_separator, build_prompt, build_separator_question  # noqa: E402
 from spinner_bot.modeling import load_model, infer  # noqa: E402
 
 
@@ -26,14 +26,8 @@ def normalize_answer(text: str) -> str:
     return m.group(1) if m else text.strip()[:1].upper()
 
 
-def image_list(paths: dict[str, Path | None], case: PromptCase) -> list[Image.Image]:
-    selected: list[Path] = []
-    if paths["original_image"] is not None:
-        selected.append(paths["original_image"])
-    if case.use_bbox_image and paths["bbox_image"] is not None:
-        selected.append(paths["bbox_image"])
-    if case.use_teacher_image and paths["teacher_image"] is not None:
-        selected.append(paths["teacher_image"])
+def image_list(paths: dict[str, Path | None]) -> list[Image.Image]:
+    selected = [paths["original_image"]] if paths["original_image"] is not None else []
     missing = [str(p) for p in selected if not p.exists()]
     if missing:
         raise FileNotFoundError("Missing required image(s): " + ", ".join(missing))
@@ -76,15 +70,16 @@ def run(args: argparse.Namespace) -> None:
         for local_i, rec in enumerate(tqdm(records, desc=f"shard {args.shard_id}")):
             global_i = args.shard_id + local_i * args.shards if args.shards > 1 else local_i
             question = rec.get("extra_info", {}).get("question") or rec.get("problem", "").replace("<image>", "").strip()
-            grounding = build_grounding_question(question, rec.get("bbox"), rec.get("problem"))
+            separator = build_separator_question(question, rec.get("problem"))
+            grounding = build_grounding_separator(question, rec.get("bbox"), rec.get("problem"))
             paths = pick_paths(rec)
             for case in cases:
                 key = (global_i, case.name)
                 if key in done:
                     continue
-                prompt = build_prompt(question, grounding, case)
+                prompt = build_prompt(question, separator, grounding, case)
                 try:
-                    imgs = image_list(paths, case)
+                    imgs = image_list(paths)
                     pred_text = infer(model, processor, prompt, imgs, args.max_new_tokens)
                     pred = normalize_answer(pred_text)
                     err = None
@@ -113,7 +108,7 @@ def main() -> None:
     p.add_argument("--dataset-jsonl", default="")
     p.add_argument("--model", default=str(ROOT / "model" / "Qwen3.5-4B"))
     p.add_argument("--output", default="outputs/opd_vl_results.jsonl")
-    p.add_argument("--cases", default="orig,orig_bbox,orig_ground,all")
+    p.add_argument("--cases", default="orig,separator,grounding,all_text")
     p.add_argument("--limit", type=int, default=0)
     p.add_argument("--max-new-tokens", type=int, default=16)
     p.add_argument("--device", default=None)
