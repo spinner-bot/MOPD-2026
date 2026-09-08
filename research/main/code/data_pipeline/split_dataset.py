@@ -100,31 +100,31 @@ def stratified_split(
         family = group[0].get(task_family_key, "P")
         images_by_family[family].append(img_id)
 
-    # 对每个 family 分别划分
+    # 对每个 family 分别划分。Stage 0 是方法选择用的 screening 集，
+    # 必须在 image level 与最终 diagnostic test 隔离。
     splits = {"train": [], "val": [], "test": [], "stage0": []}
+    main_total = config.train_size + config.val_size + config.test_size
+    total_requested = main_total + config.stage0_size
 
     for family, family_image_ids in images_by_family.items():
         np.random.shuffle(family_image_ids)
         n_total = len(family_image_ids)
 
-        # 计算该 family 在各 split 中的目标数量
-        # 按比例分配
-        train_ratio = config.train_size / (config.train_size + config.val_size + config.test_size)
-        val_ratio = config.val_size / (config.train_size + config.val_size + config.test_size)
-        test_ratio = config.test_size / (config.train_size + config.val_size + config.test_size)
-
-        n_train = int(n_total * train_ratio)
-        n_val = int(n_total * val_ratio)
-        n_test = int(n_total * test_ratio)
+        # 先预留 Stage 0 图片，再将剩余图片按 train/val/test 比例划分。
+        n_stage0 = int(round(n_total * config.stage0_size / total_requested))
+        n_stage0 = min(n_stage0, n_total)
+        remaining_total = n_total - n_stage0
+        train_ratio = config.train_size / main_total
+        val_ratio = config.val_size / main_total
+        n_train = int(remaining_total * train_ratio)
+        n_val = int(remaining_total * val_ratio)
 
         # 划分
-        train_imgs = family_image_ids[:n_train]
-        val_imgs = family_image_ids[n_train:n_train + n_val]
-        test_imgs = family_image_ids[n_train + n_val:n_train + n_val + n_test]
-
-        # 剩余放入 test（确保不浪费）
-        remaining = family_image_ids[n_train + n_val + n_test:]
-        test_imgs.extend(remaining)
+        stage0_imgs = family_image_ids[:n_stage0]
+        train_imgs = family_image_ids[n_stage0:n_stage0 + n_train]
+        val_imgs = family_image_ids[n_stage0 + n_train:n_stage0 + n_train + n_val]
+        # 余下全部归 test，避免图片或样本被静默丢弃。
+        test_imgs = family_image_ids[n_stage0 + n_train + n_val:]
 
         # 将 image 中的样本添加到对应 split
         for img_id in train_imgs:
@@ -133,12 +133,8 @@ def stratified_split(
             splits["val"].extend(image_groups[img_id])
         for img_id in test_imgs:
             splits["test"].extend(image_groups[img_id])
-
-    # Stage 0: 从 test 中抽取 400-600 样本（方案 §19）
-    # 确保覆盖 P/R/PR 和 depth 1-4+
-    test_samples = splits["test"].copy()
-    np.random.shuffle(test_samples)
-    splits["stage0"] = test_samples[:config.stage0_size]
+        for img_id in stage0_imgs:
+            splits["stage0"].extend(image_groups[img_id])
 
     # 统计信息
     stats = {
@@ -148,8 +144,6 @@ def stratified_split(
     }
 
     for split_name, split_samples in splits.items():
-        if split_name == "stage0":
-            continue
         images_in_split = len(set(s.get("source_image_id", s.get("image_original", ""))
                                    for s in split_samples))
         family_counts = defaultdict(int)
@@ -184,6 +178,7 @@ def validate_split(splits: dict) -> list[str]:
     train_images = set()
     val_images = set()
     test_images = set()
+    stage0_images = set()
 
     for sample in splits["train"]:
         img_id = sample.get("source_image_id", sample.get("image_original", ""))
@@ -196,6 +191,9 @@ def validate_split(splits: dict) -> list[str]:
     for sample in splits["test"]:
         img_id = sample.get("source_image_id", sample.get("image_original", ""))
         test_images.add(img_id)
+    for sample in splits.get("stage0", []):
+        img_id = sample.get("source_image_id", sample.get("image_original", ""))
+        stage0_images.add(img_id)
 
     # 检查交集
     if train_images & val_images:
@@ -204,6 +202,10 @@ def validate_split(splits: dict) -> list[str]:
         errors.append(f"Train-Test image overlap: {len(train_images & test_images)} images")
     if val_images & test_images:
         errors.append(f"Val-Test image overlap: {len(val_images & test_images)} images")
+    for split_name, images in (("Train", train_images), ("Val", val_images), ("Test", test_images)):
+        overlap = images & stage0_images
+        if overlap:
+            errors.append(f"{split_name}-Stage0 image overlap: {len(overlap)} images")
 
     return errors
 

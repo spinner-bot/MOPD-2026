@@ -24,7 +24,7 @@ from typing import Optional
 from enum import IntEnum
 
 
-class ReasoningDepth(int, IntEnum):
+class ReasoningDepth(IntEnum):
     """推理深度级别"""
     DEPTH_1 = 1  # E1 → A
     DEPTH_2 = 2  # E1 → H1 → A
@@ -91,32 +91,27 @@ def compute_depth_from_graph(graph: ReasoningGraph) -> int:
     if not answer_node:
         return 1
 
-    # BFS/DFS 计算从 evidence 到 answer 的最长路径
-    def find_longest_path(node_id: str, visited: set) -> int:
+    # 回溯计算从 evidence 到 answer 的最长边数。直接 E → A 为 1，
+    # 每个不可省略的中间状态再增加 1。
+    def find_longest_path(node_id: str, path: set[str]) -> int:
         if node_id in evidence_ids:
-            return 0  # 到达 evidence，路径长度为 0
+            return 0
 
         node = graph.get_node(node_id)
         if not node or not node.depends_on:
-            return 0
+            raise ValueError(f"Node '{node_id}' does not lead back to visual evidence")
 
-        max_depth = 0
+        depths = []
         for dep_id in node.depends_on:
-            if dep_id not in visited:
-                visited.add(dep_id)
-                dep_depth = find_longest_path(dep_id, visited)
-                max_depth = max(max_depth, dep_depth + 1)
+            if dep_id in path:
+                raise ValueError(f"Cycle detected in reasoning graph at '{dep_id}'")
+            depths.append(find_longest_path(dep_id, path | {dep_id}) + 1)
 
-        return max_depth
+        return max(depths)
 
     # 从 answer 节点开始回溯
-    visited = {graph.final_answer_node_id}
-    depth = find_longest_path(graph.final_answer_node_id, visited)
-
-    # 深度 = 中间状态数 + 1（最终推断）
-    # 如果是直接从 evidence 到 answer，深度为 1
-    # 如果经过 hypothesis，每多一层 +1
-    return min(depth + 1, 5)  # 上限为 5+
+    depth = find_longest_path(graph.final_answer_node_id, {graph.final_answer_node_id})
+    return min(depth, 5)  # 5 代表 5+
 
 
 def compute_depth_from_guides(

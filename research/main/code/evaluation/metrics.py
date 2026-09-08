@@ -11,7 +11,6 @@
 
 import numpy as np
 from typing import Literal
-from scipy.special import rel_entr
 
 
 def accuracy_gap(
@@ -197,6 +196,7 @@ def aggregate_metrics(results: list[dict]) -> dict:
 
 def check_stage0_go_criteria(
     metrics_by_condition: dict[str, list[dict]],
+    paired_tests: dict[str, dict] | None = None,
     threshold_gap: float = 0.02,
     threshold_logp: float = 0.1,
     threshold_depth3_gain: float = 0.03
@@ -214,42 +214,65 @@ def check_stage0_go_criteria(
     Returns:
         判定结果
     """
-    go_criteria = {}
+    paired_tests = paired_tests or {}
+    required = {"T_Q", "T_QA", "T_random", "T_generic"}
+    missing = sorted(key for key in required if not metrics_by_condition.get(key))
+    if missing:
+        return {"overall_go": False, "status": "incomplete", "missing_conditions": missing}
 
-    # 1. T 对 S 存在稳定的 positive teacher gap
-    if "S" in metrics_by_condition and "T_Q" in metrics_by_condition:
-        acc_s = np.mean([r["acc_student"] for r in metrics_by_condition["S"]])
-        acc_t = np.mean([r["acc_teacher"] for r in metrics_by_condition["T_Q"]])
-        gap = acc_t - acc_s
-        go_criteria["positive_teacher_gap"] = {
-            "value": gap,
-            "threshold": threshold_gap,
-            "pass": gap >= threshold_gap
+    def summarize(condition: str) -> dict:
+        rows = metrics_by_condition[condition]
+        depth3_rows = [row for row in rows if row.get("reasoning_depth", 0) >= 3]
+        return {
+            "accuracy_gap": float(np.mean([row["accuracy_gap"] for row in rows])),
+            "log_prob_gap": float(np.mean([row["log_prob_gap"] for row in rows])),
+            "depth3_accuracy_gap": (
+                float(np.mean([row["accuracy_gap"] for row in depth3_rows]))
+                if depth3_rows else None
+            ),
+            "n": len(rows),
+            "n_depth3": len(depth3_rows),
         }
 
-    # 2. 正确答案 log-prob 显著增加
-    if "S" in metrics_by_condition and "T_QA" in metrics_by_condition:
-        logp_s = np.mean([r["logp_student"] for r in metrics_by_condition["S"]])
-        logp_t = np.mean([r["logp_teacher"] for r in metrics_by_condition["T_QA"]])
-        lp_gap = logp_t - logp_s
-        go_criteria["log_prob_increase"] = {
-            "value": lp_gap,
-            "threshold": threshold_logp,
-            "pass": lp_gap >= threshold_logp
-        }
+    summaries = {condition: summarize(condition) for condition in required}
+    candidates = ["T_Q", "T_QA"]
+    selected = max(candidates, key=lambda condition: summaries[condition]["log_prob_gap"])
+    selected_summary = summaries[selected]
 
-    # 3. random/generic 不具有相同效果
-    if "T_Q" in metrics_by_condition and "T_random" in metrics_by_condition:
-        acc_tq = np.mean([r["acc_teacher"] for r in metrics_by_condition["T_Q"]])
-        acc_rand = np.mean([r["acc_teacher"] for r in metrics_by_condition["T_random"]])
-        diff = acc_tq - acc_rand
-        go_criteria["structured_vs_random"] = {
-            "value": diff,
-            "pass": diff > 0.01  # 至少 1% 的优势
-        }
+    def significant(name: str) -> bool:
+        return bool(paired_tests.get(name, {}).get("significant", False))
 
-    # 总体判定
-    all_pass = all(c.get("pass", False) for c in go_criteria.values())
-    go_criteria["overall_go"] = all_pass
-
-    return go_criteria
+    controls = {
+        "random": summaries[selected]["accuracy_gap"] - summaries["T_random"]["accuracy_gap"],
+        "generic": summaries[selected]["accuracy_gap"] - summaries["T_generic"]["accuracy_gap"],
+    }
+    criteria = {
+        "positive_teacher_gap": {
+            "value": selected_summary["accuracy_gap"], "threshold": threshold_gap,
+            "pass": selected_summary["accuracy_gap"] >= threshold_gap and significant(selected),
+        },
+        "log_prob_increase": {
+            "value": selected_summary["log_prob_gap"], "threshold": threshold_logp,
+            "pass": selected_summary["log_prob_gap"] >= threshold_logp and significant(selected),
+        },
+        "depth3_gain": {
+            "value": selected_summary["depth3_accuracy_gap"], "threshold": threshold_depth3_gain,
+            "pass": selected_summary["depth3_accuracy_gap"] is not None
+            and selected_summary["depth3_accuracy_gap"] >= threshold_depth3_gain,
+        },
+        "structured_vs_random": {
+            "value": controls["random"], "threshold": 0.01,
+            "pass": controls["random"] > 0.01 and significant(f"{selected}_vs_T_random"),
+        },
+        "structured_vs_generic": {
+            "value": controls["generic"], "threshold": 0.01,
+            "pass": controls["generic"] > 0.01 and significant(f"{selected}_vs_T_generic"),
+        },
+    }
+    return {
+        "overall_go": all(item["pass"] for item in criteria.values()),
+        "status": "complete",
+        "selected_text_method": selected,
+        "summaries": summaries,
+        "criteria": criteria,
+    }
