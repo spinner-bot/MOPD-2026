@@ -1,0 +1,11 @@
+2026-09-08T17:28:35Z
+Ran 6 tests in 0.020s
+OK
+
+Passed checks:
+- D4 is normalized to D4+.
+- Direct and multi-hop reasoning graphs yield depths 1 and 3.
+- Stage 0 images are disjoint from train, validation, and diagnostic test images.
+- Empty or statistically unpaired evidence cannot pass the Stage 0 gate.
+- A complete synthetic evidence set passes the gate.
+- A run archive cannot overwrite an existing run_id.
