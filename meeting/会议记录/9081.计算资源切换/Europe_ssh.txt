@@ -1,0 +1,46 @@
+在power shell安装step
+
+winget install Smallstep.step
+
+ssh-add -D
+ssh-add -L
+
+$stamp = Get-Date -Format "yyyyMMdd-HHmmss"
+if (Test-Path "$HOME\.step") {
+    Move-Item "$HOME\.step" "$HOME\.step-backup-$stamp"
+}
+
+Test-Path "$HOME\.step"
+
+step ca bootstrap --ca-url=https://sshproxy.hpc.cineca.it --fingerprint 2ae1543202304d3f434bdc1a2c92eff2cd2b02110206ef06317e70c1c1735ecd
+
+Get-Service -Name ssh-agent
+
+Set-Service -Name ssh-agent -StartupType Auto
+
+Start-Service ssh-agent
+Get-Service -Name ssh-agent
+
+step ssh login 'qiianruii@gmail.com' --provisioner cineca-hpc
+
+账号
+rqian000
+g7rCEe5X3mrXW+D
+
+step ssh list
+
+ssh-add -L
+
+step ssh list --raw 'qiianruii@gmail.com' | step ssh inspect
+
+ssh rqian000@login.leonardo.cineca.it
+
+在vscode的remote-ssh中配置
+Host leonardo
+    HostName login01-ext.leonardo.cineca.it
+    User rqian000
+    IdentityAgent \\.\pipe\openssh-ssh-agent
+    IdentitiesOnly no
+    ForwardAgent yes
+    ServerAliveInterval 60
+    ServerAliveCountMax 3
