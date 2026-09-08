@@ -1,0 +1,150 @@
+# 训练配置模板
+# 按实验方案 §28, §30 定义
+# 用于 Stage 1+ 训练
+
+# === 基础配置 ===
+model:
+  name: "Qwen3.5-4B"  # 或 "Qwen3.5-9B"
+  checkpoint: null  # 运行时填充
+
+# === OPSD 配置（方案 §28-30）===
+opsd:
+  # Teacher
+  teacher:
+    type: "ema"  # exponential moving average
+    update_rate: 0.05  # α = 0.05
+
+  # Rollout
+  rollout:
+    n_samples: 8  # N = 8 rollouts per prompt
+    prompt_max_length: 8192
+    response_max_length: 1024
+    top_k: 100  # Top-K=100 for dense logit distillation
+
+  # Loss
+  loss:
+    type: "jsd"  # Jensen-Shannon divergence
+    beta: 0.5  # JSD β = 0.5
+
+  # Training
+  training:
+    batch_size: 96
+    learning_rate: 2.0e-6
+    n_epochs: 1
+    gradient_accumulation_steps: 1
+
+# === 各阶段配置 ===
+
+# Stage 0: Privilege Gap Screening（不需要训练）
+stage0:
+  n_samples: 500  # 400-600
+  conditions:
+    - "S"        # Student: (I, Q)
+    - "V_crop"   # V-crop: (C, Q)
+    - "V_add"    # V-add: (I, C, Q)
+    - "T_Q"      # T-Q: (I, G_Q, Q)
+    - "T_QA"     # T-QA: (I, G_QA, Q)
+    - "VT"       # VT: (I, C, G_QA, Q)
+    - "T_random" # T-random: (I, G_random, Q)
+    - "T_shuffle" # T-shuffle: (I, G_shuffle, Q)
+    - "T_generic" # T-generic: (I, G_generic, Q)
+
+# Stage 1: T-only Pilot
+stage1:
+  n_samples: 2000  # 1K-2K
+  model_size: "4B"
+  n_seeds: 1  # 单 seed 先搜索方向
+  groups:
+    - "B0"  # Base checkpoint
+    - "B1"  # Final-answer SFT
+    - "B2"  # Vanilla/00 OPD
+    - "B3"  # Random-T OPD
+    - "B4"  # Real T-Q OPD
+    - "B5"  # Real T-QA OPD
+
+# Stage 2: Vision-OPD Reproduction
+stage2:
+  dataset: "vision-opd-official"
+  model_size: "4B"
+  # 完全按照官方配置
+
+# Stage 3: 正式数据集构建
+stage3:
+  train_size: 8000
+  val_size: 1000
+  test_size: 2000
+  prp_ratio: [0.33, 0.33, 0.34]  # P:R:PR ≈ 1:1:1
+
+# Stage 4: Main 2×2 Experiment
+stage4:
+  model_groups:
+    - id: "M00"
+      v_privilege: false
+      t_privilege: false
+      teacher_context: "[I, Q]"
+    - id: "MV"
+      v_privilege: true
+      t_privilege: false
+      teacher_context: "[I, C, Q]"
+    - id: "MT"
+      v_privilege: false
+      t_privilege: true
+      teacher_context: "[I, G, Q]"
+    - id: "MVT"
+      v_privilege: true
+      t_privilege: true
+      teacher_context: "[I, C, G, Q]"
+
+  # 所有模型共享
+  shared:
+    init_checkpoint: same
+    train_samples: same
+    data_order: same
+    batch_size: same
+    optimizer: same
+    rollout_config: same
+    n_epochs: same
+    teacher_ema: same
+
+  n_seeds: 3  # seed1, seed2, seed3
+
+# === 评估配置 ===
+evaluation:
+  # 内部 Diagnostic
+  diagnostic:
+    metrics:
+      - "accuracy"
+      - "log_prob"
+      - "margin"
+      - "entropy"
+      - "jsd"
+
+  # 外部 Benchmark（方案 §56-58）
+  external:
+    visual:
+      - "VStar_Bench"
+      - "ZoomBench"
+      - "HR-Bench-4K"
+      - "HR-Bench-8K"
+      - "MME-RealWorld-EN"
+      - "MME-RealWorld-CN"
+    general:
+      - "MMStar"
+      - "CV-Bench"
+      - "MMVP"
+      - "POPE"
+      - "VisualProbe"
+    reasoning:
+      - "M3-VQA"
+      - "VistaHop"
+
+  # Thinking Mode Stress Test（方案 §53）
+  thinking:
+    budgets: [512, 1024, 2048, 4096]
+    task_types: ["R", "PR", "D3", "D4+"]
+
+# === 随机种子 ===
+seeds:
+  stage0: 42
+  stage1: [42]
+  stage4: [42, 123, 456]
