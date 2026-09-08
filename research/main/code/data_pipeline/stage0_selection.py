@@ -16,6 +16,11 @@ import json
 import os
 
 
+def depth_category(depth: int) -> str:
+    """Return the protocol's four depth strata: D1, D2, D3, and D4+."""
+    return f"D{depth}" if depth in (1, 2, 3) else "D4+"
+
+
 def load_test_samples(jsonl_path: str) -> list[dict]:
     """加载 test 集样本"""
     samples = []
@@ -44,9 +49,7 @@ def stratify_samples(
         strategy = sample.get(strategy_key, "localization")
         depth = sample.get(depth_key, 1)
 
-        # Depth 归类
-        depth_cat = f"D{min(depth, 4)}" if depth < 4 else "D4+"
-        depth_cat = f"D{depth}" if depth <= 4 else "D4+"
+        depth_cat = depth_category(depth)
 
         key = (family, strategy, depth_cat)
         strata[key].append(sample)
@@ -149,25 +152,21 @@ def validate_stage0_coverage(
         family = sample.get(task_family_key, "P")
         strategy = sample.get(strategy_key, "localization")
         depth = sample.get(depth_key, 1)
-        depth_cat = f"D{depth}" if depth <= 4 else "D4+"
+        depth_cat = depth_category(depth)
 
         family_counts[family] += 1
         strategy_counts[strategy] += 1
         depth_counts[depth_cat] += 1
         combo_coverage.add((family, strategy, depth_cat))
 
-    # 检查缺失组合
+    # §19 要求各维度均被覆盖，并未要求每个 3×4×4 交叉组合都存在。
     expected_families = {"P", "R", "PR"}
     expected_strategies = {"localization", "entity_tracking", "logical_bridge", "evidence_integration"}
     expected_depths = {"D1", "D2", "D3", "D4+"}
 
-    all_expected = set()
-    for f in expected_families:
-        for s in expected_strategies:
-            for d in expected_depths:
-                all_expected.add((f, s, d))
-
-    gaps = all_expected - combo_coverage
+    missing_families = expected_families - set(family_counts)
+    missing_strategies = expected_strategies - set(strategy_counts)
+    missing_depths = expected_depths - set(depth_counts)
 
     return {
         "total": len(selected),
@@ -175,8 +174,12 @@ def validate_stage0_coverage(
         "strategy_coverage": dict(strategy_counts),
         "depth_coverage": dict(depth_counts),
         "n_combinations_covered": len(combo_coverage),
-        "n_combinations_expected": len(all_expected),
-        "gaps": [f"{f}/{s}/{d}" for f, s, d in sorted(gaps)]
+        "n_combinations_expected": None,
+        "gaps": {
+            "task_families": sorted(missing_families),
+            "guidance_strategies": sorted(missing_strategies),
+            "depths": sorted(missing_depths),
+        }
     }
 
 
