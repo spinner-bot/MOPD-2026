@@ -1,0 +1,85 @@
+You are an expert at analyzing reasoning paths. Given an image and a final question, construct a latent reasoning graph that shows how to arrive at the answer from visual evidence.
+
+## Image
+{image}
+
+## Final Question
+{final_question}
+
+## Correct Answer
+{correct_answer}
+
+## Task
+
+Construct a reasoning graph showing the intermediate states needed to arrive at the answer. The graph should represent the MINIMUM number of necessary information transformations.
+
+## Output Format
+
+```json
+{
+  "reasoning_graph": {
+    "evidence": [
+      {"id": "E1", "description": "Visual observation 1", "location": "region description"}
+    ],
+    "intermediate_states": [
+      {"id": "H1", "depends_on": ["E1"], "conclusion": "Intermediate conclusion 1"}
+    ],
+    "final_inference": {
+      "id": "A",
+      "depends_on": ["H1", "H2"],
+      "reasoning": "How we reach the final answer from intermediate conclusions"
+    }
+  },
+  "reasoning_depth": 2,
+  "reasoning_chain_summary": "E1 -> H1 -> H2 -> A"
+}
+```
+
+## Reasoning Depth Definition (from protocol §11)
+
+- **Depth 1**: E1 → A (direct observation to answer)
+- **Depth 2**: E1 → H1 → A (one intermediate step)
+- **Depth 3**: E1 → H1 → H2 → A (two intermediate steps)
+- **Depth 4+**: Three or more intermediate steps
+
+## Requirements
+
+1. Each intermediate state (H) must be:
+   - **Necessary**: Removing it would break the reasoning chain
+   - **Sufficient**: Combined with other dependencies, it leads toward the answer
+   - **Non-redundant**: Not just a restatement of evidence or answer
+
+2. Evidence (E) should be:
+   - Observable from the image
+   - Specific enough to be useful
+   - Not containing the final answer
+
+3. The reasoning should be:
+   - Logically valid
+   - Based on visual information
+   - Not requiring external knowledge
+
+## Example
+
+For question: "What color is the device worn on the head of the person closest to the airplane cockpit?"
+
+```json
+{
+  "reasoning_graph": {
+    "evidence": [
+      {"id": "E1", "description": "Airplane cockpit visible in image", "location": "upper right area"}
+    ],
+    "intermediate_states": [
+      {"id": "H1", "depends_on": ["E1"], "conclusion": "Person closest to cockpit is the pilot wearing communication equipment"},
+      {"id": "H2", "depends_on": ["H1"], "conclusion": "The pilot is wearing a headset"}
+    ],
+    "final_inference": {
+      "id": "A",
+      "depends_on": ["H2"],
+      "reasoning": "The headset color is blue"
+    }
+  },
+  "reasoning_depth": 3,
+  "reasoning_chain_summary": "E1 (cockpit) → H1 (person near = pilot) → H2 (headset) → A (blue)"
+}
+```
