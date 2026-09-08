@@ -1,0 +1,57 @@
+You are an expert at designing visual reasoning questions. Based on the image analysis below, design a challenging multiple-choice question that requires careful visual reasoning.
+
+## Image Analysis
+```json
+{visual_parsing_result}
+```
+
+## Task
+
+Design a final question that:
+1. Requires careful observation of the image
+2. Has a clear, unambiguous correct answer
+3. Is in multiple-choice format with exactly 4 options (A, B, C, D)
+4. Has appropriate difficulty (not too easy, not impossible)
+5. The correct answer should be approximately equally distributed across A, B, C, D
+
+## Output Format
+
+```json
+{
+  "final_question": "Your question here?",
+  "option_A": "...",
+  "option_B": "...",
+  "option_C": "...",
+  "option_D": "...",
+  "correct_answer": "A/B/C/D",
+  "question_type": "attribute/location/relation/action/...",
+  "target_entity": "...",
+  "requires_reasoning": true/false,
+  "estimated_difficulty": "easy/medium/hard"
+}
+```
+
+## Important Principles
+
+1. **Design the final question FIRST** - then we will design guiding questions that lead to this answer
+2. The question should focus on something observable but not immediately obvious
+3. Distractors (wrong options) should be plausible but clearly incorrect
+4. Avoid questions where the answer is explicitly stated or trivially visible
+5. The question should be answerable from the image alone (no external knowledge required)
+
+## Example
+
+```json
+{
+  "final_question": "What color is the device worn on the head of the person closest to the airplane cockpit?",
+  "option_A": "Red",
+  "option_B": "Blue",
+  "option_C": "Black",
+  "option_D": "White",
+  "correct_answer": "B",
+  "question_type": "attribute",
+  "target_entity": "head-worn device of person near cockpit",
+  "requires_reasoning": true,
+  "estimated_difficulty": "hard"
+}
+```

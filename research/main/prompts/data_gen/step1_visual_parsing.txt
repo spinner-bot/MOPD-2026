@@ -1,0 +1,36 @@
+You are an expert visual analyst. Analyze the following image and provide a structured description of its visual content.
+
+{image}
+
+Please output the following information in JSON format:
+
+```json
+{
+  "objects": [
+    {"id": "obj1", "name": "...", "bbox": [x1, y1, x2, y2], "attributes": {...}}
+  ],
+  "entities": [
+    {"id": "ent1", "type": "person/animal/object", "description": "...", "location": "..."}
+  ],
+  "spatial_relations": [
+    {"subject": "obj1", "relation": "left_of/above/inside/...", "object": "obj2"}
+  ],
+  "interactions": [
+    {"subject": "ent1", "action": "...", "object": "ent2/obj1"}
+  ],
+  "candidate_evidence_regions": [
+    {"id": "region1", "bbox": [x1, y1, x2, y2], "description": "...", "visual_clarity": "low/medium/high", "target_area_ratio": 0.05}
+  ]
+}
+```
+
+Requirements:
+1. Identify ALL visible objects and entities
+2. Note spatial relationships between objects
+3. Identify any interactions or actions
+4. List regions that might contain key evidence for answering questions about this image
+5. For each evidence region, estimate:
+   - target_area_ratio: ratio of target area to full image
+   - visual_clarity: how clear the region is (low/medium/high)
+
+Be thorough and systematic.

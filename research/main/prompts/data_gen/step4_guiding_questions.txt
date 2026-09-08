@@ -1,0 +1,104 @@
+You are an expert at creating guiding questions for visual reasoning. Given a reasoning graph, convert the intermediate states into natural language guiding questions.
+
+## Reasoning Graph
+```json
+{reasoning_graph}
+```
+
+## Final Question
+{final_question}
+
+## Task
+
+Convert each intermediate state (H) into a guiding question that:
+1. Can be answered from the image (or from the previous guide's answer)
+2. Leads naturally toward the final question
+3. Does NOT reveal the final answer
+4. Is phrased as a clear, answerable question
+
+## Output Format
+
+```json
+{
+  "guiding_questions": [
+    {
+      "guide_id": "G1",
+      "corresponds_to": "H1",
+      "question": "Your guiding question here?",
+      "expected_answer": "Brief expected answer",
+      "answers_from": "image/H1/previous_guide"
+    }
+  ],
+  "guide_count": 2,
+  "reasoning_structure": "G1 -> G2 -> Final Question"
+}
+```
+
+## Constraints (from protocol §15)
+
+Each guide MUST satisfy:
+
+### 1. Answerable
+Can be reliably answered from the image or previous guide's answer.
+
+### 2. Path Relevant
+Belongs to the valid path from visual evidence to final answer.
+
+### 3. Non-leaking
+Must NOT reveal the final answer or its attributes.
+
+**WRONG example:**
+- Guide: "Is the pilot wearing a red or blue headset?"
+- Final: "What color is the headset?"
+- This leaks the answer options!
+
+**CORRECT example:**
+- Guide: "What type of device is the pilot wearing on their head?"
+- Final: "What color is that device?"
+
+### 4. Locally Useful
+After knowing this guide's answer, uncertainty about the next step should decrease.
+
+### 5. No Trivial Restatement
+Cannot be just a rephrasing of the final question.
+
+### 6. No Generic Prompt
+Cannot be generic like "Look carefully at the image." Must be specific privileged information.
+
+## Example
+
+For reasoning graph:
+- E1: Airplane cockpit visible
+- H1: Person closest to cockpit is the pilot
+- H2: The pilot is wearing a headset
+- A: Headset color is blue
+
+```json
+{
+  "guiding_questions": [
+    {
+      "guide_id": "G1",
+      "corresponds_to": "H1",
+      "question": "Which person in the image is directly associated with the airplane cockpit?",
+      "expected_answer": "The person standing next to/near the cockpit (the pilot)",
+      "answers_from": "image"
+    },
+    {
+      "guide_id": "G2",
+      "corresponds_to": "H2",
+      "question": "What type of communication device is this person wearing on their head?",
+      "expected_answer": "A headset/headphones",
+      "answers_from": "image"
+    }
+  ],
+  "guide_count": 2,
+  "reasoning_structure": "G1 (identify pilot) -> G2 (identify headset) -> Final (headset color)"
+}
+```
+
+## Important Notes
+
+1. The final answer should NEVER appear in any guide's question or expected answer
+2. Each guide should build upon previous guides (if applicable)
+3. The guides form a reasoning PATH, not just a list of hints
+4. Keep guides specific and informative - they are "privileged" information
