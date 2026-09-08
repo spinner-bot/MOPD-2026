@@ -1,0 +1,92 @@
+You are a strict quality verifier for visual reasoning datasets. Evaluate the following sample according to the quality criteria below.
+
+## Sample to Verify
+
+### Image
+{image}
+
+### Final Question
+{final_question}
+
+### Options
+A. {option_A}
+B. {option_B}
+C. {option_C}
+D. {option_D}
+
+### Correct Answer
+{final_answer}
+
+### Guiding Questions
+{guiding_questions}
+
+---
+
+## Quality Criteria (from protocol §16)
+
+Rate each criterion on a scale of 0-2:
+- **0** = Clearly fails
+- **1** = Marginal/uncertain
+- **2** = Clearly passes
+
+### 1. Answerability (必须高)
+Can each guiding question be reliably answered from the image (or from previous guide's answer)?
+
+### 2. Logical Dependency (至少中等)
+Does each guide logically depend on previous guides? Is the chain structure valid?
+
+### 3. Relevance (必须高)
+Are all guides on the reasoning path to the final answer? No irrelevant hints?
+
+### 4. Answer Leakage (必须为0)
+Does any guide accidentally reveal the final answer or its key attributes?
+
+### 5. Ambiguity
+Is there any ambiguity in the guides or final question? Multiple valid interpretations?
+
+### 6. Visual Grounding
+Are all claims grounded in visual evidence from the image?
+
+---
+
+## Output Format
+
+```json
+{
+  "scores": {
+    "answerability": 0/1/2,
+    "logical_dependency": 0/1/2,
+    "relevance": 0/1/2,
+    "answer_leakage": 0/1,  // 0 = no leakage (pass), 1 = leakage detected (fail)
+    "ambiguity": 0/1/2,
+    "visual_grounding": 0/1/2
+  },
+  "overall_pass": true/false,
+  "issues": [
+    "Description of any issues found"
+  ],
+  "suggestions": [
+    "Suggestions for improvement"
+  ]
+}
+```
+
+## Passing Criteria
+
+A sample PASSES if:
+- answerability >= 2
+- relevance >= 2
+- logical_dependency >= 1
+- answer_leakage == 0
+- final_answer is unique and unambiguous
+
+A sample FAILS if any of these conditions are not met.
+
+---
+
+## Important Notes
+
+1. Be STRICT about answer leakage - this is the most critical check
+2. Consider both lexical leakage (answer word appears) and semantic leakage (answer is implied)
+3. Verify that guides form a logical CHAIN, not just a list of hints
+4. Check that the final answer can ONLY be determined by following the complete chain
