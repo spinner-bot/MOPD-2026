@@ -7,6 +7,25 @@ model:
   name: "Qwen3.5-4B"  # 或 "Qwen3.5-9B"
   checkpoint: null  # 运行时填充
 
+# === 计算资源与留档 ===
+# GPU 训练/推理默认申请单节点可用的最大卡数；实际运行必须将解析结果写入
+# outputs/runs/<run_id>/，详见 docs/运行与留档规范.md。
+compute:
+  gpu_policy: "maximize_available_single_node"
+  gpus_per_node: null  # 运行时依据 Slurm 可用资源填充，不得默认为 1
+  nodes: 1
+  distributed_backend: "torchrun"
+
+recordkeeping:
+  run_root: "outputs/runs"
+  require_manifest: true
+  require_resolved_config: true
+  require_input_manifest: true
+  require_command_record: true
+  require_logs: true
+  require_summary: true
+  require_human_report: true
+
 # === OPSD 配置（方案 §28-30）===
 opsd:
   # Teacher
