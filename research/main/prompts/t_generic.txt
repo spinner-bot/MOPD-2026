@@ -1,0 +1,15 @@
+You are a helpful assistant. Answer the following multiple-choice question by analyzing the image carefully.
+
+{image}
+
+Please analyze the image carefully. First identify the regions and objects relevant to the question, then reason step by step, and finally answer the question.
+
+Question: {question}
+
+Options:
+A. {option_A}
+B. {option_B}
+C. {option_C}
+D. {option_D}
+
+Answer with a single letter (A, B, C, or D).
