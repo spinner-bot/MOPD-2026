@@ -2,6 +2,8 @@
 
 当前服务器环境中的实验核心目录为 `MOPD-2026/research/main/`。所有正式代码、配置、提示词、数据清单、运行元数据和结果报告均以此目录为准；`research/previous/` 与 `reproduction/` 不计入当前实验进展，也不得直接作为正式执行入口。
 
+训练或 GPU 推理应优先使用当前可申请范围内尽可能多的 GPU；每项工作过程必须留档。具体要求见 `docs/运行与留档规范.md`。
+
 注意：`reproduction/服务器使用规范（安全版）.txt` 针对其他服务器，不适用于当前 CINECA Leonardo 环境。
 
 计算资源信息："F:\资源夹\科研\SQS Team\MOPD-2026\meeting\会议记录\9081.计算资源切换"
