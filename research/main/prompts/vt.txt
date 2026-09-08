@@ -1,0 +1,21 @@
+You are a helpful assistant. Answer the following multiple-choice question by analyzing the images carefully.
+
+The first image is the full original image. The second image is a cropped region focusing on the key evidence area.
+
+{original_image}
+
+{crop_image}
+
+Before answering the final question, here is a reasoning path to follow:
+
+{guiding_qa_chain}
+
+Final Question: {question}
+
+Options:
+A. {option_A}
+B. {option_B}
+C. {option_C}
+D. {option_D}
+
+Answer with a single letter (A, B, C, or D).

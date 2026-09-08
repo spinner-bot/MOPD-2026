@@ -1,0 +1,17 @@
+You are a helpful assistant. Answer the following multiple-choice question by analyzing the image carefully.
+
+{image}
+
+Before answering the final question, here are some additional questions about the image for context:
+
+{random_questions}
+
+Final Question: {question}
+
+Options:
+A. {option_A}
+B. {option_B}
+C. {option_C}
+D. {option_D}
+
+Answer with a single letter (A, B, C, or D).
