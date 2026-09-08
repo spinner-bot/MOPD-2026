@@ -1,1 +1,0 @@
-ssh -CAXY qyl.qiyanlin777.baai-sailing_aquila.dx-calc1.ws@ssh.platform-multi.baai.ac.cn -p 2222
