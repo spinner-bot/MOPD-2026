@@ -2,3 +2,4 @@
 
 计算资源信息："F:\资源夹\科研\SQS Team\MOPD-2026\meeting\会议记录\9081.计算资源切换"
 版本管理规范："F:\资源夹\科研\SQS Team\MOPD-2026\research\项目规范\版本管理规范.txt"
+文件资源规范："F:\资源夹\科研\SQS Team\MOPD-2026\research\项目规范\文件资源规范.txt"
