@@ -1,0 +1,6 @@
+{
+  "vision_opd_records": "/leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/data/processed/vision-opd-6k/vision-opd-visual-only.jsonl",
+  "m3vqa_candidates": "/leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/data/processed/m3vqa/stage0-annotation-candidates.jsonl",
+  "m3vqa_image_root": "/leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/data/processed/m3vqa/images",
+  "source_asset_inventory": "../20260909T-t00-m3vqa-assets/outputs/source-asset-inventory.json"
+}
