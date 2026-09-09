@@ -1,0 +1,4 @@
+Contents of .git/objects:
+pack-e031a647faa7fd364faf6f3a60bc31bb86e14f85.idx                                  1156
+pack-e031a647faa7fd364faf6f3a60bc31bb86e14f85.pack                                  954
+pack-e031a647faa7fd364faf6f3a60bc31bb86e14f85.rev                                    64
