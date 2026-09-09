@@ -25,6 +25,7 @@ stage t03 run_t03_guidance.py "$RUN/inputs/t03" "$RUN/outputs/t03"
 "$ENV" "$ROOT/code/data_pipeline/shard_annotation_candidates.py" --input "$RUN/outputs/t03-accepted.jsonl" --output-dir "$RUN/inputs/t04" --shards 4
 stage t04 run_t04_options.py "$RUN/inputs/t04" "$RUN/outputs/t04"
 (cd "$RUN" && "$ENV" "$ROOT/code/data_pipeline/validate_t04_options.py" --input-glob 'outputs/t04/*.jsonl' --accepted outputs/t04-accepted.jsonl --rejected rejects/t04.jsonl --summary summaries/t04.json)
-"$ENV" "$ROOT/code/data_pipeline/shard_annotation_candidates.py" --input "$RUN/outputs/t04-accepted.jsonl" --output-dir "$RUN/inputs/t05" --shards 4
+"$ENV" "$ROOT/code/data_pipeline/materialize_t04_controls.py" --input "$RUN/outputs/t04-accepted.jsonl" --accepted "$RUN/outputs/t04-controlled.jsonl" --rejected "$RUN/rejects/t04-controls.jsonl"
+"$ENV" "$ROOT/code/data_pipeline/shard_annotation_candidates.py" --input "$RUN/outputs/t04-controlled.jsonl" --output-dir "$RUN/inputs/t05" --shards 4
 stage t05 run_t05_quality.py "$RUN/inputs/t05" "$RUN/outputs/t05"
 (cd "$RUN" && "$ENV" "$ROOT/code/data_pipeline/validate_t05_judgements.py" --input-glob 'outputs/t05/*.jsonl' --accepted outputs/t05-accepted.jsonl --borderline outputs/t05-borderline.jsonl --rejected rejects/t05.jsonl)
