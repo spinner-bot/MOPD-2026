@@ -22,3 +22,4 @@ papers/awsome-OPD/AwesomeOPD-source/
 /research/main/data/external
 /research/main/outputs/runs/*/logs/
 /research/main/outputs/runs/*/outputs/
+/archive/reproduction/mnist-test/0. test/手写数字识别.7z
