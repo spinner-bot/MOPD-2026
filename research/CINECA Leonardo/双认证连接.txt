@@ -1,0 +1,4 @@
+D:\Smallstep\step_0.30.6\bin\step.exe ssh login 'qiianruii@gmail.com' --provisioner cineca-hpc
+rqian000
+g7rCEe5X3mrXW+D
+ssh-add -L
