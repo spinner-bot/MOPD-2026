@@ -6,6 +6,8 @@
 
 注意：`reproduction/服务器使用规范（安全版）.txt` 针对其他服务器，不适用于当前 CINECA Leonardo 环境。
 
+Git 同步与合并严禁使用 fast-forward 方式。拉取必须使用 `git pull --no-ff`，分支合并必须使用 `git merge --no-ff`，以保留明确的合并节点和完整过程记录；不得使用 `--ff` 或 `--ff-only`。
+
 计算资源信息："F:\资源夹\科研\SQS Team\MOPD-2026\meeting\会议记录\9081.计算资源切换"
 版本管理规范："F:\资源夹\科研\SQS Team\MOPD-2026\research\项目规范\版本管理规范.txt"
 文件资源规范："F:\资源夹\科研\SQS Team\MOPD-2026\research\项目规范\文件资源规范.txt"
