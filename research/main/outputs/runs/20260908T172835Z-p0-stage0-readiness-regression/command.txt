@@ -1,0 +1,2 @@
+module load python/3.11.7
+/leonardo_work/AIFAC_F02_774/rqian000/.venvs/cross-panel-py311/bin/python -m unittest discover -s research/main/code/tests -v

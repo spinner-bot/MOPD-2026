@@ -1,0 +1,10 @@
+run:
+  stage: P0
+  type: cpu_regression_validation
+  test_discovery_path: research/main/code/tests
+environment:
+  python_module: python/3.11.7
+  interpreter: /leonardo_work/AIFAC_F02_774/rqian000/.venvs/cross-panel-py311/bin/python
+resources:
+  gpu_count: 0
+  execution_host: login01.leonardo.local

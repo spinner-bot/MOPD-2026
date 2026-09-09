@@ -1,0 +1,7 @@
+{
+  "code_commit": "4f722720d856a552efd0684f1cf0beaa6fa9197d",
+  "test_file": "code/tests/test_stage0_readiness.py",
+  "data_inputs": [],
+  "model_inputs": [],
+  "notes": "This is a synthetic regression validation. It does not use experimental images, model weights, or GPU inference."
+}
