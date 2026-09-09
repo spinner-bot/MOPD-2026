@@ -1,0 +1,5 @@
+source_root=/leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/data/raw/vision-opd-6k
+target_root=/leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/data/processed/vision-opd-6k
+run_id=20260909T-stage0-vision-opd-assets
+file_count=18727
+status=completed
