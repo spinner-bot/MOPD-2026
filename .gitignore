@@ -14,3 +14,7 @@ papers/awsome-OPD/AwesomeOPD-source/
 /data/t10k-labels-idx1-ubyte.gz
 /data/train-images-idx3-ubyte.gz
 /data/train-labels-idx1-ubyte.gz
+/research/main/models
+/research/main/data/external
+/research/main/outputs/runs/*/logs/
+/research/main/outputs/runs/*/outputs/
