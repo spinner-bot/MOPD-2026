@@ -1,6 +1,10 @@
 .claude/
+.idea/
 __pycache__/
 *.py[cod]
+
+# 含密码的本地配置笔记
+/research/CINECA Leonardo/
 导师要求.txt
 papers/awsome-OPD/URL.txt
 papers/awsome-OPD/previous_work/
