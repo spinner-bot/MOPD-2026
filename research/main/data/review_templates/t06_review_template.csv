@@ -1,0 +1,1 @@
+sample_id,reviewer_id,reviewed_at_utc,criteria_version,final_answer_correct,guides_answerable,guides_relevant,guides_dependent,answer_leakage,crop_covers_evidence,unique_answer,task_family_correct,reasoning_depth_correct,decision,reason
