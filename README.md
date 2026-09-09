@@ -8,7 +8,8 @@
 |---|---|
 | `research/main/` | **当前主实验**：代码、数据、评估、进展报告 |
 | `reproduction/` | 论文复现（Vision-OPD 等）|
-| `meeting/` | 会议纪要 |
+| `meeting/feishu/` | 飞书会议纪要 |
+| `meeting/wechat/` | 微信群聊记录 |
 | `papers/` | 论文资料与分析 |
 | `archive/` | 过时或半过时资料归档 |
 
