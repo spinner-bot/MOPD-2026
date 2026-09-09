@@ -1,0 +1,7 @@
+source_archive=/leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/data/external/m3-vqa/images.zip
+target_root=/leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/data/processed/m3vqa/images
+run_id=20260909T-t00-m3vqa-assets
+file_count=10566
+source_asset_inventory=outputs/source-asset-inventory.json
+fixed_resources_verified=16
+status=completed
