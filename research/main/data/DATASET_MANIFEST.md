@@ -3,7 +3,7 @@
 > 本清单用于追溯所有实验依赖的数据来源。下载前请确认每一项已获得官方授权。
 >
 > 创建时间：2026-09-09
-> 状态：待用户确认
+> 状态：下载执行中；大文件 payload 使用 Leonardo Work 存储，main 保存清单、映射和运行记录
 
 ---
 
@@ -245,7 +245,7 @@
 
 ## 9. 可执行下载与验证流程
 
-所有资源存于 `research/main/`。每项资源均建立独立下载 run archive；下载前以 `hf models info` 或 `hf datasets info` 记录具体 revision SHA，再把 SHA 替换进命令中的 `<REVISION>`，不得使用浮动的 `main`。使用 `hf`，不使用已弃用的 `huggingface-cli`。
+项目逻辑路径均登记在 `research/main/`；模型和数据 payload 实际存放于 `/leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/`，再通过 main 中的路径映射访问。不要把全量 payload 写入 `/leonardo/home`：该文件系统空间不足。每项资源均建立独立下载 run archive；下载前以 `hf models info` 或 `hf datasets info` 记录具体 revision SHA，再把 SHA 替换进命令中的 `<REVISION>`，不得使用浮动的 `main`。使用 `hf`，不使用已弃用的 `huggingface-cli`。
 
 ```bash
 hf download Qwen/Qwen3.5-4B --revision <REVISION> --local-dir models/Qwen3.5-4B
