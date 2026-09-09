@@ -1,0 +1,20 @@
+{
+  "status": "completed",
+  "accepted": 19366,
+  "rejected": 0,
+  "accepted_by_source": {
+    "Vision-OPD-6K": 6241,
+    "M3VQA": 13125
+  },
+  "accepted_by_preliminary_family": {
+    "P": 7333,
+    "R": 12033
+  },
+  "formal_stage0_eligible": false,
+  "blocking_requirements": [
+    "validated P/R/PR labels",
+    "guidance QA chains",
+    "M3VQA grounded crops",
+    "multiple-choice controls"
+  ]
+}
