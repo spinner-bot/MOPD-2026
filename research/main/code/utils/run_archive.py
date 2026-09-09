@@ -17,7 +17,9 @@ REQUIRED_DIRECTORIES = ("logs", "outputs")
 def _git_commit(project_root: Path) -> str | None:
     try:
         return subprocess.check_output(
-            ["git", "-C", str(project_root), "rev-parse", "HEAD"], text=True
+            ["git", "-C", str(project_root), "rev-parse", "HEAD"],
+            text=True,
+            stderr=subprocess.DEVNULL,
         ).strip()
     except (OSError, subprocess.CalledProcessError):
         return None
