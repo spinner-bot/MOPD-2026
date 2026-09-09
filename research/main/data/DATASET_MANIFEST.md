@@ -271,11 +271,11 @@ git clone https://github.com/ahang0712/vistahop.git data/external/vistahop && gi
 
 ## 10. 下一步动作
 
-1. **用户确认**：审阅本清单，确认各项许可可接受
+1. **许可确认**：审阅并留档受限项目的可用性；未确认者不得启动下载
 2. **确认待查项**：
    - HR-Bench LICENSE 文件
    - V* Bench SA-1B Research License 条款
    - VistaHop 代码 LICENSE
-3. **服务器环境准备**：在 Leonardo 上准备 Python 环境 + `huggingface-cli`
-4. **分批下载**：按 Tier 优先级在服务器上下载
-5. **记录下载日志**：每次下载记录时间、版本、hash
+3. **服务器环境准备**：在 Leonardo 上准备 Python 环境 + `hf` CLI
+4. **分批下载**：按 §8 顺序下载全部资源，固定 revision 并存入 §9 的目标目录
+5. **下载验收**：每项保存时间、revision、许可快照、文件哈希和 run archive；全部验收后才进入正式实验
