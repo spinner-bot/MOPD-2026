@@ -1,0 +1,19 @@
+{
+  "run_id": "20260909T-t07-grouped-split-dry-run",
+  "stage": "T07",
+  "purpose": "候选池分组切分干跑：隔离精确与近重复图像，确认正式冻结前的阻塞条件",
+  "created_at_utc": "2026-09-09T15:50:07.904826+00:00",
+  "operator": "rqian000",
+  "hostname": "login01.leonardo.local",
+  "git_commit": "fab936b82f77bf5b6fdd70dda3e10d625d3cfbb1",
+  "slurm_job_id": null,
+  "status": "completed",
+  "result": {
+    "records": 19366,
+    "groups": 16684,
+    "exact_duplicate_clusters": 66,
+    "near_duplicate_clusters": 73,
+    "duplicate_cluster_cross_split_violations": 0,
+    "formal_split_frozen": false
+  }
+}
