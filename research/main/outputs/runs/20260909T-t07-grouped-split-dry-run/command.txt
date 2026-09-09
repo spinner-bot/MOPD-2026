@@ -1,0 +1,6 @@
+PY=/leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/envs/stage0-py311/bin/python
+PAYLOAD=/leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload
+"$PY" research/main/code/data_pipeline/preflight_group_split.py \
+  --candidates "$PAYLOAD/data/processed/candidate-v0.1/02_candidates/source-normalized.jsonl" \
+  --duplicates "$PAYLOAD/data/processed/candidate-v0.1/00_sources/image-duplicate-clusters.json" \
+  --output "$PAYLOAD/data/processed/candidate-v0.1/05_frozen/dry-run-group-split-v2.json"
