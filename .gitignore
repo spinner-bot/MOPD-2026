@@ -3,6 +3,11 @@
 __pycache__/
 *.py[cod]
 
+# Python 虚拟环境
+venv/
+.venv/
+env/
+
 # 含密码的本地配置笔记
 /research/CINECA Leonardo/
 导师要求.txt
