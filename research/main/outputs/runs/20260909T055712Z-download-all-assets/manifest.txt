@@ -1,0 +1,3 @@
+run_id=20260909T055712Z-download-all-assets
+project_root=/leonardo/home/userexternal/rqian000/spinner-bot/MOPD-2026/research/main
+payload_root=/leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload

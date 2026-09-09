@@ -1,0 +1,9 @@
+{
+  "status": "downloads_completed",
+  "payload_root": "/leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload",
+  "models": ["Qwen/Qwen3.5-4B", "Qwen/Qwen3.5-9B"],
+  "datasets_completed": 15,
+  "github_repositories_completed": 1,
+  "home_full_payload_written": false,
+  "notes": "SHA-256 generation covers final payload files and may continue independently after download completion."
+}
