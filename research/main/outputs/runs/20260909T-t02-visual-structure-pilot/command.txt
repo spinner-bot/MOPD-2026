@@ -1,0 +1,1 @@
+sbatch --export=ALL,MOPD_ROOT=/leonardo/home/userexternal/rqian000/spinner-bot/MOPD-2026/research/main,MOPD_PAYLOAD_ROOT=/leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload,MOPD_RUN_ID=20260909T-t02-visual-structure-pilot research/main/code/utils/submit_t02_visual_structure.sbatch
