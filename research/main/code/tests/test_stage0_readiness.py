@@ -11,6 +11,9 @@ for folder in (ROOT / "code" / "data_pipeline", ROOT / "code" / "evaluation", RO
     sys.path.insert(0, str(folder))
 
 from metrics import check_stage0_go_criteria
+from freeze_text_controls import freeze_controls
+from guide_contract import validate_t03_proposal
+from quality_contract import eligible, validate_quality_judgement
 from reasoning_depth import ReasoningGraph, ReasoningNode, compute_depth_from_graph
 from run_archive import initialize_run
 from split_dataset import SplitConfig, stratified_split, validate_split
@@ -96,6 +99,44 @@ class Stage0ReadinessTests(unittest.TestCase):
             self.assertTrue((run_dir / "manifest.json").exists())
             with self.assertRaises(FileExistsError):
                 initialize_run(root, "run-001", "P0", "test archive")
+
+    def test_t03_contract_rejects_answer_leakage(self):
+        proposal = {
+            "decision": "accept_candidate",
+            "task_family": "R",
+            "guidance_strategy": "logical_bridge",
+            "reasoning_depth": 3,
+            "required_evidence": ["the label on the left"],
+            "intermediate_states": ["identify label", "compare alternatives"],
+            "guides": [{"question": "What label is visible?", "answer": "The label says blue."}],
+            "final_answer_leaked_by_guide": False,
+        }
+        self.assertIn("guide 1 leaks final answer", validate_t03_proposal(proposal, "blue"))
+
+    def test_t04_controls_are_deterministic_and_exclude_guides(self):
+        sample = {
+            "sample_id": "sample-17",
+            "guide_1_question": "Which animal is at the gate?",
+            "guide_1_answer": "A dog is at the gate.",
+            "guide_2_question": "What is beside the gate?",
+            "guide_2_answer": "A bicycle is beside it.",
+        }
+        pool = ["Which animal is at the gate?", "How many clouds are visible?", "What color is the sky?"]
+        first, second = freeze_controls(sample, pool), freeze_controls(sample, pool)
+        self.assertEqual(first, second)
+        self.assertNotIn(sample["guide_1_question"], first["random_questions"])
+        self.assertTrue(first["random_questions_frozen"])
+
+    def test_t05_acceptance_gate_requires_every_high_quality_field(self):
+        accepted = {
+            "answerability": "high", "logical_dependency": "medium", "relevance": "high",
+            "ambiguity": "low", "visual_grounding": "high", "answer_leakage": 0,
+            "decision": "accept",
+        }
+        self.assertEqual(validate_quality_judgement(accepted), [])
+        self.assertTrue(eligible(accepted))
+        accepted["ambiguity"] = "medium"
+        self.assertFalse(eligible(accepted))
 
 
 if __name__ == "__main__":
