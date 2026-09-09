@@ -197,6 +197,30 @@ T00 → T01 → T02 → T03 → T04 → T05 → T06 → T07 → T08
 
 T00/T01 可立即推进；T02/T03/T05 使用 H 并可按候选分片并行；T04 的确定性部分、T06 的审核排队和 T07 的切分准备可与高性能模型批次交错进行。T07 未通过前，不提交正式 Stage 0 GPU screening；T08 完成后，同一冻结版本供全部后续阶段复用。
 
+## GPU 排队期间的并行工作
+
+GPU 作业处于 `PENDING` 时，继续执行下列任务；它们不读取尚未生成的 H 模型结论，也不占用 GPU。每项仍单独建 run archive、提交代码与结果摘要。
+
+| 可先做的工作 | 所属任务 | 执行者 | 输入与产物 | GPU 结果到达后的衔接 |
+|---|---|---|---|---|
+| 跨来源 SHA-256 与 perceptual-hash 去重 | T00 | D | 固定资产清单 → 重复/近重复簇与拒绝清单 | T07 直接以重复簇为切分组 |
+| 来源配额、候选分层和固定 seed 审计 | T01 | D + B | candidate pool → P/R/待判 PR、策略/深度缺口表 | T02/T03 以固定 shard 和缺口优先级处理 |
+| T02 原始输出校验与 rejects 分流 | T02 | D | 每个 shard 原始 JSONL → bbox/JSON 校验结果 | 9B 作业完成后立即运行，不等待人工整理 |
+| latent graph/guide QA JSON schema、解析器和泄漏检查 | T03 | D | 方案字段与提示模板 → 可执行 schema validator | T02 合格候选作为唯一输入 |
+| 选项冻结、置换、random/shuffle/generic 控制与 token 长度审计 | T04 | D + B | 完整 guide 候选的接口和固定 seed 规则 | T03 完成后直接批量执行；H 仅处理语义性干扰项 |
+| 自动验证量表、边界样本队列和拒绝原因码 | T05 | D | 验证 JSON schema、阈值和输出格式 | T03/T04 完成后交 H 批量判断，D 汇总 |
+| 人工审核表、分层抽样和仲裁记录模板 | T06 | D | `verified` 的预期字段 → 审核表与抽样 seed | T05 输出后立即生成审核批次 |
+| 图像级/近重复级无泄漏切分与冻结 manifest 的预演 | T07 | D | source index、重复簇、目标比例 → dry-run split 报告 | 仅在接受样本确定后写入正式 frozen 版本 |
+| 统一 loader、九条件输入导出和断点续跑接口 | T08 | D | frozen manifest 的接口契约 → loader/渲染/消费测试 | T07 冻结后仅替换 manifest 路径，不重新解析来源 |
+
+### 滚动提交规则
+
+1. 只有输入、代码、资源和独立输出目录均已冻结的真实 GPU 任务才可提前提交。
+2. 有上游依赖的 GPU 任务使用 `afterok` 预提交；上游失败时下游保持不运行。
+3. 同一工作保持一个有效作业；取消后必须在 run archive 记录作业 ID、原因和替代作业 ID。
+4. 为提高 backfill 机会，墙钟时间必须基于已完成的 smoke test 吞吐量填写，不以虚短时间换取调度位置。
+5. 不得使用空作业、重复作业或等待人工输入的作业占位；它们既不构成预约，也可能损害公平份额。
+
 ## 每个任务的最低留档
 
 每个任务必须保存：输入 manifest、提交时的 Git commit、模型/脚本版本、实际命令、Slurm 资源、prompt 文件及哈希、原始模型输出、接受/拒绝 ID、拒绝原因、输出哈希、`summary.json` 和 `report.md`。模型输出中含有样本内容时保存在 Work payload，并在 main 的 run archive 保存不可变路径与 SHA-256。
