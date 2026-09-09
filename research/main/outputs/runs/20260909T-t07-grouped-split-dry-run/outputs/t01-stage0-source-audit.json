@@ -1,0 +1,24 @@
+{
+  "n_records": 19366,
+  "required_field_coverage": {
+    "source_image_id": 19366,
+    "image_original": 19366
+  },
+  "missing_required_field_records": {
+    "sample_id": 19366,
+    "final_question": 19366,
+    "option_A": 19366,
+    "option_B": 19366,
+    "option_C": 19366,
+    "option_D": 19366,
+    "final_answer": 19366,
+    "crop_primary": 19366,
+    "random_questions": 19366,
+    "random_questions_frozen": 19366
+  },
+  "task_family": {"MISSING": 19366},
+  "guidance_strategy": {"MISSING": 19366},
+  "reasoning_depth": {"MISSING": 19366},
+  "complete_guiding_qa_pairs_per_record": {"0": 19366},
+  "formal_stage0_eligible": false
+}
