@@ -16,10 +16,10 @@
 | **HuggingFace** | `yuanqianhao/Vision-OPD-6K` |
 | **GitHub** | `VisionOPD/Vision-OPD` |
 | **arXiv** | [2605.18740](https://arxiv.org/abs/2605.18740) |
-| **会议** | ICCV 2025 |
+| **发表状态** | arXiv 预印本（2026-05）；不得标注为 ICCV 2025 |
 | **许可** | Apache-2.0 |
 | **规模** | 6,241 样本，~37.5 GB |
-| **下载** | `huggingface-cli download yuanqianhao/Vision-OPD-6K --repo-type dataset` |
+| **下载** | 使用 §9 的固定 revision `hf download` 流程 |
 | **用途** | Track A 严格复现 |
 
 ⚠️ 存在镜像（`zwyang6/`, `williamium/`），应使用 `yuanqianhao` 作为官方源。
@@ -50,7 +50,7 @@
 | **会议** | ICML 2026 |
 | **许可** | Apache-2.0 |
 | **规模** | 845 VQA 样本，~4.03 GB |
-| **下载** | `load_dataset("inclusionAI/ZoomBench")` |
+| **下载** | 使用 §9 的固定 revision `hf download` 流程 |
 | **备注** | 训练数据另在 `inclusionAI/ZwZ-RL-VQA`（~74K 对）|
 
 ### 2.2 HR-Bench 4K / 8K
@@ -62,8 +62,8 @@
 | **arXiv** | [2408.15556](https://arxiv.org/abs/2408.15556) |
 | **会议** | AAAI 2025 |
 | **许可** | ⚠️ **未在卡片中显式声明**，需查看仓库 LICENSE 文件 |
-| **规模** | 共 200 样本（100 FSP + 100 FCP），~9.82 GB |
-| **下载** | `load_dataset("DreamMr/HR-Bench", "hrbench_4k")` / `load_dataset("DreamMr/HR-Bench", "hrbench_8k")` |
+| **规模** | 共 200 样本（100 FSP + 100 FCP）；Hub 仓库约 9.82 GB |
+| **下载** | 使用 §9 的固定 revision `hf download` 流程；下载后记录实际采用的 4K/8K 文件 |
 
 ⚠️ 注意区分另一篇同名论文 "HRBench"（arXiv:2605.28398，LLM 推理模式），**不是同一数据集**。
 
@@ -77,7 +77,7 @@
 | **会议** | CVPR 2024 |
 | **许可** | 代码 MIT；数据集 SA-1B Research License（需确认） |
 | **规模** | 191 MCQ 样本，~380 MB |
-| **下载** | `load_dataset("craigwu/vstar_bench")` |
+| **下载** | 使用 §9 的固定 revision `hf download` 流程 |
 
 ⚠️ 注意区分 `V-STaR-Bench/V-STaR`（视频-LLM 时空推理），**不是同一数据集**。
 
@@ -95,7 +95,7 @@
 | **会议** | NeurIPS 2024 |
 | **许可** | Apache-2.0 |
 | **规模** | 1,500 样本，~101 MB（TSV）|
-| **下载** | `load_dataset("Lin-Chen/MMStar", split="val")` |
+| **下载** | 使用 §9 的固定 revision `hf download` 流程 |
 
 ### 3.2 CV-Bench
 
@@ -107,7 +107,7 @@
 | **会议** | NeurIPS 2024 |
 | **许可** | Apache-2.0 |
 | **规模** | 2,638 样本，~407 MB |
-| **下载** | `load_dataset("nyu-visionx/CV-Bench")` |
+| **下载** | 使用 §9 的固定 revision `hf download` 流程 |
 
 ### 3.3 MMVP
 
@@ -119,7 +119,7 @@
 | **会议** | CVPR 2024 Oral |
 | **许可** | MIT |
 | **规模** | 300 图像（150 CLIP-blind pairs），~3.16 MB |
-| **下载** | `load_dataset("MMVP/MMVP")` |
+| **下载** | 使用 §9 的固定 revision `hf download` 流程，并记录修正标签来源 |
 
 ⚠️ **已知问题**：索引 99, 100, 279, 280 有 ground-truth 错误。评测应使用修正版 `lmms-lab-eval/MMVP`。
 
@@ -132,8 +132,8 @@
 | **arXiv** | [2305.10355](https://arxiv.org/abs/2305.10355) |
 | **会议** | EMNLP 2023 |
 | **许可** | MIT |
-| **规模** | 9,000 样本（500 COCO val × 6 问 × 3 变体）|
-| **下载** | `git clone https://github.com/RUCAIBox/POPE.git` 或 `load_dataset("lmms-lab-encoder/POPE")` |
+| **规模** | 官方设计常表述为 9,000 个问题；所列 `lmms-lab-encoder/POPE` 镜像当前为 18,000 行，必须记录选定 split/变体及实际行数 |
+| **下载** | 使用 §9 的镜像下载流程；若采用官方仓库格式，单独留档转换过程 |
 
 ### 3.5 VisualProbe
 
@@ -144,8 +144,8 @@
 | **arXiv** | [2509.07969](https://arxiv.org/abs/2509.07969) |
 | **会议** | ICLR 2026 |
 | **许可** | **CC BY-NC 4.0**（仅非商业用途）|
-| **规模** | Train ~4K QA / Test ~500（Easy/Medium/Hard）|
-| **下载** | `load_dataset("Mini-o3/VisualProbe_Easy")` 等 |
+| **规模** | 各 Hub 子集条数独立变化；以 pinned revision 的实际清单为准 |
+| **下载** | 使用 §9 分别下载 Easy、Medium、Hard 与 train，并分别记录 revision |
 
 ⚠️ 非商业许可，若未来有商业化计划需另行授权。
 
@@ -163,7 +163,7 @@
 | **会议** | ACL 2026 Main |
 | **许可** | MIT（数据集），CC BY 4.0（论文）|
 | **规模** | 13,125 triples / 10,565 图 / 7,611 问 |
-| **下载** | `load_dataset("CASIA-IVA-Lab/M3VQA")` |
+| **下载** | 使用 §9 的固定 revision `hf download` 流程 |
 
 ### 4.2 VistaHop
 
@@ -175,7 +175,7 @@
 | **会议** | arXiv 预印本（2026-06）|
 | **许可** | 论文 CC BY 4.0；**代码许可需查 LICENSE 文件** |
 | **规模** | v2（最新）600 图像 / 600 任务 |
-| **下载** | `git clone https://github.com/ahang0712/vistahop.git` |
+| **下载** | 先核实仓库和 LICENSE，再依 §9 的 Git 固定 commit 流程下载 |
 
 ---
 
@@ -190,9 +190,9 @@
 | **GitHub** | `MME-Benchmarks/MME-RealWorld` |
 | **arXiv** | [2408.13257](https://arxiv.org/abs/2408.13257) |
 | **会议** | ICLR 2025 |
-| **许可** | ⚠️ **仅限学术研究，禁止商业用途**（GitHub README 声明）|
+| **许可** | Hub 镜像标注 Apache-2.0；官方 GitHub README 的使用限制须单独保存并优先遵守，当前按受限数据处理 |
 | **规模** | EN：13,366 图 / 29,429 QA；CN：1,889 图 / 5,917 QA |
-| **下载** | `huggingface-cli download yifanzhang114/MME-RealWorld --repo-type dataset` |
+| **下载** | 使用 §9 的固定 revision `hf download` 流程 |
 
 ⚠️ **重要**：EN 与 CN **不是翻译关系**，是独立收集的不同图像来源。
 
@@ -217,25 +217,59 @@
 
 ---
 
-## 7. 下载优先级建议
+## 7. 基础模型
 
-### Tier 1：立即历史下载（许可明确、Stage 0 必需）
-- Vision-OPD 6K（Track A 复现必需）
-- MMStar、CV-Bench、MMVP、POPE（通用能力评测）
+| 项目 | 官方来源 | 用途 | 下载目标 |
+|---|---|---|---|
+| Qwen3.5-4B | `Qwen/Qwen3.5-4B` | Stage 0、Stage 1、Track A 与主实验共同基线 | `models/Qwen3.5-4B/` |
+| Qwen3.5-9B | `Qwen/Qwen3.5-9B` | 正式扩展比较 | `models/Qwen3.5-9B/` |
 
-### Tier 2：尽快下载（许可明确、外部评测必需）
-- ZoomBench、V* Bench、M³-VQA
-- MME-RealWorld-Lite（先下载精简版）
+模型的 processor、tokenizer 和视觉配置须与权重一起下载并固定 revision。不得用 Vision-OPD 的训练后 checkpoint 替代共同基线。
 
-### Tier 3：需确认后下载（许可待查）
+## 8. 下载优先级建议
+
+### Tier 1：项目核心输入
+- Qwen3.5-4B、Qwen3.5-9B、Vision-OPD 6K
+- MMStar、CV-Bench、MMVP、POPE、ZoomBench、HR-Bench、V* Bench
+
+### Tier 2：完整外部评测
+- VisualProbe、M³-VQA、VistaHop、MME-RealWorld EN/CN 完整版
+
+### 下载前置条件（许可待查）
 - HR-Bench（确认 LICENSE）
 - VisualProbe（确认非商用可接受）
 - VistaHop（确认代码许可）
-- MME-RealWorld 完整版（93 GB，按需决定）
+- MME-RealWorld 完整版（93 GB；不以 Lite 版替代全量计划）
 
 ---
 
-## 8. 下一步动作
+## 9. 可执行下载与验证流程
+
+所有资源存于 `research/main/`。每项资源均建立独立下载 run archive；下载前以 `hf models info` 或 `hf datasets info` 记录具体 revision SHA，再把 SHA 替换进命令中的 `<REVISION>`，不得使用浮动的 `main`。使用 `hf`，不使用已弃用的 `huggingface-cli`。
+
+```bash
+hf download Qwen/Qwen3.5-4B --revision <REVISION> --local-dir models/Qwen3.5-4B
+hf download Qwen/Qwen3.5-9B --revision <REVISION> --local-dir models/Qwen3.5-9B
+hf download yuanqianhao/Vision-OPD-6K --repo-type dataset --revision <REVISION> --local-dir data/raw/vision-opd-6k
+hf download inclusionAI/ZoomBench --repo-type dataset --revision <REVISION> --local-dir data/external/zoombench
+hf download DreamMr/HR-Bench --repo-type dataset --revision <REVISION> --local-dir data/external/hr-bench
+hf download craigwu/vstar_bench --repo-type dataset --revision <REVISION> --local-dir data/external/vstar-bench
+hf download Lin-Chen/MMStar --repo-type dataset --revision <REVISION> --local-dir data/external/mmstar
+hf download nyu-visionx/CV-Bench --repo-type dataset --revision <REVISION> --local-dir data/external/cv-bench
+hf download MMVP/MMVP --repo-type dataset --revision <REVISION> --local-dir data/external/mmvp
+hf download lmms-lab-encoder/POPE --repo-type dataset --revision <REVISION> --local-dir data/external/pope
+hf download Mini-o3/VisualProbe_Easy --repo-type dataset --revision <REVISION> --local-dir data/external/visualprobe/easy
+hf download Mini-o3/VisualProbe_Medium --repo-type dataset --revision <REVISION> --local-dir data/external/visualprobe/medium
+hf download Mini-o3/VisualProbe_Hard --repo-type dataset --revision <REVISION> --local-dir data/external/visualprobe/hard
+hf download Mini-o3/VisualProbe_train --repo-type dataset --revision <REVISION> --local-dir data/external/visualprobe/train
+hf download CASIA-IVA-Lab/M3VQA --repo-type dataset --revision <REVISION> --local-dir data/external/m3-vqa
+hf download yifanzhang114/MME-RealWorld --repo-type dataset --revision <REVISION> --local-dir data/external/mme-realworld
+git clone https://github.com/ahang0712/vistahop.git data/external/vistahop && git -C data/external/vistahop checkout <COMMIT>
+```
+
+每项完成后保存 revision、许可证快照、文件数、总字节数、sha256sum 清单、实际命令和验证输出。Vision-OPD 按数据卡解压 images、teacher_images、original_images，并保存解压前后文件清单。
+
+## 10. 下一步动作
 
 1. **用户确认**：审阅本清单，确认各项许可可接受
 2. **确认待查项**：
