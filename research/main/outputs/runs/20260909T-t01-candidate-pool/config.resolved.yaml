@@ -1,0 +1,10 @@
+stage: T01
+data_version: candidate-v0.1
+execution: deterministic_cpu
+models_used: []
+sources:
+  vision_opd_records: 6241
+  m3vqa_records: 13125
+outputs:
+  accepted: 19366
+  rejected: 0

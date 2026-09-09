@@ -1,0 +1,11 @@
+{
+  "run_id": "20260909T-t01-candidate-pool",
+  "stage": "T01",
+  "purpose": "Normalize Vision-OPD and M3VQA into provenance-preserving Stage 0 candidates",
+  "created_at_utc": "2026-09-09T14:24:35.151180+00:00",
+  "operator": "rqian000",
+  "hostname": "login01.leonardo.local",
+  "git_commit": "909f0ad61cba35c610bd4c0030a91ff86c9c8108",
+  "slurm_job_id": null,
+  "status": "completed"
+}
