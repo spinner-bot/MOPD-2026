@@ -1,30 +1,10 @@
 .claude/
-.idea/
-__pycache__/
-*.py[cod]
-
-# Python 虚拟环境
-venv/
-.venv/
-env/
-
-# 含密码的本地配置笔记
-/research/CINECA Leonardo/
 导师要求.txt
 papers/awsome-OPD/URL.txt
 papers/awsome-OPD/previous_work/
 papers/awsome-OPD/AwesomeOPD-source/
 /reproduction/reproduction（2-4）.7z
 /reproduction/nzp395A.tmp
-/research/main/idea2/一期研究/API-key/deepseek按量.txt
-/research/main/idea2/一期研究/API-key/百炼token-plan.txt
-/outputs/mnist_numpy_cnn.npz
-/data/t10k-images-idx3-ubyte.gz
-/data/t10k-labels-idx1-ubyte.gz
-/data/train-images-idx3-ubyte.gz
-/data/train-labels-idx1-ubyte.gz
-/research/main/models
-/research/main/data/external
-/research/main/outputs/runs/*/logs/
-/research/main/outputs/runs/*/outputs/
-/archive/reproduction/mnist-test/0. test/手写数字识别.7z
+
+# API keys - NEVER commit
+research/main/idea2/一期研究/API-key/
