@@ -31,10 +31,11 @@ def main() -> None:
     args.output.parent.mkdir(parents=True, exist_ok=True)
     with args.input.open(encoding="utf-8") as source, args.output.open("w", encoding="utf-8") as sink, torch.inference_mode():
         for line in source:
-            item = json.loads(line); candidate = item["candidate"]; proposal = item["proposal"]
-            record = {"candidate_id": candidate["candidate_id"], "candidate": candidate, "t03": item}
+            item = json.loads(line); candidate = item["candidate"]; t03 = item.get("t03", item); proposal = t03["proposal"]
+            record = {"candidate_id": candidate["candidate_id"], "candidate": candidate, "t03": t03, "t04": item}
             try:
-                text = PROMPT.format(question=candidate["final_question_source"], options=json.dumps(candidate.get("source_options", {}), ensure_ascii=False), guides=json.dumps(proposal["guides"], ensure_ascii=False), regions=json.dumps(item["t02"]["proposal"]["evidence_regions"], ensure_ascii=False))
+                options = item.get("proposal", {}).get("options", candidate.get("source_options", {}))
+                text = PROMPT.format(question=candidate["final_question_source"], options=json.dumps(options, ensure_ascii=False), guides=json.dumps(proposal["guides"], ensure_ascii=False), regions=json.dumps(t03["t02"]["proposal"]["evidence_regions"], ensure_ascii=False))
                 messages = [{"role": "user", "content": [{"type": "image", "image": candidate["image_original"]}, {"type": "text", "text": text}]}]
                 template = processor.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
                 images, videos = process_vision_info(messages); inputs = processor(text=[template], images=images, videos=videos, padding=True, return_tensors="pt").to("cuda")
