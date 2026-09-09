@@ -1,0 +1,23 @@
+# Large data files - do not commit
+*.parquet
+*.jsonl
+!statistics.json
+
+# Images
+*.jpg
+*.jpeg
+*.png
+*.tar.gz
+
+# Checkpoints
+*.bin
+*.pt
+*.pth
+checkpoints/
+
+# Logs (keep small logs)
+*.log
+!quality_reports/*.md
+
+# Keep only small sample files for review
+# Full datasets will be stored on server
