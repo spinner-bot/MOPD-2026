@@ -1,0 +1,16 @@
+Qwen/Qwen3.5-4B	851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a	/leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/models/Qwen3.5-4B
+Qwen/Qwen3.5-9B	c202236235762e1c871ad0ccb60c8ee5ba337b9a	/leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/models/Qwen3.5-9B
+yuanqianhao/Vision-OPD-6K	eb5c1c2e7b9a7b6a619efe4161c7369c71bf8af4	/leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/data/raw/vision-opd-6k
+inclusionAI/ZoomBench	b788097e57d30510c6877824833234a73bf80d25	/leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/data/external/zoombench
+DreamMr/HR-Bench	83b9013d6293b85dc507e87199ca52517536939c	/leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/data/external/hr-bench
+craigwu/vstar_bench	d9ae62c903da0c98336e85c5ee89cd863b04b4da	/leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/data/external/vstar-bench
+Lin-Chen/MMStar	bc98d668301da7b14f648724866e57302778ab27	/leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/data/external/mmstar
+nyu-visionx/CV-Bench	bc284db50d036958861cb60cdd7b77612052ce0d	/leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/data/external/cv-bench
+lmms-lab-eval/MMVP	09a45a5d2dcbf69a1e4c16100462bdbc16c48327	/leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/data/external/mmvp
+lmms-lab-encoder/POPE	4db1276663dfa5eb8ad16a52d24c31a09e470896	/leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/data/external/pope
+Mini-o3/VisualProbe_Easy	0e665a57946d4473deb9975a13f8ddba973b8026	/leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/data/external/visualprobe/easy
+Mini-o3/VisualProbe_Medium	25d5ff5bce48147be34fd2655617ab17dc55b3fa	/leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/data/external/visualprobe/medium
+Mini-o3/VisualProbe_Hard	bbe9b7a6c41d49844f45e51916ec0a60d1f0e378	/leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/data/external/visualprobe/hard
+Mini-o3/VisualProbe_train	5bab6af0c60cb9d8c2a39191407bbca2f2f94dd0	/leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/data/external/visualprobe/train
+CASIA-IVA-Lab/M3VQA	0e39410f3058b7497c22fe4ca4b7cba23143c8ac	/leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/data/external/m3-vqa
+yifanzhang114/MME-RealWorld	741cb8831ac86085bd54f678d13ca193e2334114	/leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/data/external/mme-realworld
