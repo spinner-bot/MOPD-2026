@@ -13,6 +13,19 @@
 
 所有 B/H GPU 工作使用 Slurm 单节点的最大可用 GPU 数；同一批候选的生成和验证记录固定模型 revision、prompt hash、解码参数、GPU 数和随机种子。B/H 的输出只能是候选或审计意见，不能绕过 D 和 M 的准入门槛。
 
+## 必须执行的模型调用
+
+下表不是建议，而是数据进入下一阶段前必须完成的实际模型调用。所有调用均读取本地固定 revision 的 Qwen3.5-9B，通过 Slurm 多卡分片运行；每条原始响应保存到对应 run archive 的 `outputs/`，解析后的 JSON 另存，二者不得相互覆盖。
+
+| 调用 ID | 所属任务 | 模型输入 | 模型必须输出 | 调用后确定性处理 |
+|---|---|---|---|---|
+| H-T02 | T02 | 原图、来源 crop/bbox、最终问题 | evidence bbox、视觉清晰度/依赖度、接受或拒绝 | JSON/bbox/图像边界检查，生成 crop 或 reject |
+| H-T03 | T03 | T02 合格图像/crop、最终题、来源证据 | latent graph、P/R/PR、策略、1–4 个 guide QA、深度、拒绝原因 | schema、答案泄漏、guide 完整性与路径检查 |
+| H-T04 | T04 | T03 合格样本、自由回答来源的参考答案与证据 | 三个可排除干扰项、唯一答案判断、拒绝原因 | 固定 A/B/C/D 置换，生成 deterministic controls 与 token 审计 |
+| H-T05 | T05 | 完整候选和渲染后的九条件文本；不提供生成阶段的思维过程 | answerability、dependency、relevance、leakage、ambiguity、grounding 分数及 accept/borderline/reject | 阈值过滤、边界样本进入人工审核、生成拒绝原因码 |
+
+每个调用采用 `do_sample=false` 的首轮；只有为一致性检查明确登记的复核轮才可更换 seed。H-T03 和 H-T05 即使使用同一 checkpoint，也必须使用不同 prompt、不同输出目录和不同 Slurm run。
+
 ## 固定目录和版本
 
 大文件只写入 Leonardo Work：
