@@ -1,0 +1,4 @@
+R=/leonardo/home/userexternal/rqian000/spinner-bot/MOPD-2026/research/main
+P=/leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload
+ID=20260910T-t02-thinking-ab
+sbatch --parsable --export="ALL,MOPD_ROOT=$R,MOPD_PAYLOAD_ROOT=$P,MOPD_RUN_ID=$ID" research/main/code/utils/submit_t02_thinking_ab.sbatch  # -> 57154737
