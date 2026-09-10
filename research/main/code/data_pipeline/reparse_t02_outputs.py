@@ -2,6 +2,7 @@
 from __future__ import annotations
 import argparse, json
 from pathlib import Path
+from bbox_geometry import normalize_proposal_geometry
 from extract_json_response import extract_json_object
 
 def main() -> None:
@@ -13,7 +14,7 @@ def main() -> None:
                 row=json.loads(line)
                 if 'raw_model_output' in row:
                     proposal=extract_json_object(row['raw_model_output'])
-                    if proposal is not None: row['proposal']=proposal; row['parse_method']='deterministic_last_json_object'
+                    if proposal is not None: row['proposal']=normalize_proposal_geometry(proposal,row.get('image_width',0),row.get('image_height',0)); row['parse_method']='deterministic_last_json_object'
                     else: row['parse_error']='no_json_object_found'
                 out.write(json.dumps(row,ensure_ascii=False)+'\n')
 if __name__=='__main__': main()

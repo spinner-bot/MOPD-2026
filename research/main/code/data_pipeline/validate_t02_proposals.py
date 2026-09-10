@@ -8,7 +8,7 @@ LEVELS={'low','medium','high'}
 def validate(row):
     if row.get('error'): return 'runner_error'
     p=row.get('proposal')
-    if not isinstance(p,dict): return 'invalid_json'
+    if not isinstance(p,dict): return 'truncated_output' if row.get('truncated') else 'invalid_json'
     if p.get('decision') not in {'accept_candidate','reject'}: return 'invalid_decision'
     if p['decision']=='reject': return 'model_reject'
     regions=p.get('evidence_regions')
