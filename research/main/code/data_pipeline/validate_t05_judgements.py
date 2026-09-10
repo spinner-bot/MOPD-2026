@@ -21,7 +21,11 @@ def main() -> None:
             if not line.strip(): continue
             row = json.loads(line); judgement = row.get("judgement")
             if row.get("error") or not isinstance(judgement, dict) or validate_quality_judgement(judgement):
-                row["t05_rejection_reason"] = "invalid_judgement"; buckets["rejected"].append(row)
+                if not isinstance(judgement, dict) and row.get("truncated"):
+                    row["t05_rejection_reason"] = "truncated_output"
+                else:
+                    row["t05_rejection_reason"] = "invalid_judgement"
+                buckets["rejected"].append(row)
             elif eligible(judgement): buckets["accepted"].append(row)
             elif judgement["decision"] == "borderline": buckets["borderline"].append(row)
             else: buckets["rejected"].append(row)
