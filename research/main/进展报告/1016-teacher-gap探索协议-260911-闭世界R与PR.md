@@ -1,0 +1,361 @@
+# 1016-teacher-gap 探索协议：闭世界 R/PR
+
+**性质**：重点文档；结果读取前冻结的探索性实验协议
+
+**协议版本**：v0.1
+
+**冻结时间**：2026-09-11 01:51（UTC+8）
+
+**作者**：Codex (CINECA Leonardo)
+
+**触发原因**：依据 1012 中期评估、1013 数据主线和 1014 夜间协同规划，将“任务瓶颈—图像可供性—effect-first teacher gap”视角落实为首个可证伪实验。
+
+**适用边界**：本协议是正式 Stage 0 之前的 exploratory pilot，不替代正式方案中 N=400–600、P/R/PR 全覆盖和九条件检验。
+
+---
+
+## 1. 唯一研究问题
+
+在无需外部知识、对完整图像成立、具有至少两步不可省略证据转换的视觉问题上，冻结的 Qwen3.5-4B 是否因结构化文本特权而显著优于同一模型的无特权条件？
+
+本轮只估计 teacher utility，不训练模型。它区分两个上界：
+
+\[
+Gap_{TQ}=Perf(I,G_Q,Q)-Perf(I,Q)
+\]
+
+\[
+Gap_{TQA}=Perf(I,G_{QA},Q)-Perf(I,Q)
+\]
+
+`T-Q` 回答“引导问题本身是否能组织推理”，`T-QA` 回答“如果可靠中间状态在训练期可见，最多有多少可蒸馏信息”。两者不能合并报告。
+
+---
+
+## 2. 数据隔离与样本量
+
+### 2.1 三个互斥集合
+
+| 集合 | 数量 | 用途 | 是否进入主要结果 |
+|---|---:|---|---|
+| pipeline canary | 8 | 检查图片读取、渲染、token scoring、解析与记录完整性 | 否 |
+| construction/dev | 32 个唯一 `source_image_id` | 调整筛选提示、guide/option 构造和人工审核说明 | 否 |
+| locked pilot | 96 个唯一 `source_image_id` | 一次性运行冻结条件并作 Go/Revise/Stop 判断 | 是 |
+
+三个集合按 `source_image_id` 与已知近重复簇隔离。任何在 canary/dev 中用于调试的图片不得进入 locked pilot。同一图若派生多个问题，本轮只保留一道；正式实验再按图像 cluster 处理同图多题。
+
+### 2.2 候选不足时的处理
+
+先从 1015 的 128 条确定性候选开始语义筛选。如果不足以形成 32 dev + 96 locked：
+
+1. 使用同一固定规则和 seed 扩大候选清单；
+2. 不降低闭世界、唯一答案或推理深度门槛；
+3. 不查看任何 S/T 输出；
+4. 记录每轮候选数、排除原因和 manifest hash。
+
+### 2.3 冻结顺序
+
+```text
+候选 ID 清单
+  → 外部知识依赖判定
+  → 图像与问题有效性判定
+  → 最小证据路径
+  → guides 与四选项
+  → 人工 100% 复核
+  → option label 平衡与源图去重
+  → locked manifest + hash
+  → 冻结 prompts/model/code
+  → 才允许运行 S/T 条件
+```
+
+一旦 locked manifest 生成，任何内容修订都必须建立新版本；不得在同一结果表中替换失败样本。
+
+---
+
+## 3. 闭世界筛选合约
+
+### 3.1 三类标签
+
+每条候选只能进入以下一个状态：
+
+| 标签 | 定义 | 本轮处置 |
+|---|---|---|
+| `image_only` | 最终答案及每个必要中间结论都由当前图像或题面明确给出，可唯一作答 | 继续审核 |
+| `external_required` | 至少一个不可省略命题依赖未在图像/题面中提供的事实 | 排除，但保留原因 |
+| `ambiguous` | 图像分辨率、答案别名、指代或知识边界使上述判断不能可靠确定 | 排除出 locked pilot，进入后续复核池 |
+
+“日常视觉概念识别”不自动算外部知识；但国家与地点事实、人物身份、历史事件、物种专门属性、药用、起源、百科关系、小说上下文和未写出的数学规则，只要是答案链必要节点，就标为 `external_required`。
+
+### 3.2 判定时的信息防火墙
+
+筛选分为两个语义视角：
+
+1. **blind image solver** 只看 `I,Q`，输出候选答案、可见证据和不确定性；
+2. **entailment auditor** 看 `I,Q,reference_answers`，但不看官方 Wikipedia evidence 正文，逐项判断参考答案是否由图像与题面蕴含。
+
+官方 evidence 文本与 URL 只在判定完成后用于分析排除原因，绝不作为 guides、选项构造的事实源，也不提供给 teacher。模型判断只能产生候选；locked pilot 的 `image_only` 需要人工复核通过。
+
+### 3.3 自动排除
+
+出现任一项即不得进入 locked pilot：
+
+- 图片缺失、损坏、路径越界或 checksum 不符；
+- 问题、参考答案为空；
+- 问题要求识别图中未指明人物/地点的专名，再询问其百科属性；
+- 答案依赖 URL/evidence 才能成立；
+- 题目存在多个图像上同样合理的答案；
+- 问题从局部 crop 视角撰写，对完整图像的方位或指代不成立；
+- 参考答案只是评测别名集合，无法转成唯一语义答案；
+- 仅凭语言先验即可稳定作答，图像证据不是必要输入。
+
+---
+
+## 4. R/PR 与最小证据路径
+
+本轮主要目标是 R，允许少量自然出现的 PR，但不设 PR 配额，避免为凑层而强造问题。
+
+### 4.1 R 准入
+
+R 必须满足：
+
+1. 至少两个可区分的图像实体、区域或状态参与答案链；
+2. 从直接视觉证据到答案至少有两步不可省略的信息转换；
+3. 单一局部 crop 或单个实体属性不足以唯一回答；
+4. 删除任一关键中间状态后，答案链出现歧义或断裂；
+5. 推理不是把同一句话改写多次。
+
+### 4.2 PR 准入
+
+除满足 R 外，PR 还必须包含困难局部节点，例如小目标、遮挡、小文字或细粒度属性，并满足：
+
+\[
+A\not\Leftarrow E_{local},\quad
+A\not\Leftarrow E_{global},\quad
+A\Leftarrow E_{local}+E_{global}
+\]
+
+只有局部难点与全局关系处于同一条必要证据链时才是 PR。
+
+### 4.3 记录结构
+
+每条 accepted 样本至少保存：
+
+- `source_image_id`、源数据 ID 与 provenance；
+- `knowledge_dependency_label` 和结构化原因码；
+- `task_family`、`reasoning_depth`；
+- `required_evidence[]`；
+- `minimal_reasoning_graph`，节点类型限 `evidence/intermediate/answer`；
+- `full_image_reference_valid=true`；
+- 语义模型原始输出、解析方式与人工审核记录。
+
+`question_hop` 仅作抽样分层信息，不得直接写入最终 `reasoning_depth`。
+
+---
+
+## 5. Guide 与选择题合约
+
+### 5.1 T-Q/T-QA 共用同一条 guide 链
+
+每条样本生成 1–4 个 guide QA。`T-Q` 只渲染 guide questions；`T-QA` 渲染同一批 questions 及其 intermediate answers。两者的差异只能是中间答案是否可见。
+
+每个 guide 必须：
+
+- 能由图像或先前已给出的中间状态回答；
+- 对下一节点或最终判断有局部必要性；
+- 不出现正确选项字母；
+- 不直接陈述、同义改写或排他性暗示最终答案；
+- 不引入官方 evidence 中的外部事实；
+- 删除后能明确说明哪条依赖被破坏。
+
+`T-QA` 可以提供真正的中间状态，这是特权的定义；它不能把最终答案伪装成中间答案。
+
+### 5.2 四选项
+
+M3VQA 原题需要转成 A/B/C/D 后才进入 pilot。四个选项必须：
+
+- 恰有一个被图像证据支持；
+- 三个 distractor 都与问题类型一致、语义上 plausible，并能被图像证据排除；
+- 不以明显长度、语法或具体程度暴露正确项；
+- 不引入外部知识才能排除的 distractor；
+- 最终 96 条正确标签严格平衡为 A/B/C/D 各 24 条。
+
+选项顺序在 manifest 冻结前由确定性脚本重排，之后所有条件完全复用。
+
+---
+
+## 6. 输入条件与控制变量
+
+### 6.1 必做条件
+
+| 条件 | 输入 | 地位 |
+|---|---|---|
+| S | `I,Q` | 配对基线 |
+| T-Q | `I,G_Q,Q` | 原始 Guiding Questions 假设 |
+| T-QA | `I,G_QA,Q` | reasoning-state oracle 上界 |
+| Generic-T | `I,G_generic,Q` | 普通额外文本/逐步思考控制 |
+
+### 6.2 条件性诊断
+
+`V-add` 与 `VT` 仅在同一 locked 样本已有经人工确认的 crop 时运行。不得为了获得视觉条件而把 locked pilot 缩减为“容易裁剪”的子集；若 crop 覆盖不足，V/VT 只作明确标注 N 的次级分析。
+
+### 6.3 唯一允许改变的输入
+
+四个必做条件必须共享：
+
+- 同一 image bytes；
+- 同一最终问题和 A/B/C/D 顺序；
+- 同一 system instruction、输出格式和 scoring shell；
+- 同一模型 revision、processor、precision 与 generation 参数。
+
+条件间只替换 `<PRIVILEGED_CONTEXT>`。S 为空；T-Q 为 guide questions；T-QA 为 guide QA；Generic-T 为不含样本实体与答案的通用检查步骤。Generic-T 在 tokenizer token 数上与 T-Q 的中位长度相差不超过 10%，使用冻结模板库确定性填充，不针对单题结果调节。
+
+### 6.4 推理模式
+
+实验模型统一：
+
+```text
+enable_thinking=False
+do_sample=False
+```
+
+数据生成模型是否 thinking 不影响此条。所有条件必须显式记录 chat-template 参数，禁止依赖默认值。
+
+---
+
+## 7. 评分与完整性门控
+
+### 7.1 两套输出
+
+1. **Choice scoring**：在同一答案位置计算 A/B/C/D 标签序列的条件 log-likelihood，并在四项内归一化；作为连续机制指标的主要来源；
+2. **Constrained generation**：确定性生成单个选项字母；作为实际推理行为的 accuracy 来源。
+
+运行前必须验证四个标签的 tokenizer 序列并保存；如 token 长度不同，则对完整标签序列求和，不以单个 token 近似。
+
+### 7.2 记录字段
+
+每条 `sample × condition` 记录：
+
+- 四项 log-likelihood 与归一化概率；
+- 生成原文、解析答案和 correctness；
+- correct-answer log-prob、margin、entropy；
+- 输入 token 数、生成 token 数、截断与 EOS；
+- model/processor revision、prompt hash、manifest hash、code commit、precision；
+- image checksum、condition、sample ID、source image ID；
+- error 与 parse method。
+
+### 7.3 fail-closed gate
+
+locked pilot 只有在以下条件全部满足后才能分析：
+
+- 96 个样本 × 4 个必做条件记录全部存在且键唯一；
+- 每条四项 score 均有限，归一化和在容差内为 1；
+- 无图片读取错误、silent fallback 或 prompt 字段缺失；
+- 无截断；生成答案解析率至少 99%；
+- 各条件的 manifest/model/code/prompt hash 一致性通过；
+- 条件之间图像、问题、选项顺序完全一致。
+
+失败时只修配置并重跑相同 manifest；不得先看部分效果。
+
+---
+
+## 8. 指标与预注册判断
+
+### 8.1 主要指标
+
+1. `ΔAcc(T-QA − S)`：文本 reasoning-state oracle 是否存在；
+2. `ΔAcc(T-Q − S)`：纯引导问题是否形成可用 teacher gap；
+3. `ΔCorrectLP`：正确答案 log-prob 的配对均值差。
+
+次要指标包括 margin、entropy、错→对/对→错翻转和 T-Q/T-QA 对 oracle envelope 的比例。Generic-T 只用于判断结构性，不能替代 S。
+
+### 8.2 统计方法
+
+- accuracy 使用配对差、错→对与对→错计数、exact McNemar 单侧检验；
+- correct log-prob 使用按 `source_image_id` 的 10,000 次 paired bootstrap，报告均值与 95% CI；
+- pilot 只有每图一题，cluster 仍保留为源图以与正式分析一致；
+- T-Q 与 T-QA 两个主要对比使用 Holm 校正；
+- subgroup、depth 和 PR 分析只作探索，不作为本轮 Go 的必要条件。
+
+### 8.3 强 Go：T-Q 保持主方法
+
+同时满足：
+
+1. `ΔAcc(T-Q − S) ≥ 0.08`；
+2. Holm 校正后的 exact McNemar 单侧 `p < 0.05`；
+3. `mean ΔCorrectLP ≥ 0.15 nat` 且 paired bootstrap 95% CI 下界 `> 0`；
+4. T-Q 相对 Generic-T 至少满足 `ΔAcc ≥ 0.04` 或 `ΔCorrectLP ≥ 0.10 nat` 且方向稳定；
+5. 错→对数量大于对→错，人工复核未发现答案泄露或外部知识注入。
+
+### 8.4 条件 Go：转向 T-QA 主方法
+
+T-Q 未满足强 Go，但 T-QA 满足同样的 0.08 accuracy、0.15 nat、显著性和 Generic-T 区分条件。此时后续主张改为 **Privileged Reasoning-Path Distillation**；T-Q 保留为消融。
+
+### 8.5 Revise
+
+出现任一情况进入 Revise，不启动全量数据或训练：
+
+- T-QA 的 `ΔAcc` 在 0.03–0.08 之间；
+- accuracy 未翻转，但 `ΔCorrectLP` 明显为正；
+- T-QA 强、T-Q 弱，但泄露/中间状态质量尚不能排除；
+- Generic-T 接近结构化 T，无法区分普通提示效应；
+- effect 只集中在少数题型或高度不稳定。
+
+Revise 必须开新 manifest/version，允许调整一次 guides 或候选来源，再运行新的 locked pilot；旧结果完整保留。
+
+### 8.6 Stop 当前配方
+
+若 T-QA 同时满足：
+
+- `ΔAcc < 0.03`；
+- `ΔCorrectLP < 0.05 nat` 或其 95% CI 包含 0；
+- 无稳定净错→对翻转；
+
+则停止当前“M3VQA 闭世界题 + 当前 guide 构造”的扩大与 OPSD 训练。该判断不自动否定所有文本特权，但要求提出新的数据或 privilege 定义后再开版本。
+
+### 8.7 视觉诊断解释
+
+若 V/VT 有足够覆盖，另报告：
+
+\[
+Interaction=Perf(VT)-Perf(V)-Perf(TQA)+Perf(S)
+\]
+
+该结果只用于判断 R/PR 的模态互补，不改变文本主 gate，也不从低覆盖 V 子集反推全体。
+
+---
+
+## 9. 盲法、泄漏与可复现性
+
+1. 候选筛选者和人工审核者不能看到 S/T 结果；
+2. 负责运行的脚本在全部条件完成前不输出按条件聚合的 accuracy；
+3. 运行顺序按 `sample_id × condition` 的冻结 hash 交错，避免条件与时间/节点状态绑定；
+4. 官方 M3VQA evidence 不能进入 prompt、guides 或 options；
+5. 所有排除样本写入 rejects 并保留原因，不静默删除；
+6. 大文件只写 Work payload，仓库只提交代码、manifest 元数据、哈希和小型汇总；
+7. run archive 在输出产生前初始化，旧档案不可修改；
+8. 首次结果报告编号预留为 1017，必须按本协议原样报告未达标结果。
+
+---
+
+## 10. 运行前清单
+
+- [ ] 1015 C1 审计完成并通过 Codex 复核；
+- [ ] Work payload、模型与图片路径存在且 checksum 可读；
+- [ ] 8 canary、32 dev、96 locked 的源图集合互斥；
+- [ ] 96 locked 全部人工 image-only/R-or-PR/唯一答案审核通过；
+- [ ] A/B/C/D 各 24 条；
+- [ ] guides、options、Generic-T、prompt hashes 冻结；
+- [ ] Qwen3.5-4B revision 与 tokenizer 标签序列记录；
+- [ ] runner synthetic contract tests 通过；
+- [ ] canary 完成且 fail-closed gate 通过；
+- [ ] run archive、TAG、Slurm command 与完成门控就绪。
+
+任何一项未完成都不得启动 locked pilot。
+
+---
+
+## 11. 修订记录
+
+| 时间（UTC+8） | 作者 | 触发原因 |
+|---|---|---|
+| 2026-09-11 01:51 | Codex (CINECA Leonardo) | 创建 v0.1：在结果产生前冻结闭世界筛选、R/PR 定义、样本隔离、四条件、评分、统计与 Go/Revise/Stop 门槛 |
