@@ -14,7 +14,7 @@ def validate(row: dict) -> str | None:
         return "runner_error"
     proposal = row.get("proposal")
     if not isinstance(proposal, dict):
-        return "invalid_json"
+        return "truncated_output" if row.get("truncated") else "invalid_json"
     if proposal.get("decision") == "reject":
         return "model_reject"
     answer = row["candidate"].get("source_answer", "")
