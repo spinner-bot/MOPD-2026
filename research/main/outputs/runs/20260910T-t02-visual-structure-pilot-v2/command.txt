@@ -1,0 +1,7 @@
+R=/leonardo/home/userexternal/rqian000/spinner-bot/MOPD-2026/research/main
+P=/leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload
+ID=20260910T-t02-visual-structure-pilot-v2
+E="ALL,MOPD_ROOT=$R,MOPD_PAYLOAD_ROOT=$P,MOPD_RUN_ID=$ID"
+sbatch --parsable --export=$E research/main/code/utils/submit_t02_visual_structure_v2.sbatch                                  # -> 57151182 (pilot v2, canary+full)
+sbatch --parsable --dependency=afterany:57151182 --export=$E,MOPD_T02_TAG=pilot-v2 research/main/code/utils/submit_t02_validation.sbatch   # -> 57151183
+sbatch --parsable --dependency=afterany:57151183 --export=$E research/main/code/utils/submit_t02_completion_gate.sbatch        # -> 57151184
