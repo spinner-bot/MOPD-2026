@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse, json
 from pathlib import Path
+from extract_json_response import extract_json_object
 
 PROMPT = """You are preparing an auditable multimodal QA dataset. Inspect the image and answer only valid JSON.
 Final question: {question}
@@ -33,8 +34,9 @@ def main():
                 generated=generated[:,inputs.input_ids.shape[1]:]
                 raw=processor.batch_decode(generated,skip_special_tokens=True,clean_up_tokenization_spaces=False)[0]
                 record.update({'image_width':width,'image_height':height,'raw_model_output':raw})
-                try: record['proposal']=json.loads(raw)
-                except json.JSONDecodeError: record['parse_error']='non_json_model_output'
+                proposal=extract_json_object(raw)
+                if proposal is not None: record['proposal']=proposal; record['parse_method']='deterministic_last_json_object'
+                else: record['parse_error']='no_json_object_found'
             except Exception as e: record['error']=f'{type(e).__name__}: {e}'
             sink.write(json.dumps(record,ensure_ascii=False)+'\n'); sink.flush()
 if __name__=='__main__': main()
