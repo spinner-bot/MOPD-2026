@@ -1,0 +1,11 @@
+{
+  "run_id": "20260910T-t02-visual-structure-pilot-v2.1",
+  "stage": "T02",
+  "purpose": "Full 1200-candidate pilot rerun with validated v2 config (non-thinking, norm1000 geometry, config-only canary gate); measures accept/reject distribution on Vision-OPD P-layer and true throughput",
+  "created_at_utc": "2026-09-10T06:20:51.866872+00:00",
+  "operator": "rqian000",
+  "hostname": "login07.leonardo.local",
+  "git_commit": "813dc42780c64b714355772f72e6b7cce42d551c",
+  "slurm_job_id": null,
+  "status": "initialized"
+}
