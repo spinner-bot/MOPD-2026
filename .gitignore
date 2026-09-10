@@ -11,3 +11,6 @@ research/main/idea2/一期研究/API-key/
 
 # 服务器凭据 - 严禁提交
 research/CINECA Leonardo/双认证连接.txt
+
+# Python 缓存
+__pycache__/
