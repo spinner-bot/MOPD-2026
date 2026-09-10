@@ -49,6 +49,7 @@ def main():
     p.add_argument('--model', type=Path, required=True)
     p.add_argument('--max-new-tokens', type=int, default=1024)
     p.add_argument('--limit', type=int, default=0, help='process only the first N candidates (0 = all)')
+    p.add_argument('--thinking', action='store_true', help='enable thinking mode (A/B experiments only; production runs keep it off)')
     a = p.parse_args()
     import torch
     from PIL import Image
@@ -64,12 +65,12 @@ def main():
             if a.limit and done >= a.limit:
                 break
             done += 1
-            c = json.loads(line); image_path = Path(c['image_original']); record = {'candidate_id': c['candidate_id'], 'candidate': c}
+            c = json.loads(line); image_path = Path(c['image_original']); record = {'candidate_id': c['candidate_id'], 'candidate': c, 'thinking_mode': a.thinking}
             try:
                 with Image.open(image_path) as im: width, height = im.size
                 text = PROMPT.format(question=c['final_question_source'], crop=c.get('crop_primary_source'))
                 messages = [{'role': 'user', 'content': [{'type': 'image', 'image': str(image_path)}, {'type': 'text', 'text': text}]}]
-                template = processor.apply_chat_template(messages, tokenize=False, add_generation_prompt=True, enable_thinking=False)
+                template = processor.apply_chat_template(messages, tokenize=False, add_generation_prompt=True, enable_thinking=a.thinking)
                 images, videos = process_vision_info(messages)
                 inputs = processor(text=[template], images=images, videos=videos, padding=True, return_tensors='pt').to('cuda')
                 generated = model.generate(**inputs, max_new_tokens=a.max_new_tokens, do_sample=False)
