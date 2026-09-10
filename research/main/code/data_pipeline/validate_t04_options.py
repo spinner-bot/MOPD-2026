@@ -10,7 +10,7 @@ from pathlib import Path
 def reason(row: dict) -> str | None:
     if row.get("error"): return "runner_error"
     proposal = row.get("proposal")
-    if not isinstance(proposal, dict): return "invalid_json"
+    if not isinstance(proposal, dict): return "truncated_output" if row.get("truncated") else "invalid_json"
     if proposal.get("decision") == "reject": return "model_reject"
     options = proposal.get("options")
     if proposal.get("decision") != "accept_candidate" or not isinstance(options, dict) or set(options) != set("ABCD"):
