@@ -1,0 +1,17 @@
+{
+  "files": {
+    "candidate-shortlist-128.jsonl": {
+      "records": 128,
+      "sha256": "3dcf3aced17e5b5f6dbc19c64ba19fe75dc51db451b3ab539925d9a52c16fd7d"
+    },
+    "field_audit.json": {
+      "records": 218,
+      "sha256": "313643ffa76c4ab75f8555eacd479f2da0efc7b87153f68ba734e541212973d2"
+    },
+    "representatives.jsonl": {
+      "records": 16,
+      "sha256": "6818d9a38ab8e2e6065eaaba8f356bd0512d71292a86d70151e8e7cfd793f06e"
+    }
+  },
+  "seed": 20260911
+}

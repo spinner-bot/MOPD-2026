@@ -1,0 +1,11 @@
+{
+  "run_id": "20260911T-c1-m3vqa-field-audit",
+  "stage": "C1",
+  "purpose": "M3VQA field inventory, external-knowledge clue assessment, deterministic 128-candidate shortlist (1014 §4.2 C1); computed on Leonardo against $WORK/sqs re-materialized pool",
+  "created_at_utc": "2026-09-10T18:23:04.335852+00:00",
+  "operator": null,
+  "hostname": "DESKTOP-RFQLS84",
+  "git_commit": "89b8de485ed977b0fe05a3df1e67e02e5ab0d9a0",
+  "slurm_job_id": null,
+  "status": "initialized"
+}
