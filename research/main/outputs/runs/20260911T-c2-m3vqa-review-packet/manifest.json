@@ -1,0 +1,11 @@
+{
+  "run_id": "20260911T-c2-m3vqa-review-packet",
+  "stage": "C2",
+  "purpose": "M3VQA raw-field enrichment + nested 128/512/1024 expansion packets + blank human review templates for W2 screening (1018 §5.3, owner: claude code (local)); deterministic, no semantic judgement, evidence-text firewall",
+  "created_at_utc": "2026-09-11T10:46:11.229215+00:00",
+  "operator": null,
+  "hostname": "DESKTOP-RFQLS84",
+  "git_commit": "7997faac749d038e16cf4a724b2761836b1ed82e",
+  "slurm_job_id": null,
+  "status": "initialized"
+}
