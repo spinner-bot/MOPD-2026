@@ -17,6 +17,8 @@ from exploratory_teacher_gap import (
     validate_result_records,
 )
 from teacher_gap_inputs import COMMON_SHELL, render_teacher_gap_input, validate_generic_length
+from process_exploratory_teacher_gap import enrich_raw_record
+from run_exploratory_teacher_gap import allowed_token_function, frozen_schedule
 
 
 def manifest_sample(index: int) -> dict:
@@ -66,9 +68,10 @@ def result_records(tq_gains: int, tqa_gains: int, generic_gains: int = 1, logp_t
                 "source_image_id": f"image-{index:03d}",
                 "condition": condition,
                 "correct": correct_by_condition[condition],
+                "correct_choice": "A",
                 "correct_log_prob": -1.0 + deltas[condition],
-                "parsed_answer": "A",
-                "choice_log_likelihoods": {"A": -1.0, "B": -2.0, "C": -3.0, "D": -4.0},
+                "parsed_answer": "A" if correct_by_condition[condition] else "B",
+                "choice_log_likelihoods": {"A": -1.0 + deltas[condition], "B": -2.0, "C": -3.0, "D": -4.0},
                 "choice_probabilities": {"A": 0.4, "B": 0.3, "C": 0.2, "D": 0.1},
                 "truncated": False,
                 "eos_reached": True,
@@ -77,6 +80,7 @@ def result_records(tq_gains: int, tqa_gains: int, generic_gains: int = 1, logp_t
                 "model_revision": "model-1",
                 "processor_revision": "processor-1",
                 "code_commit": "commit-1",
+                "shell_hash": "shell-1",
                 "image_checksum": f"image-sha-{index}",
                 "question_hash": f"question-sha-{index}",
                 "options_hash": f"options-sha-{index}",
@@ -162,6 +166,38 @@ class ExploratoryTeacherGapTests(unittest.TestCase):
             n_bootstrap=500,
         )
         self.assertEqual(decision["decision"], "REVISE")
+
+    def test_frozen_schedule_is_deterministic_and_complete(self):
+        samples = [manifest_sample(0), manifest_sample(1)]
+        first = [(row["sample_id"], condition) for row, condition in frozen_schedule(samples, "hash")]
+        second = [(row["sample_id"], condition) for row, condition in frozen_schedule(samples, "hash")]
+        self.assertEqual(first, second)
+        self.assertEqual(len(first), 8)
+        self.assertEqual(len(set(first)), 8)
+
+    def test_choice_trie_allows_only_complete_labels_then_eos(self):
+        allowed = allowed_token_function(3, {"A": [10], "B": [11], "C": [12], "D": [13]}, {99})
+
+        class FakeIds:
+            def __init__(self, values): self.values = values
+            def __getitem__(self, item): return FakeIds(self.values[item])
+            def tolist(self): return self.values
+
+        self.assertEqual(allowed(0, FakeIds([1, 2, 3])), [10, 11, 12, 13])
+        self.assertEqual(allowed(0, FakeIds([1, 2, 3, 10])), [99])
+
+    def test_raw_result_enrichment_is_deterministic(self):
+        row = result_records(tq_gains=1, tqa_gains=1)[0]
+        row.update({
+            "correct_choice": "A",
+            "choice_token_ids": {"A": [10], "B": [11], "C": [12], "D": [13]},
+            "generated_token_ids": [10, 99],
+            "raw_generation": "A",
+        })
+        enriched = enrich_raw_record(row)
+        self.assertEqual(enriched["parsed_answer"], "A")
+        self.assertTrue(enriched["correct"])
+        self.assertAlmostEqual(sum(enriched["choice_probabilities"].values()), 1.0)
 
 
 if __name__ == "__main__":
