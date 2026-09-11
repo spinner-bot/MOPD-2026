@@ -1,0 +1,11 @@
+{
+  "run_id": "20260911T1910-m3vqa-expanded-1024",
+  "stage": "W2A_INPUT",
+  "purpose": "Build a deterministic 1024-record screening-only M3VQA expansion with the frozen C1 rules and seed",
+  "created_at_utc": "2026-09-11T10:25:35.727232+00:00",
+  "operator": "rqian000",
+  "hostname": "login02.leonardo.local",
+  "git_commit": "efa0b81e530c9a0e1ec4f87ed38ad04539d6763e",
+  "slurm_job_id": null,
+  "status": "initialized"
+}
