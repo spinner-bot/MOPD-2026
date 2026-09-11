@@ -1,0 +1,218 @@
+{
+  "answer_length_chars": {
+    "max": 58,
+    "median": 9,
+    "min": 1,
+    "n": 26012,
+    "p25": 6,
+    "p75": 15
+  },
+  "answers_per_record": {
+    "1": 8080,
+    "2": 1316,
+    "3": 1205,
+    "4": 1225,
+    "5": 1095,
+    "6": 158,
+    "7": 10,
+    "8": 32,
+    "9": 4
+  },
+  "audit": "C1-m3vqa-field-and-shortlist",
+  "eligible_after_exclusions": 10565,
+  "eligible_hop_distribution": {
+    "2": 3047,
+    "3": 3263,
+    "4": 1831,
+    "5": 1269,
+    "6": 66,
+    "7": 2
+  },
+  "evidence_text_shapes": {
+    "list[strx1]": 39846,
+    "list[strx2]": 38,
+    "str": 60
+  },
+  "evidence_texts_per_record": {
+    "max": 7,
+    "median": 3,
+    "min": 1,
+    "n": 13125,
+    "p25": 2,
+    "p75": 4
+  },
+  "evidence_urls_per_record": {
+    "1": 1094,
+    "2": 3204,
+    "3": 4559,
+    "4": 2696,
+    "5": 1472,
+    "6": 81,
+    "7": 19
+  },
+  "exclusion_reasons": {
+    "duplicate_source_image_id": 2560
+  },
+  "external_knowledge_clue_assessment": {
+    "deterministic_clues_available": [
+      "evidence_urls non-empty + domain (wikimedia marker => knowledge-lookup provenance clue)",
+      "evidence text count/length (multi-evidence retrieval pattern)",
+      "question_hop (retrieval hops != visual reasoning depth; weak clue only)"
+    ],
+    "not_determinable_from_fields": [
+      "whether the QUESTION itself requires external knowledge to answer",
+      "whether the answer is uniquely verifiable from the image",
+      "whether the minimal evidence path contains non-omittable visual relation steps"
+    ]
+  },
+  "field_missing_when_present": {
+    "candidate_id": 0,
+    "evidence": 0,
+    "evidence_urls": 0,
+    "final_question_source": 0,
+    "image_original": 0,
+    "needs_grounded_crop": 0,
+    "needs_guidance_chain": 0,
+    "needs_multiple_choice": 0,
+    "needs_random_control": 0,
+    "reasoning_depth_candidate": 0,
+    "reference_answers": 0,
+    "source_dataset": 0,
+    "source_image_id": 0,
+    "source_record_id": 0,
+    "stage0_admission": 0,
+    "task_family_candidate": 0
+  },
+  "field_presence": {
+    "candidate_id": 13125,
+    "evidence": 13125,
+    "evidence_urls": 13125,
+    "final_question_source": 13125,
+    "image_original": 13125,
+    "needs_grounded_crop": 13125,
+    "needs_guidance_chain": 13125,
+    "needs_multiple_choice": 13125,
+    "needs_random_control": 13125,
+    "reasoning_depth_candidate": 13125,
+    "reference_answers": 13125,
+    "source_dataset": 13125,
+    "source_image_id": 13125,
+    "source_record_id": 13125,
+    "stage0_admission": 13125,
+    "task_family_candidate": 13125
+  },
+  "field_shapes": {
+    "candidate_id": {
+      "str": 13125
+    },
+    "evidence": {
+      "list[list[strx1]x1]": 1094,
+      "list[list[strx1]x1|list[strx2]x1]": 3,
+      "list[list[strx1]x1|strx1]": 37,
+      "list[list[strx1]x1|strx3]": 1,
+      "list[list[strx1]x2]": 3163,
+      "list[list[strx1]x2|list[strx2]x1]": 16,
+      "list[list[strx1]x2|strx1]": 20,
+      "list[list[strx1]x3]": 4523,
+      "list[list[strx1]x3|list[strx2]x1]": 15,
+      "list[list[strx1]x4]": 2681,
+      "list[list[strx1]x4|list[strx2]x1]": 3,
+      "list[list[strx1]x5]": 1469,
+      "list[list[strx1]x5|list[strx2]x1]": 1,
+      "list[list[strx1]x6]": 80,
+      "list[list[strx1]x7]": 19
+    },
+    "evidence_urls": {
+      "list[strx1]": 1094,
+      "list[strx2]": 3204,
+      "list[strx3]": 4559,
+      "list[strx4]": 2696,
+      "list[strx5]": 1472,
+      "list[strx6]": 81,
+      "list[strx7]": 19
+    },
+    "final_question_source": {
+      "str": 13125
+    },
+    "image_original": {
+      "str": 13125
+    },
+    "needs_grounded_crop": {
+      "bool": 13125
+    },
+    "needs_guidance_chain": {
+      "bool": 13125
+    },
+    "needs_multiple_choice": {
+      "bool": 13125
+    },
+    "needs_random_control": {
+      "bool": 13125
+    },
+    "reasoning_depth_candidate": {
+      "int": 13125
+    },
+    "reference_answers": {
+      "list[strx1]": 8080,
+      "list[strx2]": 1316,
+      "list[strx3]": 1205,
+      "list[strx4]": 1225,
+      "list[strx5]": 1095,
+      "list[strx6]": 158,
+      "list[strx7]": 10,
+      "list[strx8]": 32,
+      "list[strx9]": 4
+    },
+    "source_dataset": {
+      "str": 13125
+    },
+    "source_image_id": {
+      "str": 13125
+    },
+    "source_record_id": {
+      "str": 13125
+    },
+    "stage0_admission": {
+      "str": 13125
+    },
+    "task_family_candidate": {
+      "str": 13125
+    }
+  },
+  "input": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/processed/c1-audit/source-normalized-m3vqa.jsonl",
+  "m3vqa_records": 13125,
+  "pool_total_records": 13125,
+  "question_hop_distribution": {
+    "1": 1092,
+    "2": 3181,
+    "3": 4546,
+    "4": 2671,
+    "5": 1511,
+    "6": 96,
+    "7": 28
+  },
+  "question_length_chars": {
+    "max": 354,
+    "median": 75,
+    "min": 21,
+    "n": 13125,
+    "p25": 63,
+    "p75": 98
+  },
+  "records_with_wikimedia_url": 13125,
+  "seed": 20260911,
+  "shortlist_allocation_by_hop": {
+    "2": 41,
+    "3": 44,
+    "4": 25,
+    "5": 17,
+    "6": 1,
+    "7": 0
+  },
+  "shortlist_n_requested": 128,
+  "shortlist_size": 128,
+  "spec": "1014 §4.2 C1; deterministic; no semantic final judgement",
+  "top_url_domains": {
+    "en.wikipedia.org": 13125
+  }
+}
