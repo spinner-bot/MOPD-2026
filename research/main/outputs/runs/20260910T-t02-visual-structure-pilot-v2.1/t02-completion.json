@@ -1,0 +1,7 @@
+{
+  "expected_total": 1200,
+  "observed_total": 1200,
+  "accepted": 353,
+  "rejected": 847,
+  "complete": true
+}

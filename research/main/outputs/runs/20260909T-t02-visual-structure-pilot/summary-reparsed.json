@@ -1,0 +1,10 @@
+{
+  "total": 1200,
+  "accepted": 93,
+  "rejected": 1107,
+  "rejections": {
+    "invalid_json": 1092,
+    "invalid_decision": 10,
+    "model_reject": 5
+  }
+}

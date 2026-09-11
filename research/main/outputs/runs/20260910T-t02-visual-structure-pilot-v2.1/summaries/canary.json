@@ -1,0 +1,10 @@
+{
+  "total": 96,
+  "parsed": 95,
+  "accepted": 25,
+  "truncated": 0,
+  "runner_errors": 0,
+  "parse_rate": 0.9895833333333334,
+  "accept_rate": 0.2604166666666667,
+  "truncation_rate": 0.0
+}

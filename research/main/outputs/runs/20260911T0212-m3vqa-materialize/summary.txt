@@ -1,0 +1,8 @@
+source_archive=/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/source/images.zip
+source_questions=/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/source/quesions.jsonl
+target_root=/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized
+run_id=20260911T0212-m3vqa-materialize
+archive_sha256=6eb3c19c1158784fc16ea7447a99dd14b4bbf0e67ae8089cffa50a1558ede313
+questions_sha256=019d7bd1d6dae5e8db9bf763e5b5822adb15a0fb92eadcc82f510d6e7c64a24a
+file_count=10565
+status=completed
