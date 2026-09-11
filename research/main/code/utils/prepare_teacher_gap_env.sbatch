@@ -41,13 +41,13 @@ import platform
 import torch
 import transformers
 import qwen_vl_utils
-from PIL import Image
+import PIL
 
 print("python=" + platform.python_version())
 print("torch=" + torch.__version__)
 print("transformers=" + transformers.__version__)
 print("qwen_vl_utils=" + getattr(qwen_vl_utils, "__version__", "unknown"))
-print("pillow=" + Image.__version__)
+print("pillow=" + PIL.__version__)
 print("cuda_build=" + str(torch.version.cuda))
 print("cuda_available=" + str(torch.cuda.is_available()))
 PY
