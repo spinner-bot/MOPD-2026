@@ -1,0 +1,11 @@
+{
+  "run_id": "20260911T2215-teacher-gap-screen-fullpool-c2",
+  "stage": "W2A",
+  "purpose": "Full-pool pre-paid screening chunk c2 (admin order 2026-09-11, rolling submission): blind+audit on deterministic chunk of the 9,463 remaining eligible records; frozen 1017 rules/seed/thresholds unchanged; selection order and human-review gates unaffected",
+  "created_at_utc": "2026-09-11T14:13:10.612633+00:00",
+  "operator": "rqian000",
+  "hostname": "login02.leonardo.local",
+  "git_commit": "3e594ed21f1c13b565ea899a13834954314ce0f5",
+  "slurm_job_id": null,
+  "status": "initialized"
+}
