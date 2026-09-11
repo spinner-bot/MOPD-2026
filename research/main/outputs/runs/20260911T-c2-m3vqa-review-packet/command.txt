@@ -1,0 +1,32 @@
+# C2 实际执行命令（2026-09-11，Leonardo login02，CPU，无 Slurm 作业）
+# 连接方式：本地 Windows OpenSSH + Windows ssh-agent 内 step 证书 + 直连 IP（代理 fake-IP 污染 DNS，见 1019 §7）
+#   /c/Windows/System32/OpenSSH/ssh.exe -o HostName=131.175.44.2 leonardo ...
+# 上传（ssh cat 管道，scp 被网络重置）：
+#   build_m3vqa_teacher_gap_review_packet.py  sha256=cfd7a3cc8967c23b143781c3b5d0a287776c05d05708e2d6ded060d9cf29f087
+#   audit_m3vqa_pilot_candidates.py           sha256=d3ffe3b3fb0ba2a96cffbd54bf8f25be18b900ee0eea6605843983ef603bd572
+#   （远端 ~/c2-scratch/ 校验与本地一致）
+
+PY=/leonardo_work/AIFAC_F02_774/rqian000/miniconda3/bin/python   # 3.11.16
+W=/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa
+R=$HOME/spinner-bot/MOPD-2026/research/main
+S=$HOME/c2-scratch
+
+# 双跑（run1 ≈ 2026-09-11 13:23 UTC / 15:23 CEST，run2 紧随其后）：
+for run in run1 run2; do
+  $PY $S/build_m3vqa_teacher_gap_review_packet.py \
+    --raw $W/source/quesions.jsonl \
+    --normalized $W/processed/c1-audit/source-normalized-m3vqa.jsonl \
+    --shortlist $R/outputs/runs/20260911T-c1-m3vqa-field-audit/outputs/candidate-shortlist-128.jsonl \
+    --aligned $R/outputs/runs/20260911T1910-m3vqa-expanded-1024/outputs/candidate-shortlist-1024.jsonl \
+    --image-root $W/materialized \
+    --output-dir $S/$run > $S/$run.log 2>&1
+done
+
+# 验收：
+(cd $S/run1 && sha256sum * | LC_ALL=C sort) > $S/run1.sha256
+(cd $S/run2 && sha256sum * | LC_ALL=C sort) > $S/run2.sha256
+diff $S/run1.sha256 $S/run2.sha256   # → 空 diff，DOUBLE-RUN-IDENTICAL
+
+# 产物回传：ssh cat 逐文件 → 本档案 outputs/；本地按 manifest.sha256.json 复核 14/14 一致
+# 本地合约测试（先行，Windows / Python 3.13.5）：
+#   python -m unittest tests.test_build_m3vqa_teacher_gap_review_packet → 12/12 OK
