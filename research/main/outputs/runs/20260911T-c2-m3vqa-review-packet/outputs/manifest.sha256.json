@@ -1,0 +1,76 @@
+{
+  "files": {
+    "enriched-aligned-1024.jsonl": {
+      "bytes": 2258622,
+      "records": 1024,
+      "sha256": "23dba101b12cca220d19df6887daf0b0fda80e9625db1832a236a4c4477e08db"
+    },
+    "enriched-tier-1024.jsonl": {
+      "bytes": 1997300,
+      "records": 1024,
+      "sha256": "fff08365425dbc1ab183859d1e19140d4f526507055b8a620ff1f22a12ecc209"
+    },
+    "enriched-tier-128.jsonl": {
+      "bytes": 249943,
+      "records": 128,
+      "sha256": "b1fea2fad3b556c8e1afb8c29b7cebc81e970b146c551fb1f3bc11e34446d02c"
+    },
+    "enriched-tier-512.jsonl": {
+      "bytes": 999588,
+      "records": 512,
+      "sha256": "fceffa333dd26556afc54fbeedc7e5fca346002f3ad34c4a1f5a776e435d9765"
+    },
+    "packet-summary.json": {
+      "bytes": 4816,
+      "records": 158,
+      "sha256": "09a0009e4ba246cb927baff1314ea42291db8e1bb72bb2afb2e77958a10d1178"
+    },
+    "review-aligned-1024.csv": {
+      "bytes": 612511,
+      "records": 1025,
+      "sha256": "fa5ead1b18092408898bbd78a7905a421516d85cc497b826aeb0103c673e457b"
+    },
+    "review-aligned-1024.jsonl": {
+      "bytes": 1035455,
+      "records": 1024,
+      "sha256": "d3fcaebaabd7e6df1d27d983a99406be08f63f5a78b3117347686793c3a3fe44"
+    },
+    "review-tier-1024.csv": {
+      "bytes": 565553,
+      "records": 1025,
+      "sha256": "d06f2be178abd17e786bdd2789f85e8a2dc21c8d8bcd67884c8ccc2ef9dad571"
+    },
+    "review-tier-1024.jsonl": {
+      "bytes": 986385,
+      "records": 1024,
+      "sha256": "3e71956ed64bbb4f9b58f5d6e9bcc758d392709d0d5aaa2bcf0c67b3a0946654"
+    },
+    "review-tier-128.csv": {
+      "bytes": 71084,
+      "records": 129,
+      "sha256": "e79a8a52e78d61bee791dc1cf79fbe4ebf28d1a66acfbbbae3b6b4fc0de63653"
+    },
+    "review-tier-128.jsonl": {
+      "bytes": 123398,
+      "records": 128,
+      "sha256": "f8da4c295dca682bc8299348f7204a91a42acdb3f4bd040aff4b3fdd2b67e23b"
+    },
+    "review-tier-512.csv": {
+      "bytes": 282571,
+      "records": 513,
+      "sha256": "1b8cbbbee7a9a48d093876e35ffbce1a4a06a49faddaa443a328e02a454ab8b0"
+    },
+    "review-tier-512.jsonl": {
+      "bytes": 492813,
+      "records": 512,
+      "sha256": "b24944533271e1fc12361378fc7ef9e9366c6ec530d22be18a7533c204376ff3"
+    },
+    "structural-rejects.jsonl": {
+      "bytes": 358400,
+      "records": 2560,
+      "sha256": "f13ab599d1edf1a3bcb174b2ac37a5a7a81bd17538531dacba5c6079550ae4eb"
+    }
+  },
+  "rules_version": "c2-v1",
+  "seed": 20260911
+}

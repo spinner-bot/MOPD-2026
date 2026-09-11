@@ -1,0 +1,9 @@
+# 提交于 2026-09-11 22:15 (UTC+8) / 14:15 UTC，login02，提交人 claude code (local)
+# 依据：admin（spinner-bot）指令——"反正等着也是等着，把数据全量处理筛选了"；滚动提交避免串行排队
+# 协议合规：1017 §2.2 扩列规则的提前全量执行——同一冻结规则/seed/门槛，筛选不接触任何 S/T 输出，
+#           选择顺序（候选清单→判定→人工审核→冻结）不变；若 pilot Stop，产物弃用（admin 已确认接受）
+JOB_ID=57331300
+sbatch --parsable --export=ALL,MOPD_ROOT=$R,MOPD_INPUT=$W/data/m3vqa/processed/exp-fullpool/chunk_c3.jsonl,MOPD_RUN_ID=20260911T2215-teacher-gap-screen-fullpool-c3,MOPD_PYTHON=$W/envs/mopd-stage0-py311/bin/python,MOPD_MODEL_9B=$W/models/Qwen3.5-9B-base,MOPD_IMAGE_ROOT=$W/data/m3vqa/materialized/images research/main/code/utils/submit_teacher_gap_screening.sbatch
+# R=$HOME/spinner-bot/MOPD-2026/research/main; W=/leonardo_work/AIFAC_F02_774/sqs
+# 输入 chunk_c3.jsonl：全池 10,565 eligible − 已覆盖 1,102（C1-128 ∪ Codex-974，互斥）= 9,463 的确定性四等分（candidate_id 排序连续切块）
+# 块哈希存于 $WORK/sqs/data/m3vqa/processed/exp-fullpool/SHA256SUMS；复用 Codex sbatch 原样零修改
