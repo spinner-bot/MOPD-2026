@@ -17,6 +17,7 @@ INPUT="${MOPD_INPUT:?set MOPD_INPUT to a candidate JSONL}"
 RUN="${ROOT}/outputs/runs/${MOPD_RUN_ID:?set MOPD_RUN_ID}"
 PY="${MOPD_PYTHON:-/leonardo_work/AIFAC_F02_774/sqs/envs/mopd-stage0-py311/bin/python}"
 MODEL="${MOPD_MODEL_9B:-/leonardo_work/AIFAC_F02_774/sqs/models/Qwen3.5-9B-base}"
+IMAGE_ROOT="${MOPD_IMAGE_ROOT:-/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images}"
 REVISION="c202236235762e1c871ad0ccb60c8ee5ba337b9a"
 EXPECTED="$(wc -l < "${INPUT}")"
 RUNNER="${ROOT}/code/data_pipeline/run_teacher_gap_candidate_stage.py"
@@ -28,7 +29,7 @@ GATE="${ROOT}/code/utils/check_teacher_gap_candidate_gate.py"
 [[ -f "${INPUT}" ]] || { echo "missing candidate input: ${INPUT}" >&2; exit 2; }
 [[ -f "${RUN}/manifest.json" ]] || { echo "initialize run archive first: ${RUN}" >&2; exit 2; }
 mkdir -p "${RUN}"/{canary,raw,parsed,rejects,summaries,logs}
-export ROOT INPUT RUN PY MODEL REVISION RUNNER
+export ROOT INPUT RUN PY MODEL IMAGE_ROOT REVISION RUNNER
 
 run_stage() {
   local stage="$1" destination="$2" limit="$3"
@@ -40,7 +41,7 @@ run_stage() {
     "${PY}" "${RUNNER}" \
       --stage "${stage}" --input "${INPUT}" \
       --output "${destination}/rank-${rank}.jsonl" \
-      --model "${MODEL}" --model-revision "${REVISION}" \
+      --model "${MODEL}" --model-revision "${REVISION}" --image-root "${IMAGE_ROOT}" \
       --rank "${rank}" --world-size 4 --max-new-tokens 1024 "${extra[@]}"
   '
 }
@@ -76,4 +77,3 @@ done
   --summary "${RUN}/summaries/screening-selection.json"
 
 echo "[W2A] screening complete; model-selected records remain pending human review"
-

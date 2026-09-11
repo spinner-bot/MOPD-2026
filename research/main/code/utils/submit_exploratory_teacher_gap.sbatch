@@ -18,6 +18,7 @@ LOCKED_MANIFEST="${MOPD_LOCKED_MANIFEST:?set 96-sample locked manifest}"
 RUN="${ROOT}/outputs/runs/${MOPD_RUN_ID:?set MOPD_RUN_ID}"
 PY="${MOPD_PYTHON:-/leonardo_work/AIFAC_F02_774/sqs/envs/mopd-stage0-py311/bin/python}"
 MODEL="${MOPD_MODEL_4B:-/leonardo_work/AIFAC_F02_774/sqs/models/Qwen3.5-4B-base}"
+IMAGE_ROOT="${MOPD_IMAGE_ROOT:-/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images}"
 REVISION="851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a"
 RUNNER="${ROOT}/code/evaluation/run_exploratory_teacher_gap.py"
 PROCESS="${ROOT}/code/evaluation/process_exploratory_teacher_gap.py"
@@ -29,7 +30,7 @@ PROCESS="${ROOT}/code/evaluation/process_exploratory_teacher_gap.py"
 [[ -f "${LOCKED_MANIFEST}" ]] || { echo "missing locked manifest" >&2; exit 2; }
 [[ -f "${RUN}/manifest.json" ]] || { echo "initialize run archive first: ${RUN}" >&2; exit 2; }
 mkdir -p "${RUN}"/{raw,parsed,summaries,logs}
-export ROOT RUN PY MODEL REVISION RUNNER
+export ROOT RUN PY MODEL IMAGE_ROOT REVISION RUNNER
 
 run_manifest() {
   local manifest="$1" expected="$2" destination="$3"
@@ -39,7 +40,7 @@ run_manifest() {
     "${PY}" "${RUNNER}" \
       --manifest "${manifest}" --expected-samples "${expected}" \
       --output "${destination}/rank-${rank}.jsonl" \
-      --model "${MODEL}" --model-revision "${REVISION}" \
+      --model "${MODEL}" --model-revision "${REVISION}" --image-root "${IMAGE_ROOT}" \
       --rank "${rank}" --world-size 4
   '
 }
@@ -69,4 +70,3 @@ echo "[W4] gate passed; aggregate once and apply the preregistered decision"
   --output "${RUN}/summaries/decision.json"
 
 echo "[W4] teacher-gap pilot complete"
-
