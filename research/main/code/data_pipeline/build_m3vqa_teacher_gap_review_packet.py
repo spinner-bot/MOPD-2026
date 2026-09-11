@@ -202,6 +202,12 @@ def enriched_record(norm: dict, raw: dict, tier: int, origin: str, seed: int) ->
     return {
         "candidate_id": norm.get("candidate_id"),
         "source_image_id": norm.get("source_image_id"),
+        # W2A compatibility (teacher_gap_candidate_contract.validate_candidate):
+        # flat top-level duplicates so enriched tiers are drop-in --input for
+        # run_teacher_gap_candidate_stage.py; the renderer is allow-list based.
+        "image_original": norm.get("image_original"),
+        "final_question_source": norm.get("final_question_source"),
+        "reference_answers": norm.get("reference_answers"),
         "question_hop": int(norm.get("reasoning_depth_candidate", 0)),
         "tier": tier,
         "tier_origin": origin,
