@@ -12,8 +12,7 @@ from dataclasses import dataclass
 
 TEACHER_GAP_CONDITIONS = ("S", "T_Q", "T_QA", "T_generic")
 
-COMMON_SHELL = """<image>
-You must answer the multiple-choice question using the image and the information below.
+COMMON_SHELL = """You must answer the multiple-choice question using the image and the information below.
 
 <PRIVILEGED_CONTEXT>
 {privileged_context}

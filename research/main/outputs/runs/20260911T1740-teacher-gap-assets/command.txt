@@ -1,0 +1,3 @@
+MOPD_STORAGE_ROOT=/leonardo_work/AIFAC_F02_774/sqs \
+MOPD_RUN_DIR=$PWD/research/main/outputs/runs/20260911T1740-teacher-gap-assets \
+research/main/code/utils/prepare_teacher_gap_assets.sh
