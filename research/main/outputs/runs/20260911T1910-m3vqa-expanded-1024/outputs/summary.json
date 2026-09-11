@@ -1,0 +1,18 @@
+{
+  "double_run_byte_identical": true,
+  "hop_distribution": {
+    "2": 329,
+    "3": 353,
+    "4": 198,
+    "5": 137,
+    "6": 7
+  },
+  "new_vs_c1_128": 974,
+  "overlap_with_c1_128": 50,
+  "records": 1024,
+  "screening_delta_file": "candidate-screening-new-974.jsonl",
+  "screening_delta_sha256": "1a35d278872ddd8488662639b7572b957ecff0d7e85dc7d435f6e4d73e15c920",
+  "status": "completed",
+  "unique_candidate_ids": 1024,
+  "unique_source_image_ids": 1024
+}

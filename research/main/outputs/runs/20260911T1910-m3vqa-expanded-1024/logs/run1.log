@@ -1,0 +1,22 @@
+{
+  "checks": {
+    "shortlist_count": 1024,
+    "unique_candidate_ids": true,
+    "unique_source_image_ids": true,
+    "representative_count": 16
+  },
+  "manifest": {
+    "candidate-shortlist-128.jsonl": {
+      "sha256": "0644170834ff044733fe95e22e1edac4cc94eba7f97a4863ec2ce1c5a6f152eb",
+      "records": 1024
+    },
+    "field_audit.json": {
+      "sha256": "c31e258fdafc8a0e2282712ba339e670d61605cbafb00026010b9e8709bcce62",
+      "records": 218
+    },
+    "representatives.jsonl": {
+      "sha256": "63d94efdc2da9fd634d36531c9e0d0229d978734bf1e2fe516e45250167a7b48",
+      "records": 16
+    }
+  }
+}
