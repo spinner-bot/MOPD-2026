@@ -23,6 +23,7 @@ Question: {question}
 
 Return exactly one JSON object and no other text:
 {{"candidate_answer":"brief answer","visible_evidence":["observation 1","observation 2"],"image_is_necessary":true,"requires_unprovided_fact":false,"ambiguous":false,"uncertainty":"brief"}}
+Keep `visible_evidence` to 1-4 distinct observations, with at most 24 words per observation. Do not repeat an observation. Keep the complete JSON response concise.
 Do not identify people or places from memory and do not guess facts absent from the image/question."""
 
 AUDIT_PROMPT = """You are the entailment auditor for a closed-world visual reasoning pilot.
@@ -250,4 +251,3 @@ def is_construction_candidate(blind: dict, audit: dict) -> bool:
         and audit.get("full_image_reference_valid") is True
         and audit.get("task_family") in TASK_FAMILIES
     )
-
