@@ -264,6 +264,17 @@ class TestC2Contract(C2Fixture):
             with contextlib.redirect_stdout(io.StringIO()):
                 c2.main(argv)
 
+    def test_w2a_contract_compatibility(self):
+        """Enriched records must be drop-in input for Codex's W2A runner
+        (teacher_gap_candidate_contract.validate_candidate, allow-list renderer)."""
+        from teacher_gap_candidate_contract import validate_candidate
+        out = self.root / "out11"
+        self.run_c2(out)
+        for tier in (8, 16, 24):
+            for rec in self.enriched(out, tier):
+                errors = validate_candidate(rec)
+                self.assertEqual(errors, [], f"tier {tier} {rec['candidate_id']}: {errors}")
+
     def test_summary_hashes_match_files(self):
         out = self.root / "out10"
         self.run_c2(out)
