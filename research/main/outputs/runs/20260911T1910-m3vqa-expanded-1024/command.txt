@@ -1,0 +1,2 @@
+/leonardo_work/AIFAC_F02_774/sqs/envs/mopd-stage0-py311/bin/python research/main/code/data_pipeline/audit_m3vqa_pilot_candidates.py --input /leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/processed/c1-audit/source-normalized-m3vqa.jsonl --output-dir RUN1 --seed 20260911 --n 1024 --representatives 16
+# Repeat into RUN2, require byte-identical hashes, and archive the screening-only shortlist as outputs/candidate-shortlist-1024.jsonl.
