@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# 1016 W2B: construct guide/options proposals for screened model candidates.
+# 1017 W2B: construct guide/options proposals for screened model candidates.
 #SBATCH --job-name=mopd-tg-construct
 #SBATCH --partition=boost_usr_prod
 #SBATCH --qos=boost_qos_lprod

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# 1016 W3/W4: complete canary gate before the frozen 96x4 locked pilot.
+# 1017 W3/W4: complete canary gate before the frozen 96x4 locked pilot.
 #SBATCH --job-name=mopd-tg-pilot
 #SBATCH --partition=boost_usr_prod
 #SBATCH --qos=boost_qos_lprod

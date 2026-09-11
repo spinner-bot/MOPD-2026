@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# 1016 W2A: blind-solver + entailment-auditor screening with in-allocation canaries.
+# 1017 W2A: blind-solver + entailment-auditor screening with in-allocation canaries.
 #SBATCH --job-name=mopd-tg-screen
 #SBATCH --partition=boost_usr_prod
 #SBATCH --qos=boost_qos_lprod
