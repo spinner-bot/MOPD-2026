@@ -2,6 +2,7 @@
 
 import json
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -10,6 +11,12 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "code" / "data_pipeline"))
 
 from process_teacher_gap_candidate_stage import parse_records, select_construction
+from finalize_teacher_gap_manifests import (
+    arrange_options,
+    duplicate_cluster_map,
+    generic_context_for,
+    validate_human_review,
+)
 from teacher_gap_candidate_contract import (
     is_construction_candidate,
     render_stage_prompt,
@@ -147,7 +154,47 @@ class TeacherGapCandidatePipelineTests(unittest.TestCase):
         leaked["guides"][0]["answer"] = "The triangle is visible."
         self.assertIn("obvious_answer_leakage", validate_construct(leaked, ["triangle"]))
 
+    def test_duplicate_clusters_are_transitively_joined(self):
+        payload = {
+            "images": [
+                {"image_original": "/a.jpg", "sha256": "a" * 64},
+                {"image_original": "/b.jpg", "sha256": "b" * 64},
+                {"image_original": "/c.jpg", "sha256": "c" * 64},
+            ],
+            "duplicate_clusters": [
+                {"kind": "near", "members": [0, 1]},
+                {"kind": "near", "members": [1, 2]},
+            ],
+        }
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "clusters.json"
+            path.write_text(json.dumps(payload), encoding="utf-8")
+            mapping = duplicate_cluster_map(path)
+        self.assertEqual(len(set(mapping.values())), 1)
+
+    def test_human_review_cannot_be_implicitly_filled(self):
+        self.assertIn("human_decision_not_accept", validate_human_review({"candidate_id": "x"}))
+
+    def test_option_arrangement_places_one_correct_answer(self):
+        arranged = arrange_options(construction(), "C", "m3vqa-1")
+        self.assertEqual(arranged["C"], "triangle")
+        self.assertEqual(len(set(arranged.values())), 4)
+
+    def test_generic_context_matches_frozen_token_target(self):
+        class FakeTokenizer:
+            @staticmethod
+            def encode(text, add_special_tokens=False):
+                return text.split()
+
+        sample = {
+            "guides": [
+                {"question": "one two three four five six seven eight", "answer": "unused"},
+                {"question": "nine ten eleven twelve thirteen fourteen", "answer": "unused"},
+            ]
+        }
+        context = generic_context_for([sample], FakeTokenizer())
+        self.assertGreater(len(context.split()), 5)
+
 
 if __name__ == "__main__":
     unittest.main()
-

@@ -77,6 +77,10 @@ def parse_records(rows: list[dict], stage: str) -> tuple[list[dict], list[dict],
                 "thinking_mode": raw.get("thinking_mode"),
             },
         }
+        if stage == "construct":
+            output["blind_proposal"] = raw.get("blind_proposal")
+            output["audit_proposal"] = raw.get("audit_proposal")
+            output["screening_provenance"] = raw.get("screening_provenance")
         if row_reasons:
             output["rejection_reasons"] = sorted(set(row_reasons))
             rejects.append(output)
@@ -202,4 +206,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
