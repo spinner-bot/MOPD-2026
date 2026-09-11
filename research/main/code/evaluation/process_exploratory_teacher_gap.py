@@ -1,4 +1,4 @@
-"""Parse raw 1016 pilot inference, apply the gate, and make the frozen decision."""
+"""Parse raw 1017 pilot inference, apply the gate, and make the frozen decision."""
 
 from __future__ import annotations
 
@@ -121,4 +121,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
