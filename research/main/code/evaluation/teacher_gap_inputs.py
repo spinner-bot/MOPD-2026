@@ -1,4 +1,4 @@
-"""Render the four frozen conditions in the 1016 teacher-gap protocol.
+"""Render the four frozen conditions in the 1017 teacher-gap protocol.
 
 The final task shell is byte-identical across conditions.  Only the contents of
 the ``<PRIVILEGED_CONTEXT>`` block may change.
@@ -106,7 +106,7 @@ def validate_generic_length(
     token_count,
     tolerance: float = 0.10,
 ) -> dict:
-    """Check the 1016 corpus-level Generic-T/T-Q median token contract.
+    """Check the 1017 corpus-level Generic-T/T-Q median token contract.
 
     ``token_count`` is injected so the frozen experiment tokenizer, rather than
     an approximate whitespace count, defines length.

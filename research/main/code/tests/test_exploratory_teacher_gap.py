@@ -1,4 +1,4 @@
-"""Contract tests for the frozen 1016 exploratory teacher-gap protocol."""
+"""Contract tests for the frozen 1017 exploratory teacher-gap protocol."""
 
 import sys
 import unittest
@@ -26,6 +26,7 @@ def manifest_sample(index: int) -> dict:
     return {
         "sample_id": f"sample-{index:03d}",
         "source_image_id": f"image-{index:03d}",
+        "source_cluster_id": f"cluster-{index:03d}",
         "source_dataset": "M3VQA",
         "source_record_id": f"m3vqa-{index:03d}",
         "image_original": f"images/{index:03d}.jpg",
@@ -41,12 +42,21 @@ def manifest_sample(index: int) -> dict:
         "task_family": "R",
         "full_image_reference_valid": True,
         "human_verified": True,
+        "human_reviewer": "reviewer-1",
+        "human_reviewed_at": "2026-09-11T18:00:00+08:00",
         "answer_leakage": 0,
         "required_evidence": ["left relation", "right relation"],
-        "minimal_reasoning_graph": {"nodes": [{"id": "e1"}, {"id": "e2"}, {"id": "a"}]},
+        "minimal_reasoning_graph": {
+            "nodes": [
+                {"id": "e1", "type": "evidence", "claim": "left relation"},
+                {"id": "h1", "type": "intermediate", "claim": "combined relation"},
+                {"id": "a", "type": "answer", "claim": "selected item"},
+            ],
+            "edges": [["e1", "h1"], ["h1", "a"]],
+        },
         "guides": [
-            {"question": "What relation is visible on the left?", "answer": "The first relation."},
-            {"question": "How does it apply on the right?", "answer": "In the same order."},
+            {"question": "What relation is visible on the left?", "answer": "The first relation.", "supports_next": "h1"},
+            {"question": "How does it apply on the right?", "answer": "In the same order.", "supports_next": "a"},
         ],
     }
 
@@ -99,6 +109,14 @@ class ExploratoryTeacherGapTests(unittest.TestCase):
         self.assertTrue(any("source_image_id" in error for error in errors))
         self.assertTrue(any("balanced" in error for error in errors))
         self.assertTrue(validate_partition_isolation({"dev": samples[:1], "locked": samples[:1]}))
+
+    def test_locked_manifest_requires_human_provenance_and_graph_contract(self):
+        samples = [manifest_sample(index) for index in range(96)]
+        samples[0]["human_reviewer"] = ""
+        samples[1]["minimal_reasoning_graph"]["edges"] = [["missing", "a"]]
+        errors = validate_locked_manifest(samples)
+        self.assertTrue(any("human_reviewer" in error for error in errors))
+        self.assertTrue(any("invalid edges" in error for error in errors))
 
     def test_common_shell_changes_only_privileged_block(self):
         sample = manifest_sample(0)
