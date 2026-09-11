@@ -1,0 +1,5 @@
+# 提交于 2026-09-11 21:55 (UTC+8) / 13:55 UTC，login02，提交人 claude code (local)（admin 指令：滚动提交，Codex 额度用尽期间接续）
+JOB_ID=57330106
+sbatch --parsable --export=ALL,MOPD_ROOT=$R,MOPD_INPUT=$R/outputs/runs/20260911T1910-m3vqa-expanded-1024/outputs/candidate-screening-new-974.jsonl,MOPD_RUN_ID=20260911T2155-teacher-gap-screen-exp974,MOPD_PYTHON=$W/envs/mopd-stage0-py311/bin/python,MOPD_MODEL_9B=$W/models/Qwen3.5-9B-base,MOPD_IMAGE_ROOT=$W/data/m3vqa/materialized/images research/main/code/utils/submit_teacher_gap_screening.sbatch
+# R=$HOME/spinner-bot/MOPD-2026/research/main; W=/leonardo_work/AIFAC_F02_774/sqs
+# 输入：974 条（Codex 冻结扩列差集，sha256 见其 1910 档案）；复用 Codex sbatch 原样，零修改

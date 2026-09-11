@@ -1,9 +1,9 @@
 # 20260911T2155-teacher-gap-screen-exp974
 
-阶段：W2A
+阶段：W2A（预付费扩列筛选；admin 指令滚动提交，2026-09-11 21:55 UTC+8）
 
-目的：Pre-paid expansion screening (admin-ordered rolling submission): blind+audit on the frozen 974-record delta of Codex archive 20260911T1910; identical frozen rules/seed/thresholds as the 128 run; selection order and human-review gates unchanged (1017 §2.2)
+目的：对 Codex 冻结的 974 条扩列差集执行 blind+audit 语义筛选（与 128 作业同一冻结规则/seed/门槛；1017 §2.2 扩列的提前执行——选择顺序与人工审核门控不变，若 128 条已足够则本产物作为已审计储备）
 
 ## 结果
 
-待运行。
+PENDING（Slurm 57330106，4×A100，预计 ~1.5h 墙钟）。完成后回填。
