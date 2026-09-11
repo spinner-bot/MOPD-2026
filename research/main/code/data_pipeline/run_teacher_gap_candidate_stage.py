@@ -105,6 +105,10 @@ def main() -> None:
                     else ["image_original", "final_question_source", "reference_answers", "audit_proposal.required_evidence", "audit_proposal.minimal_reasoning_graph"]
                 ),
             }
+            if args.stage == "construct":
+                record["blind_proposal"] = input_row.get("blind_proposal")
+                record["audit_proposal"] = audit_proposal
+                record["screening_provenance"] = input_row.get("screening_provenance")
             try:
                 candidate_errors = validate_candidate(candidate)
                 if candidate_errors:
@@ -158,4 +162,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

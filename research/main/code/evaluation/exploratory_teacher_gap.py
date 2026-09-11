@@ -90,10 +90,11 @@ def validate_locked_manifest(samples: list[dict], expected_n: int = 96) -> list[
 
 
 def validate_partition_isolation(partitions: dict[str, list[dict]]) -> list[str]:
-    """Reject source-image overlap among canary, dev, and locked manifests."""
+    """Reject source-image or known near-duplicate-cluster partition overlap."""
 
     errors = []
     owners: dict[str, str] = {}
+    cluster_owners: dict[str, str] = {}
     for name in sorted(partitions):
         for row in partitions[name]:
             source_id = str(row.get("source_image_id", "")).strip()
@@ -103,6 +104,14 @@ def validate_partition_isolation(partitions: dict[str, list[dict]]) -> list[str]
                 errors.append(f"source_image_id {source_id} overlaps {owners[source_id]} and {name}")
             else:
                 owners[source_id] = name
+            cluster_id = str(row.get("source_cluster_id", "")).strip()
+            if cluster_id:
+                if cluster_id in cluster_owners and cluster_owners[cluster_id] != name:
+                    errors.append(
+                        f"source_cluster_id {cluster_id} overlaps {cluster_owners[cluster_id]} and {name}"
+                    )
+                else:
+                    cluster_owners[cluster_id] = name
     return errors
 
 
