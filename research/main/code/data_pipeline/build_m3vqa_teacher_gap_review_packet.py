@@ -284,6 +284,10 @@ def main(argv: list[str] | None = None) -> None:
                         help="comma-separated ascending tier sizes; first must equal shortlist size")
     parser.add_argument("--image-root", type=Path, default=None,
                         help="if given, verify image existence and containment (root-verified mode)")
+    parser.add_argument("--aligned", type=Path, default=None,
+                        help="optional frozen external expansion shortlist (e.g. Codex archive "
+                             "20260911T1910-m3vqa-expanded-1024/outputs/candidate-shortlist-1024.jsonl); "
+                             "emits an additional aligned enrichment+review packet over exactly these ids")
     args = parser.parse_args(argv)
 
     tiers = sorted({int(t) for t in str(args.tiers).split(",") if t.strip()})
@@ -465,6 +469,54 @@ def main(argv: list[str] | None = None) -> None:
             "sha256_review_csv": hashlib.sha256(outputs[csv_name].encode("utf-8")).hexdigest(),
             "sha256_review_jsonl": hashlib.sha256(outputs[jsonl_name].encode("utf-8")).hexdigest(),
         }
+    # ---- optional aligned packet over a frozen external expansion -------------
+    aligned_summary = None
+    if args.aligned is not None:
+        aligned_ids: list[str] = []
+        for _, record, _line in load_jsonl(args.aligned):
+            if record is not None:
+                aligned_ids.append(cid(record))
+        aligned_missing = [i for i in aligned_ids if i not in eligible]
+        if aligned_missing:
+            raise SystemExit(
+                f"fail-closed: {len(aligned_missing)} aligned ids absent from eligible pool "
+                f"(e.g. {aligned_missing[:5]})")
+        c1_set = set(shortlist_ids)
+        aligned_rows = sorted((eligible[i][0] for i in aligned_ids),
+                              key=lambda r: (int(r.get("reasoning_depth_candidate", 0)), cid(r)))
+        aligned_records = []
+        for norm in aligned_rows:
+            key = cid(norm)
+            _n, raw_rec = eligible[key]
+            record = enriched_record(norm, raw_rec, f"aligned-{len(aligned_ids)}",
+                                     "codex_frozen_expansion", args.seed)
+            record["in_c1_shortlist"] = key in c1_set
+            record["provenance"]["aligned_source"] = str(args.aligned)
+            dump = dumps(record)
+            for text in flatten_evidence(norm.get("evidence")):
+                if len(text) >= LEAK_CHECK_MIN_LEN and text in dump:
+                    leak_failures.append(key)
+                    break
+            aligned_records.append(record)
+        a_enriched = f"enriched-aligned-{len(aligned_ids)}.jsonl"
+        a_csv = f"review-aligned-{len(aligned_ids)}.csv"
+        a_jsonl = f"review-aligned-{len(aligned_ids)}.jsonl"
+        outputs[a_enriched] = "".join(dumps(r) + "\n" for r in aligned_records)
+        outputs[a_csv] = review_csv(aligned_records)
+        outputs[a_jsonl] = "".join(dumps(review_row(r)) + "\n" for r in aligned_records)
+        aligned_summary = {
+            "source": str(args.aligned),
+            "source_sha256": sha256_file(args.aligned),
+            "count": len(aligned_records),
+            "overlap_with_c1_shortlist": sum(1 for r in aligned_records if r["in_c1_shortlist"]),
+            "new_vs_c1_shortlist": sum(1 for r in aligned_records if not r["in_c1_shortlist"]),
+            "hop_distribution": {str(k): v for k, v in sorted(Counter(
+                r["question_hop"] for r in aligned_records).items())},
+            "sha256_enriched": hashlib.sha256(outputs[a_enriched].encode("utf-8")).hexdigest(),
+            "sha256_review_csv": hashlib.sha256(outputs[a_csv].encode("utf-8")).hexdigest(),
+            "sha256_review_jsonl": hashlib.sha256(outputs[a_jsonl].encode("utf-8")).hexdigest(),
+        }
+
     if leak_failures:
         raise SystemExit(f"LEAK CHECK FAILED: evidence text in packet for {leak_failures[:5]}")
     if any(not v for v in nesting.values()):
@@ -493,6 +545,7 @@ def main(argv: list[str] | None = None) -> None:
         "eligible_hop_distribution": {str(k): len(v) for k, v in sorted(strata.items())},
         "eligible_low_hop_pool": len(low_hop),
         "tiers": tier_summary,
+        "aligned_packet": aligned_summary,
         "nesting_verified": nesting,
         "evidence_text_leak_check": "passed",
         "human_fields": list(HUMAN_FIELDS),
