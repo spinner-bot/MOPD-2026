@@ -7,3 +7,5 @@
 ## 结果
 
 待运行。
+
+2026-09-12 03:16（UTC+8）提交 job `57356746`。使用 `max_new_tokens=1536`、`repetition_penalty=1.05`、`no_repeat_ngram_size=4`；canary 和全量门控保持 fail-closed。
