@@ -1,0 +1,124 @@
+
+MODEL Qwen/Qwen3.5-4B revision=851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a
+Still waiting to acquire lock on /leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/models/Qwen3.5-4B/.cache/huggingface/.gitignore.lock (elapsed: 0.1 seconds)
+Still waiting to acquire lock on /leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/models/Qwen3.5-4B/.cache/huggingface/.gitignore.lock (elapsed: 0.1 seconds)
+Still waiting to acquire lock on /leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/models/Qwen3.5-4B/.cache/huggingface/.gitignore.lock (elapsed: 0.1 seconds)
+Still waiting to acquire lock on /leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/models/Qwen3.5-4B/.cache/huggingface/.gitignore.lock (elapsed: 0.1 seconds)
+Still waiting to acquire lock on /leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/models/Qwen3.5-4B/.cache/huggingface/.gitignore.lock (elapsed: 0.1 seconds)
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+path=/leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/models/Qwen3.5-4B
+
+MODEL Qwen/Qwen3.5-9B revision=c202236235762e1c871ad0ccb60c8ee5ba337b9a
+Still waiting to acquire lock on /leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/models/Qwen3.5-9B/.cache/huggingface/.gitignore.lock (elapsed: 0.1 seconds)
+Still waiting to acquire lock on /leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/models/Qwen3.5-9B/.cache/huggingface/.gitignore.lock (elapsed: 0.1 seconds)
+Still waiting to acquire lock on /leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/models/Qwen3.5-9B/.cache/huggingface/.gitignore.lock (elapsed: 0.1 seconds)
+Still waiting to acquire lock on /leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/models/Qwen3.5-9B/.cache/huggingface/.gitignore.lock (elapsed: 0.1 seconds)
+Still waiting to acquire lock on /leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/models/Qwen3.5-9B/.cache/huggingface/.gitignore.lock (elapsed: 0.1 seconds)
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+path=/leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/models/Qwen3.5-9B
+
+DATASET yuanqianhao/Vision-OPD-6K revision=eb5c1c2e7b9a7b6a619efe4161c7369c71bf8af4
+Still waiting to acquire lock on /leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/data/raw/vision-opd-6k/.cache/huggingface/.gitignore.lock (elapsed: 0.1 seconds)
+Still waiting to acquire lock on /leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/data/raw/vision-opd-6k/.cache/huggingface/.gitignore.lock (elapsed: 0.1 seconds)
+Still waiting to acquire lock on /leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/data/raw/vision-opd-6k/.cache/huggingface/.gitignore.lock (elapsed: 0.1 seconds)
+Still waiting to acquire lock on /leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/data/raw/vision-opd-6k/.cache/huggingface/.gitignore.lock (elapsed: 0.1 seconds)
+Still waiting to acquire lock on /leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/data/raw/vision-opd-6k/.cache/huggingface/.gitignore.lock (elapsed: 0.1 seconds)
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+path=/leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/data/raw/vision-opd-6k
+
+DATASET inclusionAI/ZoomBench revision=b788097e57d30510c6877824833234a73bf80d25
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+path=/leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/data/external/zoombench
+
+DATASET DreamMr/HR-Bench revision=83b9013d6293b85dc507e87199ca52517536939c
+Still waiting to acquire lock on /leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/data/external/hr-bench/.cache/huggingface/.gitignore.lock (elapsed: 0.1 seconds)
+Still waiting to acquire lock on /leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/data/external/hr-bench/.cache/huggingface/.gitignore.lock (elapsed: 0.1 seconds)
+Still waiting to acquire lock on /leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/data/external/hr-bench/.cache/huggingface/.gitignore.lock (elapsed: 0.1 seconds)
+Still waiting to acquire lock on /leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/data/external/hr-bench/.cache/huggingface/.gitignore.lock (elapsed: 0.1 seconds)
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+path=/leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/data/external/hr-bench
+
+DATASET craigwu/vstar_bench revision=d9ae62c903da0c98336e85c5ee89cd863b04b4da
+Still waiting to acquire lock on /leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/data/external/vstar-bench/.cache/huggingface/.gitignore.lock (elapsed: 0.1 seconds)
+Still waiting to acquire lock on /leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/data/external/vstar-bench/.cache/huggingface/.gitignore.lock (elapsed: 0.1 seconds)
+Still waiting to acquire lock on /leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/data/external/vstar-bench/.cache/huggingface/.gitignore.lock (elapsed: 0.1 seconds)
+Still waiting to acquire lock on /leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/data/external/vstar-bench/.cache/huggingface/.gitignore.lock (elapsed: 0.1 seconds)
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+path=/leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/data/external/vstar-bench
+
+DATASET Lin-Chen/MMStar revision=bc98d668301da7b14f648724866e57302778ab27
+Still waiting to acquire lock on /leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/data/external/mmstar/.cache/huggingface/.gitignore.lock (elapsed: 0.1 seconds)
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+path=/leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/data/external/mmstar
+
+DATASET nyu-visionx/CV-Bench revision=bc284db50d036958861cb60cdd7b77612052ce0d
+Still waiting to acquire lock on /leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/data/external/cv-bench/.cache/huggingface/.gitignore.lock (elapsed: 0.1 seconds)
+Still waiting to acquire lock on /leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/data/external/cv-bench/.cache/huggingface/.gitignore.lock (elapsed: 0.1 seconds)
+Still waiting to acquire lock on /leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/data/external/cv-bench/.cache/huggingface/.gitignore.lock (elapsed: 0.1 seconds)
+Still waiting to acquire lock on /leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/data/external/cv-bench/.cache/huggingface/.gitignore.lock (elapsed: 0.1 seconds)
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+path=/leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/data/external/cv-bench
+
+DATASET lmms-lab-eval/MMVP revision=09a45a5d2dcbf69a1e4c16100462bdbc16c48327
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+path=/leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/data/external/mmvp
+
+DATASET lmms-lab-encoder/POPE revision=4db1276663dfa5eb8ad16a52d24c31a09e470896
+Still waiting to acquire lock on /leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/data/external/pope/.cache/huggingface/.gitignore.lock (elapsed: 0.2 seconds)
+Still waiting to acquire lock on /leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/data/external/pope/.cache/huggingface/.gitignore.lock (elapsed: 0.2 seconds)
+Still waiting to acquire lock on /leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/data/external/pope/.cache/huggingface/.gitignore.lock (elapsed: 0.2 seconds)
+Still waiting to acquire lock on /leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/data/external/pope/.cache/huggingface/.gitignore.lock (elapsed: 0.2 seconds)
+Still waiting to acquire lock on /leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/data/external/pope/.cache/huggingface/.gitignore.lock (elapsed: 0.2 seconds)
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+path=/leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/data/external/pope
+
+DATASET Mini-o3/VisualProbe_Easy revision=0e665a57946d4473deb9975a13f8ddba973b8026
+Still waiting to acquire lock on /leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/data/external/visualprobe/easy/.cache/huggingface/.gitignore.lock (elapsed: 0.1 seconds)
+Still waiting to acquire lock on /leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/data/external/visualprobe/easy/.cache/huggingface/.gitignore.lock (elapsed: 0.1 seconds)
+Still waiting to acquire lock on /leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/data/external/visualprobe/easy/.cache/huggingface/.gitignore.lock (elapsed: 0.1 seconds)
+Still waiting to acquire lock on /leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/data/external/visualprobe/easy/.cache/huggingface/.gitignore.lock (elapsed: 0.1 seconds)
+Still waiting to acquire lock on /leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/data/external/visualprobe/easy/.cache/huggingface/.gitignore.lock (elapsed: 0.1 seconds)
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+path=/leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/data/external/visualprobe/easy
+
+DATASET Mini-o3/VisualProbe_Medium revision=25d5ff5bce48147be34fd2655617ab17dc55b3fa
+Still waiting to acquire lock on /leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/data/external/visualprobe/medium/.cache/huggingface/.gitignore.lock (elapsed: 0.1 seconds)
+Still waiting to acquire lock on /leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/data/external/visualprobe/medium/.cache/huggingface/.gitignore.lock (elapsed: 0.1 seconds)
+Still waiting to acquire lock on /leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/data/external/visualprobe/medium/.cache/huggingface/.gitignore.lock (elapsed: 0.1 seconds)
+Still waiting to acquire lock on /leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/data/external/visualprobe/medium/.cache/huggingface/.gitignore.lock (elapsed: 0.1 seconds)
+Still waiting to acquire lock on /leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/data/external/visualprobe/medium/.cache/huggingface/.gitignore.lock (elapsed: 0.1 seconds)
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+path=/leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/data/external/visualprobe/medium
+
+DATASET Mini-o3/VisualProbe_Hard revision=bbe9b7a6c41d49844f45e51916ec0a60d1f0e378
+Still waiting to acquire lock on /leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/data/external/visualprobe/hard/.cache/huggingface/.gitignore.lock (elapsed: 0.1 seconds)
+Still waiting to acquire lock on /leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/data/external/visualprobe/hard/.cache/huggingface/.gitignore.lock (elapsed: 0.1 seconds)
+Still waiting to acquire lock on /leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/data/external/visualprobe/hard/.cache/huggingface/.gitignore.lock (elapsed: 0.1 seconds)
+Still waiting to acquire lock on /leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/data/external/visualprobe/hard/.cache/huggingface/.gitignore.lock (elapsed: 0.1 seconds)
+Still waiting to acquire lock on /leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/data/external/visualprobe/hard/.cache/huggingface/.gitignore.lock (elapsed: 0.1 seconds)
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+path=/leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/data/external/visualprobe/hard
+
+DATASET Mini-o3/VisualProbe_train revision=5bab6af0c60cb9d8c2a39191407bbca2f2f94dd0
+Still waiting to acquire lock on /leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/data/external/visualprobe/train/.cache/huggingface/.gitignore.lock (elapsed: 0.1 seconds)
+Still waiting to acquire lock on /leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/data/external/visualprobe/train/.cache/huggingface/.gitignore.lock (elapsed: 0.1 seconds)
+Still waiting to acquire lock on /leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/data/external/visualprobe/train/.cache/huggingface/.gitignore.lock (elapsed: 0.1 seconds)
+Still waiting to acquire lock on /leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/data/external/visualprobe/train/.cache/huggingface/.gitignore.lock (elapsed: 0.1 seconds)
+Still waiting to acquire lock on /leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/data/external/visualprobe/train/.cache/huggingface/.gitignore.lock (elapsed: 0.1 seconds)
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+path=/leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/data/external/visualprobe/train
+
+DATASET CASIA-IVA-Lab/M3VQA revision=0e39410f3058b7497c22fe4ca4b7cba23143c8ac
+Still waiting to acquire lock on /leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/data/external/m3-vqa/.cache/huggingface/.gitignore.lock (elapsed: 0.1 seconds)
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+path=/leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/data/external/m3-vqa
+
+DATASET yifanzhang114/MME-RealWorld revision=741cb8831ac86085bd54f678d13ca193e2334114
+Still waiting to acquire lock on /leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/data/external/mme-realworld/.cache/huggingface/.gitignore.lock (elapsed: 0.1 seconds)
+Still waiting to acquire lock on /leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/data/external/mme-realworld/.cache/huggingface/.gitignore.lock (elapsed: 0.1 seconds)
+Still waiting to acquire lock on /leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/data/external/mme-realworld/.cache/huggingface/.gitignore.lock (elapsed: 0.1 seconds)
+Still waiting to acquire lock on /leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/data/external/mme-realworld/.cache/huggingface/.gitignore.lock (elapsed: 0.1 seconds)
+Still waiting to acquire lock on /leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/data/external/mme-realworld/.cache/huggingface/.gitignore.lock (elapsed: 0.1 seconds)
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+path=/leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/data/external/mme-realworld
+Cloning into '/leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/data/external/vistahop'...
