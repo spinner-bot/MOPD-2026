@@ -1,0 +1,1032 @@
+{
+  "duplicate_clusters": [],
+  "images": [
+    {
+      "candidate_ids": [
+        "m3vqa-data_0000042"
+      ],
+      "dhash64": "b131193910909396",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0000042.jpg",
+      "sha256": "2480f2c3687986a18e4ba02b40bcfee2333c64bc45f03a61acbc6cc357ca3bd0"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0000110"
+      ],
+      "dhash64": "cbc70626321a3b9b",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0000110.jpg",
+      "sha256": "62297152f6eaf424e6840fbcd4c0d8ba2c96a2c5d3fcad9495775b4cdd47de62"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0000248"
+      ],
+      "dhash64": "1e8e8e9e5272521b",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0000248.jpg",
+      "sha256": "46cc167d5287fd5dd02161f9198d638a1dfd6b8d150d6629c3b6175bc930ba8a"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0000283"
+      ],
+      "dhash64": "72eaca9a5eedc921",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0000283.jpg",
+      "sha256": "e1028041b3c3971e3ef4e110917b7d23b1f750bab2183ffe21f920ad2c817612"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0000408"
+      ],
+      "dhash64": "e161e5a50d257151",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0000408.jpg",
+      "sha256": "aa8d19990d67d01b2b2fbbfcb5d75de4391440b9b34c131c5951ebcbac6046c6"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0000442"
+      ],
+      "dhash64": "d3c1cfc3d3c3ce68",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0000442.jpg",
+      "sha256": "2b63578cf315161b93c4eb3e3b030ab3d733e72f83af57f608df3da9e7461e9c"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0000515"
+      ],
+      "dhash64": "7499191724241343",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0000515.jpg",
+      "sha256": "1f1b4d989410e6f8ac0033570682289c068d30d1cc00d63faa6a8ab9f6744a37"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0000663"
+      ],
+      "dhash64": "000928085cd63024",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0000663.jpg",
+      "sha256": "c32a753da2161382b112755ae335113da64175a47000fd3a6bef164819ce94b1"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0000875"
+      ],
+      "dhash64": "5e4e6e3a32f8f0f8",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0000844.jpg",
+      "sha256": "89a6233f85de661fc40748f7eb897e380bb433a9058c01cc68b502464bea6edd"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0001163"
+      ],
+      "dhash64": "84e4e2e264662606",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0001066.jpg",
+      "sha256": "e0715541f4a7b7fbf4d535f16764208ef28ab7c40fe382f23130a3029e7a48d1"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0001179"
+      ],
+      "dhash64": "6edb4b2f1f1f4f27",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0001082.jpg",
+      "sha256": "abd64a7e3bb9fc96494dcd4c4936658e03ae115b43a6ab67c928613d12118a05"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0001419"
+      ],
+      "dhash64": "9cacacf4d6d6ce2a",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0001257.jpg",
+      "sha256": "9c3828509b4b97de4c6029dc4d7bfb679a2a12e8b41c1834824f4d3749a69a39"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0001543"
+      ],
+      "dhash64": "d1dad6c666776b7c",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0001329.jpg",
+      "sha256": "05548fc4b5313b78ee8c98e14e9efa662ec5b2dc77a8cac7b7f2f0c407c417b6"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0001682"
+      ],
+      "dhash64": "0c0c8cacdcd81c3a",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0001428.jpg",
+      "sha256": "4e27fb1731efc3898308fba96a952b063ad344b0a8d310752ec5729ac28950aa"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0001711"
+      ],
+      "dhash64": "f372403a5272f434",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0001457.jpg",
+      "sha256": "c4b5ed315b0c3de2c9fba06be1052c9bfaa01d661534f1b4793056780aa2ab25"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0001755"
+      ],
+      "dhash64": "968e96162575aff8",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0001482.jpg",
+      "sha256": "9fdaf3958ffd9aa04c7a9f638c77e3affed0803a11c4803f0dc2c74a487b82bb"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0001760"
+      ],
+      "dhash64": "b0b632b2b2b29296",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0001487.jpg",
+      "sha256": "ad4fab9a62085973652f3a95f8efa6429b850c9d7e565c39299da6976a0abc27"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0001768"
+      ],
+      "dhash64": "5e5f5d5cded4f43c",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0001494.jpg",
+      "sha256": "61d903a02612da14fa66081a34a512edfe1080c5116d5924cf02695f1e484bfe"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0001954"
+      ],
+      "dhash64": "261e16361696aeec",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0001601.jpg",
+      "sha256": "fad5e6600dcda884b4f9b52b238a4304fd9f2b003a3df03ff8b874ef93dc0a8b"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0002129"
+      ],
+      "dhash64": "f0d0d8b032b1b373",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0001675.jpg",
+      "sha256": "9b424ac49108ed00737ef4436aa5e3d9d0d23912893026f006230462c15eb14c"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0002144"
+      ],
+      "dhash64": "8d878d1d46e6a4a4",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0001690.jpg",
+      "sha256": "49f8a372760a9af7bfa1a02f2c2a086500eb2303ec3812491b2acbc3e2d6fd72"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0002182"
+      ],
+      "dhash64": "c03330a8a46cd8d0",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0001723.jpg",
+      "sha256": "a8077d455539c12dce09c4d64c4610ba82a468c74eaf2ac51514ca41ba6df4ac"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0002253"
+      ],
+      "dhash64": "7430743039d8d9ce",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0001793.jpg",
+      "sha256": "ff9909b694590ee49e6b3465255afb37df5172ab9506d395d6056640099d5174"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0002315"
+      ],
+      "dhash64": "989898589cecacac",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0001855.jpg",
+      "sha256": "19c558489792586f825887d13c0489252ed01ba0acf12c0e5c1647012c30adf6"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0002392"
+      ],
+      "dhash64": "edffc38f8f87cdcf",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0001899.jpg",
+      "sha256": "185ddd632d24a92592b408d9174389912abe52e7cdf2523fc1b7f08e9df93ebe"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0002531"
+      ],
+      "dhash64": "89cc45f23228aaa0",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0001980.jpg",
+      "sha256": "99d57deae3e7352b072a223a31436c9eb14b45d717d8411ed90736ff8cf92a67"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0003015"
+      ],
+      "dhash64": "1c181cdd89b33333",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0002248.jpg",
+      "sha256": "f529cdf1a33ee01fe127d124494943a092392f8f2a2edcd5adc0242200d2f373"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0003213"
+      ],
+      "dhash64": "0663333a1615cb43",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0002443.jpg",
+      "sha256": "5a92b97be28505c7795476ce0b2c698c3ae50f12e7a7beb5871b4004d9816231"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0003392"
+      ],
+      "dhash64": "ccecccc0e8ec2ca1",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0002587.jpg",
+      "sha256": "660cb1a6bb89f980fb300f39fa7d4b51635a57780809ac310c7278456173a51c"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0003975"
+      ],
+      "dhash64": "7173759599e94a26",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0002919.jpg",
+      "sha256": "fe2d8cd80040b805f8384530c7dc19d6bd215d448298f750ee145fa267f1c492"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0003997"
+      ],
+      "dhash64": "4c2c28e8e8e8f078",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0002940.jpg",
+      "sha256": "31cdfd49392fde43ee988afebb54c288918dc666849c232bb2af5e1e76a3adf1"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0004128"
+      ],
+      "dhash64": "87979792b2b2b659",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0003012.jpg",
+      "sha256": "49c7ecdb669d4ce6861053e3e06e78e3125ed64b5ba359a3b8d8ce7a8bfcd4d9"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0004292"
+      ],
+      "dhash64": "1c1c8e9672d5b808",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0003071.jpg",
+      "sha256": "55fb3698ff15e514fce1954b7654e0bb9be14dc925117707cc2955c807c49504"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0004569"
+      ],
+      "dhash64": "43193b31e16087c9",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0003213.jpg",
+      "sha256": "99bbd3fdc071a9bbe0434e9f8f8fe442371e706a9d8506c494e8f0e592cb2a94"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0004637"
+      ],
+      "dhash64": "edcdfdf87163e366",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0003274.jpg",
+      "sha256": "529a43aa6d8c0c73d2b3b98f45a82197e8008f8494ea6d7c4a1f9ce858780d45"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0004645"
+      ],
+      "dhash64": "78d45066369e3c00",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0003282.jpg",
+      "sha256": "0d56f380a9360d2700e7e55bd19060c533cad2de59dfe67208f032294059589a"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0004771"
+      ],
+      "dhash64": "0b89cfcfb7efc1b1",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0003408.jpg",
+      "sha256": "1df76d56103b30086920a0d34b73b9f6dd45482d025160bf5ee3cca4e85e1bfa"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0004803"
+      ],
+      "dhash64": "3f27533038313191",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0003438.jpg",
+      "sha256": "11b5a3851bcaead502696fbddb203ed3f95cc3efaf47830a93db8bec9559fe76"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0004839"
+      ],
+      "dhash64": "e362c89e6e5828f8",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0003460.jpg",
+      "sha256": "ca56e8d7489064d78fdd041cb40057fb1df68484b74fc9830ed7d73564825970"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0005017"
+      ],
+      "dhash64": "67652530b498d8f0",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0003557.jpg",
+      "sha256": "b0fb2db7132f12adb33ef6a8b0e69c5941f2e388f5a071c4fdbdf73c90972b1f"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0005199"
+      ],
+      "dhash64": "e3e3631a8edc5070",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0003706.jpg",
+      "sha256": "4abeada932afcde635eae6ed85cecaf0ebad732db3991a5f050526792bf10b57"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0005336"
+      ],
+      "dhash64": "e0d899390920e4c8",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0003816.jpg",
+      "sha256": "0480fd011d880debcc7bb3692169e09b0e172a67bdd7ae4f76eed85858e2d6ed"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0005363"
+      ],
+      "dhash64": "d09293f3e2c40e78",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0003843.jpg",
+      "sha256": "c6163a4d6d6c320fc8efdd874a7eabc1db55559dd6622aefe0e5a012c16719f1"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0005438"
+      ],
+      "dhash64": "f0baafadadafb3f0",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0003918.jpg",
+      "sha256": "a89170d4030cfa0a668229ddaf79e51ead5978b47758ac9a3e3f77e3f9c9577b"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0006163"
+      ],
+      "dhash64": "c1c9cb981e5e5b18",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0004218.jpg",
+      "sha256": "956891f8db994dbf5ba5d44cf15fc83bf7e5d7d3511662e1843a41ae27104f8a"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0006235"
+      ],
+      "dhash64": "efccc6b630e8cc24",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0004290.jpg",
+      "sha256": "071fd458d2df06223a07f98725e056aa0200e33df476ec8fd7feeb8d64836273"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0006296"
+      ],
+      "dhash64": "c4c1c79c0b62f018",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0004351.jpg",
+      "sha256": "6432145469c76dff854b1719b39164b1240904770fb34f6fa7c8e1186fd536f1"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0006470"
+      ],
+      "dhash64": "038f6663537de466",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0004467.jpg",
+      "sha256": "1879a9975fdcf8faa617b9cd28367d552f123974c4e96452e6d6f9f43ec2982d"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0006499"
+      ],
+      "dhash64": "684be9b0f2ccdcdc",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0004482.jpg",
+      "sha256": "8aa79c3e73e725de88c780da83565ca2732e122a9aed8ac79d7be346a71d2413"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0006610"
+      ],
+      "dhash64": "02c5e9d1f1e1a723",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0004507.jpg",
+      "sha256": "2a1f27e27057ad3985db62e8e20235bbf89dc9df52c16ba2ba13a1f216c0623d"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0006904"
+      ],
+      "dhash64": "bdedff13372f4707",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0004784.jpg",
+      "sha256": "6cc62186f2c314c3cc77402f1f6b3ca63425cd911c1c50da15bf733b429a716d"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0006907"
+      ],
+      "dhash64": "2090e0b0bcf8e2c2",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0004787.jpg",
+      "sha256": "f9a9bc42d226c7d5aac5e01ce60f35c8efc9378ef9b4cde811112f77dc03cea0"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0007503"
+      ],
+      "dhash64": "0c1f0f277c7c2c0c",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0005132.jpg",
+      "sha256": "a5b84d421779906e96b34dda6d05e488b4e15f0f243adc5ca1868f3c0831366c"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0007517"
+      ],
+      "dhash64": "c989ab332ce0f0e8",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0005140.jpg",
+      "sha256": "6b0dc5ff13cb38eff5d5d5087f66fe38335a6df8890217a27c7170e0325c606b"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0007529"
+      ],
+      "dhash64": "30363636367dcdf0",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0005147.jpg",
+      "sha256": "f622d3e30179d551965235f09d430538d528fc89960e2852afcd9cb2e06b5243"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0007542"
+      ],
+      "dhash64": "0f0303060d4f070c",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0005156.jpg",
+      "sha256": "464f47225b1d897cc1fac2b4108a303826f1eebfacafb824c84b268c833aa193"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0007644"
+      ],
+      "dhash64": "1c7f7b753e1e1c3f",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0005218.jpg",
+      "sha256": "258bf2b143349bbcd8f8bf0f3d4eab0f0115ca41ef3500cb5a87e5be45c3674e"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0007820"
+      ],
+      "dhash64": "871f3f7efe6c3a1a",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0005312.jpg",
+      "sha256": "78d8eb93b8d50860b4946483f8d4bf6afb0074d9229d318e5865c3480fe77e4a"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0007877"
+      ],
+      "dhash64": "ff9f5f671b4b042a",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0005344.jpg",
+      "sha256": "ec8c7c8d027263ac6017074aa1f93d6e022d2911e5e8eaf9d4a7382d19e13b20"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0007951"
+      ],
+      "dhash64": "449cd1d060703115",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0005418.jpg",
+      "sha256": "9e4fc9390d02539b5f2117dd0830c3c0c7e9dd6feb212512114d03fcaa52e926"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0008056"
+      ],
+      "dhash64": "e6ca88595bc1a6b2",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0005508.jpg",
+      "sha256": "0dfacbbd574c65d466bc96ef5391ab1a99a0cbc350d5d41a97b8fd4d799d1076"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0008069"
+      ],
+      "dhash64": "9299589c3c381859",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0005521.jpg",
+      "sha256": "6db7c5cd61270da30043a1434e48b07db6eb6a91f99b51e3e37cc8bfc9415659"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0008070"
+      ],
+      "dhash64": "4aa295dacec4c0c0",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0005522.jpg",
+      "sha256": "dff815d1cbe7efd901c42c270fbbe6d16c3dc3be39ce0facd99a5f41401823a2"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0008075"
+      ],
+      "dhash64": "0f43d38b070f0c02",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0005527.jpg",
+      "sha256": "5afe8e132831541127fc08d284714249552fd658c473ca641cc01d462c9efaf5"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0008082"
+      ],
+      "dhash64": "a0428686d2d28288",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0005534.jpg",
+      "sha256": "85f096c9a51fd580a30a851c961fb7cac4269a4168cdb6d80d2c7b40065b4ba5"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0008119"
+      ],
+      "dhash64": "cd4d6ded9496b61c",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0005571.jpg",
+      "sha256": "40f01fb5225e0a0aee86529e8a74f00798fd5b74398c270056417458e3ce0640"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0008140"
+      ],
+      "dhash64": "9b8303030b2b98d8",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0005592.jpg",
+      "sha256": "af0a051af06271479e493427fea7971e9620ee91a4758a4d29e416c4cd010eb5"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0008198"
+      ],
+      "dhash64": "1f3757c7c3e1f036",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0005650.jpg",
+      "sha256": "689847f222a3cbf2019ca395b125f0215a1a774f85933ee2367c52c2b7698564"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0008225"
+      ],
+      "dhash64": "170f29ddc70f1e28",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0005677.jpg",
+      "sha256": "98a512a4ba9b17ff0286c33d7a8f61a76935b95b14e6e806ba13da0c68473a6b"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0008233"
+      ],
+      "dhash64": "1f5ba5243ae64f38",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0005685.jpg",
+      "sha256": "34527aa33ddcd1cebb89dc30b5b59ea7c0b0becf55daff9b63fe11c0f5f656f2"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0008308"
+      ],
+      "dhash64": "e7c1cd8ee4ecc8c4",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0005760.jpg",
+      "sha256": "1a31e89b289dc5824ab81e1459cb887e5ee080277b019a3c4cec5938a7c61f2d"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0008371"
+      ],
+      "dhash64": "82a363e4e82c39b2",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0005823.jpg",
+      "sha256": "da91323887ac66496cae9a3430a00f681fa12844b59133fb38d9c1c7b7bde3ce"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0008499"
+      ],
+      "dhash64": "7878703e373d3bb7",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0005951.jpg",
+      "sha256": "041d3babae9f90faa1f39d8002b8c5808bfdd603f25165252bb28a2530361b84"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0008645"
+      ],
+      "dhash64": "3fdb9db56ded6b8e",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0006097.jpg",
+      "sha256": "5f856b066652d46d2775e029fd739347f1d1edf6fdbdc5ceeadca5b456ca1060"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0008647"
+      ],
+      "dhash64": "e899988c5b59c8f0",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0006099.jpg",
+      "sha256": "648211e0864fcd25813578952d57a0b068031bc8d44ee2182c4bbaf25b6be38e"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0008676"
+      ],
+      "dhash64": "6ccdc7ca903130c8",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0006128.jpg",
+      "sha256": "c1259a94c0ba54c0eb9c1a9ce09f7081c7b1743578165c30a8ec0826f64a127a"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0008836"
+      ],
+      "dhash64": "c5c5d9b0f262ec7b",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0006288.jpg",
+      "sha256": "b5d3871cd1199497250a8ee112d9054d9f47d1d37523fa63a8ab01acc9e2f9c9"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0008850"
+      ],
+      "dhash64": "9bf6b2b33098d198",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0006302.jpg",
+      "sha256": "5656dcc5d3507f6efec8483102dd48483eaf01f0f0884ff53b6ae363d4bdd1ed"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0008988"
+      ],
+      "dhash64": "5573633333272f1c",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0006440.jpg",
+      "sha256": "4aa921f3dc64b07ff29f6f46be5ffb8e0db2a26f70740fca6e97accb5282a890"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0009120"
+      ],
+      "dhash64": "0d0f0f0f1d1d1d19",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0006572.jpg",
+      "sha256": "ea5351a80cba2c99506251f977ac09fc1a09d4cd3cc90f686e00659707422044"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0009125"
+      ],
+      "dhash64": "379f0d26b1320a86",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0006577.jpg",
+      "sha256": "e23316e6dfb31977f9877e691bc246c60687ba3c8fc05f52f3f32537860f575e"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0009176"
+      ],
+      "dhash64": "c462239393a36b29",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0006628.jpg",
+      "sha256": "815e5e005cdc14c74e2a4f3027375ad3489137150db0690d1514b32d0df92ad1"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0009224"
+      ],
+      "dhash64": "e005258998b83c30",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0006676.jpg",
+      "sha256": "e8904346308ee60098555ddcbb24e2ddf454ba09ad868acef9d16ef14b53d9aa"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0009316"
+      ],
+      "dhash64": "a7a72ca48624e6c4",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0006768.jpg",
+      "sha256": "42e563602b072ec6482ded5f93c92583877d1f6e2527d2f96d176d5bc4c0f7e7"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0009392"
+      ],
+      "dhash64": "1a6a2a2aababa927",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0006844.jpg",
+      "sha256": "cd32e1514d538ed0c1d0d494078325f423ad452866fbb29fa992d15e1a97260f"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0009448"
+      ],
+      "dhash64": "46428d9a0e1e9e61",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0006900.jpg",
+      "sha256": "85e0afc2f7c1be0489eb648a90215721a34eb0548653716df5d17edb52a31c6c"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0009459"
+      ],
+      "dhash64": "0d82c0e9c1019310",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0006911.jpg",
+      "sha256": "fa847929d56cc60f7f754a95096cb1303736475804555c84cff9601dedb56a7f"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0009578"
+      ],
+      "dhash64": "4082031280010808",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0007030.jpg",
+      "sha256": "9c6a1516002d6a8e5b29142b6062c2acf2e3f74df5eb60faa1ea549d44d6bbf3"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0009604"
+      ],
+      "dhash64": "3410c26a969697d1",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0007056.jpg",
+      "sha256": "b42008ce69606e0d2fdcd73aef5ba770c3420506a3a6c984a625c3cd5d1485f3"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0009670"
+      ],
+      "dhash64": "e5c9080ccccd8000",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0007122.jpg",
+      "sha256": "4ab8d8e2d574131fb02ce66595d15fddccb63b118027012c1f79a03268f8abec"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0009764"
+      ],
+      "dhash64": "983c96d070f9b49c",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0007215.jpg",
+      "sha256": "b41b0f588302f9976e43661cafc1a270c48c159c014e48610abecc75249f9ed8"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0009781"
+      ],
+      "dhash64": "8fb3ecccdd95d7c1",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0007232.jpg",
+      "sha256": "01554c2f3d71e40ea6533c14668e5aac00c463a78388ace1f90cd2d8b0b5c8bb"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0009854"
+      ],
+      "dhash64": "9830b478f2f0d697",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0007305.jpg",
+      "sha256": "33f5f7360c75882c3806b4ac69d5096230b3855949602ecf228fa800608b2178"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0009868"
+      ],
+      "dhash64": "03091d3168e6f8f0",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0007319.jpg",
+      "sha256": "1d429e5fd0e6d65e8a0b3d6b28b1623b795d2c303bbdeadb23db8931a309e75b"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0009876"
+      ],
+      "dhash64": "c3b99cd6fed30b06",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0007327.jpg",
+      "sha256": "5ea616829b945a7ac4896bdb76e820d6bb36c837afcd49ae40080fd2bdbfc6e9"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0009895"
+      ],
+      "dhash64": "c78cc46478f86c6c",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0007346.jpg",
+      "sha256": "ef6c4e7ce116af44091db770fd764ddd16d2ba8da6eccea0131248e41ee2860f"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0009906"
+      ],
+      "dhash64": "8ce4d2ee2cb8b0c8",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0007357.jpg",
+      "sha256": "8f1aaa5670b9e032561574941c019e64a5103a03f2835459bb06656f7ec71b64"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0009908"
+      ],
+      "dhash64": "f0e2e2c2f663656b",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0007359.jpg",
+      "sha256": "583d98aaceb1891492f9822638d3e61ff1547d1a3c26f88ed7fbe125ca5801e4"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0009909"
+      ],
+      "dhash64": "863959591b1f4f35",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0007360.jpg",
+      "sha256": "e7fb7c33ee73d5831fcd7e6a58180b6fcccefa98392a5df54a0666af3cd097c9"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0009959"
+      ],
+      "dhash64": "f4f0d4d4e0f8e8c4",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0007410.jpg",
+      "sha256": "50943f54f02aaaa9a42e0d4518c11c9e61d88df74ac6ada7a18a8ec52bb3d748"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0009988"
+      ],
+      "dhash64": "e3f8b469799f0701",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0007439.jpg",
+      "sha256": "1c9871656b7567d45b81acb1842ef130e7effff99efbd8c62f3e5b46e9e716ae"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0010032"
+      ],
+      "dhash64": "b23292d2d2820152",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0007483.jpg",
+      "sha256": "0aa9f3bd770f4ea607ee64ae5b8b87f874073961a9239c966e5c049a693fa99e"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0010108"
+      ],
+      "dhash64": "084978d8ccdca984",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0007559.jpg",
+      "sha256": "1628a088fffbcc8dbd19aa8920c370b91fae73bfc0d67d4a28eff5c4854e1972"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0010164"
+      ],
+      "dhash64": "d3c7c388d49b993b",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0007615.jpg",
+      "sha256": "ee1ff1d05091fe5b7779528756420a5e1f2dabce6ff1e0bdd523e40ab157874a"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0010272"
+      ],
+      "dhash64": "9e8e47975733170f",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0007723.jpg",
+      "sha256": "0ae8020daf33d59d58326c115c1c6f3268116f247f8db6a80d09cce02ffb6be1"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0010320"
+      ],
+      "dhash64": "938a8c80837225b8",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0007771.jpg",
+      "sha256": "f1d7e51689cae60bdae74661966d8a4f52aa56a47136f077c7a61251be6daa4f"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0010322"
+      ],
+      "dhash64": "b2f1e0e0c2021636",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0007773.jpg",
+      "sha256": "04dd290807e5884e5fcfd2911848d17c1a1ebb7295ac254f806124088f85bb60"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0010338"
+      ],
+      "dhash64": "fe379f8e8fef6f7f",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0007789.jpg",
+      "sha256": "a4840092c0ff418115eeefb0e35a8486906eb359949069d0fe6fcf509ddbaaa2"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0010481"
+      ],
+      "dhash64": "0f0f276359622b0f",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0007932.jpg",
+      "sha256": "3c54c852c59958c8f27e76c73b77d7fabf9354d9cf20ee7617a7b49ce12704c9"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0010631"
+      ],
+      "dhash64": "73139b991831232b",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0008082.jpg",
+      "sha256": "6c03c4f224e8715035bb29d2b087c273698438abbb6143f3073aac1fa226c146"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0010722"
+      ],
+      "dhash64": "ce6f6767b6fefcb8",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0008173.jpg",
+      "sha256": "6c32ea524daab12bc90c5da3bdb7059a7a6f1383dc001bc64a98ea7d80eecfec"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0010723"
+      ],
+      "dhash64": "e1c3c7939574fbfa",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0008174.jpg",
+      "sha256": "bd2e81b32d491f1bd5948dd6bc929a50306564213ab792fde171c9661baf5e34"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0010815"
+      ],
+      "dhash64": "59ee4e8333e1e971",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0008266.jpg",
+      "sha256": "2b4d74e0ef9dc29b99f92064df13aa41d8d7d9b1f443791d32aeed13cb37813e"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0010896"
+      ],
+      "dhash64": "6212747c4ed665a1",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0008346.jpg",
+      "sha256": "75751359216763ce4becd040774bc75fa17c0f99bf696c6652c12dcd66d8900d"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0010932"
+      ],
+      "dhash64": "7262f7d3f6e2febe",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0008382.jpg",
+      "sha256": "361580c145517b164864f124ac15825eed8c45de2f5e7e44381778c1e1bb5672"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0011051"
+      ],
+      "dhash64": "0525e50387a63766",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0008501.jpg",
+      "sha256": "ef273dc58b6eb9390b24c7711e5b8a517f5c0f4b3b23a21611c9600b856f63aa"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0011090"
+      ],
+      "dhash64": "4dcff8f070f8f8cc",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0008540.jpg",
+      "sha256": "85f6bffc933eb772442912070ce1417bcbdedc088fa60d54884b9f81b180a059"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0011101"
+      ],
+      "dhash64": "bff3f7e67a060f7f",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0008551.jpg",
+      "sha256": "2e56710e839a0d2bcb10d8ea5d2988633ee0176f4646b764f22f3cffd0fa3bec"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0011183"
+      ],
+      "dhash64": "885fc7f1723a4ced",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0008633.jpg",
+      "sha256": "b165b7cc0c4b302507a10ebaacdb542b19e5b8be34a0acaf915eaeca47439f4c"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0011212"
+      ],
+      "dhash64": "94d4c4444c6c4c78",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0008662.jpg",
+      "sha256": "9a651cebe397e5e77ef135514ded6f50a6cd9487cac90148b1fb9861ca4b39a6"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0011231"
+      ],
+      "dhash64": "438c9c9fde6d7fff",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0008681.jpg",
+      "sha256": "f91005a94255ec9864bf9ad3bbb178dc903381eeb3b0e67ac1d04eb3a8cccc8b"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0011376"
+      ],
+      "dhash64": "f2e48c38f8e0c0fe",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0008826.jpg",
+      "sha256": "29becc6fcd69505467aafae82b5117bb9177ee3af55af58af7c9672169b27e8a"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0011426"
+      ],
+      "dhash64": "b0b0d4d632337371",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0008876.jpg",
+      "sha256": "de9f49048fcb71a107caa0da9ff654bbc80031477dd78e9fe5ff38a09884be86"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0011489"
+      ],
+      "dhash64": "978fcdf80ccfefff",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0008939.jpg",
+      "sha256": "2bcd19fc7bb35e013b2647b6003f83c58646f3e931a444e92c69d0ce99fcec06"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0011544"
+      ],
+      "dhash64": "236007e3737b7b7d",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0008993.jpg",
+      "sha256": "0d88ece60eddba0a7ac263c7f0842c1376361b1b866f6bfb9927bf60202ca462"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0011742"
+      ],
+      "dhash64": "19f2ce6731810000",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0009187.jpg",
+      "sha256": "17eaf953399a19537215ee050537493fea0703a8917ed29494d40e2776a0e500"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0011764"
+      ],
+      "dhash64": "126b198921c1c1e3",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0009209.jpg",
+      "sha256": "5568699a22396d64b6b8dbf00cf66e5fdd4595a225c76945bb64bd38e998b962"
+    },
+    {
+      "candidate_ids": [
+        "m3vqa-data_0011866"
+      ],
+      "dhash64": "9cf0890e4a55d8d0",
+      "image_original": "/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images/img_0009311.jpg",
+      "sha256": "81bdbd620e0c6c6b316c310d39375906c4beaf7d4af40e2d923fc14384675462"
+    }
+  ],
+  "max_dhash_distance": 5,
+  "method": "sha256 exact plus exhaustive 64-bit dHash Hamming components",
+  "n_unique_image_paths": 128
+}
