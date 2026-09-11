@@ -1,4 +1,4 @@
-"""Fail-closed validation and decision logic for protocol 1016.
+"""Fail-closed validation and decision logic for protocol 1017.
 
 This module intentionally contains no model inference.  It freezes the CPU-side
 contracts that must pass before a locked pilot can be interpreted.
@@ -43,6 +43,7 @@ def validate_locked_manifest(samples: list[dict], expected_n: int = 96) -> list[
     required_text = (
         "source_dataset",
         "source_record_id",
+        "source_cluster_id",
         "image_original",
         "image_checksum",
         "final_question",
@@ -51,6 +52,8 @@ def validate_locked_manifest(samples: list[dict], expected_n: int = 96) -> list[
         "option_C",
         "option_D",
         "generic_context",
+        "human_reviewer",
+        "human_reviewed_at",
     )
     for index, row in enumerate(samples):
         row_id = sample_ids[index] or f"row-{index}"
@@ -71,8 +74,40 @@ def validate_locked_manifest(samples: list[dict], expected_n: int = 96) -> list[
         if not isinstance(evidence, list) or len(evidence) < 2 or any(not str(v).strip() for v in evidence):
             errors.append(f"{row_id}: required_evidence must contain at least two entries")
         graph = row.get("minimal_reasoning_graph")
-        if not isinstance(graph, dict) or not isinstance(graph.get("nodes"), list) or not graph["nodes"]:
-            errors.append(f"{row_id}: minimal_reasoning_graph.nodes is required")
+        if not isinstance(graph, dict):
+            errors.append(f"{row_id}: minimal_reasoning_graph must be an object")
+        else:
+            nodes, edges = graph.get("nodes"), graph.get("edges")
+            if not isinstance(nodes, list) or len(nodes) < 3:
+                errors.append(f"{row_id}: minimal_reasoning_graph requires at least three nodes")
+            else:
+                node_ids = [str(node.get("id", "")).strip() for node in nodes if isinstance(node, dict)]
+                node_types = {node.get("type") for node in nodes if isinstance(node, dict)}
+                invalid_node = (
+                    len(node_ids) != len(nodes)
+                    or any(not node_id for node_id in node_ids)
+                    or len(set(node_ids)) != len(node_ids)
+                    or any(
+                        node.get("type") not in {"evidence", "intermediate", "answer"}
+                        or not str(node.get("claim", "")).strip()
+                        for node in nodes
+                        if isinstance(node, dict)
+                    )
+                    or not {"evidence", "intermediate", "answer"}.issubset(node_types)
+                )
+                if invalid_node:
+                    errors.append(f"{row_id}: minimal_reasoning_graph has invalid nodes")
+                if (
+                    not isinstance(edges, list)
+                    or len(edges) < 2
+                    or any(
+                        not isinstance(edge, list)
+                        or len(edge) != 2
+                        or any(str(endpoint).strip() not in set(node_ids) for endpoint in edge)
+                        for edge in edges
+                    )
+                ):
+                    errors.append(f"{row_id}: minimal_reasoning_graph has invalid edges")
         guides = row.get("guides")
         if not isinstance(guides, list) or not 1 <= len(guides) <= 4:
             errors.append(f"{row_id}: guides must contain 1..4 items")
@@ -80,9 +115,10 @@ def validate_locked_manifest(samples: list[dict], expected_n: int = 96) -> list[
             not isinstance(guide, dict)
             or not str(guide.get("question", "")).strip()
             or not str(guide.get("answer", "")).strip()
+            or not str(guide.get("supports_next", "")).strip()
             for guide in guides
         ):
-            errors.append(f"{row_id}: every guide requires question and answer")
+            errors.append(f"{row_id}: every guide requires question, answer, and supports_next")
         options = [str(row.get(f"option_{choice}", "")).strip().casefold() for choice in CHOICES]
         if len(set(options)) != len(options):
             errors.append(f"{row_id}: options must be distinct")
@@ -302,7 +338,7 @@ def decide_teacher_gap(
     n_bootstrap: int = 10_000,
     seed: int = 20260911,
 ) -> dict:
-    """Apply the pre-registered 1016 Go/Revise/Stop decision tree."""
+    """Apply the pre-registered 1017 Go/Revise/Stop decision tree."""
 
     validation_errors = validate_result_records(records, expected_samples=expected_samples)
     if validation_errors:
