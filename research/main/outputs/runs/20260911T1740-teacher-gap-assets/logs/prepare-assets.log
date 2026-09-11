@@ -1,0 +1,16 @@
+[assets] Qwen/Qwen3.5-4B revision=851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Still waiting to acquire lock on /leonardo_work/AIFAC_F02_774/sqs/models/Qwen3.5-4B-base/.cache/huggingface/.gitignore.lock (elapsed: 0.2 seconds)
+Still waiting to acquire lock on /leonardo_work/AIFAC_F02_774/sqs/models/Qwen3.5-4B-base/.cache/huggingface/.gitignore.lock (elapsed: 0.2 seconds)
+Still waiting to acquire lock on /leonardo_work/AIFAC_F02_774/sqs/models/Qwen3.5-4B-base/.cache/huggingface/.gitignore.lock (elapsed: 0.2 seconds)
+Still waiting to acquire lock on /leonardo_work/AIFAC_F02_774/sqs/models/Qwen3.5-4B-base/.cache/huggingface/.gitignore.lock (elapsed: 0.2 seconds)
+Still waiting to acquire lock on /leonardo_work/AIFAC_F02_774/sqs/models/Qwen3.5-4B-base/.cache/huggingface/.gitignore.lock (elapsed: 0.2 seconds)
+path=/leonardo_work/AIFAC_F02_774/sqs/models/Qwen3.5-4B-base
+[assets] Qwen/Qwen3.5-9B revision=c202236235762e1c871ad0ccb60c8ee5ba337b9a
+Still waiting to acquire lock on /leonardo_work/AIFAC_F02_774/sqs/models/Qwen3.5-9B-base/.cache/huggingface/.gitignore.lock (elapsed: 0.1 seconds)
+Still waiting to acquire lock on /leonardo_work/AIFAC_F02_774/sqs/models/Qwen3.5-9B-base/.cache/huggingface/.gitignore.lock (elapsed: 0.1 seconds)
+Still waiting to acquire lock on /leonardo_work/AIFAC_F02_774/sqs/models/Qwen3.5-9B-base/.cache/huggingface/.gitignore.lock (elapsed: 0.1 seconds)
+Still waiting to acquire lock on /leonardo_work/AIFAC_F02_774/sqs/models/Qwen3.5-9B-base/.cache/huggingface/.gitignore.lock (elapsed: 0.1 seconds)
+Still waiting to acquire lock on /leonardo_work/AIFAC_F02_774/sqs/models/Qwen3.5-9B-base/.cache/huggingface/.gitignore.lock (elapsed: 0.1 seconds)
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+path=/leonardo_work/AIFAC_F02_774/sqs/models/Qwen3.5-9B-base
