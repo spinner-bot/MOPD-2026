@@ -247,6 +247,15 @@ def main() -> None:
         members = [item for item in shortlist if item["question_hop"] == hop]
         representatives.extend(members[:per_hop])
     representatives = representatives[: args.representatives]
+    if len(representatives) < args.representatives:
+        # deterministic top-up in shortlist order when small strata under-fill
+        chosen = {item["candidate_id"] for item in representatives}
+        for item in shortlist:
+            if len(representatives) >= args.representatives:
+                break
+            if item["candidate_id"] not in chosen:
+                representatives.append(item)
+                chosen.add(item["candidate_id"])
     rep_ids = {item["candidate_id"] for item in representatives}
     representative_rows = []
     for item in representatives:

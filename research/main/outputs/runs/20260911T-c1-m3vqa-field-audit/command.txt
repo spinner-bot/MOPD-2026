@@ -1,0 +1,9 @@
+# C1 执行命令（计算于 Leonardo login 节点，无 Slurm/GPU；PY=miniconda3 python 3.11.16）
+# W=/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa ; R=~/spinner-bot/MOPD-2026/research/main
+$PY $R/code/data_pipeline/build_m3vqa_annotation_queue.py --input $W/source/quesions.jsonl --output $W/processed/c1-audit/m3vqa-annotation-queue.jsonl
+touch ~/c1-scratch/empty-vision.jsonl
+$PY $R/code/data_pipeline/build_stage0_candidate_pool.py --vision-records ~/c1-scratch/empty-vision.jsonl --m3vqa-candidates $W/processed/c1-audit/m3vqa-annotation-queue.jsonl --m3vqa-image-root $W/materialized --accepted-output $W/processed/c1-audit/source-normalized-m3vqa.jsonl --rejected-output $W/processed/c1-audit/source-rejected-m3vqa.jsonl --summary-output $W/processed/c1-audit/pool-summary.json
+$PY $R/code/data_pipeline/audit_m3vqa_pilot_candidates.py --input $W/processed/c1-audit/source-normalized-m3vqa.jsonl --output-dir ~/c1-scratch/audit-run1
+$PY $R/code/data_pipeline/audit_m3vqa_pilot_candidates.py --input $W/processed/c1-audit/source-normalized-m3vqa.jsonl --output-dir ~/c1-scratch/audit-run2
+# 双跑哈希一致后，audit-run1/* 以 scp 归档至本目录 outputs/
+# 输入产物链上游：Codex 档案 20260911T0212-m3vqa-materialize（images 10,565 张，SHA-256 见其 summary.txt）
