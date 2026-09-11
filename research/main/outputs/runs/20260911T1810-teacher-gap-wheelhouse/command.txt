@@ -1,0 +1,4 @@
+PIP_CACHE_DIR=/leonardo_work/AIFAC_F02_774/sqs/cache/pip \
+/leonardo_work/AIFAC_F02_774/rqian000/miniconda3/bin/python -m pip download \
+  --dest /leonardo_work/AIFAC_F02_774/sqs/cache/wheelhouse-stage0-py311 \
+  --requirement research/main/requirements-stage0.lock

@@ -90,10 +90,11 @@ def validate_locked_manifest(samples: list[dict], expected_n: int = 96) -> list[
 
 
 def validate_partition_isolation(partitions: dict[str, list[dict]]) -> list[str]:
-    """Reject source-image overlap among canary, dev, and locked manifests."""
+    """Reject source-image or known near-duplicate-cluster partition overlap."""
 
     errors = []
     owners: dict[str, str] = {}
+    cluster_owners: dict[str, str] = {}
     for name in sorted(partitions):
         for row in partitions[name]:
             source_id = str(row.get("source_image_id", "")).strip()
@@ -103,6 +104,14 @@ def validate_partition_isolation(partitions: dict[str, list[dict]]) -> list[str]
                 errors.append(f"source_image_id {source_id} overlaps {owners[source_id]} and {name}")
             else:
                 owners[source_id] = name
+            cluster_id = str(row.get("source_cluster_id", "")).strip()
+            if cluster_id:
+                if cluster_id in cluster_owners and cluster_owners[cluster_id] != name:
+                    errors.append(
+                        f"source_cluster_id {cluster_id} overlaps {cluster_owners[cluster_id]} and {name}"
+                    )
+                else:
+                    cluster_owners[cluster_id] = name
     return errors
 
 
@@ -127,7 +136,13 @@ def validate_result_records(
         errors.append(f"expected {expected_samples} unique sample ids, found {len(by_sample)}")
 
     parsed = 0
-    global_fields = ("manifest_hash", "model_revision", "processor_revision", "code_commit")
+    global_fields = (
+        "manifest_hash",
+        "model_revision",
+        "processor_revision",
+        "code_commit",
+        "shell_hash",
+    )
     global_values = {field: set() for field in global_fields}
     for index, row in enumerate(records):
         key = f"{row.get('sample_id', '<missing>')}/{row.get('condition', '<missing>')}"
@@ -139,12 +154,24 @@ def validate_result_records(
             errors.append(f"{key}: output is truncated or missing EOS")
         if row.get("parsed_answer") in CHOICES:
             parsed += 1
+        if row.get("correct_choice") not in CHOICES:
+            errors.append(f"{key}: correct_choice must be A, B, C, or D")
+        if not isinstance(row.get("correct"), bool):
+            errors.append(f"{key}: correct must be boolean")
+        elif row.get("parsed_answer") in CHOICES and row["correct"] != (row["parsed_answer"] == row.get("correct_choice")):
+            errors.append(f"{key}: correct disagrees with parsed_answer and correct_choice")
+        if not isinstance(row.get("correct_log_prob"), (int, float)) or not math.isfinite(row["correct_log_prob"]):
+            errors.append(f"{key}: correct_log_prob must be finite")
         scores = row.get("choice_log_likelihoods")
         probabilities = row.get("choice_probabilities")
         if not isinstance(scores, dict) or set(scores) != set(CHOICES):
             errors.append(f"{key}: four choice log-likelihoods are required")
         elif not all(isinstance(v, (int, float)) and math.isfinite(v) for v in scores.values()):
             errors.append(f"{key}: choice log-likelihoods must be finite")
+        elif row.get("correct_choice") in CHOICES and isinstance(row.get("correct_log_prob"), (int, float)) and not math.isclose(
+            float(row["correct_log_prob"]), float(scores[row["correct_choice"]]), rel_tol=0, abs_tol=1e-8
+        ):
+            errors.append(f"{key}: correct_log_prob disagrees with choice score")
         if not isinstance(probabilities, dict) or set(probabilities) != set(CHOICES):
             errors.append(f"{key}: four choice probabilities are required")
         elif not all(isinstance(v, (int, float)) and math.isfinite(v) and v >= 0 for v in probabilities.values()):

@@ -1,0 +1,3 @@
+model_4b=/leonardo_work/AIFAC_F02_774/sqs/models/Qwen3.5-4B-base
+model_9b=/leonardo_work/AIFAC_F02_774/sqs/models/Qwen3.5-9B-base
+status=completed

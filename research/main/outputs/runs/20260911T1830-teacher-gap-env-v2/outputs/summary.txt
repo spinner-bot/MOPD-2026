@@ -1,0 +1,3 @@
+environment=/leonardo_work/AIFAC_F02_774/sqs/envs/mopd-stage0-py311
+lock=/leonardo/home/userexternal/rqian000/spinner-bot/MOPD-2026/research/main/requirements-stage0.lock
+status=completed
