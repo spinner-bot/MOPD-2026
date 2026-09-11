@@ -1,0 +1,2 @@
+JOB_ID=57308951
+sbatch --parsable --dependency=afterok:57308028 --export=ALL,MOPD_ROOT=$PWD/research/main,MOPD_INPUT=$PWD/research/main/outputs/runs/20260911T1840-teacher-gap-screen-c1-128/parsed/construction-inputs.jsonl,MOPD_RUN_ID=20260911T1850-teacher-gap-construct-c1-128,MOPD_PYTHON=/leonardo_work/AIFAC_F02_774/sqs/envs/mopd-stage0-py311/bin/python,MOPD_MODEL_9B=/leonardo_work/AIFAC_F02_774/sqs/models/Qwen3.5-9B-base,MOPD_IMAGE_ROOT=/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images research/main/code/utils/submit_teacher_gap_construction.sbatch
