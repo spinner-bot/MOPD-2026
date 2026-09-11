@@ -51,6 +51,7 @@ def main() -> None:
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--model", type=Path, required=True)
     parser.add_argument("--model-revision", required=True)
+    parser.add_argument("--image-root", type=Path, required=True)
     parser.add_argument("--rank", type=int, default=0)
     parser.add_argument("--world-size", type=int, default=1)
     parser.add_argument("--limit", type=int, default=0, help="per-rank record limit; zero means all")
@@ -62,6 +63,7 @@ def main() -> None:
         raise SystemExit("rank must satisfy 0 <= rank < world-size")
     if not args.model.is_dir():
         raise SystemExit(f"missing model directory: {args.model}")
+    image_root = args.image_root.resolve(strict=True)
 
     import torch
     from PIL import Image
@@ -113,7 +115,9 @@ def main() -> None:
                 candidate_errors = validate_candidate(candidate)
                 if candidate_errors:
                     raise ValueError(",".join(candidate_errors))
-                image_path = Path(candidate["image_original"])
+                image_path = Path(candidate["image_original"]).resolve(strict=True)
+                if not image_path.is_relative_to(image_root):
+                    raise ValueError(f"image path escapes image root: {image_path}")
                 if not image_path.is_file():
                     raise FileNotFoundError(image_path)
                 with Image.open(image_path) as image:

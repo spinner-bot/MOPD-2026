@@ -108,6 +108,7 @@ def main() -> None:
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--model", type=Path, required=True)
     parser.add_argument("--model-revision", required=True)
+    parser.add_argument("--image-root", type=Path, required=True)
     parser.add_argument("--rank", type=int, default=0)
     parser.add_argument("--world-size", type=int, default=1)
     parser.add_argument("--expected-samples", type=int, default=96)
@@ -121,6 +122,7 @@ def main() -> None:
     if manifest_errors:
         raise SystemExit("locked manifest invalid: " + "; ".join(manifest_errors))
     manifest_hash = sha256_file(args.manifest)
+    image_root = args.image_root.resolve(strict=True)
 
     import torch
     from qwen_vl_utils import process_vision_info
@@ -182,7 +184,9 @@ def main() -> None:
                 "generation_config": {"do_sample": False, "constrained_to": list(CHOICES)},
             }
             try:
-                image_path = Path(rendered.image_path)
+                image_path = Path(rendered.image_path).resolve(strict=True)
+                if not image_path.is_relative_to(image_root):
+                    raise ValueError(f"image path escapes image root: {image_path}")
                 image_checksum = sha256_file(image_path)
                 if image_checksum != sample["image_checksum"]:
                     raise ValueError("image checksum differs from locked manifest")
@@ -234,4 +238,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
