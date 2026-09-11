@@ -1,0 +1,4 @@
+# 提交于 2026-09-11 22:15 (UTC+8)，login02，claude code (local)（admin 滚动提交指令）
+JOB_ID=57331304
+sbatch --parsable --dependency=afterok:57331300 --export=ALL,MOPD_ROOT=$R,MOPD_INPUT=$R/outputs/runs/20260911T2215-teacher-gap-screen-fullpool-c3/parsed/construction-inputs.jsonl,MOPD_RUN_ID=20260911T2215-teacher-gap-construct-fullpool-c3,MOPD_PYTHON=$W/envs/mopd-stage0-py311/bin/python,MOPD_MODEL_9B=$W/models/Qwen3.5-9B-base,MOPD_IMAGE_ROOT=$W/data/m3vqa/materialized/images research/main/code/utils/submit_teacher_gap_construction.sbatch
+# afterok：对应 screen 块失败则本作业自动不启动；复用 Codex sbatch 原样零修改
