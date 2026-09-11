@@ -1,0 +1,2 @@
+JOB_ID=57307611
+sbatch --parsable --export=ALL,MOPD_ROOT=$PWD/research/main,MOPD_RUN_ID=20260911T1830-teacher-gap-env-v2,MOPD_STORAGE_ROOT=/leonardo_work/AIFAC_F02_774/sqs,MOPD_WHEELHOUSE=/leonardo_work/AIFAC_F02_774/sqs/cache/wheelhouse-stage0-py311 research/main/code/utils/prepare_teacher_gap_env.sbatch
