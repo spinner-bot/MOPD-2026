@@ -1,0 +1,11 @@
+{
+  "run_id": "20260911T1840-teacher-gap-screen-c1-128",
+  "stage": "W2A",
+  "purpose": "Run blind image solver and entailment auditor on the fixed 128-record C1 candidate shortlist",
+  "created_at_utc": "2026-09-11T10:05:08.509460+00:00",
+  "operator": "rqian000",
+  "hostname": "login02.leonardo.local",
+  "git_commit": "b562db5b9a852e9d3ed7385f4b0842a342822d17",
+  "slurm_job_id": null,
+  "status": "initialized"
+}
