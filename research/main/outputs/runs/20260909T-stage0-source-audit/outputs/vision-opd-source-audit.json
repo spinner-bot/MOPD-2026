@@ -1,0 +1,32 @@
+{
+  "source": "/leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/payload/data/raw/vision-opd-6k/train.jsonl",
+  "n_records": 6241,
+  "required_field_coverage": {},
+  "missing_required_field_records": {
+    "sample_id": 6241,
+    "source_image_id": 6241,
+    "final_question": 6241,
+    "option_A": 6241,
+    "option_B": 6241,
+    "option_C": 6241,
+    "option_D": 6241,
+    "final_answer": 6241,
+    "image_original": 6241,
+    "crop_primary": 6241,
+    "random_questions": 6241,
+    "random_questions_frozen": 6241
+  },
+  "task_family": {
+    "MISSING": 6241
+  },
+  "guidance_strategy": {
+    "MISSING": 6241
+  },
+  "reasoning_depth": {
+    "MISSING": 6241
+  },
+  "complete_guiding_qa_pairs_per_record": {
+    "0": 6241
+  },
+  "formal_stage0_eligible": false
+}
