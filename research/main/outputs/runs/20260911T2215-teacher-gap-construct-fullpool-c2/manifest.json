@@ -1,0 +1,11 @@
+{
+  "run_id": "20260911T2215-teacher-gap-construct-fullpool-c2",
+  "stage": "W2B",
+  "purpose": "Construction for full-pool screening chunk c2 (afterok:57331299); proposals remain candidates pending 100% human review",
+  "created_at_utc": "2026-09-11T14:13:14.344105+00:00",
+  "operator": "rqian000",
+  "hostname": "login02.leonardo.local",
+  "git_commit": "3e594ed21f1c13b565ea899a13834954314ce0f5",
+  "slurm_job_id": null,
+  "status": "initialized"
+}
