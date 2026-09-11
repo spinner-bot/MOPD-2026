@@ -275,6 +275,50 @@ class TestC2Contract(C2Fixture):
                 errors = validate_candidate(rec)
                 self.assertEqual(errors, [], f"tier {tier} {rec['candidate_id']}: {errors}")
 
+    def test_aligned_packet_over_frozen_external_expansion(self):
+        from teacher_gap_candidate_contract import validate_candidate
+        aligned_ids = sorted(self.good_ids)[6:18]  # overlaps shortlist in exactly 2 ids
+        aligned_path = self.root / "aligned-fixture.jsonl"
+        aligned_path.write_text(
+            "".join(json.dumps({"candidate_id": c}) + "\n" for c in aligned_ids), encoding="utf-8")
+        out = self.root / "out12"
+        self.run_c2(out, extra=["--aligned", str(aligned_path)])
+        records = [json.loads(line) for line in
+                   (out / "enriched-aligned-12.jsonl").read_text(encoding="utf-8").splitlines() if line.strip()]
+        self.assertEqual(len(records), 12)
+        self.assertEqual({r["candidate_id"] for r in records}, set(aligned_ids))
+        expected_overlap = set(aligned_ids) & set(self.shortlist_ids)
+        self.assertEqual({r["candidate_id"] for r in records if r["in_c1_shortlist"]}, expected_overlap)
+        for rec in records:
+            self.assertEqual(rec["tier_origin"], "codex_frozen_expansion")
+            self.assertEqual(rec["tier"], "aligned-12")
+            self.assertEqual(validate_candidate(rec), [])
+        summary = self.summary(out)
+        self.assertEqual(summary["aligned_packet"]["count"], 12)
+        self.assertEqual(summary["aligned_packet"]["overlap_with_c1_shortlist"], len(expected_overlap))
+        self.assertEqual(summary["aligned_packet"]["new_vs_c1_shortlist"], 12 - len(expected_overlap))
+        rows = [json.loads(line) for line in
+                (out / "review-aligned-12.jsonl").read_text(encoding="utf-8").splitlines() if line.strip()]
+        for row in rows:
+            for field in c2.HUMAN_FIELDS:
+                self.assertEqual(row[field], "")
+        for path in out.iterdir():
+            self.assertNotIn(SECRET_EVIDENCE.encode("utf-8"), path.read_bytes(),
+                             f"evidence text leaked into {path.name}")
+
+    def test_aligned_fail_closed_unknown_id(self):
+        aligned_path = self.root / "aligned-bad.jsonl"
+        aligned_path.write_text(
+            json.dumps({"candidate_id": self.shortlist_ids[0]}) + "\n"
+            + json.dumps({"candidate_id": self.defects["raw_join_miss"]}) + "\n",
+            encoding="utf-8")
+        argv = ["--raw", str(self.raw_path), "--normalized", str(self.norm_path),
+                "--shortlist", str(self.shortlist_path), "--output-dir", str(self.root / "out13"),
+                "--seed", str(SEED), "--tiers", TIERS, "--aligned", str(aligned_path)]
+        with self.assertRaises(SystemExit):
+            with contextlib.redirect_stdout(io.StringIO()):
+                c2.main(argv)
+
     def test_summary_hashes_match_files(self):
         out = self.root / "out10"
         self.run_c2(out)
