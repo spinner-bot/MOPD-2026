@@ -1,0 +1,2 @@
+JOB_ID=57306228
+sbatch --parsable --export=ALL,MOPD_ROOT=$PWD/research/main,MOPD_RUN_ID=20260911T1800-teacher-gap-env,MOPD_STORAGE_ROOT=/leonardo_work/AIFAC_F02_774/sqs research/main/code/utils/prepare_teacher_gap_env.sbatch
