@@ -106,6 +106,11 @@ class TeacherGapCandidatePipelineTests(unittest.TestCase):
             self.assertNotIn("TOP SECRET", prompt)
             self.assertNotIn("example.invalid", prompt)
 
+    def test_blind_prompt_bounds_evidence_output(self):
+        prompt = render_stage_prompt(candidate(), "blind")
+        self.assertIn("1-4 distinct observations", prompt)
+        self.assertIn("Do not repeat an observation", prompt)
+
     def test_valid_proposals_and_candidate_selection(self):
         self.assertEqual(validate_blind(blind()), [])
         self.assertEqual(validate_audit(audit()), [])
