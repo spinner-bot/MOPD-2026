@@ -1,0 +1,2 @@
+JOB_ID=57357180
+sbatch --parsable --export=ALL,MOPD_ROOT=/leonardo/home/userexternal/rqian000/spinner-bot/MOPD-2026/research/main,MOPD_INPUT=/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/processed/exp-fullpool/chunk_c1.jsonl,MOPD_RUN_ID=20260912T0320-teacher-gap-screen-fullpool-c1-r2,MOPD_PYTHON=/leonardo_work/AIFAC_F02_774/sqs/envs/mopd-stage0-py311/bin/python,MOPD_MODEL_9B=/leonardo_work/AIFAC_F02_774/sqs/models/Qwen3.5-9B-base,MOPD_IMAGE_ROOT=/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images research/main/code/utils/submit_teacher_gap_screening.sbatch
