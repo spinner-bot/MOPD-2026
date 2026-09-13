@@ -20,7 +20,8 @@ MODEL="${MOPD_MODEL_9B:-/leonardo_work/AIFAC_F02_774/sqs/models/Qwen3.5-9B-base}
 IMAGE_ROOT="${MOPD_IMAGE_ROOT:-/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images}"
 REVISION="c202236235762e1c871ad0ccb60c8ee5ba337b9a"
 EXPECTED_COMMIT="${MOPD_EXPECTED_CODE_COMMIT:?set MOPD_EXPECTED_CODE_COMMIT to the submitted git HEAD}"
-MAX_NEW_TOKENS="${MOPD_MAX_NEW_TOKENS:-1536}"
+MAX_NEW_TOKENS="${MOPD_MAX_NEW_TOKENS:-768}"
+FALLBACK_MAX_NEW_TOKENS="${MOPD_FALLBACK_MAX_NEW_TOKENS:-512}"
 THINKING="${MOPD_THINKING:-false}"
 EXPECTED="$(wc -l < "${INPUT}")"
 RUNNER="${ROOT}/code/data_pipeline/run_teacher_gap_candidate_stage.py"
@@ -38,7 +39,7 @@ ACTUAL_COMMIT="$(git -C "${ROOT}" rev-parse HEAD)"
   exit 2
 }
 mkdir -p "${RUN}"/{canary,raw,parsed,rejects,summaries,logs}
-export ROOT INPUT RUN PY MODEL IMAGE_ROOT REVISION EXPECTED_COMMIT MAX_NEW_TOKENS THINKING RUNNER
+export ROOT INPUT RUN PY MODEL IMAGE_ROOT REVISION EXPECTED_COMMIT MAX_NEW_TOKENS FALLBACK_MAX_NEW_TOKENS THINKING RUNNER
 
 run_construct() {
   local destination="$1" limit="$2"
@@ -54,6 +55,7 @@ run_construct() {
       --model "${MODEL}" --model-revision "${REVISION}" --code-commit "${EXPECTED_COMMIT}" \
       --image-root "${IMAGE_ROOT}" \
       --rank "${rank}" --world-size 4 --max-new-tokens "${MAX_NEW_TOKENS}" \
+      --fallback-max-new-tokens "${FALLBACK_MAX_NEW_TOKENS}" \
       "${extra[@]}"
   '
 }
@@ -70,7 +72,8 @@ run_construct "${RUN}/canary/construct" "${PER_RANK_LIMIT}"
   --summary "${RUN}/summaries/construct-canary.json" \
   --expected-total "${CANARY_EXPECTED}" --min-parse-rate 0.75 \
   --expected-world-size 4 --expected-thinking "${THINKING}" \
-  --expected-max-new-tokens "${MAX_NEW_TOKENS}"
+  --expected-primary-max-new-tokens "${MAX_NEW_TOKENS}" \
+  --expected-fallback-max-new-tokens "${FALLBACK_MAX_NEW_TOKENS}"
 
 mkdir -p "${RUN}/raw/construct"
 run_construct "${RUN}/raw/construct" 0
@@ -79,7 +82,8 @@ run_construct "${RUN}/raw/construct" 0
   --summary "${RUN}/summaries/construct-completion.json" \
   --expected-total "${EXPECTED}" --min-parse-rate 0.90 \
   --expected-world-size 4 --expected-thinking "${THINKING}" \
-  --expected-max-new-tokens "${MAX_NEW_TOKENS}"
+  --expected-primary-max-new-tokens "${MAX_NEW_TOKENS}" \
+  --expected-fallback-max-new-tokens "${FALLBACK_MAX_NEW_TOKENS}"
 "${PY}" "${PROCESS}" parse --stage construct \
   --inputs "${RUN}/raw/construct/rank-*.jsonl" \
   --parsed-output "${RUN}/parsed/construct.jsonl" \

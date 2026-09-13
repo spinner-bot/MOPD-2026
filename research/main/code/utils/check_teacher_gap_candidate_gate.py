@@ -13,8 +13,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "data_pipeline"))
 
+from extract_json_response import extract_json_object
 from process_teacher_gap_candidate_stage import parse_records
-from teacher_gap_candidate_contract import STAGES
+from teacher_gap_candidate_contract import STAGES, proposal_errors
 
 
 PROMPT_FIELDS = {
@@ -47,7 +48,8 @@ def summarize_and_validate(
     min_parse_rate: float = 0.95,
     expected_world_size: int = 4,
     expected_thinking: bool | None = None,
-    expected_max_new_tokens: int | None = None,
+    expected_primary_max_new_tokens: int | None = None,
+    expected_fallback_max_new_tokens: int | None = None,
 ) -> tuple[dict, list[str]]:
     parsed, rejected, parse_summary = parse_records(rows, stage)
     ids = [row.get("candidate_id") for row in rows]
@@ -68,6 +70,14 @@ def summarize_and_validate(
     thinking_modes = {value for value in thinking_values if type(value) is bool}
     generation_configs = {canonical_json(row.get("generation_config")) for row in rows}
     input_indices = [row.get("input_index") for row in rows]
+    fallback_used = sum(row.get("fallback_used") is True for row in rows)
+    fallback_recovered = sum(row.get("fallback_recovered") is True for row in rows)
+    primary_truncated = sum(
+        isinstance(row.get("attempts"), list)
+        and bool(row["attempts"])
+        and row["attempts"][0].get("truncated") is True
+        for row in rows
+    )
 
     summary = {
         "stage": stage,
@@ -84,6 +94,9 @@ def summarize_and_validate(
         "world_sizes": world_sizes,
         "thinking_modes": sorted(str(value) for value in thinking_modes),
         "generation_configs": sorted(generation_configs),
+        "fallback_used": fallback_used,
+        "fallback_recovered": fallback_recovered,
+        "primary_truncated": primary_truncated,
         "parse_summary": parse_summary,
     }
     failures = []
@@ -128,13 +141,90 @@ def summarize_and_validate(
             not isinstance(config, dict)
             or config.get("do_sample") is not False
             or config.get("structured_output_repetition_constraints") != "disabled"
-            or not isinstance(config.get("max_new_tokens"), int)
-            or isinstance(config.get("max_new_tokens"), bool)
-            or config.get("max_new_tokens") < 1
+            or config.get("max_attempts") != 2
+            or not isinstance(config.get("primary_max_new_tokens"), int)
+            or isinstance(config.get("primary_max_new_tokens"), bool)
+            or config.get("primary_max_new_tokens") < 1
+            or not isinstance(config.get("fallback_max_new_tokens"), int)
+            or isinstance(config.get("fallback_max_new_tokens"), bool)
+            or config.get("fallback_max_new_tokens") < 1
         ):
             failures.append(f"{key}: invalid generation_config")
-        elif expected_max_new_tokens is not None and config["max_new_tokens"] != expected_max_new_tokens:
-            failures.append(f"{key}: max_new_tokens differs from submitted value")
+        else:
+            if (
+                expected_primary_max_new_tokens is not None
+                and config["primary_max_new_tokens"] != expected_primary_max_new_tokens
+            ):
+                failures.append(f"{key}: primary_max_new_tokens differs from submitted value")
+            if (
+                expected_fallback_max_new_tokens is not None
+                and config["fallback_max_new_tokens"] != expected_fallback_max_new_tokens
+            ):
+                failures.append(f"{key}: fallback_max_new_tokens differs from submitted value")
+
+        attempts = row.get("attempts")
+        if not isinstance(attempts, list) or not 1 <= len(attempts) <= 2:
+            failures.append(f"{key}: attempts must contain primary and optional fallback")
+            attempts = []
+        elif row.get("attempt_count") != len(attempts) or row.get("chosen_attempt") != len(attempts) - 1:
+            failures.append(f"{key}: attempt count or chosen index mismatch")
+        if attempts and any(not isinstance(attempt, dict) for attempt in attempts):
+            failures.append(f"{key}: every attempt must be an object")
+            attempts = []
+        if attempts:
+            if attempts[0].get("attempt_kind") != "primary":
+                failures.append(f"{key}: first attempt must be primary")
+            should_fallback = bool(attempts[0].get("validation_errors"))
+            if len(attempts) == 2 and attempts[1].get("attempt_kind") != "compact_fallback":
+                failures.append(f"{key}: second attempt must be compact_fallback")
+            if row.get("fallback_used") is not (len(attempts) == 2):
+                failures.append(f"{key}: fallback_used mismatch")
+            if should_fallback != (len(attempts) == 2):
+                failures.append(f"{key}: fallback presence disagrees with primary validity")
+            for attempt_index, attempt in enumerate(attempts):
+                raw_output = str(attempt.get("raw_model_output", ""))
+                proposal = extract_json_object(raw_output)
+                computed_errors = []
+                if attempt.get("truncated") is not False or attempt.get("eos_reached") is not True:
+                    computed_errors.append("truncated_output")
+                if proposal is None:
+                    computed_errors.append("invalid_json")
+                else:
+                    computed_errors.extend(proposal_errors(stage, proposal, row.get("candidate", {})))
+                computed_errors = sorted(set(computed_errors))
+                if attempt.get("validation_errors") != computed_errors:
+                    failures.append(f"{key}: attempt {attempt_index} validation_errors mismatch")
+                if attempt.get("schema_valid") is not (not computed_errors):
+                    failures.append(f"{key}: attempt {attempt_index} schema_valid mismatch")
+                for field in ("prompt_hash", "chat_template_hash"):
+                    if not str(attempt.get(field, "")).strip():
+                        failures.append(f"{key}: attempt {attempt_index} missing {field}")
+                for field in ("max_new_tokens", "input_tokens", "generated_tokens"):
+                    value = attempt.get(field)
+                    if not isinstance(value, int) or isinstance(value, bool) or value < 1:
+                        failures.append(f"{key}: attempt {attempt_index} invalid {field}")
+                if isinstance(config, dict):
+                    expected_attempt_cap = config.get(
+                        "primary_max_new_tokens"
+                        if attempt_index == 0
+                        else "fallback_max_new_tokens"
+                    )
+                    if attempt.get("max_new_tokens") != expected_attempt_cap:
+                        failures.append(
+                            f"{key}: attempt {attempt_index} max_new_tokens differs from generation_config"
+                        )
+            chosen = attempts[-1]
+            for field in (
+                "prompt_hash", "chat_template_hash", "input_tokens", "generated_tokens",
+                "eos_reached", "truncated", "raw_model_output",
+            ):
+                if row.get(field) != chosen.get(field):
+                    failures.append(f"{key}: top-level {field} differs from chosen attempt")
+            recovered = len(attempts) == 2 and not attempts[-1].get("validation_errors")
+            if row.get("fallback_recovered") is not recovered:
+                failures.append(f"{key}: fallback_recovered mismatch")
+            if row.get("primary_failure_reasons") != attempts[0].get("validation_errors"):
+                failures.append(f"{key}: primary_failure_reasons mismatch")
         for field in ("image_checksum", "prompt_hash", "chat_template_hash"):
             if not str(row.get(field, "")).strip():
                 failures.append(f"{key}: missing {field}")
@@ -164,7 +254,8 @@ def main() -> None:
     parser.add_argument("--min-parse-rate", type=float, default=0.95)
     parser.add_argument("--expected-world-size", type=int, default=4)
     parser.add_argument("--expected-thinking", choices=("true", "false"))
-    parser.add_argument("--expected-max-new-tokens", type=int)
+    parser.add_argument("--expected-primary-max-new-tokens", type=int)
+    parser.add_argument("--expected-fallback-max-new-tokens", type=int)
     args = parser.parse_args()
 
     paths = sorted(glob.glob(args.input_glob))
@@ -181,7 +272,8 @@ def main() -> None:
         min_parse_rate=args.min_parse_rate,
         expected_world_size=args.expected_world_size,
         expected_thinking=expected_thinking,
-        expected_max_new_tokens=args.expected_max_new_tokens,
+        expected_primary_max_new_tokens=args.expected_primary_max_new_tokens,
+        expected_fallback_max_new_tokens=args.expected_fallback_max_new_tokens,
     )
     summary["files"] = paths
     summary["failures"] = failures

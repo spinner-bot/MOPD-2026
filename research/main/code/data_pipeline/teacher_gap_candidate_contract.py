@@ -51,6 +51,28 @@ Create 1-4 indispensable guide QA pairs and three plausible same-type distractor
 Return exactly one JSON object and no other text:
 {{"decision":"accept_candidate|reject","guides":[{{"question":"...","answer":"...","supports_next":"node id"}}],"correct_answer_text":"...","distractors":["...","...","..."],"generic_context_seed":"inspect-compare-verify","answer_leakage":false,"external_fact_injected":false,"rejection_reason":""}}"""
 
+COMPACT_BLIND_PROMPT = """Inspect the complete image and answer this closed-world audit question using no outside facts:
+{question}
+Return one compact JSON object, no markdown or analysis, with exactly these keys:
+{{"candidate_answer":"under 12 words","visible_evidence":["observation under 12 words","optional second observation under 12 words"],"image_is_necessary":true,"requires_unprovided_fact":false,"ambiguous":false,"uncertainty":"low|medium|high"}}
+Use 1-2 distinct visible_evidence items. Stop immediately after the closing brace."""
+
+COMPACT_AUDIT_PROMPT = """Audit whether the reference answer is uniquely entailed by the complete image and question, without outside facts.
+Question: {question}
+Reference answer aliases: {answers}
+Return one compact JSON object, no markdown or analysis, with exactly these keys:
+{{"knowledge_dependency_label":"image_only|external_required|ambiguous","reason_codes":["short_code"],"reference_entailed":true,"unique_answer":true,"image_is_necessary":true,"full_image_reference_valid":true,"task_family":"R","reasoning_depth":2,"required_evidence":["E1","E2"],"minimal_reasoning_graph":{{"nodes":[{{"id":"e1","type":"evidence","claim":"E1"}},{{"id":"e2","type":"evidence","claim":"E2"}},{{"id":"h1","type":"intermediate","claim":"short intermediate"}},{{"id":"a","type":"answer","claim":"short answer"}}],"edges":[["e1","h1"],["e2","h1"],["h1","a"]]}},"explanation":"under 20 words"}}
+For a non-qualifying sample use JSON null for task_family, reasoning_depth 0, required_evidence [], and minimal_reasoning_graph {{"nodes":[],"edges":[]}}. Stop after the closing brace."""
+
+COMPACT_CONSTRUCT_PROMPT = """Using only the complete image and audited visual path, construct short guides and options for this question.
+Question: {question}
+Reference answer aliases: {answers}
+Required visual evidence: {required_evidence}
+Audited reasoning graph: {reasoning_graph}
+Return one compact JSON object, no markdown or analysis, with exactly these keys:
+{{"decision":"accept_candidate","guides":[{{"question":"under 16 words","answer":"under 12 words","supports_next":"existing node id"}}],"correct_answer_text":"one reference alias","distractors":["same-type option","same-type option","same-type option"],"generic_context_seed":"inspect-compare-verify","answer_leakage":false,"external_fact_injected":false,"rejection_reason":""}}
+Use 1-3 guides, never state the final answer in a guide, and stop after the closing brace. If safe construction is impossible, return the same keys with decision "reject", empty guides/options/answer/seed, both booleans false, and a short rejection_reason."""
+
 
 def stable_hash(value: str) -> str:
     return hashlib.sha256(value.encode("utf-8")).hexdigest()
@@ -94,6 +116,34 @@ def render_stage_prompt(candidate: dict, stage: str, audit_proposal: dict | None
     if not isinstance(audit_proposal, dict):
         raise ValueError("construct stage requires audit_proposal")
     return CONSTRUCT_PROMPT.format(
+        question=question,
+        answers=answers,
+        required_evidence=json.dumps(audit_proposal.get("required_evidence", []), ensure_ascii=False),
+        reasoning_graph=json.dumps(audit_proposal.get("minimal_reasoning_graph", {}), ensure_ascii=False),
+    )
+
+
+def render_compact_stage_prompt(
+    candidate: dict,
+    stage: str,
+    audit_proposal: dict | None = None,
+) -> str:
+    """Render the recorded one-shot fallback prompt from the same allow-list."""
+
+    if stage not in STAGES:
+        raise ValueError(f"unsupported stage: {stage}")
+    errors = validate_candidate(candidate)
+    if errors:
+        raise ValueError(",".join(errors))
+    question = _text(candidate["final_question_source"])
+    answers = json.dumps(_answers(candidate), ensure_ascii=False)
+    if stage == "blind":
+        return COMPACT_BLIND_PROMPT.format(question=question)
+    if stage == "audit":
+        return COMPACT_AUDIT_PROMPT.format(question=question, answers=answers)
+    if not isinstance(audit_proposal, dict):
+        raise ValueError("construct stage requires audit_proposal")
+    return COMPACT_CONSTRUCT_PROMPT.format(
         question=question,
         answers=answers,
         required_evidence=json.dumps(audit_proposal.get("required_evidence", []), ensure_ascii=False),
