@@ -28,7 +28,7 @@
 
 ## 2. 审核材料与权威格式
 
-审核包位于对应运行档案的 `outputs/`。`review-*.csv` 便于浏览和分工；`review-*.jsonl` 是提交给 `finalize_teacher_gap_manifests.py` 的权威输入。旧审核包的字段不完整，不能直接用于冻结；必须用修复后的生成器在新运行档案中重新生成。
+模型构造完成后，先用 `build_teacher_gap_human_review_queue.py` 将通过结构校验的 construct 记录、blind/audit 提议、guides 和选项合并成完整审核队列。`review-*.csv` 便于浏览和分工；`review-*.jsonl` 是提交给 `finalize_teacher_gap_manifests.py` 的权威输入。旧 C2 审核包仅有原问题且字段不完整，不能直接用于冻结；必须从实际 W2B 构造产物生成新队列。
 
 CSV 中的数组、对象和布尔值容易被电子表格转成字符串。若在 CSV 中工作，交付前必须转换成下述 JSONL 类型，并通过终检程序。禁止手工填写 `human_verified`；该字段只在终检通过后由程序写入冻结清单。
 
@@ -118,5 +118,6 @@ JSON 布尔值必须写成不带引号的 `true`/`false`。`"yes"`、`"no"`、`1
 - 1019：C2 M3VQA 富化与人工审核包
 - 1020：W2 滚动作业链清点
 - `code/data_pipeline/build_m3vqa_teacher_gap_review_packet.py`：空白审核模板生成器
+- `code/data_pipeline/build_teacher_gap_human_review_queue.py`：构造产物与人工字段的完整审核队列生成器
 - `code/data_pipeline/finalize_teacher_gap_manifests.py`：人工审核终检与冻结程序
 - `code/data_pipeline/reasoning_graph_contract.py`：推理图权威结构校验器
