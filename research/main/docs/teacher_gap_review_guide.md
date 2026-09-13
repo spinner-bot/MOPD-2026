@@ -6,11 +6,11 @@
 
 **创建原因**：W2 teacher-gap pilot 完成后需进行人工审核，提前准备指引文档
 
-**修改时间**：2026-09-13 22:29（UTC+8）
+**修改时间**：2026-09-14 04:40（UTC+8）
 
 **修改作者**：Codex (CINECA Leonardo)
 
-**修改原因**：统一 1017 冻结协议、审核包字段和终检程序，修复旧指南取值与机器契约不兼容的问题
+**修改原因**：同步人工 evidence/DAG 集合一致性与 R/PR 困难视觉节点门禁，防止只改标签生成 PR
 
 ---
 
@@ -41,6 +41,7 @@ CSV 中的数组、对象和布尔值容易被电子表格转成字符串。若�
 | `human_unique_answer` | boolean | 合格样本必须为 `true` |
 | `human_full_image_valid` | boolean | 合格样本必须为 `true` |
 | `human_required_evidence` | array[string] | 至少两个非空、互不替代的视觉证据 |
+| `human_difficult_visual_evidence` | array[string] | R 必须为空；PR 至少一项，且每项逐字来自 `human_required_evidence` |
 | `human_reasoning_depth` | integer | 至少为 2，且等于图中从 evidence 到 answer 的最长边数 |
 | `human_reasoning_graph` | object | 满足第 4 节的最小有向无环图 |
 | `human_guides_ok` | boolean | 合格样本必须为 `true` |
@@ -86,6 +87,8 @@ JSON 布尔值必须写成不带引号的 `true`/`false`。`"yes"`、`"no"`、`1
 
 `required_evidence` 与图中 evidence claim 应表达同一组必要观察。若去掉任一证据答案仍可唯一推出，该样本不满足当前 R/PR 门槛，除非重新构造问题使该证据成为必要条件。
 
+终检按忽略大小写和首尾空白后的集合，要求 `human_required_evidence` 与推理图全部 evidence claim 精确一致且互不重复。PR 必须从该集合指出至少一个真实困难局部节点；R 的困难节点列表必须为空。只改 `human_task_family` 而不提供困难必要证据，不能把 R 升级为 PR。
+
 ## 5. 判定顺序
 
 1. **闭世界检查**：遮蔽参考答案和官方 evidence 文本，仅凭完整图像与题面判断可答性。需要百科、人物身份、历史地理事实或题面未给出的规则时，标为 `external_required`。
@@ -103,7 +106,7 @@ JSON 布尔值必须写成不带引号的 `true`/`false`。`"yes"`、`"no"`、`1
 ## 6. 完整 JSONL 合格示例
 
 ```json
-{"candidate_id":"m3vqa-example","human_knowledge_label":"image_only","human_task_family":"R","human_unique_answer":true,"human_full_image_valid":true,"human_required_evidence":["左侧连接关系","右侧连接关系"],"human_reasoning_depth":2,"human_reasoning_graph":{"nodes":[{"id":"e1","type":"evidence","claim":"左侧连接关系"},{"id":"e2","type":"evidence","claim":"右侧连接关系"},{"id":"h1","type":"intermediate","claim":"两条关系指向同一图形"},{"id":"a","type":"answer","claim":"选择三角形"}],"edges":[["e1","h1"],["e2","h1"],["h1","a"]]},"human_guides_ok":true,"human_options_ok":true,"human_answer_leakage":false,"human_external_fact_injected":false,"human_decision":"accept","human_reviewer":"reviewer-01","human_reviewed_at":"2026-09-13T22:29:00+08:00","human_notes":""}
+{"candidate_id":"m3vqa-example","human_knowledge_label":"image_only","human_task_family":"R","human_unique_answer":true,"human_full_image_valid":true,"human_required_evidence":["左侧连接关系","右侧连接关系"],"human_difficult_visual_evidence":[],"human_reasoning_depth":2,"human_reasoning_graph":{"nodes":[{"id":"e1","type":"evidence","claim":"左侧连接关系"},{"id":"e2","type":"evidence","claim":"右侧连接关系"},{"id":"h1","type":"intermediate","claim":"两条关系指向同一图形"},{"id":"a","type":"answer","claim":"选择三角形"}],"edges":[["e1","h1"],["e2","h1"],["h1","a"]]},"human_guides_ok":true,"human_options_ok":true,"human_answer_leakage":false,"human_external_fact_injected":false,"human_decision":"accept","human_reviewer":"reviewer-01","human_reviewed_at":"2026-09-13T22:29:00+08:00","human_notes":""}
 ```
 
 ## 7. 交付与验收
@@ -123,3 +126,11 @@ JSON 布尔值必须写成不带引号的 `true`/`false`。`"yes"`、`"no"`、`1
 - `code/data_pipeline/build_teacher_gap_human_review_queue.py`：构造产物与人工字段的完整审核队列生成器
 - `code/data_pipeline/finalize_teacher_gap_manifests.py`：人工审核终检与冻结程序
 - `code/data_pipeline/reasoning_graph_contract.py`：推理图权威结构校验器
+
+## 9. 修订记录
+
+| 时间（UTC+8） | 作者 | 触发原因 |
+|---|---|---|
+| 2026-09-12 14:45 | claude code (local) | 创建：W2 teacher-gap pilot 后提前准备人工审核和交付指引。 |
+| 2026-09-13 22:29 | Codex (CINECA Leonardo) | 修订：统一 1017 冻结协议、审核包字段和终检程序，修复旧指南取值与机器契约不兼容。 |
+| 2026-09-14 04:40 | Codex (CINECA Leonardo) | 修订：同步 `586c1d4` 的 evidence/DAG 集合一致性和 R/PR 困难视觉节点字段；补齐历史修订表。 |

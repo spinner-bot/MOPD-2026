@@ -102,7 +102,7 @@ research/main/outputs/runs/20260914T0328-image-affordance-b2a-blind-calibration/
 
 ### 3.7 区分 R 与 PR
 
-- **R**：关系推理链成立，所需局部证据在正常查看下清楚可辨；`human_difficult_visual_evidence` 可为空数组。
+- **R**：关系推理链成立，所需局部证据在正常查看下清楚可辨；`human_difficult_visual_evidence` 必须为空数组。若其中确有困难必要节点，应改判 PR。
 - **PR**：同一关系链成立，而且链上至少一项必要证据存在真实感知困难，例如小字、微小标记、密集遮挡或细粒度局部差异；必须在 `human_difficult_visual_evidence` 中具体写出该证据。
 
 图片复杂、物体很多或画面漂亮本身不构成 PR。困难视觉节点必须是答案链上的必要证据。
@@ -132,7 +132,7 @@ B2a 的 `human_verified` 是审核者对盲审字段的签名，与 `teacher_gap
 | `human_evidence_descriptions` | array[string] | 至少 2 项直接视觉事实 |
 | `human_reasoning_steps` | array[string] | 至少 2 项不可省略的变换 |
 | `human_counterfactual_required_evidence` | array[string] | 与直接证据列表为同一集合，至少 2 项 |
-| `human_difficult_visual_evidence` | array[string] | 必须来自直接证据列表；PR 至少 1 项，R 可空 |
+| `human_difficult_visual_evidence` | array[string] | 必须来自直接证据列表；PR 至少 1 项，R 必须为空 |
 | `human_external_knowledge_needed` | boolean | `false` |
 | `human_reviewer` | string | 非空稳定标识 |
 | `human_reviewed_at` | string | 带时区 ISO 8601 |
@@ -197,3 +197,4 @@ B2a 的 `human_verified` 是审核者对盲审字段的签名，与 `teacher_gap
 |---|---|---|
 | 2026-09-14 03:52 | Codex (CINECA Leonardo) | 创建：将 1035 的先人后机设计转成可直接执行的 32 图审核规则、字段类型、反事实检查与完成命令。 |
 | 2026-09-14 04:13 | Codex (CINECA Leonardo) | 修订：加入 B2b 锁后揭示命令；明确机器 invalid/unavailable 不得作为负例，比较字段继续由人工填写。 |
+| 2026-09-14 04:40 | Codex (CINECA Leonardo) | 修订：与 `586c1d4` 统一 R/PR 语义；R 的困难证据数组必须为空，PR 必须含至少一个属于必要证据集合的困难节点。 |
