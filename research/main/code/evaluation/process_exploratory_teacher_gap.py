@@ -31,13 +31,19 @@ def load_jsonl(patterns: list[str]) -> list[dict]:
 
 def write_jsonl(path: Path, rows: list[dict]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    with path.open("w", encoding="utf-8") as sink:
+    with path.open("x", encoding="utf-8") as sink:
         for row in rows:
             sink.write(json.dumps(row, ensure_ascii=False, sort_keys=True) + "\n")
 
 
 def file_sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def write_json_new(path: Path, value: dict) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("x", encoding="utf-8") as sink:
+        sink.write(json.dumps(value, ensure_ascii=False, indent=2, sort_keys=True) + "\n")
 
 
 def parse_constrained_answer(raw: dict) -> tuple[str | None, str | None]:
@@ -103,6 +109,8 @@ def main() -> None:
     args = parser.parse_args()
 
     if args.command == "validate-manifests":
+        if args.summary.exists():
+            raise SystemExit(f"refusing to overwrite manifest gate summary: {args.summary}")
         paths = {"canary": args.canary, "dev": args.dev, "locked": args.locked}
         partitions = {name: load_jsonl([str(path)]) for name, path in paths.items()}
         errors = validate_manifest_bundle(partitions)
@@ -113,15 +121,13 @@ def main() -> None:
             "validation_errors": errors,
             "performance_results_read": False,
         }
-        args.summary.parent.mkdir(parents=True, exist_ok=True)
-        args.summary.write_text(
-            json.dumps(summary, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
-            encoding="utf-8",
-        )
+        write_json_new(args.summary, summary)
         print(json.dumps(summary, ensure_ascii=False, sort_keys=True))
         if errors:
             raise SystemExit("teacher-gap manifest bundle FAILED: " + "; ".join(errors))
     elif args.command == "validate":
+        if args.parsed_output.exists() or args.summary.exists():
+            raise SystemExit("refusing to overwrite parsed output or validation summary")
         rows = [enrich_raw_record(row) for row in load_jsonl(args.inputs)]
         errors = validate_result_records(rows, expected_samples=args.expected_samples)
         summary = {
@@ -133,21 +139,21 @@ def main() -> None:
             "status": "passed" if not errors else "failed",
             "note": "No condition-level performance is emitted before the completeness gate passes.",
         }
-        args.summary.parent.mkdir(parents=True, exist_ok=True)
-        args.summary.write_text(json.dumps(summary, ensure_ascii=False, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        write_json_new(args.summary, summary)
         if errors:
             raise SystemExit("teacher-gap result gate FAILED: " + "; ".join(errors))
         write_jsonl(args.parsed_output, rows)
         print(json.dumps(summary, ensure_ascii=False, sort_keys=True))
     else:
+        if args.output.exists():
+            raise SystemExit(f"refusing to overwrite decision output: {args.output}")
         rows = load_jsonl([str(args.input)])
         decision = decide_teacher_gap(
             rows,
             leakage_free=args.leakage_free,
             expected_samples=args.expected_samples,
         )
-        args.output.parent.mkdir(parents=True, exist_ok=True)
-        args.output.write_text(json.dumps(decision, ensure_ascii=False, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        write_json_new(args.output, decision)
         print(json.dumps(decision, ensure_ascii=False, sort_keys=True))
         if decision["decision"] == "INVALID":
             raise SystemExit("teacher-gap decision refused invalid records")

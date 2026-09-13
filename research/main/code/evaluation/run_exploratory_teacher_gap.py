@@ -123,6 +123,8 @@ def main() -> None:
         raise SystemExit(
             f"code commit changed after submission: expected={args.code_commit} actual={current_commit}"
         )
+    if args.output.exists():
+        raise SystemExit(f"refusing to overwrite existing raw output: {args.output}")
     samples = load_jsonl(args.manifest)
     manifest_errors = validate_locked_manifest(samples, expected_n=args.expected_samples)
     if manifest_errors:
@@ -158,7 +160,7 @@ def main() -> None:
     schedule = frozen_schedule(samples, manifest_hash)
     args.output.parent.mkdir(parents=True, exist_ok=True)
     processed = 0
-    with args.output.open("w", encoding="utf-8") as sink, torch.inference_mode():
+    with args.output.open("x", encoding="utf-8") as sink, torch.inference_mode():
         for schedule_index, (sample, condition) in enumerate(schedule):
             if schedule_index % args.world_size != args.rank:
                 continue

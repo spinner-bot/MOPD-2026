@@ -139,6 +139,31 @@ class ExploratoryTeacherGapTests(unittest.TestCase):
                 with self.assertRaisesRegex(SystemExit, "code commit changed after submission"):
                     run_teacher_gap()
 
+    def test_runner_refuses_to_overwrite_raw_output(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            model = root / "model"
+            model.mkdir()
+            manifest = root / "manifest.jsonl"
+            manifest.write_text("", encoding="utf-8")
+            output = root / "raw.jsonl"
+            output.write_text("immutable\n", encoding="utf-8")
+            argv = [
+                "run_exploratory_teacher_gap.py",
+                "--manifest", str(manifest),
+                "--output", str(output),
+                "--model", str(model),
+                "--model-revision", "model-revision",
+                "--code-commit", "same-commit",
+                "--image-root", str(root),
+            ]
+            with patch("sys.argv", argv), patch(
+                "run_exploratory_teacher_gap.git_commit", return_value="same-commit"
+            ):
+                with self.assertRaisesRegex(SystemExit, "refusing to overwrite"):
+                    run_teacher_gap()
+            self.assertEqual(output.read_text(encoding="utf-8"), "immutable\n")
+
     def test_locked_manifest_fails_closed_on_overlap_and_balance(self):
         samples = [manifest_sample(index) for index in range(96)]
         self.assertEqual(validate_locked_manifest(samples), [])
