@@ -10,4 +10,6 @@ r7 的 8 个机器 construction candidates 中，逐条诊断发现 6 条具有�
 
 ## 结果
 
-待运行。作业依赖 B1 r2 `57598570` 结束后再申请同一组 4×A100 资源，避免同时占用超过计划上限。
+Slurm `57599082` 于 2026-09-13 21:05:47–21:11:47 CEST 在 `lrdn1759` 运行。blind canary 8/8 均在生成前以 runner error 拒绝，full/audit 未运行，作业按设计 `FAILED (1:0)` fail-closed；没有语义输出，因此本次不能评价新版 audit。
+
+根因是迁移后存在两个 M3VQA 图片根。固定 C1 输入的旧绝对路径经 `/leonardo_work/AIFAC_F02_774/sqs/data` 软链接解析到 `/leonardo_scratch/large/userexternal/rqian000/sqs/data/...`；本次提交却沿用了 B1 新池的 `/leonardo_scratch/large/userexternal/rqian000/data/...`。两处均有图片副本，但 runner 的根目录逃逸检查正确地拒绝了不属于指定 root 的解析路径。后继 r8b 只把 `MOPD_IMAGE_ROOT` 对齐到 C1 路径实际解析根，不改输入内容、样本、模型、prompt 或 validator，并在 B1 r3 结束后串行运行。

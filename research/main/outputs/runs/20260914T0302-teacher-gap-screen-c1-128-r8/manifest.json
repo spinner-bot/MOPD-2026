@@ -4,7 +4,7 @@
   "purpose": "Re-run fixed C1-128 with direct-visual and complete-answer audit semantics",
   "created_at_utc": "2026-09-13T19:02:06+00:00",
   "operator": "Codex (CINECA Leonardo)",
-  "status": "submitted_dependency",
+  "status": "failed_closed_canary_path_root",
   "slurm_job_id": "57599082",
   "git_commit": null,
   "input_records": 128,
@@ -30,5 +30,14 @@
   },
   "human_verified": 0,
   "submitted_code_commit": "63b9bf4b1b3cb409afa45c66c5913e04fa0d9faa",
-  "run_worktree": "/leonardo/home/userexternal/rqian000/spinner-bot/MOPD-2026-codex-r8"
+  "run_worktree": "/leonardo/home/userexternal/rqian000/spinner-bot/MOPD-2026-codex-r8",
+  "started_at_local": "2026-09-13T21:05:47+02:00",
+  "ended_at_local": "2026-09-13T21:11:47+02:00",
+  "node": "lrdn1759",
+  "exit_code": "1:0",
+  "canary_generated_records": 0,
+  "runner_error_records": 8,
+  "full_ran": false,
+  "audit_ran": false,
+  "failure_reason": "resolved C1 image paths escaped the submitted image root after storage migration"
 }
