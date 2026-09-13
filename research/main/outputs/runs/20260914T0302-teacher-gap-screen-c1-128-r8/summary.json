@@ -1,5 +1,7 @@
 {
-  "status": "prepared",
-  "slurm_job_id": null,
-  "human_verified": 0
+  "status": "submitted_dependency",
+  "slurm_job_id": "57599082",
+  "human_verified": 0,
+  "submitted_code_commit": "63b9bf4b1b3cb409afa45c66c5913e04fa0d9faa",
+  "run_worktree": "/leonardo/home/userexternal/rqian000/spinner-bot/MOPD-2026-codex-r8"
 }
