@@ -234,8 +234,12 @@ def validate_results_against_manifest(
             continue
         expected_values = {
             "manifest_hash": manifest_hash,
+            "source_dataset": str(sample.get("source_dataset", "")),
+            "source_record_id": str(sample.get("source_record_id", "")),
             "source_image_id": str(sample.get("source_image_id", "")),
             "source_cluster_id": str(sample.get("source_cluster_id", "")),
+            "task_family": str(sample.get("task_family", "")),
+            "reasoning_depth": str(sample.get("reasoning_depth", "")),
             "image_checksum": str(sample.get("image_checksum", "")),
             "correct_choice": str(sample.get("final_answer", "")),
             "question_hash": hashlib.sha256(
@@ -322,6 +326,11 @@ def validate_result_records(
             parsed += 1
         if row.get("correct_choice") not in CHOICES:
             errors.append(f"{key}: correct_choice must be A, B, C, or D")
+        if row.get("task_family") not in {"R", "PR"}:
+            errors.append(f"{key}: task_family must be R or PR")
+        reasoning_depth = row.get("reasoning_depth")
+        if not isinstance(reasoning_depth, int) or isinstance(reasoning_depth, bool) or reasoning_depth < 2:
+            errors.append(f"{key}: reasoning_depth must be an integer >= 2")
         if not isinstance(row.get("correct"), bool):
             errors.append(f"{key}: correct must be boolean")
         elif row.get("parsed_answer") in CHOICES and row["correct"] != (row["parsed_answer"] == row.get("correct_choice")):
@@ -400,8 +409,12 @@ def validate_result_records(
         errors.append("schedule_index values must cover the frozen schedule exactly once")
 
     invariant_fields = (
+        "source_dataset",
+        "source_record_id",
         "source_image_id",
         "source_cluster_id",
+        "task_family",
+        "reasoning_depth",
         "image_checksum",
         "question_hash",
         "options_hash",

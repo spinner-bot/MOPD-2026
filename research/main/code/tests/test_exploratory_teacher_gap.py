@@ -96,8 +96,12 @@ def result_records(tq_gains: int, tqa_gains: int, generic_gains: int = 1, logp_t
         for condition in CONDITIONS:
             rows.append({
                 "sample_id": f"sample-{index:03d}",
+                "source_dataset": "M3VQA",
+                "source_record_id": f"m3vqa-{index:03d}",
                 "source_image_id": f"image-{index:03d}",
                 "source_cluster_id": f"cluster-{index:03d}",
+                "task_family": "R",
+                "reasoning_depth": 2,
                 "condition": condition,
                 "schedule_index": schedule_index,
                 "rank": schedule_index % 4,
@@ -310,11 +314,15 @@ class ExploratoryTeacherGapTests(unittest.TestCase):
         rows[1]["source_cluster_id"] = "wrong-cluster"
         rows[2]["schedule_index"] = rows[1]["schedule_index"]
         rows[3]["prompt_hash"] = rows[2]["prompt_hash"]
+        rows[4]["task_family"] = "P"
+        rows[5]["reasoning_depth"] = "2"
         errors = validate_result_records(rows)
         self.assertTrue(any("chat_template" in error for error in errors))
         self.assertTrue(any("source_cluster_id" in error for error in errors))
         self.assertTrue(any("schedule_index" in error for error in errors))
         self.assertTrue(any("distinct prompt_hash" in error for error in errors))
+        self.assertTrue(any("task_family must be R or PR" in error for error in errors))
+        self.assertTrue(any("reasoning_depth must be an integer" in error for error in errors))
 
     def test_result_records_are_bound_to_exact_manifest_metadata(self):
         samples = [manifest_sample(index) for index in range(96)]
@@ -325,8 +333,12 @@ class ExploratoryTeacherGapTests(unittest.TestCase):
             sample = expected_by_id[row["sample_id"]]
             row.update({
                 "manifest_hash": manifest_hash,
+                "source_dataset": sample["source_dataset"],
+                "source_record_id": sample["source_record_id"],
                 "source_image_id": sample["source_image_id"],
                 "source_cluster_id": sample["source_cluster_id"],
+                "task_family": sample["task_family"],
+                "reasoning_depth": sample["reasoning_depth"],
                 "image_checksum": sample["image_checksum"],
                 "correct_choice": sample["final_answer"],
                 "question_hash": hashlib.sha256(sample["final_question"].encode()).hexdigest(),

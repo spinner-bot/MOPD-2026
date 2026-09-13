@@ -199,8 +199,12 @@ def main() -> None:
             rendered = render_teacher_gap_input(sample, condition)
             record = {
                 "sample_id": sample["sample_id"],
+                "source_dataset": sample["source_dataset"],
+                "source_record_id": sample["source_record_id"],
                 "source_image_id": sample["source_image_id"],
                 "source_cluster_id": sample["source_cluster_id"],
+                "task_family": sample["task_family"],
+                "reasoning_depth": sample["reasoning_depth"],
                 "condition": condition,
                 "schedule_index": schedule_index,
                 "rank": args.rank,
