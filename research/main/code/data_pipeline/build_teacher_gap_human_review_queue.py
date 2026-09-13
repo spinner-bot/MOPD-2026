@@ -25,6 +25,7 @@ from teacher_gap_candidate_contract import (
     validate_candidate,
     validate_construct,
 )
+from reasoning_graph_contract import validate_guide_graph_alignment
 
 
 MACHINE_FIELDS = (
@@ -86,6 +87,13 @@ def validate_constructed_row(row: dict) -> list[str]:
         )
         if proposal.get("decision") != "accept_candidate":
             errors.append("construction_decision_not_accept")
+        elif isinstance(audit, dict):
+            errors.extend(
+                f"guide_graph:{error}"
+                for error in validate_guide_graph_alignment(
+                    proposal.get("guides"), audit.get("minimal_reasoning_graph")
+                )
+            )
     return sorted(set(errors))
 
 

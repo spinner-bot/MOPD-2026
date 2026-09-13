@@ -137,3 +137,34 @@ def validate_reasoning_graph(
                 f"declared_reasoning_depth_mismatch:{declared_depth}!={computed_depth}"
             )
     return sorted(set(errors)), computed_depth
+
+
+def validate_guide_graph_alignment(guides: Any, graph: Any) -> list[str]:
+    """Validate that guide targets name usable nodes in a valid graph.
+
+    Semantic usefulness remains a human judgement. This check only prevents
+    dangling/evidence-node references and a guide chain that never reaches an
+    intermediate reasoning state.
+    """
+
+    graph_errors, _ = validate_reasoning_graph(graph, require_two_evidence=True)
+    if graph_errors:
+        return ["guide_alignment_graph_invalid"]
+    if not isinstance(guides, list) or not guides:
+        return ["guide_alignment_requires_guides"]
+    node_types = {str(node["id"]).strip(): node["type"] for node in graph["nodes"]}
+    errors = []
+    targets = []
+    for index, guide in enumerate(guides):
+        if not isinstance(guide, dict):
+            errors.append(f"guide_{index}_not_object")
+            continue
+        target = str(guide.get("supports_next", "")).strip()
+        targets.append(target)
+        if target not in node_types:
+            errors.append(f"guide_{index}_unknown_supports_next:{target or '<empty>'}")
+        elif node_types[target] == "evidence":
+            errors.append(f"guide_{index}_targets_evidence:{target}")
+    if not any(node_types.get(target) == "intermediate" for target in targets):
+        errors.append("guides_do_not_support_intermediate_node")
+    return sorted(set(errors))
