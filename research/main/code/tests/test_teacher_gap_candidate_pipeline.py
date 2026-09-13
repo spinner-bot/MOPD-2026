@@ -195,7 +195,7 @@ class TeacherGapCandidatePipelineTests(unittest.TestCase):
     def test_valid_proposals_and_candidate_selection(self):
         self.assertEqual(validate_blind(blind()), [])
         self.assertEqual(validate_audit(audit()), [])
-        self.assertEqual(validate_construct(construction(), candidate()), [])
+        self.assertEqual(validate_construct(construction(), candidate(), audit()), [])
         self.assertTrue(is_construction_candidate(blind(), audit()))
 
     def test_multi_answer_target_is_one_complete_canonical_option(self):
@@ -221,12 +221,57 @@ class TeacherGapCandidatePipelineTests(unittest.TestCase):
             {"question": "Which breed is the left dog?", "answer": "Golden Retriever", "supports_next": "h1"},
             {"question": "Which breed is the right dog?", "answer": "Akita", "supports_next": "a"},
         ]
-        self.assertEqual(validate_construct(proposal, multi), [])
+        self.assertEqual(validate_construct(proposal, multi, audit()), [])
         proposal["correct_answer_text"] = "Golden Retriever"
         self.assertIn(
             "correct_answer_not_canonical_complete_answer",
-            validate_construct(proposal, multi),
+            validate_construct(proposal, multi, audit()),
         )
+
+    def test_multi_answer_distractors_preserve_target_cardinality(self):
+        multi = candidate()
+        multi.update({
+            "reference_answers": ["Ford", "Acura"],
+            "reference_answer_alias_groups": [["Ford"], ["Acura"]],
+            "canonical_answer_text": '["Ford","Acura"]',
+        })
+        proposal = construction()
+        proposal["correct_answer_text"] = multi["canonical_answer_text"]
+        proposal["distractors"] = [
+            '["Ford","Toyota"]', '["Nissan","Acura"]', '["Nissan","Toyota"]',
+        ]
+        self.assertEqual(validate_construct(proposal, multi, audit()), [])
+        proposal["distractors"][0] = "Ford"
+        self.assertIn("invalid_distractor_cardinality", validate_construct(proposal, multi, audit()))
+        proposal["distractors"][0] = '["Ford",""]'
+        self.assertIn("invalid_distractor_cardinality", validate_construct(proposal, multi, audit()))
+        proposal["distractors"][0] = '["Acura","Ford"]'
+        self.assertIn("options_not_distinct", validate_construct(proposal, multi, audit()))
+
+    def test_construct_gate_rejects_dangling_guide_target(self):
+        proposal = construction()
+        proposal["guides"][0]["supports_next"] = "missing-node"
+        self.assertTrue(any(
+            "unknown_supports_next" in reason
+            for reason in validate_construct(proposal, candidate(), audit())
+        ))
+
+    def test_repeated_answer_item_requires_repeated_mention_for_leakage(self):
+        multi = candidate()
+        multi.update({
+            "reference_answers": ["Ford", "Ford"],
+            "reference_answer_alias_groups": [["Ford"], ["Ford"]],
+            "canonical_answer_text": '["Ford","Ford"]',
+        })
+        proposal = construction()
+        proposal["correct_answer_text"] = multi["canonical_answer_text"]
+        proposal["distractors"] = [
+            '["Ford","Acura"]', '["Toyota","Ford"]', '["Toyota","Acura"]',
+        ]
+        proposal["guides"][0]["answer"] = "Ford is visible"
+        self.assertNotIn("obvious_answer_leakage", validate_construct(proposal, multi, audit()))
+        proposal["guides"][0]["answer"] = "Ford and Ford are visible"
+        self.assertIn("obvious_answer_leakage", validate_construct(proposal, multi, audit()))
 
     def test_construct_fallback_locks_input_canonical_answer_not_invalid_primary(self):
         primary = construction()
@@ -328,7 +373,7 @@ class TeacherGapCandidatePipelineTests(unittest.TestCase):
     def test_obvious_answer_leakage_fails_closed(self):
         leaked = construction()
         leaked["guides"][0]["answer"] = "The triangle is visible."
-        self.assertIn("obvious_answer_leakage", validate_construct(leaked, candidate()))
+        self.assertIn("obvious_answer_leakage", validate_construct(leaked, candidate(), audit()))
 
     def test_duplicate_clusters_are_transitively_joined(self):
         payload = {

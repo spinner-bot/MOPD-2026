@@ -103,6 +103,7 @@ def main() -> None:
         kind: str,
         max_new_tokens: int,
         candidate: dict,
+        audit_proposal: dict | None = None,
         preserved_decision_fields: dict | None = None,
     ) -> dict:
         messages = [{
@@ -142,7 +143,7 @@ def main() -> None:
         if proposal is None:
             validation_errors.append("invalid_json")
         else:
-            validation_errors.extend(proposal_errors(args.stage, proposal, candidate))
+            validation_errors.extend(proposal_errors(args.stage, proposal, candidate, audit_proposal))
             validation_errors.extend(
                 decision_lock_errors(proposal, preserved_decision_fields or {})
             )
@@ -228,7 +229,8 @@ def main() -> None:
                     image.verify()
                 primary_prompt = render_stage_prompt(candidate, args.stage, audit_proposal)
                 attempts = [generate_attempt(
-                    image_path, primary_prompt, "primary", args.max_new_tokens, candidate
+                    image_path, primary_prompt, "primary", args.max_new_tokens, candidate,
+                    audit_proposal,
                 )]
                 if attempts[0]["validation_errors"]:
                     primary_proposal = extract_json_object(attempts[0]["raw_model_output"])
@@ -245,6 +247,7 @@ def main() -> None:
                         "compact_fallback",
                         args.fallback_max_new_tokens,
                         candidate,
+                        audit_proposal,
                         preserved,
                     ))
                 chosen = attempts[-1]

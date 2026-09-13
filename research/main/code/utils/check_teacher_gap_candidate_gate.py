@@ -205,7 +205,9 @@ def summarize_and_validate(
                 if proposal is None:
                     computed_errors.append("invalid_json")
                 else:
-                    computed_errors.extend(proposal_errors(stage, proposal, row.get("candidate", {})))
+                    computed_errors.extend(proposal_errors(
+                        stage, proposal, row.get("candidate", {}), row.get("audit_proposal")
+                    ))
                     computed_lock = {}
                     if attempt_index == 1:
                         computed_lock = fallback_decision_fields(

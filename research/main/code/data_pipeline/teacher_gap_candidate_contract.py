@@ -10,9 +10,10 @@ from __future__ import annotations
 import hashlib
 import json
 import re
+from collections import Counter
 from typing import Any
 
-from reasoning_graph_contract import validate_reasoning_graph
+from reasoning_graph_contract import validate_guide_graph_alignment, validate_reasoning_graph
 
 
 STAGES = ("blind", "audit", "construct")
@@ -47,10 +48,11 @@ Use only the supplied complete image, question, reference answer aliases, and au
 Question: {question}
 Canonical complete answer (copy exactly into correct_answer_text): {canonical_answer}
 Accepted aliases grouped by required answer item: {answer_alias_groups}
+Required answer cardinality: {answer_cardinality}
 Required visual evidence: {required_evidence}
 Audited reasoning graph: {reasoning_graph}
 
-Create 1-4 indispensable guide QA pairs and three plausible same-type distractors. Guides must support the next reasoning node, must be answerable from the image or prior guide state, and must not state/paraphrase the final answer or reveal an option label. Distractors must be rejectable from the image without outside knowledge.
+Create 1-4 indispensable guide QA pairs and three plausible same-type distractors. Guides must support an existing non-evidence node in the audited graph, must be answerable from the image or prior guide state, and must not state/paraphrase the final answer or reveal an option label. Distractors must be rejectable from the image without outside knowledge. When answer cardinality is greater than one, every distractor must be a JSON array string with exactly that many non-empty string items.
 Return exactly one JSON object and no other text:
 {{"decision":"accept_candidate|reject","guides":[{{"question":"...","answer":"...","supports_next":"node id"}}],"correct_answer_text":"...","distractors":["...","...","..."],"generic_context_seed":"inspect-compare-verify","answer_leakage":false,"external_fact_injected":false,"rejection_reason":""}}"""
 
@@ -72,12 +74,13 @@ COMPACT_CONSTRUCT_PROMPT = """Using only the complete image and audited visual p
 Question: {question}
 Canonical complete answer (copy exactly into correct_answer_text): {canonical_answer}
 Accepted aliases grouped by required answer item: {answer_alias_groups}
+Required answer cardinality: {answer_cardinality}
 Required visual evidence: {required_evidence}
 Audited reasoning graph: {reasoning_graph}
 Recoverable first-attempt fields to preserve when present: {decision_lock}
 Return one compact JSON object, no markdown or analysis, with exactly these keys:
 {{"decision":"accept_candidate","guides":[{{"question":"under 16 words","answer":"under 12 words","supports_next":"existing node id"}}],"correct_answer_text":{canonical_answer_json},"distractors":["same-cardinality option","same-cardinality option","same-cardinality option"],"generic_context_seed":"inspect-compare-verify","answer_leakage":false,"external_fact_injected":false,"rejection_reason":""}}
-Use 1-3 guides, never state the final answer in a guide, and stop after the closing brace. If safe construction is impossible, return the same keys with decision "reject", empty guides/options/answer/seed, both booleans false, and a short rejection_reason."""
+Use 1-3 guides. Every supports_next must name an existing non-evidence node in the audited graph, and at least one guide must support an intermediate node. Never state the final answer in a guide. When answer cardinality is greater than one, every distractor must be a JSON array string with exactly that many non-empty string items. Stop after the closing brace. If safe construction is impossible, return the same keys with decision "reject", empty guides/options/answer/seed, both booleans false, and a short rejection_reason."""
 
 
 def stable_hash(value: str) -> str:
@@ -174,6 +177,7 @@ def render_stage_prompt(candidate: dict, stage: str, audit_proposal: dict | None
         question=question,
         canonical_answer=canonical_answer,
         answer_alias_groups=answer_alias_groups,
+        answer_cardinality=len(_answers(candidate)),
         required_evidence=json.dumps(audit_proposal.get("required_evidence", []), ensure_ascii=False),
         reasoning_graph=json.dumps(audit_proposal.get("minimal_reasoning_graph", {}), ensure_ascii=False),
     )
@@ -215,6 +219,7 @@ def render_compact_stage_prompt(
         canonical_answer=canonical_answer,
         canonical_answer_json=canonical_answer,
         answer_alias_groups=answer_alias_groups,
+        answer_cardinality=len(_answers(candidate)),
         required_evidence=json.dumps(audit_proposal.get("required_evidence", []), ensure_ascii=False),
         reasoning_graph=json.dumps(audit_proposal.get("minimal_reasoning_graph", {}), ensure_ascii=False),
         decision_lock=rendered_lock,
@@ -409,7 +414,7 @@ def obvious_answer_leakage(proposal: dict, candidate: dict) -> bool:
     """
 
     groups = [
-        {_normalize_for_leakage(alias) for alias in group if _normalize_for_leakage(alias)}
+        tuple(sorted({_normalize_for_leakage(alias) for alias in group if _normalize_for_leakage(alias)}))
         for group in _answer_alias_groups(candidate)
     ]
     if not groups:
@@ -419,15 +424,50 @@ def obvious_answer_leakage(proposal: dict, candidate: dict) -> bool:
             continue
         for key in ("question", "answer"):
             text = _normalize_for_leakage(_text(guide.get(key)))
+            required_groups = Counter(groups)
             if all(
-                any(alias == text or (len(alias) >= 4 and alias in text) for alias in group)
-                for group in groups
+                max((_alias_occurrences(text, alias) for alias in group), default=0) >= multiplicity
+                for group, multiplicity in required_groups.items()
             ):
                 return True
     return False
 
 
-def validate_construct(proposal: dict, candidate: dict) -> list[str]:
+def _alias_occurrences(text: str, alias: str) -> int:
+    if not alias:
+        return 0
+    return len(re.findall(rf"(?<!\w){re.escape(alias)}(?!\w)", text))
+
+
+def _valid_multi_item_option(value: str, cardinality: int) -> bool:
+    try:
+        parsed = json.loads(value)
+    except (TypeError, ValueError):
+        return False
+    return (
+        isinstance(parsed, list)
+        and len(parsed) == cardinality
+        and all(isinstance(item, str) and _text(item) for item in parsed)
+    )
+
+
+def _option_distinct_key(value: str, cardinality: int) -> tuple[str, ...]:
+    if cardinality <= 1:
+        return (_normalize_for_leakage(value),)
+    try:
+        parsed = json.loads(value)
+    except ValueError:
+        return ("invalid_option", value)
+    if not isinstance(parsed, list):
+        return ("invalid_option", value)
+    return tuple(sorted(_normalize_for_leakage(_text(item)) for item in parsed))
+
+
+def validate_construct(
+    proposal: dict,
+    candidate: dict,
+    audit_proposal: dict | None = None,
+) -> list[str]:
     errors = []
     if proposal.get("decision") not in {"accept_candidate", "reject"}:
         errors.append("invalid_decision")
@@ -444,6 +484,15 @@ def validate_construct(proposal: dict, candidate: dict) -> list[str]:
             if not isinstance(guide, dict) or any(not _text(guide.get(k)) for k in ("question", "answer", "supports_next")):
                 errors.append("invalid_guide")
                 break
+    if not isinstance(audit_proposal, dict):
+        errors.append("missing_audit_proposal_for_construct")
+    elif isinstance(guides, list):
+        errors.extend(
+            f"guide_graph:{error}"
+            for error in validate_guide_graph_alignment(
+                guides, audit_proposal.get("minimal_reasoning_graph")
+            )
+        )
     correct_raw = _text(proposal.get("correct_answer_text"))
     correct = _normalize_for_leakage(correct_raw)
     expected = canonical_answer_text(candidate)
@@ -452,7 +501,15 @@ def validate_construct(proposal: dict, candidate: dict) -> list[str]:
     distractors = proposal.get("distractors")
     if not isinstance(distractors, list) or len(distractors) != 3 or any(not _text(item) for item in distractors):
         errors.append("invalid_distractors")
-    elif len({_normalize_for_leakage(item) for item in distractors} | {correct}) != 4:
+    elif len(_answers(candidate)) > 1 and any(
+        not _valid_multi_item_option(_text(item), len(_answers(candidate)))
+        for item in distractors
+    ):
+        errors.append("invalid_distractor_cardinality")
+    elif len({
+        _option_distinct_key(_text(item), len(_answers(candidate)))
+        for item in [correct_raw, *distractors]
+    }) != 4:
         errors.append("options_not_distinct")
     for key in ("answer_leakage", "external_fact_injected"):
         if proposal.get(key) is not False:
@@ -466,7 +523,12 @@ def validate_construct(proposal: dict, candidate: dict) -> list[str]:
     return errors
 
 
-def proposal_errors(stage: str, proposal: dict, candidate: dict) -> list[str]:
+def proposal_errors(
+    stage: str,
+    proposal: dict,
+    candidate: dict,
+    audit_proposal: dict | None = None,
+) -> list[str]:
     if not isinstance(proposal, dict):
         return ["proposal_not_object"]
     if stage == "blind":
@@ -474,7 +536,7 @@ def proposal_errors(stage: str, proposal: dict, candidate: dict) -> list[str]:
     if stage == "audit":
         return validate_audit(proposal)
     if stage == "construct":
-        return validate_construct(proposal, candidate)
+        return validate_construct(proposal, candidate, audit_proposal)
     return ["unsupported_stage"]
 
 
