@@ -33,6 +33,8 @@ research/main/outputs/runs/20260914T0328-image-affordance-b2a-blind-calibration/
 
 `image_path` 只用于打开对应完整图片。若路径或哈希异常，停止该条并报告基础设施问题，不自行换图。
 
+技术预检 `20260914T0445-b2a-image-decode-preflight` 确认 32/32 可解码且哈希一致，但其中 12 张低于 0.1 MP、3 张短边小于 224 px。审核时应能查看 100% 原生像素和当前缩放比例；不得使用超分辨率、AI 增强或平滑放大后新增的伪细节作为证据。分辨率不足以确认必要证据时，按真实观察标为 ambiguous/unusable，而不是猜测。
+
 ## 3. 判定顺序
 
 ### 3.1 图片可用性
@@ -198,3 +200,4 @@ B2a 的 `human_verified` 是审核者对盲审字段的签名，与 `teacher_gap
 | 2026-09-14 03:52 | Codex (CINECA Leonardo) | 创建：将 1035 的先人后机设计转成可直接执行的 32 图审核规则、字段类型、反事实检查与完成命令。 |
 | 2026-09-14 04:13 | Codex (CINECA Leonardo) | 修订：加入 B2b 锁后揭示命令；明确机器 invalid/unavailable 不得作为负例，比较字段继续由人工填写。 |
 | 2026-09-14 04:40 | Codex (CINECA Leonardo) | 修订：与 `586c1d4` 统一 R/PR 语义；R 的困难证据数组必须为空，PR 必须含至少一个属于必要证据集合的困难节点。 |
+| 2026-09-14 04:47 | Codex (CINECA Leonardo) | 修订：引用 B2a 技术解码预检；要求核对原生像素和缩放，禁止图像增强产生证据。 |

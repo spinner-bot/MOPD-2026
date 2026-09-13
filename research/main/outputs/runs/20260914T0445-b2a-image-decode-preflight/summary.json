@@ -1,0 +1,27 @@
+{
+  "decoded": 32,
+  "errors": [],
+  "formats": {
+    "JPEG": 32
+  },
+  "height_max": 1418,
+  "height_median": 480.0,
+  "height_min": 108,
+  "human_verified_records": 0,
+  "images_below_0_1_megapixels": 12,
+  "images_with_short_side_below_224": 3,
+  "megapixels_max": 2.904064,
+  "megapixels_median": 0.266072,
+  "megapixels_min": 0.01566,
+  "modes": {
+    "RGB": 32
+  },
+  "records_expected": 32,
+  "records_observed": 32,
+  "run_id": "20260914T0445-b2a-image-decode-preflight",
+  "semantic_labels_created": 0,
+  "sha256_matches": 32,
+  "width_max": 2048,
+  "width_median": 518.0,
+  "width_min": 145
+}
