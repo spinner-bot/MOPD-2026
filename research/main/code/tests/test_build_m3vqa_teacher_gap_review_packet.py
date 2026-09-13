@@ -227,6 +227,17 @@ class TestC2Contract(C2Fixture):
             for field in c2.HUMAN_FIELDS:
                 self.assertIn(field, header)
 
+    def test_human_template_covers_every_finalizer_requirement(self):
+        required = {
+            "human_knowledge_label", "human_task_family", "human_unique_answer",
+            "human_full_image_valid", "human_required_evidence", "human_reasoning_depth",
+            "human_reasoning_graph", "human_guides_ok", "human_options_ok",
+            "human_answer_leakage", "human_external_fact_injected", "human_decision",
+            "human_reviewer", "human_reviewed_at", "human_notes",
+        }
+        self.assertEqual(set(c2.HUMAN_FIELDS), required)
+        self.assertEqual(c2.RULES_VERSION, "c2-v2")
+
     def test_raw_field_enrichment_and_firewall_structure(self):
         out = self.root / "out7"
         self.run_c2(out)

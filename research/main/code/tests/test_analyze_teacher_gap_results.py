@@ -49,10 +49,11 @@ def audit() -> dict:
         "minimal_reasoning_graph": {
             "nodes": [
                 {"id": "e1", "type": "evidence", "claim": "left relation"},
+                {"id": "e2", "type": "evidence", "claim": "right relation"},
                 {"id": "h1", "type": "intermediate", "claim": "joint relation"},
                 {"id": "a", "type": "answer", "claim": "triangle"},
             ],
-            "edges": [["e1", "h1"], ["h1", "a"]],
+            "edges": [["e1", "h1"], ["e2", "h1"], ["h1", "a"]],
         },
         "explanation": "The visible relation determines one answer.",
     }

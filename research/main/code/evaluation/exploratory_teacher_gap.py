@@ -8,7 +8,15 @@ from __future__ import annotations
 
 import math
 import random
+import sys
 from collections import Counter, defaultdict
+from pathlib import Path
+
+
+DATA_PIPELINE_ROOT = Path(__file__).resolve().parents[1] / "data_pipeline"
+sys.path.insert(0, str(DATA_PIPELINE_ROOT))
+
+from reasoning_graph_contract import validate_reasoning_graph
 
 
 CONDITIONS = ("S", "T_Q", "T_QA", "T_generic")
@@ -70,44 +78,18 @@ def validate_locked_manifest(samples: list[dict], expected_n: int = 96) -> list[
             errors.append(f"{row_id}: human_verified must be true")
         if row.get("answer_leakage") not in {0, False}:
             errors.append(f"{row_id}: answer_leakage must be zero")
+        depth = row.get("reasoning_depth")
+        if not isinstance(depth, int) or isinstance(depth, bool) or depth < 2:
+            errors.append(f"{row_id}: reasoning_depth must be an integer >= 2")
         evidence = row.get("required_evidence")
         if not isinstance(evidence, list) or len(evidence) < 2 or any(not str(v).strip() for v in evidence):
             errors.append(f"{row_id}: required_evidence must contain at least two entries")
-        graph = row.get("minimal_reasoning_graph")
-        if not isinstance(graph, dict):
-            errors.append(f"{row_id}: minimal_reasoning_graph must be an object")
-        else:
-            nodes, edges = graph.get("nodes"), graph.get("edges")
-            if not isinstance(nodes, list) or len(nodes) < 3:
-                errors.append(f"{row_id}: minimal_reasoning_graph requires at least three nodes")
-            else:
-                node_ids = [str(node.get("id", "")).strip() for node in nodes if isinstance(node, dict)]
-                node_types = {node.get("type") for node in nodes if isinstance(node, dict)}
-                invalid_node = (
-                    len(node_ids) != len(nodes)
-                    or any(not node_id for node_id in node_ids)
-                    or len(set(node_ids)) != len(node_ids)
-                    or any(
-                        node.get("type") not in {"evidence", "intermediate", "answer"}
-                        or not str(node.get("claim", "")).strip()
-                        for node in nodes
-                        if isinstance(node, dict)
-                    )
-                    or not {"evidence", "intermediate", "answer"}.issubset(node_types)
-                )
-                if invalid_node:
-                    errors.append(f"{row_id}: minimal_reasoning_graph has invalid nodes")
-                if (
-                    not isinstance(edges, list)
-                    or len(edges) < 2
-                    or any(
-                        not isinstance(edge, list)
-                        or len(edge) != 2
-                        or any(str(endpoint).strip() not in set(node_ids) for endpoint in edge)
-                        for edge in edges
-                    )
-                ):
-                    errors.append(f"{row_id}: minimal_reasoning_graph has invalid edges")
+        graph_errors, _ = validate_reasoning_graph(
+            row.get("minimal_reasoning_graph"),
+            declared_depth=depth,
+            require_two_evidence=True,
+        )
+        errors.extend(f"{row_id}: minimal_reasoning_graph {error}" for error in graph_errors)
         guides = row.get("guides")
         if not isinstance(guides, list) or not 1 <= len(guides) <= 4:
             errors.append(f"{row_id}: guides must contain 1..4 items")
