@@ -1,0 +1,18 @@
+{
+  "audit_parsed_valid": 119,
+  "audit_rejected": 9,
+  "blind_parsed_valid": 127,
+  "hedged_or_associative_entailment_candidate_ids": [
+    "m3vqa-data_0000042",
+    "m3vqa-data_0000663",
+    "m3vqa-data_0008198"
+  ],
+  "hedged_or_associative_entailment_count": 3,
+  "human_verified_records": 0,
+  "interpretation_boundary": "deterministic machine-validator replay; not human verification and not an estimate that M3VQA images have zero R/PR affordance",
+  "replay_selected_for_construction": 0,
+  "run_id": "20260914T0358-teacher-gap-r7-semantic-replay-v2",
+  "source_observed": 128,
+  "source_run_id": "20260914T0200-teacher-gap-screen-c1-128-r7",
+  "source_selected_under_submission_contract": 8
+}
