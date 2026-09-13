@@ -4,4 +4,6 @@
 
 ## 结果
 
-待运行。所有有效输出仍标记为待独立人工复核，不能直接成为 R/PR 或 task-family 真值。
+Slurm `57597609` 于 2026-09-13 20:52:52–20:53:12 CEST 在 `lrdn2923` 启动，并在模型加载前以 `FAILED (2:0)` 终止。预检发现显式传入的 Python 路径 `/leonardo_scratch/large/userexternal/rqian000/envs/mopd-stage0-py311/bin/python` 不存在；模型与图片路径存在。未运行 canary 或 full，生成记录为 0，因此这不是模型能力、数据质量或 B1 门禁结果。
+
+失败原因是新存储布局中环境位于 fast scratch，而提交命令错误地指向 large scratch。后继修复只更正确定性运行时路径，并使用新 run ID 与新固定 commit 重提。所有未来有效输出仍标记为待独立人工复核，不能直接成为 R/PR 或 task-family 真值。

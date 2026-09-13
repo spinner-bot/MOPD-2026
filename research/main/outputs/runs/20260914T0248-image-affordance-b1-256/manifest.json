@@ -4,7 +4,7 @@
   "purpose": "Question-independent image affordance proposal pilot",
   "created_at_utc": "2026-09-13T18:47:35.002053+00:00",
   "operator": "Codex (CINECA Leonardo)",
-  "status": "submitted",
+  "status": "failed_preflight_missing_python",
   "slurm_job_id": "57597609",
   "git_commit": null,
   "input_records": 256,
@@ -20,5 +20,11 @@
     "time_limit": "48:00:00"
   },
   "submitted_code_commit": "e5edf8d98c0dc47e23c9e56d44ab00c836a3c617",
-  "run_worktree": "/leonardo/home/userexternal/rqian000/spinner-bot/MOPD-2026-codex-b1"
+  "run_worktree": "/leonardo/home/userexternal/rqian000/spinner-bot/MOPD-2026-codex-b1",
+  "started_at_local": "2026-09-13T20:52:52+02:00",
+  "ended_at_local": "2026-09-13T20:53:12+02:00",
+  "node": "lrdn2923",
+  "exit_code": "2:0",
+  "failure_reason": "MOPD_PYTHON pointed to absent /leonardo_scratch/large environment; no model generation started",
+  "generated_records": 0
 }
