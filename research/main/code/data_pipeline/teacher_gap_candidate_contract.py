@@ -36,7 +36,7 @@ Canonical complete answer: {canonical_answer}
 Accepted aliases grouped by required answer item: {answer_alias_groups}
 
 The canonical answer may be a JSON array string. If so, every array item is required; the items are not interchangeable aliases.
-Classify whether the complete answer and every necessary intermediate claim are entailed by the image/question.
+Classify whether the complete answer and every necessary intermediate claim are entailed by the image/question. Every evidence-node claim must be a direct visual observation, never a statement about what the question asks or a general learned association. The answer-node claim must explicitly cover every canonical answer item without denying any required item.
 image_only means uniquely answerable without any unprovided fact. external_required means at least one necessary fact is absent. ambiguous means the boundary, reference, image, or uniqueness cannot be verified.
 R requires at least two distinct visual entities/regions/states and at least two indispensable transformations. PR additionally requires a difficult local node on that same necessary chain.
 Return exactly one JSON object and no other text:
@@ -348,7 +348,7 @@ def validate_blind(proposal: dict) -> list[str]:
     return errors
 
 
-def validate_audit(proposal: dict) -> list[str]:
+def validate_audit(proposal: dict, candidate: dict | None = None) -> list[str]:
     errors = []
     label = proposal.get("knowledge_dependency_label")
     if label not in KNOWLEDGE_LABELS:
@@ -387,6 +387,23 @@ def validate_audit(proposal: dict) -> list[str]:
                 for node in graph["nodes"]
             ):
                 errors.append("placeholder_reasoning_graph")
+            evidence_claims = [_text(item) for item in evidence] + [
+                _text(node.get("claim")) for node in graph["nodes"]
+                if isinstance(node, dict) and node.get("type") == "evidence"
+            ]
+            if any(_is_meta_or_nonvisual_evidence(claim) for claim in evidence_claims):
+                errors.append("nonvisual_or_meta_evidence_claim")
+            if isinstance(candidate, dict):
+                answer_claims = [
+                    _text(node.get("claim")) for node in graph["nodes"]
+                    if isinstance(node, dict) and node.get("type") == "answer"
+                ]
+                if len(answer_claims) == 1 and not _claim_covers_complete_answer(answer_claims[0], candidate):
+                    errors.append("answer_node_missing_canonical_item")
+                if len(answer_claims) == 1 and _claim_negates_required_answer(answer_claims[0], candidate):
+                    errors.append("answer_node_negates_required_item")
+                if _entailed_explanation_conflict(proposal.get("explanation"), candidate):
+                    errors.append("reference_entailment_explanation_conflict")
     else:
         if family is not None:
             errors.append("nonqualifying_task_family_must_be_null")
@@ -409,6 +426,70 @@ def _normalize_for_leakage(value: str) -> str:
 def _is_placeholder_text(value: Any) -> bool:
     normalized = _normalize_for_leakage(_text(value))
     return normalized in {"e1", "e2", "evidence 1", "evidence 2"} or "replace with" in normalized
+
+
+def _is_meta_or_nonvisual_evidence(value: Any) -> bool:
+    normalized = _normalize_for_leakage(_text(value))
+    phrases = (
+        "the question asks", "question asks", "the question states",
+        "reference answer", "canonical answer", "from the options",
+        "well known", "is traditionally", "is a traditional",
+        "is associated with", "are associated with",
+        "which is indicative of", "which are indicative of",
+        "is characteristic of", "are characteristic of",
+    )
+    return any(phrase in normalized for phrase in phrases)
+
+
+def _claim_covers_complete_answer(claim: str, candidate: dict) -> bool:
+    text = _normalize_for_leakage(claim)
+    groups = [
+        tuple(sorted({_normalize_for_leakage(alias) for alias in group if _normalize_for_leakage(alias)}))
+        for group in _answer_alias_groups(candidate)
+    ]
+    required_groups = Counter(groups)
+    return bool(groups) and all(
+        max((_alias_occurrences(text, alias) for alias in group), default=0) >= multiplicity
+        for group, multiplicity in required_groups.items()
+    )
+
+
+def _claim_negates_required_answer(value: Any, candidate: dict) -> bool:
+    normalized = _normalize_for_leakage(_text(value))
+    clauses = re.split(r"[.;:]|\bbut\b|\bhowever\b", normalized)
+    absence = ("not present", "not shown", "not visible", "is absent", "are absent")
+    aliases = {
+        _normalize_for_leakage(alias)
+        for group in _answer_alias_groups(candidate)
+        for alias in group
+        if _normalize_for_leakage(alias)
+    }
+    return any(
+        any(_alias_occurrences(clause, alias) for alias in aliases)
+        and any(phrase in clause for phrase in absence)
+        for clause in clauses
+    )
+
+
+def _entailed_explanation_conflict(value: Any, candidate: dict) -> bool:
+    normalized = _normalize_for_leakage(_text(value))
+    absence = any(phrase in normalized for phrase in (
+        "not visually represented", "not represented in the image",
+        "not present in the image", "not shown in the image",
+        "absent from the image",
+    ))
+    aliases = {
+        _normalize_for_leakage(alias)
+        for group in _answer_alias_groups(candidate)
+        for alias in group
+        if _normalize_for_leakage(alias)
+    }
+    target = (
+        "reference answer" in normalized
+        or "canonical answer" in normalized
+        or any(_alias_occurrences(normalized, alias) for alias in aliases)
+    )
+    return absence and target
 
 
 def obvious_answer_leakage(proposal: dict, candidate: dict) -> bool:
@@ -551,18 +632,18 @@ def proposal_errors(
     if stage == "blind":
         return validate_blind(proposal)
     if stage == "audit":
-        return validate_audit(proposal)
+        return validate_audit(proposal, candidate)
     if stage == "construct":
         return validate_construct(proposal, candidate, audit_proposal)
     return ["unsupported_stage"]
 
 
-def is_construction_candidate(blind: dict, audit: dict) -> bool:
+def is_construction_candidate(blind: dict, audit: dict, candidate: dict | None = None) -> bool:
     """Conservative model-candidate rule; human verification is still mandatory."""
 
     return (
         not validate_blind(blind)
-        and not validate_audit(audit)
+        and not validate_audit(audit, candidate)
         and blind.get("image_is_necessary") is True
         and blind.get("requires_unprovided_fact") is False
         and blind.get("ambiguous") is False

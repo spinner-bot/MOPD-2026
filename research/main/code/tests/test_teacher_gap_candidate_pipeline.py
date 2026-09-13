@@ -75,7 +75,7 @@ def audit() -> dict:
                 {"id": "e1", "type": "evidence", "claim": "left connection"},
                 {"id": "e2", "type": "evidence", "claim": "right connection"},
                 {"id": "h1", "type": "intermediate", "claim": "shared endpoint"},
-                {"id": "a", "type": "answer", "claim": "the required shape"},
+                {"id": "a", "type": "answer", "claim": "triangle"},
             ],
             "edges": [["e1", "h1"], ["e2", "h1"], ["h1", "a"]],
         },
@@ -194,9 +194,81 @@ class TeacherGapCandidatePipelineTests(unittest.TestCase):
 
     def test_valid_proposals_and_candidate_selection(self):
         self.assertEqual(validate_blind(blind()), [])
-        self.assertEqual(validate_audit(audit()), [])
+        self.assertEqual(validate_audit(audit(), candidate()), [])
         self.assertEqual(validate_construct(construction(), candidate(), audit()), [])
-        self.assertTrue(is_construction_candidate(blind(), audit()))
+        self.assertTrue(is_construction_candidate(blind(), audit(), candidate()))
+
+    def test_audit_requires_direct_visual_evidence(self):
+        meta = audit()
+        meta["minimal_reasoning_graph"]["nodes"][1]["claim"] = "The question asks for the shape."
+        self.assertIn("nonvisual_or_meta_evidence_claim", validate_audit(meta, candidate()))
+
+        learned = audit()
+        learned["required_evidence"][1] = "This symbol is traditionally associated with triangles."
+        self.assertIn("nonvisual_or_meta_evidence_claim", validate_audit(learned, candidate()))
+
+    def test_audit_answer_node_must_cover_complete_reference(self):
+        multi = candidate()
+        multi.update({
+            "reference_answers": ["horse", "animal power"],
+            "reference_answer_alias_groups": [["horse"], ["animal power"]],
+            "canonical_answer_text": '["horse","animal power"]',
+        })
+        incomplete = audit()
+        incomplete["minimal_reasoning_graph"]["nodes"][-1]["claim"] = "The answer is animal power."
+        self.assertIn(
+            "answer_node_missing_canonical_item",
+            validate_audit(incomplete, multi),
+        )
+
+    def test_audit_answer_node_rejects_denial_of_required_item(self):
+        multi = candidate()
+        multi.update({
+            "reference_answers": ["Ford", "Acura", "Suzuki"],
+            "reference_answer_alias_groups": [["Ford"], ["Acura"], ["Suzuki"]],
+            "canonical_answer_text": '["Ford","Acura","Suzuki"]',
+        })
+        contradictory = audit()
+        contradictory["minimal_reasoning_graph"]["nodes"][-1]["claim"] = (
+            "Ford is present; Acura and Suzuki are not present."
+        )
+        errors = validate_audit(contradictory, multi)
+        self.assertNotIn("answer_node_missing_canonical_item", errors)
+        self.assertIn("answer_node_negates_required_item", errors)
+
+    def test_audit_explanation_cannot_admit_missing_reference_item(self):
+        multi = candidate()
+        multi.update({
+            "reference_answers": ["Mexican cuisine", "Danish cuisine"],
+            "reference_answer_alias_groups": [["Mexican cuisine"], ["Danish cuisine"]],
+            "canonical_answer_text": '["Mexican cuisine","Danish cuisine"]',
+        })
+        contradictory = audit()
+        contradictory["minimal_reasoning_graph"]["nodes"][-1]["claim"] = (
+            "Mexican cuisine and Danish cuisine."
+        )
+        contradictory["explanation"] = (
+            "Danish cuisine is not visually represented, but the reference answer includes it."
+        )
+        self.assertIn(
+            "reference_entailment_explanation_conflict",
+            validate_audit(contradictory, multi),
+        )
+
+    def test_audit_repeated_reference_item_requires_repeated_answer_mention(self):
+        repeated = candidate()
+        repeated.update({
+            "reference_answers": ["Japanese cuisine", "Japanese cuisine"],
+            "reference_answer_alias_groups": [["Japanese cuisine"], ["Japanese cuisine"]],
+            "canonical_answer_text": '["Japanese cuisine","Japanese cuisine"]',
+        })
+        proposal = audit()
+        proposal["minimal_reasoning_graph"]["nodes"][-1]["claim"] = "Japanese cuisine"
+        self.assertIn("answer_node_missing_canonical_item", validate_audit(proposal, repeated))
+        proposal["minimal_reasoning_graph"]["nodes"][-1]["claim"] = (
+            "Japanese cuisine and Japanese cuisine"
+        )
+        self.assertNotIn("answer_node_missing_canonical_item", validate_audit(proposal, repeated))
 
     def test_multi_answer_target_is_one_complete_canonical_option(self):
         multi = candidate()
