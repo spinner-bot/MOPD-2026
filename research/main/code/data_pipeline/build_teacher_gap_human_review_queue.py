@@ -70,6 +70,10 @@ def validate_constructed_row(row: dict) -> list[str]:
         candidate = {}
     else:
         errors.extend(validate_candidate(candidate))
+        if str(row.get("candidate_id", "")).strip() != str(candidate.get("candidate_id", "")).strip():
+            errors.append("candidate_id_mismatch")
+        if str(row.get("source_image_id", "")).strip() != str(candidate.get("source_image_id", "")).strip():
+            errors.append("source_image_id_mismatch")
     if not isinstance(blind, dict):
         errors.append("blind_proposal_not_object")
     else:

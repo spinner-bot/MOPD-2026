@@ -75,10 +75,14 @@ def validate_locked_manifest(samples: list[dict], expected_n: int = 96) -> list[
             errors.append(f"{row_id}: task_family must be R or PR")
         if row.get("full_image_reference_valid") is not True:
             errors.append(f"{row_id}: full_image_reference_valid must be true")
+        if row.get("unique_answer") is not True:
+            errors.append(f"{row_id}: unique_answer must be true")
         if row.get("human_verified") is not True:
             errors.append(f"{row_id}: human_verified must be true")
         if row.get("answer_leakage") not in {0, False}:
             errors.append(f"{row_id}: answer_leakage must be zero")
+        if row.get("external_fact_injected") not in {0, False}:
+            errors.append(f"{row_id}: external_fact_injected must be zero")
         depth = row.get("reasoning_depth")
         if not isinstance(depth, int) or isinstance(depth, bool) or depth < 2:
             errors.append(f"{row_id}: reasoning_depth must be an integer >= 2")
