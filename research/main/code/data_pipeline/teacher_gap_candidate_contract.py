@@ -31,9 +31,11 @@ Do not identify people or places from memory and do not guess facts absent from 
 AUDIT_PROMPT = """You are the entailment auditor for a closed-world visual reasoning pilot.
 Use only the supplied complete image, question, and reference answer aliases. No official evidence text or URL is available.
 Question: {question}
-Reference answer aliases: {answers}
+Canonical complete answer: {canonical_answer}
+Accepted aliases grouped by required answer item: {answer_alias_groups}
 
-Classify whether the answer and every necessary intermediate claim are entailed by the image/question.
+The canonical answer may be a JSON array string. If so, every array item is required; the items are not interchangeable aliases.
+Classify whether the complete answer and every necessary intermediate claim are entailed by the image/question.
 image_only means uniquely answerable without any unprovided fact. external_required means at least one necessary fact is absent. ambiguous means the boundary, reference, image, or uniqueness cannot be verified.
 R requires at least two distinct visual entities/regions/states and at least two indispensable transformations. PR additionally requires a difficult local node on that same necessary chain.
 Return exactly one JSON object and no other text:
@@ -43,7 +45,8 @@ For a non-qualifying sample use JSON null for task_family, reasoning_depth 0, an
 CONSTRUCT_PROMPT = """You are constructing candidate guides and multiple-choice options for a closed-world visual reasoning pilot.
 Use only the supplied complete image, question, reference answer aliases, and audited visual evidence/path. Never use Wikipedia evidence or URLs.
 Question: {question}
-Reference answer aliases: {answers}
+Canonical complete answer (copy exactly into correct_answer_text): {canonical_answer}
+Accepted aliases grouped by required answer item: {answer_alias_groups}
 Required visual evidence: {required_evidence}
 Audited reasoning graph: {reasoning_graph}
 
@@ -59,19 +62,21 @@ Use 1-2 distinct visible_evidence items. Stop immediately after the closing brac
 
 COMPACT_AUDIT_PROMPT = """Rewrite the first audit attempt as one schema-valid compact JSON object. Do not redo or reverse its recoverable high-level decision.
 Question: {question}
-Reference answer aliases: {answers}
+Canonical complete answer: {canonical_answer}
+Accepted aliases grouped by required answer item: {answer_alias_groups}
 Locked decision fields: {decision_lock}
 Target shape for this record: {target_shape}
 Copy every locked value exactly. JSON null has no quotes. Include every key shown. For image_only only, replace short evidence/claim placeholders with image-grounded content while keeping a two-evidence DAG. Return no markdown or analysis and stop after the closing brace."""
 
 COMPACT_CONSTRUCT_PROMPT = """Using only the complete image and audited visual path, construct short guides and options for this question.
 Question: {question}
-Reference answer aliases: {answers}
+Canonical complete answer (copy exactly into correct_answer_text): {canonical_answer}
+Accepted aliases grouped by required answer item: {answer_alias_groups}
 Required visual evidence: {required_evidence}
 Audited reasoning graph: {reasoning_graph}
 Recoverable first-attempt fields to preserve when present: {decision_lock}
 Return one compact JSON object, no markdown or analysis, with exactly these keys:
-{{"decision":"accept_candidate","guides":[{{"question":"under 16 words","answer":"under 12 words","supports_next":"existing node id"}}],"correct_answer_text":"one reference alias","distractors":["same-type option","same-type option","same-type option"],"generic_context_seed":"inspect-compare-verify","answer_leakage":false,"external_fact_injected":false,"rejection_reason":""}}
+{{"decision":"accept_candidate","guides":[{{"question":"under 16 words","answer":"under 12 words","supports_next":"existing node id"}}],"correct_answer_text":{canonical_answer_json},"distractors":["same-cardinality option","same-cardinality option","same-cardinality option"],"generic_context_seed":"inspect-compare-verify","answer_leakage":false,"external_fact_injected":false,"rejection_reason":""}}
 Use 1-3 guides, never state the final answer in a guide, and stop after the closing brace. If safe construction is impossible, return the same keys with decision "reject", empty guides/options/answer/seed, both booleans false, and a short rejection_reason."""
 
 
@@ -90,13 +95,57 @@ def _answers(candidate: dict) -> list[str]:
     return [_text(item) for item in value if _text(item)]
 
 
+def _answer_alias_groups(candidate: dict) -> list[list[str]]:
+    value = candidate.get("reference_answer_alias_groups")
+    if not isinstance(value, list):
+        return []
+    groups = []
+    for group in value:
+        if not isinstance(group, list):
+            return []
+        rendered = [_text(item) for item in group if _text(item)]
+        if not rendered:
+            return []
+        groups.append(rendered)
+    return groups
+
+
+def canonical_answer_text(candidate: dict) -> str:
+    """Return the one frozen MC option representing the complete target.
+
+    M3VQA is multi-answer: ``answers`` contains canonical answer items while
+    each ``answer_evals`` sub-list contains aliases for one required item.
+    A JSON array string keeps a multi-item answer distinct from an alias list.
+    """
+
+    answers = _answers(candidate)
+    if len(answers) == 1:
+        return answers[0]
+    return json.dumps(answers, ensure_ascii=False, separators=(",", ":"))
+
+
 def validate_candidate(candidate: dict) -> list[str]:
     errors = []
     for key in ("candidate_id", "source_image_id", "image_original", "final_question_source"):
         if not _text(candidate.get(key)):
             errors.append(f"missing_{key}")
-    if not _answers(candidate):
+    answers = _answers(candidate)
+    aliases = _answer_alias_groups(candidate)
+    if not answers:
         errors.append("missing_reference_answers")
+    if not aliases:
+        errors.append("missing_reference_answer_alias_groups")
+    elif len(aliases) != len(answers):
+        errors.append("answer_alias_group_count_mismatch")
+    else:
+        for answer, group in zip(answers, aliases):
+            normalized_group = {_normalize_for_leakage(value) for value in group}
+            if _normalize_for_leakage(answer) not in normalized_group:
+                errors.append("canonical_answer_missing_from_alias_group")
+                break
+    expected = canonical_answer_text(candidate) if answers else ""
+    if _text(candidate.get("canonical_answer_text")) != expected:
+        errors.append("canonical_answer_text_mismatch")
     return errors
 
 
@@ -109,16 +158,22 @@ def render_stage_prompt(candidate: dict, stage: str, audit_proposal: dict | None
     if errors:
         raise ValueError(",".join(errors))
     question = _text(candidate["final_question_source"])
-    answers = json.dumps(_answers(candidate), ensure_ascii=False)
+    canonical_answer = json.dumps(canonical_answer_text(candidate), ensure_ascii=False)
+    answer_alias_groups = json.dumps(_answer_alias_groups(candidate), ensure_ascii=False)
     if stage == "blind":
         return BLIND_PROMPT.format(question=question)
     if stage == "audit":
-        return AUDIT_PROMPT.format(question=question, answers=answers)
+        return AUDIT_PROMPT.format(
+            question=question,
+            canonical_answer=canonical_answer,
+            answer_alias_groups=answer_alias_groups,
+        )
     if not isinstance(audit_proposal, dict):
         raise ValueError("construct stage requires audit_proposal")
     return CONSTRUCT_PROMPT.format(
         question=question,
-        answers=answers,
+        canonical_answer=canonical_answer,
+        answer_alias_groups=answer_alias_groups,
         required_evidence=json.dumps(audit_proposal.get("required_evidence", []), ensure_ascii=False),
         reasoning_graph=json.dumps(audit_proposal.get("minimal_reasoning_graph", {}), ensure_ascii=False),
     )
@@ -138,8 +193,9 @@ def render_compact_stage_prompt(
     if errors:
         raise ValueError(",".join(errors))
     question = _text(candidate["final_question_source"])
-    answers = json.dumps(_answers(candidate), ensure_ascii=False)
-    decision_lock = fallback_decision_fields(stage, primary_proposal)
+    canonical_answer = json.dumps(canonical_answer_text(candidate), ensure_ascii=False)
+    answer_alias_groups = json.dumps(_answer_alias_groups(candidate), ensure_ascii=False)
+    decision_lock = fallback_decision_fields(stage, primary_proposal, candidate)
     rendered_lock = json.dumps(decision_lock, ensure_ascii=False, sort_keys=True)
     if stage == "blind":
         return COMPACT_BLIND_PROMPT.format(question=question, decision_lock=rendered_lock)
@@ -147,7 +203,8 @@ def render_compact_stage_prompt(
         target = audit_fallback_target(primary_proposal)
         return COMPACT_AUDIT_PROMPT.format(
             question=question,
-            answers=answers,
+            canonical_answer=canonical_answer,
+            answer_alias_groups=answer_alias_groups,
             decision_lock=rendered_lock,
             target_shape=json.dumps(target, ensure_ascii=False, separators=(",", ":")),
         )
@@ -155,14 +212,20 @@ def render_compact_stage_prompt(
         raise ValueError("construct stage requires audit_proposal")
     return COMPACT_CONSTRUCT_PROMPT.format(
         question=question,
-        answers=answers,
+        canonical_answer=canonical_answer,
+        canonical_answer_json=canonical_answer,
+        answer_alias_groups=answer_alias_groups,
         required_evidence=json.dumps(audit_proposal.get("required_evidence", []), ensure_ascii=False),
         reasoning_graph=json.dumps(audit_proposal.get("minimal_reasoning_graph", {}), ensure_ascii=False),
         decision_lock=rendered_lock,
     )
 
 
-def fallback_decision_fields(stage: str, proposal: dict | None) -> dict:
+def fallback_decision_fields(
+    stage: str,
+    proposal: dict | None,
+    candidate: dict | None = None,
+) -> dict:
     """Return only valid high-level fields a compact retry must preserve.
 
     Audit retries are conservative: an unparseable first attempt becomes
@@ -189,8 +252,11 @@ def fallback_decision_fields(stage: str, proposal: dict | None) -> dict:
     if stage == "construct":
         if proposal.get("decision") in {"accept_candidate", "reject"}:
             locked["decision"] = proposal["decision"]
-        if _text(proposal.get("correct_answer_text")):
-            locked["correct_answer_text"] = _text(proposal["correct_answer_text"])
+        if locked.get("decision") == "accept_candidate" and isinstance(candidate, dict):
+            if not validate_candidate(candidate):
+                # The complete correct option is an input invariant. Never
+                # preserve a primary answer already known to violate it.
+                locked["correct_answer_text"] = canonical_answer_text(candidate)
         return locked
     raise ValueError(f"unsupported stage: {stage}")
 
@@ -294,12 +360,21 @@ def validate_audit(proposal: dict) -> list[str]:
             errors.append("invalid_required_evidence")
         elif len({_normalize_for_leakage(_text(item)) for item in evidence}) != len(evidence):
             errors.append("duplicate_required_evidence")
+        elif any(_is_placeholder_text(item) for item in evidence):
+            errors.append("placeholder_required_evidence")
         graph_errors, _ = validate_reasoning_graph(
             proposal.get("minimal_reasoning_graph"),
             declared_depth=depth,
             require_two_evidence=True,
         )
         errors.extend(graph_errors)
+        graph = proposal.get("minimal_reasoning_graph")
+        if isinstance(graph, dict) and isinstance(graph.get("nodes"), list):
+            if any(
+                isinstance(node, dict) and _is_placeholder_text(node.get("claim"))
+                for node in graph["nodes"]
+            ):
+                errors.append("placeholder_reasoning_graph")
     else:
         if family is not None:
             errors.append("nonqualifying_task_family_must_be_null")
@@ -319,21 +394,40 @@ def _normalize_for_leakage(value: str) -> str:
     return re.sub(r"[^\w]+", " ", value.casefold()).strip()
 
 
-def obvious_answer_leakage(proposal: dict, reference_answers: list[str]) -> bool:
-    answers = {_normalize_for_leakage(value) for value in reference_answers if _normalize_for_leakage(value)}
-    if not answers:
+def _is_placeholder_text(value: Any) -> bool:
+    normalized = _normalize_for_leakage(_text(value))
+    return normalized in {"e1", "e2", "evidence 1", "evidence 2"} or "replace with" in normalized
+
+
+def obvious_answer_leakage(proposal: dict, candidate: dict) -> bool:
+    """Fail if one guide directly contains the complete final answer.
+
+    For a multi-item target, an atomic item may be a legitimate intermediate
+    state. It is leakage only when a single guide states at least one alias
+    from every required answer group. Human review still judges indirect and
+    cross-guide leakage.
+    """
+
+    groups = [
+        {_normalize_for_leakage(alias) for alias in group if _normalize_for_leakage(alias)}
+        for group in _answer_alias_groups(candidate)
+    ]
+    if not groups:
         return True
     for guide in proposal.get("guides", []):
         if not isinstance(guide, dict):
             continue
         for key in ("question", "answer"):
             text = _normalize_for_leakage(_text(guide.get(key)))
-            if any(answer == text or (len(answer) >= 4 and answer in text) for answer in answers):
+            if all(
+                any(alias == text or (len(alias) >= 4 and alias in text) for alias in group)
+                for group in groups
+            ):
                 return True
     return False
 
 
-def validate_construct(proposal: dict, reference_answers: list[str]) -> list[str]:
+def validate_construct(proposal: dict, candidate: dict) -> list[str]:
     errors = []
     if proposal.get("decision") not in {"accept_candidate", "reject"}:
         errors.append("invalid_decision")
@@ -350,10 +444,11 @@ def validate_construct(proposal: dict, reference_answers: list[str]) -> list[str
             if not isinstance(guide, dict) or any(not _text(guide.get(k)) for k in ("question", "answer", "supports_next")):
                 errors.append("invalid_guide")
                 break
-    correct = _normalize_for_leakage(_text(proposal.get("correct_answer_text")))
-    aliases = {_normalize_for_leakage(value) for value in reference_answers}
-    if not correct or correct not in aliases:
-        errors.append("correct_answer_not_reference_alias")
+    correct_raw = _text(proposal.get("correct_answer_text"))
+    correct = _normalize_for_leakage(correct_raw)
+    expected = canonical_answer_text(candidate)
+    if not correct or correct_raw != expected:
+        errors.append("correct_answer_not_canonical_complete_answer")
     distractors = proposal.get("distractors")
     if not isinstance(distractors, list) or len(distractors) != 3 or any(not _text(item) for item in distractors):
         errors.append("invalid_distractors")
@@ -362,7 +457,7 @@ def validate_construct(proposal: dict, reference_answers: list[str]) -> list[str
     for key in ("answer_leakage", "external_fact_injected"):
         if proposal.get(key) is not False:
             errors.append(f"{key}_not_false")
-    if obvious_answer_leakage(proposal, reference_answers):
+    if obvious_answer_leakage(proposal, candidate):
         errors.append("obvious_answer_leakage")
     if not _text(proposal.get("generic_context_seed")):
         errors.append("missing_generic_context_seed")
@@ -379,7 +474,7 @@ def proposal_errors(stage: str, proposal: dict, candidate: dict) -> list[str]:
     if stage == "audit":
         return validate_audit(proposal)
     if stage == "construct":
-        return validate_construct(proposal, _answers(candidate))
+        return validate_construct(proposal, candidate)
     return ["unsupported_stage"]
 
 

@@ -199,9 +199,16 @@ def main() -> None:
                 "prompt_fields_used": (
                     ["image_original", "final_question_source"]
                     if args.stage == "blind"
-                    else ["image_original", "final_question_source", "reference_answers"]
+                    else [
+                        "image_original", "final_question_source", "reference_answers",
+                        "reference_answer_alias_groups", "canonical_answer_text",
+                    ]
                     if args.stage == "audit"
-                    else ["image_original", "final_question_source", "reference_answers", "audit_proposal.required_evidence", "audit_proposal.minimal_reasoning_graph"]
+                    else [
+                        "image_original", "final_question_source", "reference_answers",
+                        "reference_answer_alias_groups", "canonical_answer_text",
+                        "audit_proposal.required_evidence", "audit_proposal.minimal_reasoning_graph",
+                    ]
                 ),
             }
             if args.stage == "construct":
@@ -225,7 +232,7 @@ def main() -> None:
                 )]
                 if attempts[0]["validation_errors"]:
                     primary_proposal = extract_json_object(attempts[0]["raw_model_output"])
-                    preserved = fallback_decision_fields(args.stage, primary_proposal)
+                    preserved = fallback_decision_fields(args.stage, primary_proposal, candidate)
                     compact_prompt = render_compact_stage_prompt(
                         candidate,
                         args.stage,

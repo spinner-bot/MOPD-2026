@@ -40,7 +40,7 @@ def make_raw(data_id: str, hop: int, image_id: str) -> dict:
         "question_hop": hop,
         "question_type": "IP1TP0S2",
         "entity_num": 3,
-        "answer_evals": {"yes": ["yep", "affirmative"]},
+        "answer_evals": [["yes", "yep", "affirmative"]],
         "img_entity_names": ["Guava"],
         "evidence_img_ids": [f"wikiimg_{data_id}"],
         "evidence_section_ids": [f"sec_{data_id}"],
@@ -236,7 +236,7 @@ class TestC2Contract(C2Fixture):
             "human_reviewer", "human_reviewed_at", "human_notes",
         }
         self.assertEqual(set(c2.HUMAN_FIELDS), required)
-        self.assertEqual(c2.RULES_VERSION, "c2-v2")
+        self.assertEqual(c2.RULES_VERSION, "c2-v3-answer-cardinality")
 
     def test_raw_field_enrichment_and_firewall_structure(self):
         out = self.root / "out7"
@@ -247,7 +247,7 @@ class TestC2Contract(C2Fixture):
             screen = rec["screening_input"]
             self.assertEqual(screen["question_type"], "IP1TP0S2")
             self.assertEqual(screen["entity_num"], 3)
-            self.assertEqual(screen["answer_evals"], {"yes": ["yep", "affirmative"]})
+            self.assertEqual(screen["answer_evals"], [["yes", "yep", "affirmative"]])
             posthoc = rec["posthoc_analysis_only"]
             self.assertEqual(posthoc["img_entity_names"], ["Guava"])
             self.assertIn("evidence_urls", posthoc)

@@ -21,6 +21,8 @@ def candidate() -> dict:
         "image_original": "/work/image.jpg",
         "final_question_source": "Which shape completes the relation?",
         "reference_answers": ["triangle"],
+        "reference_answer_alias_groups": [["triangle"]],
+        "canonical_answer_text": "triangle",
     }
 
 

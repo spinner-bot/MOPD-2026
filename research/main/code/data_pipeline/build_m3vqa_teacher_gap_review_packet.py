@@ -52,7 +52,7 @@ from audit_m3vqa_pilot_candidates import (  # noqa: E402
     url_domain,
 )
 
-RULES_VERSION = "c2-v2"
+RULES_VERSION = "c2-v3-answer-cardinality"
 DEFAULT_SEED = 20260911
 DEFAULT_TIERS = "128,512,1024"
 
@@ -116,6 +116,53 @@ def flatten_evidence(evidence) -> list[str]:
     elif not is_missing(evidence):
         texts.append(str(evidence))
     return texts
+
+
+def normalize_answer(value) -> str:
+    return " ".join(str(value).casefold().split())
+
+
+def reference_answer_spec(raw: dict) -> tuple[list[str], list[list[str]], str]:
+    """Convert M3VQA's answer fields without confusing items and aliases.
+
+    ``answer_evals`` is the official list of required answer groups. Usually
+    it aligns one-to-one with ``answers``. In 20 source rows it contains one
+    group whose members include several legacy ``answers`` values; those are
+    aliases for one target and are deterministically collapsed to the first
+    canonical value.
+    """
+
+    answers = raw.get("answers")
+    groups = raw.get("answer_evals")
+    if not isinstance(answers, list) or not answers or any(is_missing(v) for v in answers):
+        raise ValueError("invalid_answers")
+    if (
+        not isinstance(groups, list)
+        or not groups
+        or any(not isinstance(group, list) or not group or any(is_missing(v) for v in group) for group in groups)
+    ):
+        raise ValueError("invalid_answer_evals")
+    canonical = [str(value).strip() for value in answers]
+    aliases = [[str(value).strip() for value in group] for group in groups]
+    if len(canonical) == len(aliases):
+        targets = canonical
+    elif len(aliases) == 1:
+        normalized_aliases = {normalize_answer(value) for value in aliases[0]}
+        targets = [next(
+            (value for value in canonical if normalize_answer(value) in normalized_aliases),
+            canonical[0],
+        )]
+    else:
+        raise ValueError("unsupported_answer_cardinality_mismatch")
+    for target, group in zip(targets, aliases):
+        if normalize_answer(target) not in {normalize_answer(value) for value in group}:
+            raise ValueError("canonical_answer_missing_from_alias_group")
+    canonical_text = (
+        targets[0]
+        if len(targets) == 1
+        else json.dumps(targets, ensure_ascii=False, separators=(",", ":"))
+    )
+    return targets, aliases, canonical_text
 
 
 def load_jsonl(path: Path):
@@ -204,6 +251,7 @@ def enriched_record(norm: dict, raw: dict, tier: int, origin: str, seed: int) ->
     urls = norm.get("evidence_urls") or []
     if not isinstance(urls, list):
         urls = [urls]
+    targets, alias_groups, canonical_text = reference_answer_spec(raw)
     return {
         "candidate_id": norm.get("candidate_id"),
         "source_image_id": norm.get("source_image_id"),
@@ -212,13 +260,17 @@ def enriched_record(norm: dict, raw: dict, tier: int, origin: str, seed: int) ->
         # run_teacher_gap_candidate_stage.py; the renderer is allow-list based.
         "image_original": norm.get("image_original"),
         "final_question_source": norm.get("final_question_source"),
-        "reference_answers": norm.get("reference_answers"),
+        "reference_answers": targets,
+        "reference_answer_alias_groups": alias_groups,
+        "canonical_answer_text": canonical_text,
         "question_hop": int(norm.get("reasoning_depth_candidate", 0)),
         "tier": tier,
         "tier_origin": origin,
         "screening_input": {
             "final_question_source": norm.get("final_question_source"),
-            "reference_answers": norm.get("reference_answers"),
+            "reference_answers": targets,
+            "reference_answer_alias_groups": alias_groups,
+            "canonical_answer_text": canonical_text,
             "image_original": norm.get("image_original"),
             "task_family_candidate": norm.get("task_family_candidate"),
             "n_evidence_texts": len(flatten_evidence(norm.get("evidence"))),

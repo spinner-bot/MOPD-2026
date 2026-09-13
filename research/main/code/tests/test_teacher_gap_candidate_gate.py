@@ -35,6 +35,8 @@ def raw_blind() -> dict:
         "image_original": "/images/image-1.jpg",
         "final_question_source": "Which shape follows both relations?",
         "reference_answers": ["triangle"],
+        "reference_answer_alias_groups": [["triangle"]],
+        "canonical_answer_text": "triangle",
     }
     raw_output = json.dumps(proposal)
     prompt_hash = stable_hash(render_stage_prompt(candidate, "blind"))

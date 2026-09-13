@@ -34,6 +34,8 @@ MACHINE_FIELDS = (
     "image_path",
     "question",
     "reference_answers",
+    "reference_answer_alias_groups",
+    "canonical_answer_text",
     "blind_proposal",
     "audit_proposal",
     "construction_proposal",
@@ -87,7 +89,7 @@ def validate_constructed_row(row: dict) -> list[str]:
     else:
         errors.extend(
             f"construct:{error}"
-            for error in validate_construct(proposal, candidate.get("reference_answers", []))
+            for error in validate_construct(proposal, candidate)
         )
         if proposal.get("decision") != "accept_candidate":
             errors.append("construction_decision_not_accept")
@@ -109,6 +111,8 @@ def queue_record(row: dict) -> dict:
         "image_path": candidate["image_original"],
         "question": candidate["final_question_source"],
         "reference_answers": candidate["reference_answers"],
+        "reference_answer_alias_groups": candidate["reference_answer_alias_groups"],
+        "canonical_answer_text": candidate["canonical_answer_text"],
         "blind_proposal": row["blind_proposal"],
         "audit_proposal": row["audit_proposal"],
         "construction_proposal": row["proposal"],

@@ -28,11 +28,16 @@ from teacher_gap_candidate_contract import (
 
 PROMPT_FIELDS = {
     "blind": ["image_original", "final_question_source"],
-    "audit": ["image_original", "final_question_source", "reference_answers"],
+    "audit": [
+        "image_original", "final_question_source", "reference_answers",
+        "reference_answer_alias_groups", "canonical_answer_text",
+    ],
     "construct": [
         "image_original",
         "final_question_source",
         "reference_answers",
+        "reference_answer_alias_groups",
+        "canonical_answer_text",
         "audit_proposal.required_evidence",
         "audit_proposal.minimal_reasoning_graph",
     ],
@@ -206,6 +211,7 @@ def summarize_and_validate(
                         computed_lock = fallback_decision_fields(
                             stage,
                             extract_json_object(str(attempts[0].get("raw_model_output", ""))),
+                            row.get("candidate", {}),
                         )
                     computed_errors.extend(decision_lock_errors(proposal, computed_lock))
                 computed_errors = sorted(set(computed_errors))
@@ -242,7 +248,9 @@ def summarize_and_validate(
                     primary_proposal = extract_json_object(
                         str(attempts[0].get("raw_model_output", ""))
                     )
-                    expected_preserved = fallback_decision_fields(stage, primary_proposal)
+                    expected_preserved = fallback_decision_fields(
+                        stage, primary_proposal, row.get("candidate", {})
+                    )
                     expected_fallback_prompt = render_compact_stage_prompt(
                         row.get("candidate", {}),
                         stage,
