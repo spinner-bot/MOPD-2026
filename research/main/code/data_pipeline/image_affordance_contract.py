@@ -24,15 +24,16 @@ QUESTION_TYPES = {"compare", "spatial", "connection", "order", "state_change", "
 AFFORDANCE_PROMPT = """Inspect only this complete image. No source question, answer, dataset evidence, URL, or model result is available.
 Describe visible structure that could naturally support a future closed-world visual reasoning question. Do not identify a person, place, brand, species, event, or hidden fact from memory. Do not invent a question or answer yet.
 R requires at least two distinct visible entities/regions and at least two indispensable transformations. PR requires the same reasoning chain plus a genuinely difficult local visual detail on that chain. A long description is not a reasoning chain.
+Use candidate only with integer r_score 2 or 3. Merely naming two objects and then restating one simple above/below/near/foreground relation is not two-step R; use reject when no richer path exists.
 Return exactly one concise JSON object and no other text:
 {"decision":"candidate|reject|ambiguous","observable_entities":[{"id":"e1","description":"visible description","region":"top-left|top|top-right|left|center|right|bottom-left|bottom|bottom-right|distributed|whole","fine_detail_difficult":false}],"observable_relations":[{"source_id":"e1","relation":"visible relation","target_id":"e2"}],"candidate_reasoning_paths":[{"family":"R|PR","evidence_entity_ids":["e1","e2"],"transformations":["derive step 1","derive step 2"],"natural_question_type":"compare|spatial|connection|order|state_change|chart_relation"}],"p_score":0,"r_score":0,"pr_score":0,"closed_world_question_feasible":false,"external_identification_needed":false,"uncertainty":"brief"}
 Scores are integers 0-3. Use candidate only when at least one natural path satisfies the definitions and could have a unique answer from the image alone. Use reject when no such path is visible; ambiguous when image quality or structure prevents a reliable decision. Stop after the closing brace."""
 
-COMPACT_AFFORDANCE_PROMPT = """Rewrite the first image-only affordance attempt as one concise schema-valid JSON object. Do not use any source question, answer, dataset evidence, URL, or outside identity fact.
+COMPACT_AFFORDANCE_PROMPT = """Rewrite the first image-only affordance attempt as one concise schema-valid JSON object. Reinspect only the supplied image; do not use any source question, answer, dataset evidence, URL, or outside identity fact.
 Locked conservative decision fields: {decision_lock}
-Copy every locked value exactly. For candidate, include 2-6 visible entities, 1-5 visible relations, and 1-2 natural R/PR paths with at least two distinct evidence entity IDs and two indispensable transformations. For reject or ambiguous, lists may be empty.
-Return exactly these keys and no markdown or analysis:
-{{"decision":"candidate|reject|ambiguous","observable_entities":[],"observable_relations":[],"candidate_reasoning_paths":[],"p_score":0,"r_score":0,"pr_score":0,"closed_world_question_feasible":false,"external_identification_needed":false,"uncertainty":"brief"}}
+Copy every locked value exactly. If no decision is locked, choose reject or ambiguous unless a genuine path meets every candidate rule. Candidate requires integer r_score 2 or 3, 2-6 entity objects, 1-5 relation objects, and 1-2 path objects. Each path needs at least two distinct entity IDs and at least two indispensable transformations. Naming two objects plus one simple spatial relation is insufficient. For reject or ambiguous, lists may be empty.
+Return exactly this object structure with integers 0-3; replace example text, never replace objects with strings, never add keys, and never repeat entries:
+{{"decision":"candidate|reject|ambiguous","observable_entities":[{{"id":"e1","description":"visible description","region":"center","fine_detail_difficult":false}},{{"id":"e2","description":"visible description","region":"right","fine_detail_difficult":false}}],"observable_relations":[{{"source_id":"e1","relation":"visible relation","target_id":"e2"}}],"candidate_reasoning_paths":[{{"family":"R","evidence_entity_ids":["e1","e2"],"transformations":["derive step 1","derive step 2"],"natural_question_type":"compare"}}],"p_score":0,"r_score":2,"pr_score":0,"closed_world_question_feasible":true,"external_identification_needed":false,"uncertainty":"brief"}}
 Stop after the closing brace."""
 
 
@@ -52,12 +53,17 @@ def affordance_fallback_lock(primary: dict | None) -> dict:
 
     primary = primary if isinstance(primary, dict) else {}
     decision = primary.get("decision")
-    if decision == "candidate" and primary.get("closed_world_question_feasible") is True and primary.get("external_identification_needed") is False:
+    if decision == "candidate" and not validate_affordance_proposal(primary):
         return {
             "decision": "candidate",
             "closed_world_question_feasible": True,
             "external_identification_needed": False,
         }
+    if decision == "candidate":
+        # An internally inconsistent positive must be allowed to fail closed.
+        # Locking it as candidate forces the repair attempt to preserve the
+        # very error that triggered fallback (B1 r2 canary, 2026-09-14).
+        return {}
     if decision in {"reject", "ambiguous"}:
         return {
             "decision": decision,

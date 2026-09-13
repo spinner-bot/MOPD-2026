@@ -88,6 +88,31 @@ class ImageAffordanceContractTests(unittest.TestCase):
             "external_identification_needed": False,
         })
 
+    def test_invalid_candidate_can_downgrade_during_fallback(self):
+        invalid = proposal()
+        invalid["r_score"] = 1
+        self.assertIn("candidate_r_score_below_two", validate_affordance_proposal(invalid))
+        self.assertEqual(affordance_fallback_lock(invalid), {})
+        rewritten = proposal()
+        rewritten.update({
+            "decision": "reject",
+            "observable_entities": [],
+            "observable_relations": [],
+            "candidate_reasoning_paths": [],
+            "r_score": 0,
+            "closed_world_question_feasible": False,
+        })
+        self.assertEqual(affordance_lock_errors(rewritten, {}), [])
+
+    def test_compact_prompt_preserves_nested_object_schema(self):
+        invalid = proposal()
+        invalid["r_score"] = 1
+        prompt = render_compact_affordance_prompt(invalid)
+        self.assertIn('"id":"e1"', prompt)
+        self.assertIn('"source_id":"e1"', prompt)
+        self.assertIn('"family":"R"', prompt)
+        self.assertIn("integers 0-3", prompt)
+
 
 if __name__ == "__main__":
     unittest.main()
