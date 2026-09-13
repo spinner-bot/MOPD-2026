@@ -1,0 +1,20 @@
+stage: W2B
+input_records: resolved_after_screening
+model_path: /leonardo_work/AIFAC_F02_774/sqs/models/Qwen3.5-9B-base
+model_revision: c202236235762e1c871ad0ccb60c8ee5ba337b9a
+python: /leonardo_work/AIFAC_F02_774/sqs/envs/mopd-stage0-py311/bin/python
+image_root: /leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images
+world_size: 4
+gpus: 4
+thinking: false
+do_sample: false
+primary_max_new_tokens: 768
+fallback_max_new_tokens: 512
+max_attempts: 2
+fallback_policy: preserve recoverable primary decision fields; reject any output-side mismatch
+structured_output_repetition_constraints: disabled
+canary_per_rank: 2
+canary_min_parse_rate: 0.75
+full_min_parse_rate: 0.90
+require_zero_selected_truncation: true
+require_zero_runner_errors: true
