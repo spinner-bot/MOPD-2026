@@ -79,6 +79,18 @@ def choice_token_sequences(tokenizer) -> dict[str, list[int]]:
     return sequences
 
 
+def validate_choice_continuations(tokenizer, prefix_text: str, sequences: dict[str, list[int]]) -> None:
+    """Ensure standalone frozen labels are the exact suffix after this template."""
+
+    prefix = list(tokenizer.encode(prefix_text, add_special_tokens=False))
+    for choice, expected in sequences.items():
+        combined = list(tokenizer.encode(prefix_text + choice, add_special_tokens=False))
+        if combined[: len(prefix)] != prefix:
+            raise ValueError(f"chat-template boundary retokenizes before choice {choice}")
+        if combined[len(prefix) :] != expected:
+            raise ValueError(f"choice {choice} continuation differs from frozen token sequence")
+
+
 def allowed_token_function(prefix_length: int, sequences: dict[str, list[int]], eos_ids: set[int]):
     """Build a token-trie constraint that permits only A/B/C/D followed by EOS."""
 
@@ -231,6 +243,7 @@ def main() -> None:
                     add_generation_prompt=True,
                     enable_thinking=False,
                 )
+                validate_choice_continuations(processor.tokenizer, template, sequences)
                 images, videos = process_vision_info(messages)
                 inputs = processor(
                     text=[template], images=images, videos=videos, padding=True, return_tensors="pt"
@@ -251,6 +264,7 @@ def main() -> None:
                     "image_checksum": image_checksum,
                     "input_tokens": prefix_length,
                     "choice_log_likelihoods": scores,
+                    "choice_continuation_verified": True,
                     "generated_token_ids": token_list,
                     "generated_tokens": len(token_list),
                     "eos_reached": any(token in eos_ids for token in token_list),

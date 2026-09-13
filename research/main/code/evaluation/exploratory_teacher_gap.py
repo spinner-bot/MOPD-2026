@@ -275,6 +275,8 @@ def validate_result_records(
 
         if row.get("chat_template") != {"enable_thinking": False, "add_generation_prompt": True}:
             errors.append(f"{key}: chat_template must disable thinking and add generation prompt")
+        if row.get("choice_continuation_verified") is not True:
+            errors.append(f"{key}: choice continuation must be verified against the chat-template boundary")
         generation = row.get("generation_config")
         if (
             not isinstance(generation, dict)

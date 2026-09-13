@@ -27,6 +27,7 @@ from run_exploratory_teacher_gap import (
     frozen_schedule,
     main as run_teacher_gap,
     runtime_code_hashes,
+    validate_choice_continuations,
 )
 
 
@@ -113,6 +114,7 @@ def result_records(tq_gains: int, tqa_gains: int, generic_gains: int = 1, logp_t
                 "chat_template": {"enable_thinking": False, "add_generation_prompt": True},
                 "generation_config": {"do_sample": False, "constrained_to": ["A", "B", "C", "D"]},
                 "choice_token_ids": {"A": [1], "B": [2], "C": [3], "D": [4]},
+                "choice_continuation_verified": True,
                 "runtime_code_hashes": {
                     "exploratory_teacher_gap.py": "hash-1",
                     "reasoning_graph_contract.py": "hash-2",
@@ -188,6 +190,29 @@ class ExploratoryTeacherGapTests(unittest.TestCase):
             },
         )
         self.assertTrue(all(len(value) == 64 for value in hashes.values()))
+
+    def test_choice_continuation_must_preserve_template_boundary(self):
+        class CharacterTokenizer:
+            @staticmethod
+            def encode(text, add_special_tokens=False):
+                return [ord(value) for value in text]
+
+        sequences = {choice: [ord(choice)] for choice in "ABCD"}
+        validate_choice_continuations(CharacterTokenizer(), "assistant\n", sequences)
+        with self.assertRaisesRegex(ValueError, "differs from frozen"):
+            validate_choice_continuations(
+                CharacterTokenizer(), "assistant\n", {**sequences, "A": [999]}
+            )
+
+        class RetokenizingTokenizer:
+            @staticmethod
+            def encode(text, add_special_tokens=False):
+                return [1] if text == "prefix" else [2]
+
+        with self.assertRaisesRegex(ValueError, "retokenizes"):
+            validate_choice_continuations(
+                RetokenizingTokenizer(), "prefix", {choice: [index] for index, choice in enumerate("ABCD")}
+            )
 
     def test_locked_manifest_fails_closed_on_overlap_and_balance(self):
         samples = [manifest_sample(index) for index in range(96)]
