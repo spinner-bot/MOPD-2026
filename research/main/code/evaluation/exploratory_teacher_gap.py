@@ -19,7 +19,7 @@ from pathlib import Path
 DATA_PIPELINE_ROOT = Path(__file__).resolve().parents[1] / "data_pipeline"
 sys.path.insert(0, str(DATA_PIPELINE_ROOT))
 
-from reasoning_graph_contract import validate_reasoning_graph
+from reasoning_graph_contract import validate_guide_graph_alignment, validate_reasoning_graph
 
 
 CONDITIONS = ("S", "T_Q", "T_QA", "T_generic")
@@ -67,6 +67,7 @@ def validate_locked_manifest(samples: list[dict], expected_n: int = 96) -> list[
         "option_B",
         "option_C",
         "option_D",
+        "canonical_answer_text",
         "generic_context",
         "human_reviewer",
         "human_reviewed_at",
@@ -101,14 +102,48 @@ def validate_locked_manifest(samples: list[dict], expected_n: int = 96) -> list[
         if not isinstance(depth, int) or isinstance(depth, bool) or depth < 2:
             errors.append(f"{row_id}: reasoning_depth must be an integer >= 2")
         evidence = row.get("required_evidence")
-        if not isinstance(evidence, list) or len(evidence) < 2 or any(not str(v).strip() for v in evidence):
+        evidence_valid = (
+            isinstance(evidence, list)
+            and len(evidence) >= 2
+            and all(isinstance(value, str) and value.strip() for value in evidence)
+            and len({value.strip().casefold() for value in evidence}) == len(evidence)
+        )
+        if not evidence_valid:
             errors.append(f"{row_id}: required_evidence must contain at least two entries")
+        graph = row.get("minimal_reasoning_graph")
         graph_errors, _ = validate_reasoning_graph(
-            row.get("minimal_reasoning_graph"),
+            graph,
             declared_depth=depth,
             require_two_evidence=True,
         )
         errors.extend(f"{row_id}: minimal_reasoning_graph {error}" for error in graph_errors)
+        if evidence_valid and isinstance(graph, dict) and isinstance(graph.get("nodes"), list):
+            graph_evidence = {
+                str(node.get("claim", "")).strip().casefold()
+                for node in graph["nodes"]
+                if isinstance(node, dict) and node.get("type") == "evidence"
+            }
+            if graph_evidence != {value.strip().casefold() for value in evidence}:
+                errors.append(f"{row_id}: required_evidence must match graph evidence")
+
+        difficult = row.get("difficult_visual_evidence")
+        difficult_valid = (
+            isinstance(difficult, list)
+            and all(isinstance(value, str) and value.strip() for value in difficult)
+            and len({value.strip().casefold() for value in difficult}) == len(difficult)
+        )
+        if not difficult_valid:
+            errors.append(f"{row_id}: difficult_visual_evidence must be a distinct string list")
+        elif evidence_valid and any(
+            value.strip().casefold() not in {item.strip().casefold() for item in evidence}
+            for value in difficult
+        ):
+            errors.append(f"{row_id}: difficult_visual_evidence must be required evidence")
+        elif row.get("task_family") == "PR" and not difficult:
+            errors.append(f"{row_id}: PR requires difficult_visual_evidence")
+        elif row.get("task_family") == "R" and difficult:
+            errors.append(f"{row_id}: R must not have difficult_visual_evidence")
+
         guides = row.get("guides")
         if not isinstance(guides, list) or not 1 <= len(guides) <= 4:
             errors.append(f"{row_id}: guides must contain 1..4 items")
@@ -120,9 +155,18 @@ def validate_locked_manifest(samples: list[dict], expected_n: int = 96) -> list[
             for guide in guides
         ):
             errors.append(f"{row_id}: every guide requires question, answer, and supports_next")
+        errors.extend(
+            f"{row_id}: {error}"
+            for error in validate_guide_graph_alignment(guides, graph)
+        )
         options = [str(row.get(f"option_{choice}", "")).strip().casefold() for choice in CHOICES]
         if len(set(options)) != len(options):
             errors.append(f"{row_id}: options must be distinct")
+        correct_choice = row.get("final_answer")
+        if correct_choice in CHOICES and str(row.get(f"option_{correct_choice}", "")).strip() != str(
+            row.get("canonical_answer_text", "")
+        ).strip():
+            errors.append(f"{row_id}: correct option must equal canonical_answer_text")
     return errors
 
 

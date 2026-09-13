@@ -36,7 +36,7 @@ from run_exploratory_teacher_gap import (
 
 def manifest_sample(index: int) -> dict:
     label = "ABCD"[index % 4]
-    return {
+    sample = {
         "sample_id": f"sample-{index:03d}",
         "source_image_id": f"image-{index:03d}",
         "source_cluster_id": f"cluster-{index:03d}",
@@ -61,6 +61,7 @@ def manifest_sample(index: int) -> dict:
         "answer_leakage": 0,
         "external_fact_injected": 0,
         "required_evidence": ["left relation", "right relation"],
+        "difficult_visual_evidence": [],
         "reasoning_depth": 2,
         "minimal_reasoning_graph": {
             "nodes": [
@@ -76,6 +77,8 @@ def manifest_sample(index: int) -> dict:
             {"question": "How does it apply on the right?", "answer": "In the same order.", "supports_next": "a"},
         ],
     }
+    sample["canonical_answer_text"] = sample[f"option_{label}"]
+    return sample
 
 
 def result_records(tq_gains: int, tqa_gains: int, generic_gains: int = 1, logp_tq: float = 0.30, logp_tqa: float = 0.35) -> list[dict]:
@@ -255,6 +258,16 @@ class ExploratoryTeacherGapTests(unittest.TestCase):
         self.assertTrue(any("human_reviewer" in error for error in errors))
         self.assertTrue(any("requires timezone" in error for error in errors))
         self.assertTrue(any("unknown_endpoint" in error for error in errors))
+
+    def test_locked_manifest_preserves_answer_and_r_pr_evidence_semantics(self):
+        samples = [manifest_sample(index) for index in range(96)]
+        samples[0]["canonical_answer_text"] = "not the correct option"
+        samples[1]["required_evidence"] = ["other evidence", "right relation"]
+        samples[2]["task_family"] = "PR"
+        errors = validate_locked_manifest(samples)
+        self.assertTrue(any("correct option must equal canonical" in error for error in errors))
+        self.assertTrue(any("required_evidence must match graph" in error for error in errors))
+        self.assertTrue(any("PR requires difficult" in error for error in errors))
 
     def test_common_shell_changes_only_privileged_block(self):
         sample = manifest_sample(0)

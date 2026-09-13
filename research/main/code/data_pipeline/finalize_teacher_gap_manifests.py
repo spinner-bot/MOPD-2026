@@ -318,6 +318,7 @@ def main() -> None:
                 "final_question": candidate["final_question_source"],
                 **{f"option_{choice}": options[choice] for choice in CHOICES},
                 "final_answer": correct_label,
+                "canonical_answer_text": candidate["canonical_answer_text"],
                 "guides": proposal["guides"],
                 "generic_context": "PENDING_TOKEN_MATCH",
                 "knowledge_dependency_label": "image_only",
@@ -330,6 +331,7 @@ def main() -> None:
                 "answer_leakage": 0,
                 "external_fact_injected": 0,
                 "required_evidence": review["human_required_evidence"],
+                "difficult_visual_evidence": review["human_difficult_visual_evidence"],
                 "reasoning_depth": review["human_reasoning_depth"],
                 "minimal_reasoning_graph": review["human_reasoning_graph"],
             })
