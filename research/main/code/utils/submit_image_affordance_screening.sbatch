@@ -15,7 +15,7 @@ set -euo pipefail
 ROOT="${MOPD_ROOT:?set MOPD_ROOT to research/main}"
 INPUT="${MOPD_INPUT:?set MOPD_INPUT to image-only JSONL}"
 RUN="${ROOT}/outputs/runs/${MOPD_RUN_ID:?set MOPD_RUN_ID}"
-PY="${MOPD_PYTHON:-/leonardo_scratch/large/userexternal/rqian000/envs/mopd-stage0-py311/bin/python}"
+PY="${MOPD_PYTHON:-/leonardo_scratch/fast/AIFAC_F02_774/rqian000/envs/mopd-stage0-py311/bin/python}"
 MODEL="${MOPD_MODEL_9B:-/leonardo_scratch/large/userexternal/rqian000/models/Qwen3.5-9B-base}"
 IMAGE_ROOT="${MOPD_IMAGE_ROOT:-/leonardo_scratch/large/userexternal/rqian000/data/m3vqa/materialized/images}"
 REVISION="c202236235762e1c871ad0ccb60c8ee5ba337b9a"
@@ -29,7 +29,9 @@ PROCESS="${ROOT}/code/data_pipeline/process_image_affordance_screen.py"
 GATE="${ROOT}/code/utils/check_image_affordance_gate.py"
 
 [[ "${EXPECTED}" -gt 0 ]] || { echo "empty input" >&2; exit 2; }
-[[ -x "${PY}" && -d "${MODEL}" && -d "${IMAGE_ROOT}" ]] || { echo "missing runtime asset" >&2; exit 2; }
+[[ -x "${PY}" ]] || { echo "missing Python executable: ${PY}" >&2; exit 2; }
+[[ -d "${MODEL}" ]] || { echo "missing model directory: ${MODEL}" >&2; exit 2; }
+[[ -d "${IMAGE_ROOT}" ]] || { echo "missing image directory: ${IMAGE_ROOT}" >&2; exit 2; }
 [[ -f "${RUN}/manifest.json" ]] || { echo "initialize run archive first" >&2; exit 2; }
 [[ "$(git -C "${ROOT}" rev-parse HEAD)" == "${EXPECTED_COMMIT}" ]] || { echo "code commit drift" >&2; exit 2; }
 mkdir -p "${RUN}"/{canary,raw,parsed,rejects,summaries,logs}
