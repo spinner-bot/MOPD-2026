@@ -1,0 +1,46 @@
+{
+  "code_commits": [
+    "88a4426de96172d06ed114ce7beb373e51d82939"
+  ],
+  "failures": [],
+  "fallback_recovered": 0,
+  "fallback_used": 0,
+  "files": [
+    "/leonardo/home/userexternal/rqian000/spinner-bot/MOPD-2026/research/main/outputs/runs/20260913T2355-teacher-gap-screen-c1-128-r5b/canary/blind/rank-0.jsonl",
+    "/leonardo/home/userexternal/rqian000/spinner-bot/MOPD-2026/research/main/outputs/runs/20260913T2355-teacher-gap-screen-c1-128-r5b/canary/blind/rank-1.jsonl",
+    "/leonardo/home/userexternal/rqian000/spinner-bot/MOPD-2026/research/main/outputs/runs/20260913T2355-teacher-gap-screen-c1-128-r5b/canary/blind/rank-2.jsonl",
+    "/leonardo/home/userexternal/rqian000/spinner-bot/MOPD-2026/research/main/outputs/runs/20260913T2355-teacher-gap-screen-c1-128-r5b/canary/blind/rank-3.jsonl"
+  ],
+  "generation_configs": [
+    "{\"do_sample\":false,\"fallback_max_new_tokens\":512,\"max_attempts\":2,\"primary_max_new_tokens\":768,\"structured_output_repetition_constraints\":\"disabled\"}"
+  ],
+  "model_dtypes": [
+    "torch.bfloat16"
+  ],
+  "model_revisions": [
+    "c202236235762e1c871ad0ccb60c8ee5ba337b9a"
+  ],
+  "parse_rate": 1.0,
+  "parse_summary": {
+    "observed": 8,
+    "parse_rate": 1.0,
+    "parsed_valid": 8,
+    "rejected": 0,
+    "rejection_reasons": {},
+    "stage": "blind"
+  },
+  "primary_truncated": 0,
+  "rejected": 0,
+  "runner_errors": 0,
+  "stage": "blind",
+  "thinking_modes": [
+    "False"
+  ],
+  "total": 8,
+  "truncated_or_missing_eos": 0,
+  "unique_candidate_ids": 8,
+  "valid_parsed": 8,
+  "world_sizes": [
+    4
+  ]
+}

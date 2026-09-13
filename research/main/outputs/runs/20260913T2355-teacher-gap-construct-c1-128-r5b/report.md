@@ -2,8 +2,6 @@
 
 阶段：W2B C1 构造。
 
-目的：仅在 `20260913T2355-teacher-gap-screen-c1-128-r5b` 全部通过后生成 guides/options 机器候选；所有结果仍须 100% 人工审核。
-
 ## 结果
 
-待提交。screen 失败时应以依赖取消、零运行时间结束。
+**CANCELLED DEPENDENCY，运行时间 0。** Slurm `57579118` 依赖 `afterok:57579114`；screen blind full fail-closed，本作业于 2026-09-13 17:59:38（CEST）自动取消。没有加载模型或生成记录。

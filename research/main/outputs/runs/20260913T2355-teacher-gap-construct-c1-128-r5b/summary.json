@@ -1,4 +1,10 @@
 {
-  "status": "prepared_not_submitted",
-  "slurm_job_id": null
+  "status": "cancelled_dependency",
+  "slurm_job_id": "57579118",
+  "dependency": "afterok:57579114",
+  "dependency_state": "FAILED",
+  "elapsed": "00:00:00",
+  "model_loaded": false,
+  "output_records": 0,
+  "human_review_candidates": 0
 }
