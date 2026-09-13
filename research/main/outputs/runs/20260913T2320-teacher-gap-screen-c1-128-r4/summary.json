@@ -1,4 +1,91 @@
 {
-  "status": "prepared_not_submitted",
-  "slurm_job_id": null
+  "artifact_sha256": {
+    "canary/audit/rank-0.jsonl": "67d82e4043a6f64074edb0faee7cea94ee2e512901b15b9900e67e4b140482de",
+    "canary/audit/rank-1.jsonl": "1dbe1a340d363a78b0a4f15eab8485cbbb77a9c491c6e57c8e3998580d6633a6",
+    "canary/audit/rank-2.jsonl": "1a1d01286979668e3550eb0b242b06412c02334a76fb358e07635bfee28c122b",
+    "canary/audit/rank-3.jsonl": "9bb30dd639c4c5e5ad22de6c9e56e37133257fdc90c2b1a95e48134d29b3e9ce",
+    "canary/blind/rank-0.jsonl": "05cc45979bc67a141129f0803a1fe8b13ea63db5c8ffb22f1f7a1834987b1519",
+    "canary/blind/rank-1.jsonl": "b8b75fba9c435c08be3dcfac61d2599b819b855fe92e961f5b9c0517b09e1aa4",
+    "canary/blind/rank-2.jsonl": "b1d01133cb4a38a197b1eb1201b74e1b866cd56fc381500aacfc62e926736466",
+    "canary/blind/rank-3.jsonl": "526c9a61665c884048489a2a0aafce165aa94d3923c3cf00106ac99b0836499c",
+    "command.txt": "a0e6540f622a27eac64aad0e316df250feb81bdbc5c4df258f825d5d16b9100f",
+    "config.resolved.yaml": "5f456049ae6fc7840114e05884c3610e86ca5972f51bc77543c776a332ad3a3a",
+    "input_manifest.json": "7545eee29d288f2ae8901c4a7097c1f138d68ed2f5975e0a60de347e9e723fe3",
+    "logs/slurm-57574779.err": "6ef07ddf2273655969325692f6be7fff82397299c1dd08993a8f09d4489ec5bb",
+    "logs/slurm-57574779.out": "939c13c3e5e91a045c37ea7cc2ac293b94aac3a614842a52357b339c7d65fe8d",
+    "parsed/blind.jsonl": "a8fd4f9789f4ba300488d8fbb936efdf673ea529ae45e19dec65ff71783605a9",
+    "raw/blind/rank-0.jsonl": "1b7155ff9b4f43a88670e9251402a495e58f30ed21bd593c873487d32ded3d2b",
+    "raw/blind/rank-1.jsonl": "6ade69f8b33905a47a857c25971b7dde79a3493f385ddcba651da7b295906cef",
+    "raw/blind/rank-2.jsonl": "b0e3420d791c059a2bde584bf86141c7da55eab3339262a7a8809cc34292d10d",
+    "raw/blind/rank-3.jsonl": "0f3d0ae512aa92d804b77519e7603cd44b8c0fb8b09eee3cb8adbc58a4f02ad7",
+    "rejects/blind.jsonl": "943aebca4bea55fb36def1f9e41fc01b10e5b1a4c355fc905f3cb0cc9cecb9ae",
+    "submit.sbatch": "5707fe07497f15bd2f0423d7ae1e449ae396f5eb443accf437af54732c9bf06f",
+    "summaries/audit-canary.json": "a465f08d62e2437058e3d4e5ab85abdef752fb85eaba739a0b8aee12ac83eee4",
+    "summaries/blind-canary.json": "97ed9bcdbeb76ccf797efdbb454dccb64576d493e39966914654b4f5c6c58492",
+    "summaries/blind-completion.json": "511e308c91afcc5e74381a676b90cec7cb2a1e8673506fb2394852f89d9eaad1",
+    "summaries/blind-parse.json": "4d4aa6601981d651194a232d5ed984bd3db865b6ae90609330738fc56f9df384"
+  },
+  "audit_canary": {
+    "fallback_recovered_structurally": 2,
+    "fallback_used": 6,
+    "final_rejection_reasons": {
+      "invalid_json": 2,
+      "missing_explanation": 1,
+      "nonqualifying_task_family_must_be_null": 1
+    },
+    "gate": "failed",
+    "observed": 8,
+    "parse_rate": 0.5,
+    "primary_truncated": 0,
+    "runner_errors": 0,
+    "selected_truncated": 0,
+    "strict_valid": 4
+  },
+  "audit_full": "not_run",
+  "audit_label_transitions_on_fallback": {
+    "external_required->external_required": 3,
+    "external_required->image_only": 1,
+    "external_required->unparseable": 2
+  },
+  "audit_primary_failure_reasons": {
+    "nonqualifying_reasoning_depth_must_be_zero": 2,
+    "nonqualifying_reasoning_graph_must_be_empty": 2,
+    "nonqualifying_required_evidence_must_be_empty": 2,
+    "nonqualifying_task_family_must_be_null": 6
+  },
+  "blind_canary": {
+    "fallback_recovered": 0,
+    "fallback_used": 0,
+    "gate": "passed",
+    "observed": 8,
+    "parse_rate": 1.0,
+    "selected_truncated": 0,
+    "strict_valid": 8
+  },
+  "blind_full": {
+    "fallback_recovered": 8,
+    "fallback_used": 9,
+    "final_rejection_reasons": {
+      "invalid_visible_evidence": 1
+    },
+    "gate": "passed",
+    "observed": 128,
+    "parse_rate": 0.9921875,
+    "primary_truncated": 5,
+    "runner_errors": 0,
+    "selected_truncated": 0,
+    "strict_valid": 127
+  },
+  "blind_primary_failure_reasons": {
+    "duplicate_visible_evidence": 1,
+    "invalid_json": 6,
+    "invalid_visible_evidence": 2,
+    "truncated_output": 5
+  },
+  "construct": "cancelled_dependency_zero_runtime",
+  "decision": "retain blind fallback; redesign audit fallback to preserve primary high-level decisions and provide balanced full templates; rerun canary under new run id",
+  "dependent_construct_job_id": "57574781",
+  "elapsed": "00:10:06",
+  "slurm_job_id": "57574779",
+  "status": "failed_closed"
 }
