@@ -1,0 +1,11 @@
+{
+  "run_id": "20260914T0236-m3vqa-image-affordance-pool-v1",
+  "stage": "image-first-B0",
+  "operator": "Codex (CINECA Leonardo)",
+  "status": "completed",
+  "code_commit_containing_exact_builder": "4892a36",
+  "rules_version": "m3vqa-image-affordance-pool-v1",
+  "full_output_location": "/leonardo_scratch/large/userexternal/rqian000/data/m3vqa/processed/image-affordance-v1/run2/images.jsonl",
+  "source_questions_exposed": false,
+  "teacher_gap_results_used_for_selection": false
+}
