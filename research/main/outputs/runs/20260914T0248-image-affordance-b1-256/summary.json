@@ -1,5 +1,7 @@
 {
-  "status": "prepared_not_submitted",
-  "slurm_job_id": null,
-  "human_verified": 0
+  "status": "submitted",
+  "slurm_job_id": "57597609",
+  "human_verified": 0,
+  "submitted_code_commit": "e5edf8d98c0dc47e23c9e56d44ab00c836a3c617",
+  "run_worktree": "/leonardo/home/userexternal/rqian000/spinner-bot/MOPD-2026-codex-b1"
 }
