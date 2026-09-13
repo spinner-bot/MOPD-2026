@@ -21,6 +21,7 @@ from finalize_teacher_gap_manifests import (
 )
 from teacher_gap_candidate_contract import (
     is_construction_candidate,
+    render_compact_stage_prompt,
     render_stage_prompt,
     validate_audit,
     validate_blind,
@@ -131,6 +132,11 @@ class TeacherGapCandidatePipelineTests(unittest.TestCase):
             prompt = render_stage_prompt(candidate(), stage, audit() if stage == "construct" else None)
             self.assertNotIn("TOP SECRET", prompt)
             self.assertNotIn("example.invalid", prompt)
+            compact = render_compact_stage_prompt(
+                candidate(), stage, audit() if stage == "construct" else None
+            )
+            self.assertNotIn("TOP SECRET", compact)
+            self.assertNotIn("example.invalid", compact)
 
     def test_blind_prompt_bounds_evidence_output(self):
         prompt = render_stage_prompt(candidate(), "blind")

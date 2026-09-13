@@ -13,8 +13,16 @@ import json
 import subprocess
 from pathlib import Path
 
+from extract_json_response import extract_json_object
 from generation_audit import collect_eos_ids, hit_token_cap
-from teacher_gap_candidate_contract import STAGES, render_stage_prompt, stable_hash, validate_candidate
+from teacher_gap_candidate_contract import (
+    STAGES,
+    proposal_errors,
+    render_compact_stage_prompt,
+    render_stage_prompt,
+    stable_hash,
+    validate_candidate,
+)
 
 
 def sha256_file(path: Path) -> str:
@@ -56,14 +64,15 @@ def main() -> None:
     parser.add_argument("--rank", type=int, default=0)
     parser.add_argument("--world-size", type=int, default=1)
     parser.add_argument("--limit", type=int, default=0, help="per-rank record limit; zero means all")
-    parser.add_argument("--max-new-tokens", type=int, default=1536)
+    parser.add_argument("--max-new-tokens", type=int, default=768)
+    parser.add_argument("--fallback-max-new-tokens", type=int, default=512)
     parser.add_argument("--thinking", action="store_true")
     args = parser.parse_args()
 
     if args.world_size < 1 or not 0 <= args.rank < args.world_size:
         raise SystemExit("rank must satisfy 0 <= rank < world-size")
-    if args.max_new_tokens < 1:
-        raise SystemExit("max-new-tokens must be positive")
+    if args.max_new_tokens < 1 or args.fallback_max_new_tokens < 1:
+        raise SystemExit("primary and fallback max-new-tokens must be positive")
     if not args.model.is_dir():
         raise SystemExit(f"missing model directory: {args.model}")
     current_commit = git_commit()
@@ -85,6 +94,59 @@ def main() -> None:
     eos_ids = collect_eos_ids(processor, model)
     args.output.parent.mkdir(parents=True, exist_ok=True)
     selected = 0
+
+    def generate_attempt(image_path: Path, prompt: str, kind: str, max_new_tokens: int, candidate: dict) -> dict:
+        messages = [{
+            "role": "user",
+            "content": [
+                {"type": "image", "image": str(image_path)},
+                {"type": "text", "text": prompt},
+            ],
+        }]
+        template = processor.apply_chat_template(
+            messages,
+            tokenize=False,
+            add_generation_prompt=True,
+            enable_thinking=args.thinking,
+        )
+        images, videos = process_vision_info(messages)
+        inputs = processor(
+            text=[template], images=images, videos=videos, padding=True, return_tensors="pt"
+        ).to("cuda")
+        generated = model.generate(
+            **inputs,
+            max_new_tokens=max_new_tokens,
+            do_sample=False,
+        )
+        new_tokens = generated[0, inputs.input_ids.shape[1]:]
+        eos_reached = any(int(token) in eos_ids for token in new_tokens)
+        truncated = hit_token_cap(new_tokens, eos_ids)
+        raw = processor.batch_decode(
+            generated[:, inputs.input_ids.shape[1]:],
+            skip_special_tokens=True,
+            clean_up_tokenization_spaces=False,
+        )[0]
+        proposal = extract_json_object(raw)
+        validation_errors = []
+        if truncated:
+            validation_errors.append("truncated_output")
+        if proposal is None:
+            validation_errors.append("invalid_json")
+        else:
+            validation_errors.extend(proposal_errors(args.stage, proposal, candidate))
+        return {
+            "attempt_kind": kind,
+            "max_new_tokens": max_new_tokens,
+            "prompt_hash": stable_hash(prompt),
+            "chat_template_hash": stable_hash(template),
+            "input_tokens": int(inputs.input_ids.shape[1]),
+            "generated_tokens": int(len(new_tokens)),
+            "eos_reached": eos_reached,
+            "truncated": truncated,
+            "raw_model_output": raw,
+            "validation_errors": sorted(set(validation_errors)),
+            "schema_valid": not validation_errors,
+        }
 
     with args.input.open(encoding="utf-8") as source, args.output.open("w", encoding="utf-8") as sink, torch.inference_mode():
         for index, line in enumerate(source):
@@ -113,7 +175,9 @@ def main() -> None:
                 "model_dtype": str(getattr(model, "dtype", "unknown")),
                 "generation_config": {
                     "do_sample": False,
-                    "max_new_tokens": args.max_new_tokens,
+                    "primary_max_new_tokens": args.max_new_tokens,
+                    "fallback_max_new_tokens": args.fallback_max_new_tokens,
+                    "max_attempts": 2,
                     # Repetition constraints are deliberately disabled for the
                     # exact JSON schema. r2's no-repeat n-gram constraint
                     # systematically corrupted repeated field-name tokens.
@@ -142,45 +206,40 @@ def main() -> None:
                     raise FileNotFoundError(image_path)
                 with Image.open(image_path) as image:
                     image.verify()
-                prompt = render_stage_prompt(candidate, args.stage, audit_proposal)
-                messages = [{
-                    "role": "user",
-                    "content": [
-                        {"type": "image", "image": str(image_path)},
-                        {"type": "text", "text": prompt},
-                    ],
-                }]
-                template = processor.apply_chat_template(
-                    messages,
-                    tokenize=False,
-                    add_generation_prompt=True,
-                    enable_thinking=args.thinking,
-                )
-                images, videos = process_vision_info(messages)
-                inputs = processor(
-                    text=[template], images=images, videos=videos, padding=True, return_tensors="pt"
-                ).to("cuda")
-                generated = model.generate(
-                    **inputs,
-                    max_new_tokens=args.max_new_tokens,
-                    do_sample=False,
-                )
-                new_tokens = generated[0, inputs.input_ids.shape[1]:]
-                eos_reached = any(int(token) in eos_ids for token in new_tokens)
-                raw = processor.batch_decode(
-                    generated[:, inputs.input_ids.shape[1]:],
-                    skip_special_tokens=True,
-                    clean_up_tokenization_spaces=False,
-                )[0]
+                primary_prompt = render_stage_prompt(candidate, args.stage, audit_proposal)
+                attempts = [generate_attempt(
+                    image_path, primary_prompt, "primary", args.max_new_tokens, candidate
+                )]
+                if attempts[0]["validation_errors"]:
+                    compact_prompt = render_compact_stage_prompt(candidate, args.stage, audit_proposal)
+                    attempts.append(generate_attempt(
+                        image_path,
+                        compact_prompt,
+                        "compact_fallback",
+                        args.fallback_max_new_tokens,
+                        candidate,
+                    ))
+                chosen = attempts[-1]
                 record.update({
                     "image_checksum": sha256_file(image_path),
-                    "prompt_hash": stable_hash(prompt),
-                    "chat_template_hash": stable_hash(template),
-                    "input_tokens": int(inputs.input_ids.shape[1]),
-                    "generated_tokens": int(len(new_tokens)),
-                    "eos_reached": eos_reached,
-                    "truncated": hit_token_cap(new_tokens, eos_ids),
-                    "raw_model_output": raw,
+                    "attempts": attempts,
+                    "attempt_count": len(attempts),
+                    "chosen_attempt": len(attempts) - 1,
+                    "fallback_used": len(attempts) == 2,
+                    "fallback_recovered": len(attempts) == 2 and not chosen["validation_errors"],
+                    "primary_failure_reasons": attempts[0]["validation_errors"],
+                    **{
+                        key: chosen[key]
+                        for key in (
+                            "prompt_hash",
+                            "chat_template_hash",
+                            "input_tokens",
+                            "generated_tokens",
+                            "eos_reached",
+                            "truncated",
+                            "raw_model_output",
+                        )
+                    },
                 })
             except Exception as error:
                 record["error"] = f"{type(error).__name__}: {error}"

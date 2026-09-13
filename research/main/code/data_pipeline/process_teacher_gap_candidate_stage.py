@@ -80,6 +80,11 @@ def parse_records(rows: list[dict], stage: str) -> tuple[list[dict], list[dict],
                 "thinking_mode": raw.get("thinking_mode"),
                 "chat_template": raw.get("chat_template"),
                 "generation_config": raw.get("generation_config"),
+                "attempt_count": raw.get("attempt_count"),
+                "chosen_attempt": raw.get("chosen_attempt"),
+                "fallback_used": raw.get("fallback_used"),
+                "fallback_recovered": raw.get("fallback_recovered"),
+                "primary_failure_reasons": raw.get("primary_failure_reasons"),
             },
         }
         if stage == "construct":
