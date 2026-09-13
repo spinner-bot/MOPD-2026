@@ -1,0 +1,7 @@
+{
+  "input_path": "research/main/outputs/runs/20260914T0236-m3vqa-image-affordance-pool-v1/outputs/sample-256.jsonl",
+  "input_sha256": "e69b6d14fe8da625720af1ee7198213b909c682c10e2313003f43c2c139debf4",
+  "records": 256,
+  "rules_version": "m3vqa-image-affordance-pool-v1",
+  "source_questions_exposed": false
+}
