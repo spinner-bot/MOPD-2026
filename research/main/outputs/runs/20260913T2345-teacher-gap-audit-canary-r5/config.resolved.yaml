@@ -1,0 +1,13 @@
+stage: W2A-audit-canary
+input_records_consumed: 8
+world_size: 4
+gpus: 4
+thinking: false
+do_sample: false
+primary_max_new_tokens: 768
+fallback_max_new_tokens: 512
+max_attempts: 2
+fallback_policy: preserve recoverable primary decision fields; unparseable audit becomes ambiguous
+canary_min_parse_rate: 0.75
+require_zero_selected_truncation: true
+require_zero_runner_errors: true
