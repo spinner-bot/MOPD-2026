@@ -1,0 +1,22 @@
+{
+  "candidate_input_records": 128,
+  "candidate_input_sha256": "3dcf3aced17e5b5f6dbc19c64ba19fe75dc51db451b3ab539925d9a52c16fd7d",
+  "duplicate_raw_ids": [],
+  "legacy_alias_lists_collapsed": 0,
+  "official_evidence_included": false,
+  "output_sha256": "656b7eadcf96d33135242a8f7e7beda775558bd8f5a5807913337a4867d18392",
+  "raw_source_records": 13125,
+  "raw_source_sha256": "019d7bd1d6dae5e8db9bf763e5b5822adb15a0fb92eadcc82f510d6e7c64a24a",
+  "rejected_records": 0,
+  "rejection_reasons": {},
+  "rejects_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "rules_version": "m3vqa-answer-contract-v1",
+  "target_cardinality_distribution": {
+    "1": 54,
+    "2": 20,
+    "3": 23,
+    "4": 16,
+    "5": 15
+  },
+  "upgraded_records": 128
+}

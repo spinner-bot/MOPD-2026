@@ -1,0 +1,6 @@
+/leonardo_work/AIFAC_F02_774/sqs/envs/mopd-stage0-py311/bin/python research/main/code/data_pipeline/upgrade_m3vqa_teacher_gap_answers.py \
+  --candidates research/main/outputs/runs/20260911T-c1-m3vqa-field-audit/outputs/candidate-shortlist-128.jsonl \
+  --raw-m3vqa /leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/source/quesions.jsonl \
+  --output research/main/outputs/runs/20260914T0152-m3vqa-answer-contract-c1-128/outputs/candidates.jsonl \
+  --rejects research/main/outputs/runs/20260914T0152-m3vqa-answer-contract-c1-128/outputs/rejects.jsonl \
+  --summary research/main/outputs/runs/20260914T0152-m3vqa-answer-contract-c1-128/outputs/summary.json
