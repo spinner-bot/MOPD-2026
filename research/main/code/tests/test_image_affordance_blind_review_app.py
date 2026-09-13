@@ -168,6 +168,21 @@ class ImageAffordanceBlindReviewAppTests(unittest.TestCase):
 
         expect_failure(escape, "escapes configured root")
 
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            packet, image_root, rows = make_packet(root, 1)
+            rows[0]["image_path"] = str(image_root / "missing.jpg")
+            write_jsonl(packet, rows)
+            with self.assertRaises(FileNotFoundError):
+                ReviewStore(
+                    input_path=packet,
+                    image_root=image_root,
+                    draft_path=root / "draft.jsonl",
+                    export_prefix=root / "export",
+                    expected_input_sha256=hashlib.sha256(packet.read_bytes()).hexdigest(),
+                    expected_records=1,
+                )
+
     def test_complete_32_record_draft_exports_through_existing_finalizer(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
