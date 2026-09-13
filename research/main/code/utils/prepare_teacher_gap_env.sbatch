@@ -14,8 +14,8 @@ set -euo pipefail
 
 ROOT="${MOPD_ROOT:?set MOPD_ROOT to research/main}"
 RUN="${ROOT}/outputs/runs/${MOPD_RUN_ID:?set MOPD_RUN_ID}"
-STORAGE_ROOT="${MOPD_STORAGE_ROOT:-/leonardo_work/AIFAC_F02_774/sqs}"
-ENV_ROOT="${MOPD_ENV_ROOT:-${STORAGE_ROOT}/envs/mopd-stage0-py311}"
+STORAGE_ROOT="${MOPD_STORAGE_ROOT:-/leonardo_scratch/large/userexternal/rqian000}"
+ENV_ROOT="${MOPD_ENV_ROOT:-/leonardo_scratch/fast/AIFAC_F02_774/rqian000/envs/mopd-stage0-py311}"
 BASE_PYTHON="${MOPD_BASE_PYTHON:-/leonardo_work/AIFAC_F02_774/rqian000/miniconda3/bin/python}"
 LOCK="${ROOT}/requirements-stage0.lock"
 WHEELHOUSE="${MOPD_WHEELHOUSE:-${STORAGE_ROOT}/cache/wheelhouse-stage0-py311}"
