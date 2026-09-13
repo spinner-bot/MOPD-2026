@@ -1,0 +1,7 @@
+{
+  "status": "prepared",
+  "slurm_job_id": null,
+  "human_verified": 0,
+  "supersedes_run_id": "20260914T0248-image-affordance-b1-256",
+  "correction_only": "runtime_python_path"
+}
