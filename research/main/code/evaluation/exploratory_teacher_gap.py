@@ -197,7 +197,12 @@ def validate_result_records(
         "model_dtype",
     )
     global_values = {field: set() for field in global_fields}
-    global_json_fields = ("chat_template", "generation_config", "choice_token_ids")
+    global_json_fields = (
+        "chat_template",
+        "generation_config",
+        "choice_token_ids",
+        "runtime_code_hashes",
+    )
     global_json_values = {field: set() for field in global_json_fields}
     schedule_indices = []
     for index, row in enumerate(records):

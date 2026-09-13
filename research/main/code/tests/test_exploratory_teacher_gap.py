@@ -26,6 +26,7 @@ from run_exploratory_teacher_gap import (
     choice_token_sequences,
     frozen_schedule,
     main as run_teacher_gap,
+    runtime_code_hashes,
 )
 
 
@@ -112,6 +113,12 @@ def result_records(tq_gains: int, tqa_gains: int, generic_gains: int = 1, logp_t
                 "chat_template": {"enable_thinking": False, "add_generation_prompt": True},
                 "generation_config": {"do_sample": False, "constrained_to": ["A", "B", "C", "D"]},
                 "choice_token_ids": {"A": [1], "B": [2], "C": [3], "D": [4]},
+                "runtime_code_hashes": {
+                    "exploratory_teacher_gap.py": "hash-1",
+                    "reasoning_graph_contract.py": "hash-2",
+                    "run_exploratory_teacher_gap.py": "hash-3",
+                    "teacher_gap_inputs.py": "hash-4",
+                },
                 "image_checksum": f"image-sha-{index}",
                 "question_hash": f"question-sha-{index}",
                 "options_hash": f"options-sha-{index}",
@@ -168,6 +175,19 @@ class ExploratoryTeacherGapTests(unittest.TestCase):
                 with self.assertRaisesRegex(SystemExit, "refusing to overwrite"):
                     run_teacher_gap()
             self.assertEqual(output.read_text(encoding="utf-8"), "immutable\n")
+
+    def test_runner_records_all_runtime_code_hashes(self):
+        hashes = runtime_code_hashes()
+        self.assertEqual(
+            set(hashes),
+            {
+                "exploratory_teacher_gap.py",
+                "reasoning_graph_contract.py",
+                "run_exploratory_teacher_gap.py",
+                "teacher_gap_inputs.py",
+            },
+        )
+        self.assertTrue(all(len(value) == 64 for value in hashes.values()))
 
     def test_locked_manifest_fails_closed_on_overlap_and_balance(self):
         samples = [manifest_sample(index) for index in range(96)]

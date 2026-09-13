@@ -24,6 +24,27 @@ REVISION="851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a"
 EXPECTED_COMMIT="${MOPD_EXPECTED_CODE_COMMIT:?set MOPD_EXPECTED_CODE_COMMIT to the submitted git HEAD}"
 RUNNER="${ROOT}/code/evaluation/run_exploratory_teacher_gap.py"
 PROCESS="${ROOT}/code/evaluation/process_exploratory_teacher_gap.py"
+CODE_PATHS=(
+  code/evaluation/run_exploratory_teacher_gap.py
+  code/evaluation/process_exploratory_teacher_gap.py
+  code/evaluation/exploratory_teacher_gap.py
+  code/evaluation/teacher_gap_inputs.py
+  code/data_pipeline/reasoning_graph_contract.py
+  code/utils/submit_exploratory_teacher_gap.sbatch
+)
+
+assert_code_state() {
+  local actual_commit
+  actual_commit="$(git -C "${ROOT}" rev-parse HEAD)"
+  [[ "${actual_commit}" == "${EXPECTED_COMMIT}" ]] || {
+    echo "code commit changed after submission: expected=${EXPECTED_COMMIT} actual=${actual_commit}" >&2
+    exit 2
+  }
+  git -C "${ROOT}" diff --quiet HEAD -- "${CODE_PATHS[@]}" || {
+    echo "tracked teacher-gap runtime code differs from ${EXPECTED_COMMIT}" >&2
+    exit 2
+  }
+}
 
 [[ "${MOPD_LEAKAGE_FREE:-0}" == 1 ]] || { echo "MOPD_LEAKAGE_FREE=1 required after 100% human review" >&2; exit 2; }
 [[ -x "${PY}" ]] || { echo "missing Python environment: ${PY}" >&2; exit 2; }
@@ -32,11 +53,7 @@ PROCESS="${ROOT}/code/evaluation/process_exploratory_teacher_gap.py"
 [[ -f "${DEV_MANIFEST}" ]] || { echo "missing dev manifest" >&2; exit 2; }
 [[ -f "${LOCKED_MANIFEST}" ]] || { echo "missing locked manifest" >&2; exit 2; }
 [[ -f "${RUN}/manifest.json" ]] || { echo "initialize run archive first: ${RUN}" >&2; exit 2; }
-ACTUAL_COMMIT="$(git -C "${ROOT}" rev-parse HEAD)"
-[[ "${ACTUAL_COMMIT}" == "${EXPECTED_COMMIT}" ]] || {
-  echo "code commit changed after submission: expected=${EXPECTED_COMMIT} actual=${ACTUAL_COMMIT}" >&2
-  exit 2
-}
+assert_code_state
 mkdir -p "${RUN}"/{raw,parsed,summaries,logs}
 export ROOT RUN PY MODEL IMAGE_ROOT REVISION EXPECTED_COMMIT RUNNER
 
@@ -64,6 +81,7 @@ run_manifest() {
 echo "[W3] 8-sample canary: all four conditions"
 mkdir -p "${RUN}/raw/canary"
 run_manifest "${CANARY_MANIFEST}" 8 "${RUN}/raw/canary"
+assert_code_state
 "${PY}" "${PROCESS}" validate \
   --inputs "${RUN}/raw/canary/rank-*.jsonl" \
   --expected-samples 8 \
@@ -71,8 +89,10 @@ run_manifest "${CANARY_MANIFEST}" 8 "${RUN}/raw/canary"
   --summary "${RUN}/summaries/canary-gate.json"
 
 echo "[W4] frozen locked pilot: 96 samples x 4 conditions"
+assert_code_state
 mkdir -p "${RUN}/raw/locked"
 run_manifest "${LOCKED_MANIFEST}" 96 "${RUN}/raw/locked"
+assert_code_state
 "${PY}" "${PROCESS}" validate \
   --inputs "${RUN}/raw/locked/rank-*.jsonl" \
   --expected-samples 96 \
@@ -80,6 +100,7 @@ run_manifest "${LOCKED_MANIFEST}" 96 "${RUN}/raw/locked"
   --summary "${RUN}/summaries/locked-gate.json"
 
 echo "[W4] gate passed; aggregate once and apply the preregistered decision"
+assert_code_state
 "${PY}" "${PROCESS}" decide \
   --input "${RUN}/parsed/locked.jsonl" \
   --expected-samples 96 --leakage-free \

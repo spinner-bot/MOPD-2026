@@ -12,6 +12,16 @@ from exploratory_teacher_gap import CHOICES, CONDITIONS, validate_locked_manifes
 from teacher_gap_inputs import render_teacher_gap_input, validate_generic_length
 
 
+RUNTIME_CODE_PATHS = {
+    "run_exploratory_teacher_gap.py": Path(__file__).resolve(),
+    "exploratory_teacher_gap.py": Path(__file__).resolve().with_name("exploratory_teacher_gap.py"),
+    "teacher_gap_inputs.py": Path(__file__).resolve().with_name("teacher_gap_inputs.py"),
+    "reasoning_graph_contract.py": Path(__file__).resolve().parents[1]
+    / "data_pipeline"
+    / "reasoning_graph_contract.py",
+}
+
+
 def sha256_bytes(value: bytes) -> str:
     return hashlib.sha256(value).hexdigest()
 
@@ -22,6 +32,10 @@ def sha256_file(path: Path) -> str:
         for block in iter(lambda: source.read(1024 * 1024), b""):
             digest.update(block)
     return digest.hexdigest()
+
+
+def runtime_code_hashes() -> dict[str, str]:
+    return {name: sha256_file(path) for name, path in sorted(RUNTIME_CODE_PATHS.items())}
 
 
 def git_commit() -> str:
@@ -132,6 +146,7 @@ def main() -> None:
     if manifest_errors:
         raise SystemExit("locked manifest invalid: " + "; ".join(manifest_errors))
     manifest_hash = sha256_file(args.manifest)
+    code_hashes = runtime_code_hashes()
     image_root = args.image_root.resolve(strict=True)
 
     import torch
@@ -182,6 +197,7 @@ def main() -> None:
                 "model_revision": args.model_revision,
                 "processor_revision": args.model_revision,
                 "code_commit": args.code_commit,
+                "runtime_code_hashes": code_hashes,
                 "prompt_hash": rendered.prompt_hash,
                 "shell_hash": rendered.shell_hash,
                 "question_hash": sha256_bytes(sample["final_question"].encode("utf-8")),
