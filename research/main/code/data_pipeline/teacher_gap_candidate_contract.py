@@ -38,7 +38,7 @@ image_only means uniquely answerable without any unprovided fact. external_requi
 R requires at least two distinct visual entities/regions/states and at least two indispensable transformations. PR additionally requires a difficult local node on that same necessary chain.
 Return exactly one JSON object and no other text:
 {{"knowledge_dependency_label":"image_only|external_required|ambiguous","reason_codes":["code"],"reference_entailed":true,"unique_answer":true,"image_is_necessary":true,"full_image_reference_valid":true,"task_family":"R|PR|null","reasoning_depth":2,"required_evidence":["E1","E2"],"minimal_reasoning_graph":{{"nodes":[{{"id":"e1","type":"evidence","claim":"..."}},{{"id":"e2","type":"evidence","claim":"..."}},{{"id":"h1","type":"intermediate","claim":"..."}},{{"id":"a","type":"answer","claim":"..."}}],"edges":[["e1","h1"],["e2","h1"],["h1","a"]]}},"explanation":"brief"}}
-Use null task_family and reasoning_depth 0 when the sample is not a qualifying R/PR candidate."""
+For a non-qualifying sample use JSON null for task_family, reasoning_depth 0, an empty required_evidence list, and {{"nodes":[],"edges":[]}} for minimal_reasoning_graph."""
 
 CONSTRUCT_PROMPT = """You are constructing candidate guides and multiple-choice options for a closed-world visual reasoning pilot.
 Use only the supplied complete image, question, reference answer aliases, and audited visual evidence/path. Never use Wikipedia evidence or URLs.
@@ -106,8 +106,12 @@ def validate_blind(proposal: dict) -> list[str]:
     if not _text(proposal.get("candidate_answer")):
         errors.append("missing_candidate_answer")
     evidence = proposal.get("visible_evidence")
-    if not isinstance(evidence, list) or not evidence or any(not _text(item) for item in evidence):
+    if not isinstance(evidence, list) or not 1 <= len(evidence) <= 4 or any(not _text(item) for item in evidence):
         errors.append("invalid_visible_evidence")
+    elif any(len(_text(item).split()) > 24 for item in evidence):
+        errors.append("visible_evidence_item_too_long")
+    elif len({_normalize_for_leakage(_text(item)) for item in evidence}) != len(evidence):
+        errors.append("duplicate_visible_evidence")
     for key in ("image_is_necessary", "requires_unprovided_fact", "ambiguous"):
         if not isinstance(proposal.get(key), bool):
             errors.append(f"invalid_{key}")
@@ -138,6 +142,8 @@ def validate_audit(proposal: dict) -> list[str]:
             errors.append("invalid_reasoning_depth")
         if not isinstance(evidence, list) or len(evidence) < 2 or any(not _text(item) for item in evidence):
             errors.append("invalid_required_evidence")
+        elif len({_normalize_for_leakage(_text(item)) for item in evidence}) != len(evidence):
+            errors.append("duplicate_required_evidence")
         graph_errors, _ = validate_reasoning_graph(
             proposal.get("minimal_reasoning_graph"),
             declared_depth=depth,
@@ -145,10 +151,15 @@ def validate_audit(proposal: dict) -> list[str]:
         )
         errors.extend(graph_errors)
     else:
-        if family not in {None, "null"}:
+        if family is not None:
             errors.append("nonqualifying_task_family_must_be_null")
-        if depth not in {0, None}:
+        if depth != 0 or isinstance(depth, bool):
             errors.append("nonqualifying_reasoning_depth_must_be_zero")
+        if not isinstance(evidence, list) or evidence:
+            errors.append("nonqualifying_required_evidence_must_be_empty")
+        graph = proposal.get("minimal_reasoning_graph")
+        if not isinstance(graph, dict) or graph.get("nodes") != [] or graph.get("edges") != []:
+            errors.append("nonqualifying_reasoning_graph_must_be_empty")
     if not _text(proposal.get("explanation")):
         errors.append("missing_explanation")
     return errors
@@ -203,6 +214,10 @@ def validate_construct(proposal: dict, reference_answers: list[str]) -> list[str
             errors.append(f"{key}_not_false")
     if obvious_answer_leakage(proposal, reference_answers):
         errors.append("obvious_answer_leakage")
+    if not _text(proposal.get("generic_context_seed")):
+        errors.append("missing_generic_context_seed")
+    if _text(proposal.get("rejection_reason")):
+        errors.append("accepted_candidate_has_rejection_reason")
     return errors
 
 
