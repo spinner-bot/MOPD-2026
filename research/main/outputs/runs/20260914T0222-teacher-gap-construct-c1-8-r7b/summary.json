@@ -1,4 +1,6 @@
 {
-  "status": "prepared_not_submitted",
-  "slurm_job_id": null
+  "status": "submitted",
+  "slurm_job_id": "57595439",
+  "submitted_code_commit": "aa11b60df5475f1aead0ff83d0a073163641adca",
+  "run_worktree": "/leonardo/home/userexternal/rqian000/spinner-bot/MOPD-2026-codex-r7b"
 }
