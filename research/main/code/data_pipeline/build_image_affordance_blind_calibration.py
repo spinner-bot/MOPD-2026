@@ -71,6 +71,7 @@ def _nonempty_text_list(value: object, minimum: int) -> bool:
         isinstance(value, list)
         and len(value) >= minimum
         and all(isinstance(item, str) and _text(item) for item in value)
+        and len({_text(item).casefold() for item in value}) == len(value)
     )
 
 
@@ -125,19 +126,28 @@ def validate_completed_review(original: dict, reviewed: dict) -> list[str]:
             errors.append("candidate_missing_canonical_answer")
         if reviewed.get("human_affordance_family") not in FAMILIES:
             errors.append("candidate_invalid_affordance_family")
-        if not _nonempty_text_list(reviewed.get("human_evidence_descriptions"), 2):
+        evidence = reviewed.get("human_evidence_descriptions")
+        evidence_valid = _nonempty_text_list(evidence, 2)
+        if not evidence_valid:
             errors.append("candidate_requires_two_visual_evidence_items")
         if not _nonempty_text_list(reviewed.get("human_reasoning_steps"), 2):
             errors.append("candidate_requires_two_reasoning_steps")
-        if not _nonempty_text_list(
-            reviewed.get("human_counterfactual_required_evidence"), 2
-        ):
+        counterfactual = reviewed.get("human_counterfactual_required_evidence")
+        counterfactual_valid = _nonempty_text_list(counterfactual, 2)
+        if not counterfactual_valid:
             errors.append("candidate_requires_two_counterfactual_evidence_items")
+        elif evidence_valid and {
+            _text(item).casefold() for item in counterfactual
+        } != {_text(item).casefold() for item in evidence}:
+            errors.append("counterfactual_evidence_must_match_visual_evidence")
         difficult = reviewed.get("human_difficult_visual_evidence")
-        if not isinstance(difficult, list) or any(
-            not isinstance(item, str) or not _text(item) for item in difficult
-        ):
+        if not _nonempty_text_list(difficult, 0):
             errors.append("invalid_difficult_visual_evidence")
+        elif evidence_valid and any(
+            _text(item).casefold() not in {_text(value).casefold() for value in evidence}
+            for item in difficult
+        ):
+            errors.append("difficult_visual_evidence_not_in_required_evidence")
         elif reviewed.get("human_affordance_family") == "PR" and not difficult:
             errors.append("pr_requires_difficult_visual_evidence")
     elif decision in {"reject", "ambiguous"} and not _text(reviewed.get("human_notes")):

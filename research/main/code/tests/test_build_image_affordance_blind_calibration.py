@@ -80,7 +80,9 @@ class ImageAffordanceBlindCalibrationTests(unittest.TestCase):
             "human_affordance_family": "R",
             "human_evidence_descriptions": ["left route is open", "right route is blocked"],
             "human_reasoning_steps": ["compare both routes", "select the open route"],
-            "human_counterfactual_required_evidence": ["left route state", "right route state"],
+            "human_counterfactual_required_evidence": [
+                "left route is open", "right route is blocked"
+            ],
             "human_difficult_visual_evidence": [],
             "human_external_knowledge_needed": False,
             "human_reviewer": "reviewer-1",
@@ -110,6 +112,29 @@ class ImageAffordanceBlindCalibrationTests(unittest.TestCase):
         reviewed["human_affordance_family"] = "PR"
         self.assertIn(
             "pr_requires_difficult_visual_evidence",
+            validate_completed_review(original, reviewed),
+        )
+
+    def test_evidence_must_be_distinct_and_counterfactual_list_must_match(self):
+        original, reviewed = self.completed_candidate()
+        reviewed["human_evidence_descriptions"] = ["same evidence", "same evidence"]
+        self.assertIn(
+            "candidate_requires_two_visual_evidence_items",
+            validate_completed_review(original, reviewed),
+        )
+        reviewed["human_evidence_descriptions"] = ["left route is open", "right route is blocked"]
+        reviewed["human_counterfactual_required_evidence"] = ["left route is open", "unrelated item"]
+        self.assertIn(
+            "counterfactual_evidence_must_match_visual_evidence",
+            validate_completed_review(original, reviewed),
+        )
+
+    def test_difficult_evidence_must_be_on_required_path(self):
+        original, reviewed = self.completed_candidate()
+        reviewed["human_affordance_family"] = "PR"
+        reviewed["human_difficult_visual_evidence"] = ["tiny unrelated logo"]
+        self.assertIn(
+            "difficult_visual_evidence_not_in_required_evidence",
             validate_completed_review(original, reviewed),
         )
 
