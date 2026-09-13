@@ -6,6 +6,7 @@ contracts that must pass before a locked pilot can be interpreted.
 
 from __future__ import annotations
 
+import json
 import math
 import random
 import sys
@@ -160,12 +161,33 @@ def validate_result_records(
         "processor_revision",
         "code_commit",
         "shell_hash",
+        "model_dtype",
     )
     global_values = {field: set() for field in global_fields}
+    global_json_fields = ("chat_template", "generation_config", "choice_token_ids")
+    global_json_values = {field: set() for field in global_json_fields}
+    schedule_indices = []
     for index, row in enumerate(records):
         key = f"{row.get('sample_id', '<missing>')}/{row.get('condition', '<missing>')}"
         if row.get("condition") not in CONDITIONS:
             errors.append(f"{key}: unsupported condition")
+        schedule_index = row.get("schedule_index")
+        rank = row.get("rank")
+        world_size = row.get("world_size")
+        if not isinstance(schedule_index, int) or isinstance(schedule_index, bool):
+            errors.append(f"{key}: schedule_index must be an integer")
+        else:
+            schedule_indices.append(schedule_index)
+        if world_size != 4:
+            errors.append(f"{key}: world_size must be 4")
+        if not isinstance(rank, int) or isinstance(rank, bool) or not 0 <= rank < 4:
+            errors.append(f"{key}: rank must be an integer in 0..3")
+        elif (
+            isinstance(schedule_index, int)
+            and not isinstance(schedule_index, bool)
+            and rank != schedule_index % 4
+        ):
+            errors.append(f"{key}: rank disagrees with frozen schedule sharding")
         if row.get("error") not in {None, ""}:
             errors.append(f"{key}: error is present")
         if row.get("truncated") is not False or row.get("eos_reached") is not True:
@@ -201,14 +223,59 @@ def validate_result_records(
             if not value:
                 errors.append(f"{key}: missing {field}")
             global_values[field].add(value)
+        for field in global_json_fields:
+            value = row.get(field)
+            if value is None:
+                errors.append(f"{key}: missing {field}")
+                continue
+            try:
+                global_json_values[field].add(
+                    json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+                )
+            except (TypeError, ValueError):
+                errors.append(f"{key}: {field} must be JSON serializable")
+
+        if row.get("chat_template") != {"enable_thinking": False, "add_generation_prompt": True}:
+            errors.append(f"{key}: chat_template must disable thinking and add generation prompt")
+        generation = row.get("generation_config")
+        if (
+            not isinstance(generation, dict)
+            or generation.get("do_sample") is not False
+            or generation.get("constrained_to") != list(CHOICES)
+        ):
+            errors.append(f"{key}: generation_config violates frozen deterministic choice contract")
+        choice_tokens = row.get("choice_token_ids")
+        if (
+            not isinstance(choice_tokens, dict)
+            or set(choice_tokens) != set(CHOICES)
+            or any(
+                not isinstance(value, list)
+                or not value
+                or any(not isinstance(token, int) or isinstance(token, bool) for token in value)
+                for value in choice_tokens.values()
+            )
+            or len({tuple(value) for value in choice_tokens.values()}) != len(CHOICES)
+        ):
+            errors.append(f"{key}: choice_token_ids must contain four distinct non-empty integer sequences")
 
     if records and parsed / len(records) < min_parse_rate:
         errors.append(f"parse rate {parsed / len(records):.6f} is below {min_parse_rate:.6f}")
     for field, values in global_values.items():
         if len(values) != 1:
             errors.append(f"{field} must be identical across all records")
+    for field, values in global_json_values.items():
+        if len(values) != 1:
+            errors.append(f"{field} must be identical across all records")
+    if sorted(schedule_indices) != list(range(expected_total)):
+        errors.append("schedule_index values must cover the frozen schedule exactly once")
 
-    invariant_fields = ("image_checksum", "question_hash", "options_hash")
+    invariant_fields = (
+        "source_image_id",
+        "source_cluster_id",
+        "image_checksum",
+        "question_hash",
+        "options_hash",
+    )
     for sample_id, rows in by_sample.items():
         if {row.get("condition") for row in rows} != set(CONDITIONS):
             errors.append(f"{sample_id}: all four conditions are required")
@@ -219,6 +286,8 @@ def validate_result_records(
         prompt_hashes = [str(row.get("prompt_hash", "")).strip() for row in rows]
         if any(not value for value in prompt_hashes):
             errors.append(f"{sample_id}: prompt_hash is required")
+        elif len(set(prompt_hashes)) != len(CONDITIONS):
+            errors.append(f"{sample_id}: each condition must have a distinct prompt_hash")
     return errors
 
 
@@ -326,7 +395,7 @@ def decide_teacher_gap(
     if validation_errors:
         return {"decision": "INVALID", "validation_errors": validation_errors}
     ids, rows = _condition_vectors(records)
-    source_clusters = [str(rows["S"][sample_id]["source_image_id"]) for sample_id in ids]
+    source_clusters = [str(rows["S"][sample_id]["source_cluster_id"]) for sample_id in ids]
     baseline_correct = [bool(rows["S"][sample_id]["correct"]) for sample_id in ids]
     baseline_logp = [float(rows["S"][sample_id]["correct_log_prob"]) for sample_id in ids]
     generic_correct = [bool(rows["T_generic"][sample_id]["correct"]) for sample_id in ids]
