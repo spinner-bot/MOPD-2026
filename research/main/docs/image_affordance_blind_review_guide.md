@@ -187,6 +187,8 @@ B2a 的 `human_verified` 是审核者对盲审字段的签名，与 `teacher_gap
 
 构建器会重新验证原包 SHA、32/32 签名和单条 ID，并记录第一阶段文件 SHA。只有 `parsed_valid` 的机器输出进入 precision/recall 交集；`invalid` 与 `unavailable` 分开计数。第二阶段的 faithful/path-match/false-two-step 等人工比较字段保持空白，不能由程序代填。
 
+B2b 的 `--output` 与 `--summary` 同样必须是互不相同且尚不存在的新路径；构建器排他创建文件，拒绝覆盖既有揭示包或统计摘要。
+
 ## 7. 关联材料
 
 - 1034：图像优先支路 B 的最初冻结顺序；
@@ -204,3 +206,4 @@ B2a 的 `human_verified` 是审核者对盲审字段的签名，与 `teacher_gap
 | 2026-09-14 04:40 | Codex (CINECA Leonardo) | 修订：与 `586c1d4` 统一 R/PR 语义；R 的困难证据数组必须为空，PR 必须含至少一个属于必要证据集合的困难节点。 |
 | 2026-09-14 04:47 | Codex (CINECA Leonardo) | 修订：引用 B2a 技术解码预检；要求核对原生像素和缩放，禁止图像增强产生证据。 |
 | 2026-09-14 05:02 | Codex (CINECA Leonardo) | 修订：finalizer 的 accepted/rejected/summary 改为互异新路径和排他写入；重试使用新版本文件名。 |
+| 2026-09-14 05:05 | Codex (CINECA Leonardo) | 修订：B2b 锁后揭示包与摘要同步改为互异新路径和排他写入，保留先人后机联结证据。 |

@@ -9,8 +9,13 @@ import json
 from collections import Counter
 from pathlib import Path
 
-from build_image_affordance_blind_calibration import load_jsonl, stable_packet_sha256, write_jsonl
-from finalize_image_affordance_blind_review import finalize
+from build_image_affordance_blind_calibration import load_jsonl, stable_packet_sha256
+from finalize_image_affordance_blind_review import (
+    finalize,
+    require_new_outputs,
+    write_json_exclusive,
+    write_jsonl_exclusive,
+)
 from process_image_affordance_screen import load as load_machine_raw
 from process_image_affordance_screen import parse_records
 
@@ -155,6 +160,7 @@ def main() -> None:
     parser.add_argument("--summary", type=Path, required=True)
     args = parser.parse_args()
     try:
+        require_new_outputs([args.output, args.summary])
         reviewed_sha256 = file_sha256(args.reviewed)
         output, summary = build_comparison_packet(
             load_jsonl(args.original),
@@ -164,13 +170,9 @@ def main() -> None:
         )
     except (OSError, ValueError, json.JSONDecodeError) as error:
         raise SystemExit(str(error)) from error
-    write_jsonl(args.output, output)
+    write_jsonl_exclusive(args.output, output)
     summary["comparison_packet_sha256"] = stable_packet_sha256(output)
-    args.summary.parent.mkdir(parents=True, exist_ok=True)
-    args.summary.write_text(
-        json.dumps(summary, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
-        encoding="utf-8",
-    )
+    write_json_exclusive(args.summary, summary)
     print(json.dumps(summary, ensure_ascii=False, sort_keys=True))
 
 
