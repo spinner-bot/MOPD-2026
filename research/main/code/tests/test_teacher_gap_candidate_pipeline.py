@@ -207,6 +207,47 @@ class TeacherGapCandidatePipelineTests(unittest.TestCase):
         learned["required_evidence"][1] = "This symbol is traditionally associated with triangles."
         self.assertIn("nonvisual_or_meta_evidence_claim", validate_audit(learned, candidate()))
 
+    def test_audit_rejects_uncertainty_as_unique_visual_entailment(self):
+        hedged = audit()
+        hedged["required_evidence"][1] = (
+            "The black SUV is a different make, likely a Mahindra or similar brand."
+        )
+        hedged["minimal_reasoning_graph"]["nodes"][1]["claim"] = hedged["required_evidence"][1]
+        self.assertIn(
+            "hedged_or_associative_entailment",
+            validate_audit(hedged, candidate()),
+        )
+
+    def test_audit_rejects_scene_association_as_latent_professional_identity(self):
+        associative = audit()
+        associative["required_evidence"] = [
+            "Both people wear formal attire typical of red carpet events.",
+            "The setting strongly suggests a professional event.",
+        ]
+        associative["minimal_reasoning_graph"]["nodes"][0]["claim"] = (
+            associative["required_evidence"][0]
+        )
+        associative["minimal_reasoning_graph"]["nodes"][1]["claim"] = (
+            associative["required_evidence"][1]
+        )
+        associative["minimal_reasoning_graph"]["nodes"][2]["claim"] = (
+            "Attending together implies a shared professional affiliation."
+        )
+        self.assertIn(
+            "hedged_or_associative_entailment",
+            validate_audit(associative, candidate()),
+        )
+
+    def test_audit_allows_deterministic_visual_relation_inference(self):
+        relational = audit()
+        relational["minimal_reasoning_graph"]["nodes"][2]["claim"] = (
+            "The two shadows suggest a shared light direction."
+        )
+        self.assertNotIn(
+            "hedged_or_associative_entailment",
+            validate_audit(relational, candidate()),
+        )
+
     def test_audit_answer_node_must_cover_complete_reference(self):
         multi = candidate()
         multi.update({

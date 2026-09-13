@@ -393,6 +393,20 @@ def validate_audit(proposal: dict, candidate: dict | None = None) -> list[str]:
             ]
             if any(_is_meta_or_nonvisual_evidence(claim) for claim in evidence_claims):
                 errors.append("nonvisual_or_meta_evidence_claim")
+            entailment_claims = (
+                [_text(item) for item in evidence]
+                + [
+                    _text(node.get("claim")) for node in graph["nodes"]
+                    if isinstance(node, dict)
+                ]
+                + [_text(proposal.get("explanation"))]
+            )
+            if (
+                proposal.get("reference_entailed") is True
+                and proposal.get("unique_answer") is True
+                and any(_is_hedged_or_associative_entailment(claim) for claim in entailment_claims)
+            ):
+                errors.append("hedged_or_associative_entailment")
             if isinstance(candidate, dict):
                 answer_claims = [
                     _text(node.get("claim")) for node in graph["nodes"]
@@ -439,6 +453,35 @@ def _is_meta_or_nonvisual_evidence(value: Any) -> bool:
         "is characteristic of", "are characteristic of",
     )
     return any(phrase in normalized for phrase in phrases)
+
+
+def _is_hedged_or_associative_entailment(value: Any) -> bool:
+    """Detect claims that cannot support a unique, image-entailed answer.
+
+    Explicit uncertainty is incompatible with ``reference_entailed=true`` and
+    ``unique_answer=true``.  Association language is narrower: it is rejected
+    only when used to infer a latent identity or category, so ordinary visual
+    reasoning such as a shadow indicating light direction remains admissible.
+    """
+
+    normalized = _normalize_for_leakage(_text(value))
+    words = set(normalized.split())
+    if words & {"likely", "probably", "perhaps", "maybe", "possibly"}:
+        return True
+    if "or similar" in normalized:
+        return True
+
+    association = any(phrase in normalized for phrase in (
+        "suggest", "imply", "typical of", "indicative of",
+        "characteristic of", "associated with",
+    ))
+    latent_category = words & {
+        "affiliation", "affiliations", "brand", "brands", "event", "events",
+        "identity", "identities", "manufacturer", "manufacturers", "nationality",
+        "occupation", "occupations", "profession", "professional", "professions",
+        "species",
+    }
+    return association and bool(latent_category)
 
 
 def _claim_covers_complete_answer(claim: str, candidate: dict) -> bool:
