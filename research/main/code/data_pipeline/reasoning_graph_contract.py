@@ -78,6 +78,13 @@ def validate_reasoning_graph(
     minimum_evidence = 2 if require_two_evidence else 1
     if type_counts["evidence"] < minimum_evidence:
         errors.append(f"reasoning_graph_requires_{minimum_evidence}_evidence_nodes")
+    evidence_claims = [
+        " ".join(str(node.get("claim", "")).casefold().split())
+        for node in node_by_id.values()
+        if node.get("type") == "evidence"
+    ]
+    if len(set(evidence_claims)) != len(evidence_claims):
+        errors.append("duplicate_reasoning_graph_evidence_claim")
 
     answer_ids = [node_id for node_id, node in node_by_id.items() if node.get("type") == "answer"]
     for node_id, node in node_by_id.items():

@@ -137,6 +137,14 @@ class TeacherGapCandidatePipelineTests(unittest.TestCase):
         self.assertIn("1-4 distinct observations", prompt)
         self.assertIn("Do not repeat an observation", prompt)
 
+        too_many = blind()
+        too_many["visible_evidence"] = ["one", "two", "three", "four", "five"]
+        self.assertIn("invalid_visible_evidence", validate_blind(too_many))
+
+        repeated = blind()
+        repeated["visible_evidence"] = ["same observation", "Same   observation"]
+        self.assertIn("duplicate_visible_evidence", validate_blind(repeated))
+
     def test_valid_proposals_and_candidate_selection(self):
         self.assertEqual(validate_blind(blind()), [])
         self.assertEqual(validate_audit(audit()), [])
@@ -175,6 +183,8 @@ class TeacherGapCandidatePipelineTests(unittest.TestCase):
             "knowledge_dependency_label": "external_required",
             "task_family": None,
             "reasoning_depth": 0,
+            "required_evidence": [],
+            "minimal_reasoning_graph": {"nodes": [], "edges": []},
         })
         self.assertEqual(validate_audit(external), [])
         selected, rejected, summary = select_construction(
