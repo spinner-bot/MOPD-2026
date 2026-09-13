@@ -15,7 +15,12 @@ from build_image_affordance_blind_calibration import (
     build_blind_packet,
     validate_completed_review,
 )
-from finalize_image_affordance_blind_review import finalize, require_new_outputs
+from finalize_image_affordance_blind_review import (
+    file_sha256,
+    finalize,
+    require_new_outputs,
+    validate_original_packet,
+)
 
 
 def source(key: str) -> dict:
@@ -170,6 +175,20 @@ class ImageAffordanceBlindCalibrationTests(unittest.TestCase):
                 require_new_outputs([existing, root / "rejected.jsonl", root / "summary.json"])
             with self.assertRaisesRegex(ValueError, "must be distinct"):
                 require_new_outputs([root / "same", root / "same", root / "summary.json"])
+
+    def test_finalizer_cli_original_is_bound_to_hash_and_count(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "original.jsonl"
+            path.write_text('{"calibration_record_id":"one"}\n', encoding="utf-8")
+            digest = file_sha256(path)
+            self.assertEqual(
+                validate_original_packet(path, [{"calibration_record_id": "one"}], expected_sha256=digest, expected_records=1),
+                digest,
+            )
+            with self.assertRaisesRegex(ValueError, "SHA-256"):
+                validate_original_packet(path, [{}], expected_sha256="0" * 64, expected_records=1)
+            with self.assertRaisesRegex(ValueError, "expected 2"):
+                validate_original_packet(path, [{}], expected_sha256=digest, expected_records=2)
 
 
 if __name__ == "__main__":

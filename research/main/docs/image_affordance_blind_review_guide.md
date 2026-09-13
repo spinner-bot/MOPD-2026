@@ -158,6 +158,8 @@ B2a 的 `human_verified` 是审核者对盲审字段的签名，与 `teacher_gap
 
 只有 `valid_signed_reviews=32` 才算这一位审核者完成第一阶段。finalizer 不补字段、不改 decision，也不会把未签名记录升级为已验证。任何图片身份、防火墙字段或其他不可变字段被修改都会拒绝。
 
+finalizer CLI 默认固定原始包 SHA-256 `b61839dd…a1057a58` 和 32 条记录，并将原包与 reviewed 工作文件的实际 SHA-256 写入 summary。只有显式合成测试才能通过参数改期望值；真实 B2a 不得覆盖默认门禁。
+
 `--accepted`、`--rejected` 与 `--summary` 必须是三个互不相同且尚不存在的新路径。finalizer 使用 exclusive create，拒绝覆盖旧审核结果；修订或重试应使用带版本的新文件名，并保留原输出。
 
 若安排两位审核者，两人必须先各自得到 32/32 valid，再计算 candidate/noncandidate 一致性和 R/PR 一致性；分歧通过第三份显式 adjudication 记录解决，不能让后审核者覆盖先审核者文件。
@@ -210,3 +212,4 @@ B2b 的 `--output` 与 `--summary` 同样必须是互不相同且尚不存在的
 | 2026-09-14 05:02 | Codex (CINECA Leonardo) | 修订：finalizer 的 accepted/rejected/summary 改为互异新路径和排他写入；重试使用新版本文件名。 |
 | 2026-09-14 05:05 | Codex (CINECA Leonardo) | 修订：B2b 锁后揭示包与摘要同步改为互异新路径和排他写入，保留先人后机联结证据。 |
 | 2026-09-14 05:08 | Codex (CINECA Leonardo) | 修订：B2a 路由分析摘要改为新路径排他写入，防止三档来源裁决被原地替换。 |
+| 2026-09-14 05:17 | Codex (CINECA Leonardo) | 修订：finalizer CLI 自身固定原始 32 包 hash/条数，并在 summary 保存 original/reviewed 两份输入 hash。 |

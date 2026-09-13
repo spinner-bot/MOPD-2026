@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 from collections import Counter
 from pathlib import Path
@@ -12,6 +13,29 @@ from build_image_affordance_blind_calibration import (
     load_jsonl,
     validate_completed_review,
 )
+
+
+EXPECTED_PACKET_SHA256 = "b61839ddb4111f1be5d2d67f165c40dc05cd10daf8d5ca02a202b707a1057a58"
+EXPECTED_RECORDS = 32
+
+
+def file_sha256(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def validate_original_packet(
+    path: Path,
+    rows: list[dict],
+    *,
+    expected_sha256: str = EXPECTED_PACKET_SHA256,
+    expected_records: int = EXPECTED_RECORDS,
+) -> str:
+    digest = file_sha256(path)
+    if digest != expected_sha256:
+        raise ValueError("unexpected frozen B2a packet SHA-256")
+    if len(rows) != expected_records:
+        raise ValueError(f"expected {expected_records} frozen B2a records")
+    return digest
 
 
 def require_new_outputs(paths: list[Path]) -> None:
@@ -93,14 +117,23 @@ def main() -> None:
     parser.add_argument("--accepted", type=Path, required=True)
     parser.add_argument("--rejected", type=Path, required=True)
     parser.add_argument("--summary", type=Path, required=True)
+    parser.add_argument("--expected-original-sha256", default=EXPECTED_PACKET_SHA256)
+    parser.add_argument("--expected-records", type=int, default=EXPECTED_RECORDS)
     args = parser.parse_args()
     try:
         require_new_outputs([args.accepted, args.rejected, args.summary])
-        accepted, rejected, summary = finalize(
-            load_jsonl(args.original), load_jsonl(args.reviewed)
+        original_rows = load_jsonl(args.original)
+        original_sha256 = validate_original_packet(
+            args.original,
+            original_rows,
+            expected_sha256=args.expected_original_sha256,
+            expected_records=args.expected_records,
         )
+        accepted, rejected, summary = finalize(original_rows, load_jsonl(args.reviewed))
     except (OSError, ValueError, json.JSONDecodeError) as error:
         raise SystemExit(str(error)) from error
+    summary["original_packet_sha256"] = original_sha256
+    summary["reviewed_packet_sha256"] = file_sha256(args.reviewed)
     write_jsonl_exclusive(args.accepted, accepted)
     write_jsonl_exclusive(args.rejected, rejected)
     write_json_exclusive(args.summary, summary)
