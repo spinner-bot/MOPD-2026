@@ -9,7 +9,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "code" / "data_pipeline"))
 
-from build_m3vqa_image_affordance_pool import FORBIDDEN_OUTPUT_KEYS, build_pool
+from build_m3vqa_image_affordance_pool import FORBIDDEN_OUTPUT_KEYS, build_pool, select_sample
 
 
 class ImageAffordancePoolTests(unittest.TestCase):
@@ -51,6 +51,12 @@ class ImageAffordancePoolTests(unittest.TestCase):
             output, rejects, _ = build_pool(rows, Path(directory))
         self.assertEqual(output, [])
         self.assertEqual(len(rejects), 2)
+
+    def test_sample_selection_is_deterministic_and_question_independent(self):
+        rows = [{"image_candidate_id": f"i{index}", "opaque": index} for index in range(8)]
+        self.assertEqual(select_sample(rows, 3, 7), select_sample(list(reversed(rows)), 3, 7))
+        with self.assertRaises(ValueError):
+            select_sample(rows, 9, 7)
 
 
 if __name__ == "__main__":
