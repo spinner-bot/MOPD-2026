@@ -4,8 +4,8 @@
   "purpose": "Retry image-only affordance pilot with fail-closed candidate repair and explicit nested schema",
   "created_at_utc": "2026-09-13T19:07:43+00:00",
   "operator": "Codex (CINECA Leonardo)",
-  "status": "prepared",
-  "slurm_job_id": null,
+  "status": "submitted_dependency",
+  "slurm_job_id": "57599758",
   "git_commit": null,
   "input_records": 256,
   "input_sha256": "e69b6d14fe8da625720af1ee7198213b909c682c10e2313003f43c2c139debf4",
@@ -26,5 +26,7 @@
     "type": "afterany",
     "slurm_job_id": "57599082",
     "reason": "serialize 4-GPU allocations"
-  }
+  },
+  "submitted_code_commit": "67f5af72bfa1aaf17723853793f2158cddb4d92f",
+  "run_worktree": "/leonardo/home/userexternal/rqian000/spinner-bot/MOPD-2026-codex-b1r3"
 }
