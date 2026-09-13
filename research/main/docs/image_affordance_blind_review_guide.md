@@ -169,6 +169,20 @@ B2a 的 `human_verified` 是审核者对盲审字段的签名，与 `teacher_gap
 
 第二阶段不得回改第一阶段人工判断。B1 r3 只完成 canary，缺失机器输出的图片记为 `machine_output_unavailable`，不能算作机器 reject 或假阴性。
 
+锁定第一阶段文件后，用以下命令生成独立的第二阶段揭示包；输出路径必须是新文件：
+
+```bash
+/leonardo_scratch/fast/AIFAC_F02_774/rqian000/envs/mopd-stage0-py311/bin/python \
+  research/main/code/data_pipeline/build_image_affordance_machine_comparison.py \
+  --original research/main/outputs/runs/20260914T0328-image-affordance-b2a-blind-calibration/outputs/blind-review-32.jsonl \
+  --reviewed Work/b2a-review-reviewer01.jsonl \
+  --machine-raw 'research/main/outputs/runs/20260914T0308-image-affordance-b1-256-r3/canary/image-affordance/rank-*.jsonl' \
+  --output Work/b2b-review-reviewer01.jsonl \
+  --summary Work/b2b-review-reviewer01.summary.json
+```
+
+构建器会重新验证原包 SHA、32/32 签名和单条 ID，并记录第一阶段文件 SHA。只有 `parsed_valid` 的机器输出进入 precision/recall 交集；`invalid` 与 `unavailable` 分开计数。第二阶段的 faithful/path-match/false-two-step 等人工比较字段保持空白，不能由程序代填。
+
 ## 7. 关联材料
 
 - 1034：图像优先支路 B 的最初冻结顺序；
@@ -182,3 +196,4 @@ B2a 的 `human_verified` 是审核者对盲审字段的签名，与 `teacher_gap
 | 时间（UTC+8） | 作者 | 触发原因 |
 |---|---|---|
 | 2026-09-14 03:52 | Codex (CINECA Leonardo) | 创建：将 1035 的先人后机设计转成可直接执行的 32 图审核规则、字段类型、反事实检查与完成命令。 |
+| 2026-09-14 04:13 | Codex (CINECA Leonardo) | 修订：加入 B2b 锁后揭示命令；明确机器 invalid/unavailable 不得作为负例，比较字段继续由人工填写。 |
