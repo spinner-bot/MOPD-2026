@@ -254,6 +254,25 @@ class TeacherGapCandidatePipelineTests(unittest.TestCase):
         review["human_reasoning_depth"] = 3
         self.assertTrue(any("depth_mismatch" in error for error in validate_human_review(review)))
 
+    def test_human_review_time_requires_iso_timezone(self):
+        review = {
+            "human_decision": "accept",
+            "human_knowledge_label": "image_only",
+            "human_task_family": "R",
+            "human_unique_answer": True,
+            "human_full_image_valid": True,
+            "human_guides_ok": True,
+            "human_options_ok": True,
+            "human_answer_leakage": False,
+            "human_external_fact_injected": False,
+            "human_reviewer": "reviewer-1",
+            "human_reviewed_at": "2026-09-13 22:29",
+            "human_required_evidence": ["left connection", "right connection"],
+            "human_reasoning_depth": 2,
+            "human_reasoning_graph": audit()["minimal_reasoning_graph"],
+        }
+        self.assertIn("human_reviewed_at_requires_timezone", validate_human_review(review))
+
     def test_option_arrangement_places_one_correct_answer(self):
         arranged = arrange_options(construction(), "C", "m3vqa-1")
         self.assertEqual(arranged["C"], "triangle")

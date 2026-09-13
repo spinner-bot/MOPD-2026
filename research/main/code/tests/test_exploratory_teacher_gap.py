@@ -43,10 +43,12 @@ def manifest_sample(index: int) -> dict:
         "knowledge_dependency_label": "image_only",
         "task_family": "R",
         "full_image_reference_valid": True,
+        "unique_answer": True,
         "human_verified": True,
         "human_reviewer": "reviewer-1",
         "human_reviewed_at": "2026-09-11T18:00:00+08:00",
         "answer_leakage": 0,
+        "external_fact_injected": 0,
         "required_evidence": ["left relation", "right relation"],
         "reasoning_depth": 2,
         "minimal_reasoning_graph": {

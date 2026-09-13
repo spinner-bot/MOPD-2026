@@ -111,6 +111,13 @@ class HumanReviewQueueTests(unittest.TestCase):
         self.assertEqual(len(rejected), 1)
         self.assertIn("duplicate_candidate_id", rejected[0]["rejection_reasons"])
 
+    def test_outer_and_inner_identity_must_match(self):
+        row = constructed()
+        row["candidate"]["source_image_id"] = "different-image"
+        queued, rejected, _ = build_queue([row])
+        self.assertEqual(queued, [])
+        self.assertIn("source_image_id_mismatch", rejected[0]["rejection_reasons"])
+
 
 if __name__ == "__main__":
     unittest.main()
