@@ -1,0 +1,12 @@
+{
+  "input_path": "research/main/outputs/runs/20260913T2320-teacher-gap-screen-c1-128-r4/parsed/construction-inputs.jsonl",
+  "producer_run_id": "20260913T2320-teacher-gap-screen-c1-128-r4",
+  "producer_stage": "W2A",
+  "records": "resolved_after_screening",
+  "fallback_protocol_implementation_commit": "36a569d",
+  "runner_sha256": "c6cd45d560b9855804d48e3eecd0ed7ec5ec26bb34b101593dd0224e45f18a5a",
+  "processor_sha256": "5366eda8a996b7f5c964eaf90e09babc0d640fa010fcd1104e0874f4c2cb8e71",
+  "contract_sha256": "f4d0fb3d528d68d266a6647929561c980b7149cb7b0e8f3b375d8d3a2504f3a9",
+  "gate_sha256": "d23089d88af3ad0926a663828c39f01ec6237a3394653fdaa0f621562d85e4d3",
+  "submit_script_sha256": "0c2c4bc5ed19c63f29f947ba2df7d535f0af558ebdd42c98ff4402d51a4eedfb"
+}
