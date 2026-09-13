@@ -1,0 +1,50 @@
+{
+  "artifact_sha256": {
+    "canary/blind/rank-0.jsonl": "3d44ccb077565a35457f755223b828b81e2a10f8cd1fcb1b6b8fcc0bb22e0eb8",
+    "canary/blind/rank-1.jsonl": "8d2b4974233086c4731bf65b9d1e304fce19392b0d0cc2f1afbd93180d833540",
+    "canary/blind/rank-2.jsonl": "48663ae3f1795e108c6a48b0e6de6e2d15d735669b47240e1b8fc124c136369a",
+    "canary/blind/rank-3.jsonl": "1ba1e3d0a77c693084cb2c18cb71f92d4c0348e7cec04b61bf3c45c0a1a0df4d",
+    "command.txt": "06dd50b1a18d0ecc5d898a69c810e82af4c7b9cb1f357d99f524e85391ea38a6",
+    "config.resolved.yaml": "57b9203a09271e46e3261a6101598c8806d7eb4c7a1aebf049ba189e178c6148",
+    "input_manifest.json": "4814ce9e1503d745f5d563445bbd513e21e2708cbeb6fb56c067f344ae879d03",
+    "logs/slurm-57568703.err": "10d44af11a47d3bcb16ff0a0fa7a23c8cd592e67090f7aea1c140e819ae8e4f0",
+    "logs/slurm-57568703.out": "cb126be6024cd095ec1b3f287cad256e5562875f83c3a4b72db47b1335787062",
+    "raw/blind/rank-0.jsonl": "0e182083fc159091b283e903366d8dbb05007efd30296f9500a15ac5b5be3013",
+    "raw/blind/rank-1.jsonl": "d7a5014dd152f9743d98f2e4798fbd5e51f509218fd5187b44412bcd74bff076",
+    "raw/blind/rank-2.jsonl": "f3577f15520e669097eb75d33d8f53d003a4943b86bf7088bccb17888ffdcc58",
+    "raw/blind/rank-3.jsonl": "bea1bae5a006d9a33bcf8f14a002d28a238058a003c078624bad712a21b79e24",
+    "submit.sbatch": "29cda9d4007e643bbe4882528679d9f9bd0d0afdf31af256761d6ced72d4b139",
+    "summaries/blind-canary.json": "583bcdab90ce992c0ea3150c784b26f7b2c7820fa0bea20e35b0560183d2b6b6",
+    "summaries/blind-completion.json": "0d98d342c79108dcd9f761e8376a0a8ffb8971b1eeee65b6a3a83a74da08207b",
+    "summaries/hardened-posthoc-blind.json": "d74ebd83c11d9eead69607b05e1668cfccab9c096d67a38a930d68e06ca22621"
+  },
+  "audit_stage": "not_run",
+  "blind_full": {
+    "gate": "failed",
+    "invalid_json": 6,
+    "observed": 128,
+    "parse_rate": 0.953125,
+    "runner_errors": 0,
+    "submission_contract_valid": 122,
+    "truncated_or_missing_eos": 5
+  },
+  "canary": {
+    "gate": "passed",
+    "observed": 8,
+    "parse_rate": 1.0,
+    "runner_errors": 0,
+    "truncated_or_missing_eos": 0,
+    "valid_parsed": 8
+  },
+  "construct": "cancelled_dependency_zero_runtime",
+  "decision": "implement explicit compact fallback with immutable attempt provenance; rerun C1 before fullpool",
+  "dependent_construct_job_id": "57568704",
+  "elapsed": "00:10:29",
+  "posthoc_hardened_contract": {
+    "parse_rate": 0.9296875,
+    "rejected": 9,
+    "valid": 119
+  },
+  "slurm_job_id": "57568703",
+  "status": "failed_closed"
+}

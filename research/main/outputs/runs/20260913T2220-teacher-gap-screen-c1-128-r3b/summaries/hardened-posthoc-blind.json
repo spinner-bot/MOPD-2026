@@ -1,0 +1,91 @@
+{
+  "audit_kind": "posthoc_reparse_with_stricter_contract",
+  "auditor_branch": "codex/w3-hardening",
+  "auditor_commit": "adde793",
+  "does_not_change_submission_time_gate": true,
+  "generated_tokens": {
+    "max": 1536,
+    "median": 113.0,
+    "min": 66
+  },
+  "parse_summary": {
+    "observed": 128,
+    "parse_rate": 0.9296875,
+    "parsed_valid": 119,
+    "rejected": 9,
+    "rejection_reasons": {
+      "duplicate_visible_evidence": 1,
+      "invalid_json": 6,
+      "invalid_visible_evidence": 2,
+      "truncated_output": 5
+    },
+    "stage": "blind"
+  },
+  "rejected": [
+    {
+      "candidate_id": "m3vqa-data_0004771",
+      "rejection_reasons": [
+        "invalid_json"
+      ]
+    },
+    {
+      "candidate_id": "m3vqa-data_0006235",
+      "rejection_reasons": [
+        "invalid_json",
+        "truncated_output"
+      ]
+    },
+    {
+      "candidate_id": "m3vqa-data_0010896",
+      "rejection_reasons": [
+        "invalid_json",
+        "truncated_output"
+      ]
+    },
+    {
+      "candidate_id": "m3vqa-data_0010722",
+      "rejection_reasons": [
+        "invalid_json",
+        "truncated_output"
+      ]
+    },
+    {
+      "candidate_id": "m3vqa-data_0008070",
+      "rejection_reasons": [
+        "duplicate_visible_evidence"
+      ]
+    },
+    {
+      "candidate_id": "m3vqa-data_0001768",
+      "rejection_reasons": [
+        "invalid_visible_evidence"
+      ]
+    },
+    {
+      "candidate_id": "m3vqa-data_0007820",
+      "rejection_reasons": [
+        "invalid_visible_evidence"
+      ]
+    },
+    {
+      "candidate_id": "m3vqa-data_0010815",
+      "rejection_reasons": [
+        "invalid_json",
+        "truncated_output"
+      ]
+    },
+    {
+      "candidate_id": "m3vqa-data_0005363",
+      "rejection_reasons": [
+        "invalid_json",
+        "truncated_output"
+      ]
+    }
+  ],
+  "rejection_reasons": {
+    "duplicate_visible_evidence": 1,
+    "invalid_json": 6,
+    "invalid_visible_evidence": 2,
+    "truncated_output": 5
+  }
+}
