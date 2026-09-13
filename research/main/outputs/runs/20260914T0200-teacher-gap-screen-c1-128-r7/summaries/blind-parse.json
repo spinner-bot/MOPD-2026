@@ -1,0 +1,10 @@
+{
+  "observed": 128,
+  "parse_rate": 0.9921875,
+  "parsed_valid": 127,
+  "rejected": 1,
+  "rejection_reasons": {
+    "invalid_visible_evidence": 1
+  },
+  "stage": "blind"
+}

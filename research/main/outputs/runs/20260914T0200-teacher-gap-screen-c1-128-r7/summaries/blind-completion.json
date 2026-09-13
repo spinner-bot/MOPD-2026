@@ -1,0 +1,49 @@
+{
+  "code_commits": [
+    "21f54f08caaae7e8e8c743b0b81e0230e8432ea7"
+  ],
+  "failures": [],
+  "fallback_recovered": 8,
+  "fallback_used": 9,
+  "files": [
+    "/leonardo/home/userexternal/rqian000/spinner-bot/MOPD-2026-codex-r7/research/main/outputs/runs/20260914T0200-teacher-gap-screen-c1-128-r7/raw/blind/rank-0.jsonl",
+    "/leonardo/home/userexternal/rqian000/spinner-bot/MOPD-2026-codex-r7/research/main/outputs/runs/20260914T0200-teacher-gap-screen-c1-128-r7/raw/blind/rank-1.jsonl",
+    "/leonardo/home/userexternal/rqian000/spinner-bot/MOPD-2026-codex-r7/research/main/outputs/runs/20260914T0200-teacher-gap-screen-c1-128-r7/raw/blind/rank-2.jsonl",
+    "/leonardo/home/userexternal/rqian000/spinner-bot/MOPD-2026-codex-r7/research/main/outputs/runs/20260914T0200-teacher-gap-screen-c1-128-r7/raw/blind/rank-3.jsonl"
+  ],
+  "generation_configs": [
+    "{\"do_sample\":false,\"fallback_max_new_tokens\":512,\"max_attempts\":2,\"primary_max_new_tokens\":768,\"structured_output_repetition_constraints\":\"disabled\"}"
+  ],
+  "max_truncated_allowed": 1,
+  "model_dtypes": [
+    "torch.bfloat16"
+  ],
+  "model_revisions": [
+    "c202236235762e1c871ad0ccb60c8ee5ba337b9a"
+  ],
+  "parse_rate": 0.9921875,
+  "parse_summary": {
+    "observed": 128,
+    "parse_rate": 0.9921875,
+    "parsed_valid": 127,
+    "rejected": 1,
+    "rejection_reasons": {
+      "invalid_visible_evidence": 1
+    },
+    "stage": "blind"
+  },
+  "primary_truncated": 5,
+  "rejected": 1,
+  "runner_errors": 0,
+  "stage": "blind",
+  "thinking_modes": [
+    "False"
+  ],
+  "total": 128,
+  "truncated_or_missing_eos": 0,
+  "unique_candidate_ids": 128,
+  "valid_parsed": 127,
+  "world_sizes": [
+    4
+  ]
+}
