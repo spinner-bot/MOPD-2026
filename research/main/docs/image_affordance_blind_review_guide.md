@@ -35,6 +35,18 @@ research/main/outputs/runs/20260914T0328-image-affordance-b2a-blind-calibration/
 
 技术预检 `20260914T0445-b2a-image-decode-preflight` 确认 32/32 可解码且哈希一致，但其中 12 张低于 0.1 MP、3 张短边小于 224 px。审核时应能查看 100% 原生像素和当前缩放比例；不得使用超分辨率、AI 增强或平滑放大后新增的伪细节作为证据。分辨率不足以确认必要证据时，按真实观察标为 ambiguous/unusable，而不是猜测。
 
+标准库审核界面可从仓库根启动：
+
+```bash
+/leonardo_scratch/fast/AIFAC_F02_774/rqian000/envs/mopd-stage0-py311/bin/python \
+  research/main/code/review/image_affordance_blind_review_app.py \
+  --draft Work/b2a-review-reviewer01-v1.jsonl \
+  --export-prefix Work/b2a-review-reviewer01-final-v1 \
+  --port 8765
+```
+
+服务只接受 `127.0.0.1`，打开 `http://127.0.0.1:8765/`。若浏览器不在 Leonardo 同一主机，通过 SSH local port forwarding 访问该 loopback 端口，不能把 host 改成 `0.0.0.0`。`--draft` 与 `--export-prefix` 必须指向审核者自己的新路径；draft 第一次保存后可继续原子更新，final 三个文件只创建一次。
+
 ## 3. 判定顺序
 
 ### 3.1 图片可用性
@@ -213,3 +225,4 @@ B2b 的 `--output` 与 `--summary` 同样必须是互不相同且尚不存在的
 | 2026-09-14 05:05 | Codex (CINECA Leonardo) | 修订：B2b 锁后揭示包与摘要同步改为互异新路径和排他写入，保留先人后机联结证据。 |
 | 2026-09-14 05:08 | Codex (CINECA Leonardo) | 修订：B2a 路由分析摘要改为新路径排他写入，防止三档来源裁决被原地替换。 |
 | 2026-09-14 05:17 | Codex (CINECA Leonardo) | 修订：finalizer CLI 自身固定原始 32 包 hash/条数，并在 summary 保存 original/reviewed 两份输入 hash。 |
+| 2026-09-14 05:30 | Codex (CINECA Leonardo) | 修订：加入 C4 标准库 loopback 界面启动命令、SSH 本地转发边界，以及 draft 可续写/final 排他创建规则。 |
