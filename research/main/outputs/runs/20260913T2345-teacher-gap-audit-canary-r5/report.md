@@ -6,7 +6,7 @@
 
 ## 结果
 
-**PASSED**。Slurm `57578132` 于 2026-09-13 17:47:13–17:52:23（CEST）在 `lrdn1185` 使用 4×A100，固定提交 `2ab1ec3`。
+**PASSED**。Slurm `57578132` 于 2026-09-13 17:42:28–17:48:14（CEST）在 `lrdn1185` 使用 4×A100，固定提交 `2ab1ec3`。
 
 - 8/8 严格合格，零截断、零 runner error；6/6 fallback 全部恢复。
 - 最终标签为 7 条 `external_required`、1 条 `image_only`；与 primary 可恢复的高层标签一致，decision lock mismatch 为 0。

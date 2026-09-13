@@ -14,7 +14,7 @@
   },
   "decision": "submit new pinned C1 screen->construct chain",
   "decision_lock_mismatches": 0,
-  "elapsed": "00:05:10",
+  "elapsed": "00:05:46",
   "fallback_recovered": 6,
   "fallback_used": 6,
   "knowledge_labels": {
