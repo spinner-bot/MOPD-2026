@@ -72,6 +72,21 @@ ALLOWED_STATUSES = {
     "pending_blind_human_affordance_review",
     "human_blind_affordance_review_complete",
 }
+EXPECTED_PACKET_KEYS = {
+    "calibration_record_id",
+    "calibration_source_index",
+    "image_candidate_id",
+    "source_image_id",
+    "source_dataset",
+    "image_path",
+    "image_sha256",
+    "review_phase",
+    "machine_proposal_exposed",
+    "source_question_exposed",
+    "review_status",
+    "human_verified",
+    *HUMAN_FIELDS,
+}
 
 
 def sha256_stream(path: Path) -> str:
@@ -181,6 +196,13 @@ class ReviewStore:
             record_id = str(row.get("calibration_record_id", "")).strip()
             if not record_id or record_id in self._original_by_id:
                 raise ValueError("frozen packet has missing or duplicate calibration_record_id")
+            if set(row) != EXPECTED_PACKET_KEYS:
+                unexpected = sorted(set(row) - EXPECTED_PACKET_KEYS)
+                missing = sorted(EXPECTED_PACKET_KEYS - set(row))
+                raise ValueError(
+                    f"frozen packet schema differs for {record_id}: "
+                    f"unexpected={unexpected}, missing={missing}"
+                )
             if FORBIDDEN_KEYS & row.keys():
                 raise ValueError(f"frozen packet violates review firewall: {record_id}")
             if row.get("machine_proposal_exposed") is not False:

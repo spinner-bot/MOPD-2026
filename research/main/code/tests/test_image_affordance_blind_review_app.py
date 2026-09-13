@@ -155,7 +155,9 @@ class ImageAffordanceBlindReviewAppTests(unittest.TestCase):
                         expected_records=1,
                     )
 
-        expect_failure(lambda root, rows: rows[0].update({"machine_proposal": {}}), "firewall")
+        expect_failure(lambda root, rows: rows[0].update({"machine_proposal": {}}), "schema differs")
+        expect_failure(lambda root, rows: rows[0].update({"source_question": "secret"}), "schema differs")
+        expect_failure(lambda root, rows: rows[0].update({"question": "secret alias"}), "schema differs")
         expect_failure(lambda root, rows: rows[0].update({"image_sha256": "0" * 64}), "SHA-256")
 
         def escape(root: Path, rows: list[dict]) -> None:
