@@ -1,7 +1,39 @@
 {
-  "status": "submitted_dependency",
+  "status": "failed_closed_storage_root_relocated_during_audit_full",
   "slurm_job_id": "57600241",
-  "human_verified": 0,
   "submitted_code_commit": "8c5537fb0007307469b4717ca9912254637e4a28",
-  "run_worktree": "/leonardo/home/userexternal/rqian000/spinner-bot/MOPD-2026-codex-r8b"
+  "elapsed": "00:15:45",
+  "exit_code": "1:0",
+  "blind_canary": {"valid": 8, "total": 8},
+  "blind_full": {
+    "valid": 127,
+    "total": 128,
+    "fallback_used": 9,
+    "fallback_recovered": 8,
+    "runner_errors": 0,
+    "final_truncated": 0
+  },
+  "audit_canary": {
+    "valid": 8,
+    "total": 8,
+    "fallback_used": 5,
+    "fallback_recovered": 5
+  },
+  "audit_full": {
+    "valid": 95,
+    "total": 128,
+    "fallback_used": 57,
+    "fallback_recovered": 53,
+    "runner_errors": 29,
+    "storage_file_not_found_errors": 29,
+    "knowledge_labels_in_valid_prefix": {
+      "external_required": 88,
+      "ambiguous": 3,
+      "image_only": 4
+    }
+  },
+  "construction_selection_run": false,
+  "machine_candidates_final": null,
+  "human_verified": 0,
+  "interpretation": "incomplete audit prefix; no candidate-yield inference permitted"
 }
