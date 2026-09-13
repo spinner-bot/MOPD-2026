@@ -115,6 +115,14 @@ class ImageAffordanceBlindCalibrationTests(unittest.TestCase):
             validate_completed_review(original, reviewed),
         )
 
+    def test_r_cannot_claim_a_difficult_visual_node(self):
+        original, reviewed = self.completed_candidate()
+        reviewed["human_difficult_visual_evidence"] = ["left route is open"]
+        self.assertIn(
+            "r_must_not_have_difficult_visual_evidence",
+            validate_completed_review(original, reviewed),
+        )
+
     def test_evidence_must_be_distinct_and_counterfactual_list_must_match(self):
         original, reviewed = self.completed_candidate()
         reviewed["human_evidence_descriptions"] = ["same evidence", "same evidence"]

@@ -526,6 +526,7 @@ class TeacherGapCandidatePipelineTests(unittest.TestCase):
             "human_reviewer": "reviewer-1",
             "human_reviewed_at": "2026-09-13T22:29:00+08:00",
             "human_required_evidence": ["left connection", "right connection"],
+            "human_difficult_visual_evidence": [],
             "human_reasoning_depth": 2,
             "human_reasoning_graph": audit()["minimal_reasoning_graph"],
         }
@@ -547,10 +548,39 @@ class TeacherGapCandidatePipelineTests(unittest.TestCase):
             "human_reviewer": "reviewer-1",
             "human_reviewed_at": "2026-09-13 22:29",
             "human_required_evidence": ["left connection", "right connection"],
+            "human_difficult_visual_evidence": [],
             "human_reasoning_depth": 2,
             "human_reasoning_graph": audit()["minimal_reasoning_graph"],
         }
         self.assertIn("human_reviewed_at_requires_timezone", validate_human_review(review))
+
+    def test_human_review_evidence_and_pr_difficulty_are_structural(self):
+        review = {
+            "human_decision": "accept",
+            "human_knowledge_label": "image_only",
+            "human_task_family": "PR",
+            "human_unique_answer": True,
+            "human_full_image_valid": True,
+            "human_guides_ok": True,
+            "human_options_ok": True,
+            "human_answer_leakage": False,
+            "human_external_fact_injected": False,
+            "human_reviewer": "reviewer-1",
+            "human_reviewed_at": "2026-09-13T22:29:00+08:00",
+            "human_required_evidence": ["left connection", "right connection"],
+            "human_difficult_visual_evidence": [],
+            "human_reasoning_depth": 2,
+            "human_reasoning_graph": audit()["minimal_reasoning_graph"],
+        }
+        errors = validate_human_review(review)
+        self.assertIn("human_PR_requires_difficult_visual_evidence", errors)
+        review["human_difficult_visual_evidence"] = ["left connection"]
+        self.assertEqual(validate_human_review(review), [])
+        review["human_required_evidence"] = ["different evidence", "right connection"]
+        self.assertIn(
+            "human_required_evidence_must_match_graph_evidence",
+            validate_human_review(review),
+        )
 
     def test_option_arrangement_places_one_correct_answer(self):
         arranged = arrange_options(construction(), "C", "m3vqa-1")

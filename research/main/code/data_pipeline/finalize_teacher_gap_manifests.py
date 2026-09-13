@@ -129,17 +129,50 @@ def validate_human_review(review: dict) -> list[str]:
         except ValueError:
             errors.append("invalid_human_reviewed_at")
     evidence = review.get("human_required_evidence")
-    if not isinstance(evidence, list) or len(evidence) < 2 or any(not str(value).strip() for value in evidence):
+    evidence_valid = (
+        isinstance(evidence, list)
+        and len(evidence) >= 2
+        and all(isinstance(value, str) and value.strip() for value in evidence)
+        and len({value.strip().casefold() for value in evidence}) == len(evidence)
+    )
+    if not evidence_valid:
         errors.append("invalid_human_required_evidence")
     depth = review.get("human_reasoning_depth")
     if not isinstance(depth, int) or isinstance(depth, bool) or depth < 2:
         errors.append("invalid_human_reasoning_depth")
+    graph = review.get("human_reasoning_graph")
     graph_errors, _ = validate_reasoning_graph(
-        review.get("human_reasoning_graph"),
+        graph,
         declared_depth=depth,
         require_two_evidence=True,
     )
     errors.extend(f"invalid_human_reasoning_graph:{error}" for error in graph_errors)
+    if evidence_valid and isinstance(graph, dict) and isinstance(graph.get("nodes"), list):
+        graph_evidence = {
+            str(node.get("claim", "")).strip().casefold()
+            for node in graph["nodes"]
+            if isinstance(node, dict) and node.get("type") == "evidence"
+        }
+        if graph_evidence != {value.strip().casefold() for value in evidence}:
+            errors.append("human_required_evidence_must_match_graph_evidence")
+
+    difficult = review.get("human_difficult_visual_evidence")
+    difficult_valid = (
+        isinstance(difficult, list)
+        and all(isinstance(value, str) and value.strip() for value in difficult)
+        and len({value.strip().casefold() for value in difficult}) == len(difficult)
+    )
+    if not difficult_valid:
+        errors.append("invalid_human_difficult_visual_evidence")
+    elif evidence_valid and any(
+        value.strip().casefold() not in {item.strip().casefold() for item in evidence}
+        for value in difficult
+    ):
+        errors.append("human_difficult_evidence_not_in_required_evidence")
+    elif review.get("human_task_family") == "PR" and not difficult:
+        errors.append("human_PR_requires_difficult_visual_evidence")
+    elif review.get("human_task_family") == "R" and difficult:
+        errors.append("human_R_must_not_have_difficult_visual_evidence")
     return errors
 
 

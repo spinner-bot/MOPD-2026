@@ -150,6 +150,8 @@ def validate_completed_review(original: dict, reviewed: dict) -> list[str]:
             errors.append("difficult_visual_evidence_not_in_required_evidence")
         elif reviewed.get("human_affordance_family") == "PR" and not difficult:
             errors.append("pr_requires_difficult_visual_evidence")
+        elif reviewed.get("human_affordance_family") == "R" and difficult:
+            errors.append("r_must_not_have_difficult_visual_evidence")
     elif decision in {"reject", "ambiguous"} and not _text(reviewed.get("human_notes")):
         errors.append("noncandidate_requires_notes")
 
