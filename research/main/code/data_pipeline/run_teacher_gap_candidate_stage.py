@@ -17,6 +17,8 @@ from extract_json_response import extract_json_object
 from generation_audit import collect_eos_ids, hit_token_cap
 from teacher_gap_candidate_contract import (
     STAGES,
+    decision_lock_errors,
+    fallback_decision_fields,
     proposal_errors,
     render_compact_stage_prompt,
     render_stage_prompt,
@@ -95,7 +97,14 @@ def main() -> None:
     args.output.parent.mkdir(parents=True, exist_ok=True)
     selected = 0
 
-    def generate_attempt(image_path: Path, prompt: str, kind: str, max_new_tokens: int, candidate: dict) -> dict:
+    def generate_attempt(
+        image_path: Path,
+        prompt: str,
+        kind: str,
+        max_new_tokens: int,
+        candidate: dict,
+        preserved_decision_fields: dict | None = None,
+    ) -> dict:
         messages = [{
             "role": "user",
             "content": [
@@ -134,6 +143,9 @@ def main() -> None:
             validation_errors.append("invalid_json")
         else:
             validation_errors.extend(proposal_errors(args.stage, proposal, candidate))
+            validation_errors.extend(
+                decision_lock_errors(proposal, preserved_decision_fields or {})
+            )
         return {
             "attempt_kind": kind,
             "max_new_tokens": max_new_tokens,
@@ -146,6 +158,7 @@ def main() -> None:
             "raw_model_output": raw,
             "validation_errors": sorted(set(validation_errors)),
             "schema_valid": not validation_errors,
+            "preserved_decision_fields": preserved_decision_fields or {},
         }
 
     with args.input.open(encoding="utf-8") as source, args.output.open("w", encoding="utf-8") as sink, torch.inference_mode():
@@ -211,13 +224,21 @@ def main() -> None:
                     image_path, primary_prompt, "primary", args.max_new_tokens, candidate
                 )]
                 if attempts[0]["validation_errors"]:
-                    compact_prompt = render_compact_stage_prompt(candidate, args.stage, audit_proposal)
+                    primary_proposal = extract_json_object(attempts[0]["raw_model_output"])
+                    preserved = fallback_decision_fields(args.stage, primary_proposal)
+                    compact_prompt = render_compact_stage_prompt(
+                        candidate,
+                        args.stage,
+                        audit_proposal,
+                        primary_proposal,
+                    )
                     attempts.append(generate_attempt(
                         image_path,
                         compact_prompt,
                         "compact_fallback",
                         args.fallback_max_new_tokens,
                         candidate,
+                        preserved,
                     ))
                 chosen = attempts[-1]
                 record.update({

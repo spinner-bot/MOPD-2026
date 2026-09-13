@@ -13,6 +13,11 @@ for folder in (ROOT / "code" / "data_pipeline", ROOT / "code" / "utils"):
     sys.path.insert(0, str(folder))
 
 from check_teacher_gap_candidate_gate import summarize_and_validate
+from teacher_gap_candidate_contract import (
+    render_compact_stage_prompt,
+    render_stage_prompt,
+    stable_hash,
+)
 
 
 def raw_blind() -> dict:
@@ -24,11 +29,19 @@ def raw_blind() -> dict:
         "ambiguous": False,
         "uncertainty": "low",
     }
+    candidate = {
+        "candidate_id": "candidate-1",
+        "source_image_id": "image-1",
+        "image_original": "/images/image-1.jpg",
+        "final_question_source": "Which shape follows both relations?",
+        "reference_answers": ["triangle"],
+    }
     raw_output = json.dumps(proposal)
+    prompt_hash = stable_hash(render_stage_prompt(candidate, "blind"))
     attempt = {
         "attempt_kind": "primary",
         "max_new_tokens": 768,
-        "prompt_hash": "prompt-sha",
+        "prompt_hash": prompt_hash,
         "chat_template_hash": "template-sha",
         "input_tokens": 100,
         "generated_tokens": 40,
@@ -37,6 +50,7 @@ def raw_blind() -> dict:
         "raw_model_output": raw_output,
         "validation_errors": [],
         "schema_valid": True,
+        "preserved_decision_fields": {},
     }
     return {
         "candidate_id": "candidate-1",
@@ -45,13 +59,7 @@ def raw_blind() -> dict:
         "input_index": 0,
         "rank": 0,
         "world_size": 4,
-        "candidate": {
-            "candidate_id": "candidate-1",
-            "source_image_id": "image-1",
-            "image_original": "/images/image-1.jpg",
-            "final_question_source": "Which shape follows both relations?",
-            "reference_answers": ["triangle"],
-        },
+        "candidate": candidate,
         "model_revision": "revision",
         "code_commit": "commit",
         "model_dtype": "torch.bfloat16",
@@ -66,7 +74,7 @@ def raw_blind() -> dict:
         },
         "prompt_fields_used": ["image_original", "final_question_source"],
         "image_checksum": "image-sha",
-        "prompt_hash": "prompt-sha",
+        "prompt_hash": prompt_hash,
         "chat_template_hash": "template-sha",
         "input_tokens": 100,
         "generated_tokens": 40,
@@ -109,7 +117,12 @@ class CandidateGateTests(unittest.TestCase):
             "schema_valid": False,
         })
         fallback = dict(row["attempts"][0])
-        fallback.update({"attempt_kind": "compact_fallback", "max_new_tokens": 512})
+        fallback.update({
+            "attempt_kind": "compact_fallback",
+            "max_new_tokens": 512,
+            "prompt_hash": stable_hash(render_compact_stage_prompt(row["candidate"], "blind")),
+            "preserved_decision_fields": {},
+        })
         row.update({
             "attempts": [primary, fallback],
             "attempt_count": 2,
