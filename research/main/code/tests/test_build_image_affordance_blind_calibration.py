@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -14,7 +15,7 @@ from build_image_affordance_blind_calibration import (
     build_blind_packet,
     validate_completed_review,
 )
-from finalize_image_affordance_blind_review import finalize
+from finalize_image_affordance_blind_review import finalize, require_new_outputs
 
 
 def source(key: str) -> dict:
@@ -158,6 +159,17 @@ class ImageAffordanceBlindCalibrationTests(unittest.TestCase):
         originals = build_blind_packet([source("a"), source("b")], 2)[0]
         with self.assertRaisesRegex(ValueError, "incomplete"):
             finalize(originals, [originals[0]])
+
+    def test_finalizer_outputs_must_be_new_and_distinct(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            require_new_outputs([root / "accepted.jsonl", root / "rejected.jsonl", root / "summary.json"])
+            existing = root / "existing.jsonl"
+            existing.write_text("immutable\n", encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "refusing to overwrite"):
+                require_new_outputs([existing, root / "rejected.jsonl", root / "summary.json"])
+            with self.assertRaisesRegex(ValueError, "must be distinct"):
+                require_new_outputs([root / "same", root / "same", root / "summary.json"])
 
 
 if __name__ == "__main__":

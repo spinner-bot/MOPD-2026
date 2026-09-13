@@ -158,6 +158,8 @@ B2a 的 `human_verified` 是审核者对盲审字段的签名，与 `teacher_gap
 
 只有 `valid_signed_reviews=32` 才算这一位审核者完成第一阶段。finalizer 不补字段、不改 decision，也不会把未签名记录升级为已验证。任何图片身份、防火墙字段或其他不可变字段被修改都会拒绝。
 
+`--accepted`、`--rejected` 与 `--summary` 必须是三个互不相同且尚不存在的新路径。finalizer 使用 exclusive create，拒绝覆盖旧审核结果；修订或重试应使用带版本的新文件名，并保留原输出。
+
 若安排两位审核者，两人必须先各自得到 32/32 valid，再计算 candidate/noncandidate 一致性和 R/PR 一致性；分歧通过第三份显式 adjudication 记录解决，不能让后审核者覆盖先审核者文件。
 
 ## 6. 第二阶段揭示规则
@@ -201,3 +203,4 @@ B2a 的 `human_verified` 是审核者对盲审字段的签名，与 `teacher_gap
 | 2026-09-14 04:13 | Codex (CINECA Leonardo) | 修订：加入 B2b 锁后揭示命令；明确机器 invalid/unavailable 不得作为负例，比较字段继续由人工填写。 |
 | 2026-09-14 04:40 | Codex (CINECA Leonardo) | 修订：与 `586c1d4` 统一 R/PR 语义；R 的困难证据数组必须为空，PR 必须含至少一个属于必要证据集合的困难节点。 |
 | 2026-09-14 04:47 | Codex (CINECA Leonardo) | 修订：引用 B2a 技术解码预检；要求核对原生像素和缩放，禁止图像增强产生证据。 |
+| 2026-09-14 05:02 | Codex (CINECA Leonardo) | 修订：finalizer 的 accepted/rejected/summary 改为互异新路径和排他写入；重试使用新版本文件名。 |

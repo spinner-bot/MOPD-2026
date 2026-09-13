@@ -11,8 +11,29 @@ from pathlib import Path
 from build_image_affordance_blind_calibration import (
     load_jsonl,
     validate_completed_review,
-    write_jsonl,
 )
+
+
+def require_new_outputs(paths: list[Path]) -> None:
+    resolved = [path.resolve(strict=False) for path in paths]
+    if len(set(resolved)) != len(resolved):
+        raise ValueError("accepted, rejected, and summary outputs must be distinct")
+    existing = [str(path) for path in paths if path.exists()]
+    if existing:
+        raise ValueError("refusing to overwrite existing finalizer output: " + ",".join(existing))
+
+
+def write_jsonl_exclusive(path: Path, rows: list[dict]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("x", encoding="utf-8", newline="\n") as sink:
+        for row in rows:
+            sink.write(json.dumps(row, ensure_ascii=False, sort_keys=True) + "\n")
+
+
+def write_json_exclusive(path: Path, value: dict) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("x", encoding="utf-8", newline="\n") as sink:
+        sink.write(json.dumps(value, ensure_ascii=False, indent=2, sort_keys=True) + "\n")
 
 
 def finalize(original_rows: list[dict], reviewed_rows: list[dict]) -> tuple[list[dict], list[dict], dict]:
@@ -74,18 +95,15 @@ def main() -> None:
     parser.add_argument("--summary", type=Path, required=True)
     args = parser.parse_args()
     try:
+        require_new_outputs([args.accepted, args.rejected, args.summary])
         accepted, rejected, summary = finalize(
             load_jsonl(args.original), load_jsonl(args.reviewed)
         )
     except (OSError, ValueError, json.JSONDecodeError) as error:
         raise SystemExit(str(error)) from error
-    write_jsonl(args.accepted, accepted)
-    write_jsonl(args.rejected, rejected)
-    args.summary.parent.mkdir(parents=True, exist_ok=True)
-    args.summary.write_text(
-        json.dumps(summary, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
-        encoding="utf-8",
-    )
+    write_jsonl_exclusive(args.accepted, accepted)
+    write_jsonl_exclusive(args.rejected, rejected)
+    write_json_exclusive(args.summary, summary)
     print(json.dumps(summary, ensure_ascii=False, sort_keys=True))
 
 
