@@ -12,6 +12,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+from datetime import datetime
 from pathlib import Path
 
 from image_affordance_contract import validate_image_candidate
@@ -49,6 +50,9 @@ FORBIDDEN_KEYS = {
     "reasoning_depth_candidate",
     "task_family_candidate",
 }
+DECISIONS = {"candidate", "reject", "ambiguous"}
+FAMILIES = {"R", "PR"}
+EDITABLE_REVIEW_FIELDS = {*HUMAN_FIELDS, "human_verified", "review_status"}
 
 
 def stable_packet_sha256(rows: list[dict]) -> str:
@@ -56,6 +60,90 @@ def stable_packet_sha256(rows: list[dict]) -> str:
         json.dumps(row, ensure_ascii=False, sort_keys=True) + "\n" for row in rows
     )
     return hashlib.sha256(payload.encode("utf-8")).hexdigest()
+
+
+def _text(value: object) -> str:
+    return str(value if value is not None else "").strip()
+
+
+def _nonempty_text_list(value: object, minimum: int) -> bool:
+    return (
+        isinstance(value, list)
+        and len(value) >= minimum
+        and all(isinstance(item, str) and _text(item) for item in value)
+    )
+
+
+def validate_completed_review(original: dict, reviewed: dict) -> list[str]:
+    """Validate a human-signed blind judgment without filling any field."""
+
+    errors = []
+    immutable_keys = (set(original) | set(reviewed)) - EDITABLE_REVIEW_FIELDS
+    for key in sorted(immutable_keys):
+        if original.get(key) != reviewed.get(key):
+            errors.append(f"immutable_field_changed:{key}")
+    if FORBIDDEN_KEYS & reviewed.keys():
+        errors.append("review_firewall_violation")
+    if reviewed.get("machine_proposal_exposed") is not False:
+        errors.append("machine_proposal_was_exposed")
+    if reviewed.get("source_question_exposed") is not False:
+        errors.append("source_question_was_exposed")
+    if reviewed.get("human_verified") is not True:
+        errors.append("human_verified_not_true")
+    if reviewed.get("review_status") != "human_blind_affordance_review_complete":
+        errors.append("review_status_not_complete")
+    if type(reviewed.get("human_image_usable")) is not bool:
+        errors.append("human_image_usable_not_bool")
+    if type(reviewed.get("human_external_knowledge_needed")) is not bool:
+        errors.append("human_external_knowledge_needed_not_bool")
+
+    decision = reviewed.get("human_affordance_decision")
+    if decision not in DECISIONS:
+        errors.append("invalid_human_affordance_decision")
+    if not _text(reviewed.get("human_reviewer")):
+        errors.append("missing_human_reviewer")
+    reviewed_at = _text(reviewed.get("human_reviewed_at"))
+    try:
+        parsed_time = datetime.fromisoformat(reviewed_at)
+        if parsed_time.tzinfo is None or parsed_time.utcoffset() is None:
+            errors.append("human_reviewed_at_missing_timezone")
+    except ValueError:
+        errors.append("invalid_human_reviewed_at")
+
+    if decision == "candidate":
+        if reviewed.get("human_image_usable") is not True:
+            errors.append("candidate_image_not_usable")
+        if reviewed.get("human_external_knowledge_needed") is not False:
+            errors.append("candidate_needs_external_knowledge")
+        if not _text(reviewed.get("human_target_question")):
+            errors.append("candidate_missing_target_question")
+        answer = reviewed.get("human_canonical_answer")
+        if not (
+            isinstance(answer, str) and _text(answer)
+            or _nonempty_text_list(answer, 1)
+        ):
+            errors.append("candidate_missing_canonical_answer")
+        if reviewed.get("human_affordance_family") not in FAMILIES:
+            errors.append("candidate_invalid_affordance_family")
+        if not _nonempty_text_list(reviewed.get("human_evidence_descriptions"), 2):
+            errors.append("candidate_requires_two_visual_evidence_items")
+        if not _nonempty_text_list(reviewed.get("human_reasoning_steps"), 2):
+            errors.append("candidate_requires_two_reasoning_steps")
+        if not _nonempty_text_list(
+            reviewed.get("human_counterfactual_required_evidence"), 2
+        ):
+            errors.append("candidate_requires_two_counterfactual_evidence_items")
+        difficult = reviewed.get("human_difficult_visual_evidence")
+        if not isinstance(difficult, list) or any(
+            not isinstance(item, str) or not _text(item) for item in difficult
+        ):
+            errors.append("invalid_difficult_visual_evidence")
+        elif reviewed.get("human_affordance_family") == "PR" and not difficult:
+            errors.append("pr_requires_difficult_visual_evidence")
+    elif decision in {"reject", "ambiguous"} and not _text(reviewed.get("human_notes")):
+        errors.append("noncandidate_requires_notes")
+
+    return sorted(set(errors))
 
 
 def build_blind_packet(source_candidates: list[dict], size: int) -> tuple[list[dict], dict]:

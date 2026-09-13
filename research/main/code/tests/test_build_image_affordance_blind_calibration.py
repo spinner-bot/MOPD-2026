@@ -12,7 +12,9 @@ from build_image_affordance_blind_calibration import (
     FORBIDDEN_KEYS,
     HUMAN_FIELDS,
     build_blind_packet,
+    validate_completed_review,
 )
+from finalize_image_affordance_blind_review import finalize
 
 
 def source(key: str) -> dict:
@@ -64,6 +66,65 @@ class ImageAffordanceBlindCalibrationTests(unittest.TestCase):
         question_source["final_question_source"] = "secret"
         with self.assertRaisesRegex(ValueError, "question_firewall_violation"):
             build_blind_packet([question_source], 1)
+
+    def completed_candidate(self) -> tuple[dict, dict]:
+        original = build_blind_packet([source("a")], 1)[0][0]
+        reviewed = dict(original)
+        reviewed.update({
+            "review_status": "human_blind_affordance_review_complete",
+            "human_verified": True,
+            "human_image_usable": True,
+            "human_affordance_decision": "candidate",
+            "human_target_question": "Which route reaches the marked exit?",
+            "human_canonical_answer": "the left route",
+            "human_affordance_family": "R",
+            "human_evidence_descriptions": ["left route is open", "right route is blocked"],
+            "human_reasoning_steps": ["compare both routes", "select the open route"],
+            "human_counterfactual_required_evidence": ["left route state", "right route state"],
+            "human_difficult_visual_evidence": [],
+            "human_external_knowledge_needed": False,
+            "human_reviewer": "reviewer-1",
+            "human_reviewed_at": "2026-09-14T04:00:00+08:00",
+            "human_notes": "closed-world target",
+        })
+        return original, reviewed
+
+    def test_complete_concrete_candidate_passes(self):
+        original, reviewed = self.completed_candidate()
+        self.assertEqual(validate_completed_review(original, reviewed), [])
+        accepted, rejected, summary = finalize([original], [reviewed])
+        self.assertEqual(accepted, [reviewed])
+        self.assertEqual(rejected, [])
+        self.assertEqual(summary["valid_decisions"], {"candidate": 1})
+
+    def test_candidate_requires_counterfactual_evidence_and_human_signature(self):
+        original, reviewed = self.completed_candidate()
+        reviewed["human_counterfactual_required_evidence"] = []
+        reviewed["human_verified"] = False
+        errors = validate_completed_review(original, reviewed)
+        self.assertIn("candidate_requires_two_counterfactual_evidence_items", errors)
+        self.assertIn("human_verified_not_true", errors)
+
+    def test_pr_requires_difficult_visual_evidence(self):
+        original, reviewed = self.completed_candidate()
+        reviewed["human_affordance_family"] = "PR"
+        self.assertIn(
+            "pr_requires_difficult_visual_evidence",
+            validate_completed_review(original, reviewed),
+        )
+
+    def test_immutable_or_firewall_mutation_fails(self):
+        original, reviewed = self.completed_candidate()
+        reviewed["image_path"] = "/different.jpg"
+        reviewed["machine_proposal"] = {"decision": "candidate"}
+        errors = validate_completed_review(original, reviewed)
+        self.assertIn("immutable_field_changed:image_path", errors)
+        self.assertIn("review_firewall_violation", errors)
+
+    def test_finalizer_requires_the_complete_original_set(self):
+        originals = build_blind_packet([source("a"), source("b")], 2)[0]
+        with self.assertRaisesRegex(ValueError, "incomplete"):
+            finalize(originals, [originals[0]])
 
 
 if __name__ == "__main__":
