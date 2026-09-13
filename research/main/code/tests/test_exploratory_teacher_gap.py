@@ -1,8 +1,10 @@
 """Contract tests for the frozen 1017 exploratory teacher-gap protocol."""
 
 import sys
+import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -18,7 +20,7 @@ from exploratory_teacher_gap import (
 )
 from teacher_gap_inputs import COMMON_SHELL, render_teacher_gap_input, validate_generic_length
 from process_exploratory_teacher_gap import enrich_raw_record
-from run_exploratory_teacher_gap import allowed_token_function, frozen_schedule
+from run_exploratory_teacher_gap import allowed_token_function, frozen_schedule, main as run_teacher_gap
 
 
 def manifest_sample(index: int) -> dict:
@@ -100,6 +102,28 @@ def result_records(tq_gains: int, tqa_gains: int, generic_gains: int = 1, logp_t
 
 
 class ExploratoryTeacherGapTests(unittest.TestCase):
+    def test_runner_refuses_a_commit_changed_after_submission(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            model = root / "model"
+            model.mkdir()
+            manifest = root / "manifest.jsonl"
+            manifest.write_text("", encoding="utf-8")
+            argv = [
+                "run_exploratory_teacher_gap.py",
+                "--manifest", str(manifest),
+                "--output", str(root / "output.jsonl"),
+                "--model", str(model),
+                "--model-revision", "model-revision",
+                "--code-commit", "submitted-commit",
+                "--image-root", str(root),
+            ]
+            with patch("sys.argv", argv), patch(
+                "run_exploratory_teacher_gap.git_commit", return_value="newer-commit"
+            ):
+                with self.assertRaisesRegex(SystemExit, "code commit changed after submission"):
+                    run_teacher_gap()
+
     def test_locked_manifest_fails_closed_on_overlap_and_balance(self):
         samples = [manifest_sample(index) for index in range(96)]
         self.assertEqual(validate_locked_manifest(samples), [])

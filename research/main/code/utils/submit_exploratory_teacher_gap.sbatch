@@ -20,6 +20,7 @@ PY="${MOPD_PYTHON:-/leonardo_work/AIFAC_F02_774/sqs/envs/mopd-stage0-py311/bin/p
 MODEL="${MOPD_MODEL_4B:-/leonardo_work/AIFAC_F02_774/sqs/models/Qwen3.5-4B-base}"
 IMAGE_ROOT="${MOPD_IMAGE_ROOT:-/leonardo_work/AIFAC_F02_774/sqs/data/m3vqa/materialized/images}"
 REVISION="851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a"
+EXPECTED_COMMIT="${MOPD_EXPECTED_CODE_COMMIT:?set MOPD_EXPECTED_CODE_COMMIT to the submitted git HEAD}"
 RUNNER="${ROOT}/code/evaluation/run_exploratory_teacher_gap.py"
 PROCESS="${ROOT}/code/evaluation/process_exploratory_teacher_gap.py"
 
@@ -29,8 +30,13 @@ PROCESS="${ROOT}/code/evaluation/process_exploratory_teacher_gap.py"
 [[ -f "${CANARY_MANIFEST}" ]] || { echo "missing canary manifest" >&2; exit 2; }
 [[ -f "${LOCKED_MANIFEST}" ]] || { echo "missing locked manifest" >&2; exit 2; }
 [[ -f "${RUN}/manifest.json" ]] || { echo "initialize run archive first: ${RUN}" >&2; exit 2; }
+ACTUAL_COMMIT="$(git -C "${ROOT}" rev-parse HEAD)"
+[[ "${ACTUAL_COMMIT}" == "${EXPECTED_COMMIT}" ]] || {
+  echo "code commit changed after submission: expected=${EXPECTED_COMMIT} actual=${ACTUAL_COMMIT}" >&2
+  exit 2
+}
 mkdir -p "${RUN}"/{raw,parsed,summaries,logs}
-export ROOT RUN PY MODEL IMAGE_ROOT REVISION RUNNER
+export ROOT RUN PY MODEL IMAGE_ROOT REVISION EXPECTED_COMMIT RUNNER
 
 run_manifest() {
   local manifest="$1" expected="$2" destination="$3"
@@ -40,7 +46,8 @@ run_manifest() {
     "${PY}" "${RUNNER}" \
       --manifest "${manifest}" --expected-samples "${expected}" \
       --output "${destination}/rank-${rank}.jsonl" \
-      --model "${MODEL}" --model-revision "${REVISION}" --image-root "${IMAGE_ROOT}" \
+      --model "${MODEL}" --model-revision "${REVISION}" --code-commit "${EXPECTED_COMMIT}" \
+      --image-root "${IMAGE_ROOT}" \
       --rank "${rank}" --world-size 4
   '
 }
