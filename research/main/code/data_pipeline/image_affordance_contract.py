@@ -8,6 +8,7 @@ truth; both require a later question and independent review.
 from __future__ import annotations
 
 import hashlib
+import json
 import re
 from typing import Any
 
@@ -27,6 +28,13 @@ Return exactly one concise JSON object and no other text:
 {"decision":"candidate|reject|ambiguous","observable_entities":[{"id":"e1","description":"visible description","region":"top-left|top|top-right|left|center|right|bottom-left|bottom|bottom-right|distributed|whole","fine_detail_difficult":false}],"observable_relations":[{"source_id":"e1","relation":"visible relation","target_id":"e2"}],"candidate_reasoning_paths":[{"family":"R|PR","evidence_entity_ids":["e1","e2"],"transformations":["derive step 1","derive step 2"],"natural_question_type":"compare|spatial|connection|order|state_change|chart_relation"}],"p_score":0,"r_score":0,"pr_score":0,"closed_world_question_feasible":false,"external_identification_needed":false,"uncertainty":"brief"}
 Scores are integers 0-3. Use candidate only when at least one natural path satisfies the definitions and could have a unique answer from the image alone. Use reject when no such path is visible; ambiguous when image quality or structure prevents a reliable decision. Stop after the closing brace."""
 
+COMPACT_AFFORDANCE_PROMPT = """Rewrite the first image-only affordance attempt as one concise schema-valid JSON object. Do not use any source question, answer, dataset evidence, URL, or outside identity fact.
+Locked conservative decision fields: {decision_lock}
+Copy every locked value exactly. For candidate, include 2-6 visible entities, 1-5 visible relations, and 1-2 natural R/PR paths with at least two distinct evidence entity IDs and two indispensable transformations. For reject or ambiguous, lists may be empty.
+Return exactly these keys and no markdown or analysis:
+{{"decision":"candidate|reject|ambiguous","observable_entities":[],"observable_relations":[],"candidate_reasoning_paths":[],"p_score":0,"r_score":0,"pr_score":0,"closed_world_question_feasible":false,"external_identification_needed":false,"uncertainty":"brief"}}
+Stop after the closing brace."""
+
 
 def stable_hash(value: str) -> str:
     return hashlib.sha256(value.encode("utf-8")).hexdigest()
@@ -37,6 +45,48 @@ def render_affordance_prompt(candidate: dict) -> str:
     if errors:
         raise ValueError(",".join(errors))
     return AFFORDANCE_PROMPT
+
+
+def affordance_fallback_lock(primary: dict | None) -> dict:
+    """Preserve only a recoverable decision; unknown output fails to ambiguous."""
+
+    primary = primary if isinstance(primary, dict) else {}
+    decision = primary.get("decision")
+    if decision == "candidate" and primary.get("closed_world_question_feasible") is True and primary.get("external_identification_needed") is False:
+        return {
+            "decision": "candidate",
+            "closed_world_question_feasible": True,
+            "external_identification_needed": False,
+        }
+    if decision in {"reject", "ambiguous"}:
+        return {
+            "decision": decision,
+            "closed_world_question_feasible": primary.get("closed_world_question_feasible")
+            if isinstance(primary.get("closed_world_question_feasible"), bool) else False,
+            "external_identification_needed": primary.get("external_identification_needed")
+            if isinstance(primary.get("external_identification_needed"), bool) else False,
+        }
+    return {
+        "decision": "ambiguous",
+        "closed_world_question_feasible": False,
+        "external_identification_needed": False,
+    }
+
+
+def render_compact_affordance_prompt(primary: dict | None) -> str:
+    return COMPACT_AFFORDANCE_PROMPT.format(
+        decision_lock=json.dumps(
+            affordance_fallback_lock(primary), ensure_ascii=False, sort_keys=True
+        )
+    )
+
+
+def affordance_lock_errors(proposal: dict | None, locked: dict) -> list[str]:
+    if not isinstance(proposal, dict):
+        return []
+    return ["fallback_decision_mismatch"] if any(
+        proposal.get(key) != value for key, value in locked.items()
+    ) else []
 
 
 def _text(value: Any) -> str:

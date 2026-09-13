@@ -8,7 +8,14 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "code" / "data_pipeline"))
 
-from image_affordance_contract import render_affordance_prompt, validate_affordance_proposal, validate_image_candidate
+from image_affordance_contract import (
+    affordance_fallback_lock,
+    affordance_lock_errors,
+    render_affordance_prompt,
+    render_compact_affordance_prompt,
+    validate_affordance_proposal,
+    validate_image_candidate,
+)
 
 
 def candidate():
@@ -62,6 +69,24 @@ class ImageAffordanceContractTests(unittest.TestCase):
         p = proposal()
         p["candidate_reasoning_paths"][0]["evidence_entity_ids"] = [{"bad": "type"}]
         self.assertIn("path_0_invalid_evidence_entities", validate_affordance_proposal(p))
+
+    def test_fallback_never_promotes_unrecoverable_primary(self):
+        lock = affordance_fallback_lock(None)
+        self.assertEqual(lock["decision"], "ambiguous")
+        prompt = render_compact_affordance_prompt(None)
+        self.assertIn('"decision": "ambiguous"', prompt)
+        rewritten = proposal()
+        self.assertEqual(
+            affordance_lock_errors(rewritten, lock), ["fallback_decision_mismatch"]
+        )
+
+    def test_valid_candidate_decision_is_locked(self):
+        lock = affordance_fallback_lock(proposal())
+        self.assertEqual(lock, {
+            "decision": "candidate",
+            "closed_world_question_feasible": True,
+            "external_identification_needed": False,
+        })
 
 
 if __name__ == "__main__":
