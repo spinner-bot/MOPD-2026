@@ -136,5 +136,5 @@ JSON 布尔值必须写成不带引号的 `true`/`false`。`"yes"`、`"no"`、`1
 | 2026-09-12 14:45 | claude code (local) | 创建：W2 teacher-gap pilot 后提前准备人工审核和交付指引。 |
 | 2026-09-13 22:29 | Codex (CINECA Leonardo) | 修订：统一 1017 冻结协议、审核包字段和终检程序，修复旧指南取值与机器契约不兼容。 |
 | 2026-09-14 04:40 | Codex (CINECA Leonardo) | 修订：同步 `586c1d4` 的 evidence/DAG 集合一致性和 R/PR 困难视觉节点字段；补齐历史修订表。 |
-| 2026-09-14 04:42 | Codex (CINECA Leonardo) | 修订：终检输出改为新 run ID 排他写入，并要求 construction candidate 显式携带真实图源，避免混合来源被静默写成 M3VQA。 |
-| 2026-09-14 05:07 | Codex (CINECA Leonardo) | 修订：冻结清单保留 canonical answer 与困难视觉证据，使 bundle gate 可独立重验答案、证据/DAG、R/PR 和 guide 对齐。 |
+| 2026-09-14 04:38 | Codex (CINECA Leonardo) | 修订：终检输出改为新 run ID 排他写入，并要求 construction candidate 显式携带真实图源，避免混合来源被静默写成 M3VQA。 |
+| 2026-09-14 04:46 | Codex (CINECA Leonardo) | 修订：冻结清单保留 canonical answer 与困难视觉证据，使 bundle gate 可独立重验答案、证据/DAG、R/PR 和 guide 对齐。 |
