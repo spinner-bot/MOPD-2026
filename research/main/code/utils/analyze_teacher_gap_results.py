@@ -1,246 +1,185 @@
 #!/usr/bin/env python3
-"""
-分析 teacher-gap screen/construct 作业结果。
+"""Audit W2 teacher-gap candidate screen/construct run archives.
 
-功能：
-1. 统计截断率（truncated_or_missing_eos）
-2. 分类统计 image_only / external_required / ambiguous
-3. 与 C2 aligned 包联结生成人工审核优先队列
-4. 对比 r1 vs r2 修复效果
-
-使用：
-    python analyze_teacher_gap_results.py --run-dir <archive_dir>
+This tool reads the real archive layout used by the W2 sbatch scripts and
+delegates parsing and candidate selection to the same authoritative functions
+as the gates. It never promotes model output to human truth and never reports
+candidate-screening counts as a measured teacher gap.
 """
+
+from __future__ import annotations
 
 import argparse
+import glob
 import json
 import sys
 from pathlib import Path
-from collections import defaultdict, Counter
 
 
-def load_jsonl(path: Path) -> list:
-    """加载 JSONL 文件"""
-    if not path.exists():
-        return []
-    records = []
-    with open(path, encoding="utf-8") as f:
-        for line in f:
-            line = line.strip()
-            if line:
-                records.append(json.loads(line))
-    return records
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "data_pipeline"))
+
+from process_teacher_gap_candidate_stage import parse_records, select_construction  # noqa: E402
+
+
+def load_jsonl_paths(paths: list[Path]) -> list[dict]:
+    rows = []
+    for path in paths:
+        with path.open(encoding="utf-8") as source:
+            rows.extend(json.loads(line) for line in source if line.strip())
+    return rows
+
+
+def stage_paths(run_dir: Path, stage: str, scope: str = "raw") -> list[Path]:
+    pattern = str(run_dir / scope / stage / "rank-*.jsonl")
+    return [Path(value) for value in sorted(glob.glob(pattern))]
+
+
+def analyze_raw_stage(run_dir: Path, stage: str, scope: str = "raw") -> tuple[list[dict], dict]:
+    paths = stage_paths(run_dir, stage, scope)
+    if not paths:
+        return [], {
+            "stage": stage,
+            "scope": scope,
+            "status": "not_available",
+            "files": [],
+            "observed": 0,
+        }
+    raw = load_jsonl_paths(paths)
+    parsed, rejected, summary = parse_records(raw, stage)
+    truncated = sum(
+        row.get("truncated") is not False or row.get("eos_reached") is not True
+        for row in raw
+    )
+    runner_errors = sum(bool(row.get("error")) for row in raw)
+    return parsed, {
+        **summary,
+        "scope": scope,
+        "status": "complete_raw_set" if raw else "empty_raw_set",
+        "files": [str(path) for path in paths],
+        "truncated_or_missing_eos": truncated,
+        "runner_errors": runner_errors,
+        "valid_candidate_ids": [row["candidate_id"] for row in parsed],
+        "rejected_candidate_ids": [row["candidate_id"] for row in rejected],
+    }
 
 
 def analyze_screen_output(run_dir: Path) -> dict:
-    """分析 screen 作业输出"""
+    blind_rows, blind_summary = analyze_raw_stage(run_dir, "blind")
+    audit_rows, audit_summary = analyze_raw_stage(run_dir, "audit")
     result = {
         "run_dir": str(run_dir),
-        "total": 0,
-        "parsed_valid": 0,
-        "truncated": 0,
-        "invalid_json": 0,
-        "image_only": 0,
-        "external_required": 0,
-        "ambiguous": 0,
-        "candidates": [],
+        "run_type": "screen",
+        "stages": {"blind": blind_summary, "audit": audit_summary},
+        "teacher_gap_measured": False,
+        "scientific_status": "candidate_screening_only",
+        "selection": {"status": "not_available_until_both_full_stages_exist"},
+        "human_review_queue": [],
     }
-
-    # 查找输出文件
-    output_dir = run_dir / "raw" / "summaries"
-    if not output_dir.exists():
-        print(f"警告: {output_dir} 不存在", file=sys.stderr)
-        return result
-
-    for jsonl_file in sorted(output_dir.glob("*.jsonl")):
-        records = load_jsonl(jsonl_file)
-        for rec in records:
-            result["total"] += 1
-
-            # 检查截断
-            if rec.get("truncated") or rec.get("truncated_output"):
-                result["truncated"] += 1
-                continue
-
-            # 检查解析
-            if rec.get("parse_error") or not rec.get("parsed"):
-                result["invalid_json"] += 1
-                continue
-
-            result["parsed_valid"] += 1
-
-            # 分类
-            candidate = {
-                "candidate_id": rec.get("candidate_id"),
-                "category": rec.get("category", "unknown"),
-                "reason": rec.get("reason", ""),
-            }
-
-            category = rec.get("category", "").lower()
-            if "image_only" in category or "image-only" in category:
-                result["image_only"] += 1
-            elif "external" in category:
-                result["external_required"] += 1
-            elif "ambiguous" in category:
-                result["ambiguous"] += 1
-
-            result["candidates"].append(candidate)
-
+    if blind_rows and audit_rows:
+        selected, rejected, summary = select_construction(blind_rows, audit_rows)
+        result["selection"] = {
+            **summary,
+            "status": "model_selection_complete",
+            "rejected_candidate_ids": [row["candidate_id"] for row in rejected],
+        }
+        result["human_review_queue"] = [{
+            "candidate_id": row["candidate_id"],
+            "source_image_id": row["source_image_id"],
+            "status": "model_candidate_pending_construction_and_human_review",
+        } for row in selected]
     return result
 
 
 def analyze_construct_output(run_dir: Path) -> dict:
-    """分析 construct 作业输出"""
-    result = {
-        "run_dir": str(run_dir),
-        "total": 0,
-        "constructed": 0,
-        "failed": 0,
-        "records": [],
-    }
-
-    output_dir = run_dir / "processed"
-    if not output_dir.exists():
-        print(f"警告: {output_dir} 不存在", file=sys.stderr)
-        return result
-
-    for jsonl_file in sorted(output_dir.glob("*.jsonl")):
-        records = load_jsonl(jsonl_file)
-        for rec in records:
-            result["total"] += 1
-
-            if rec.get("constructed"):
-                result["constructed"] += 1
-            else:
-                result["failed"] += 1
-
-            result["records"].append({
-                "candidate_id": rec.get("candidate_id"),
-                "guide_count": len(rec.get("guides", [])),
-                "leakage_check": rec.get("leakage_check", "unknown"),
+    parsed, summary = analyze_raw_stage(run_dir, "construct")
+    decisions = {"accept_candidate": 0, "reject": 0}
+    queue = []
+    for row in parsed:
+        decision = row["proposal"].get("decision")
+        if decision in decisions:
+            decisions[decision] += 1
+        if decision == "accept_candidate":
+            queue.append({
+                "candidate_id": row["candidate_id"],
+                "source_image_id": row["source_image_id"],
+                "status": "constructed_model_candidate_pending_human_review",
             })
-
-    return result
-
-
-def compare_r1_r2(r1_dir: Path, r2_dir: Path) -> dict:
-    """对比 r1 和 r2 的修复效果"""
-    r1_result = analyze_screen_output(r1_dir)
-    r2_result = analyze_screen_output(r2_dir)
-
-    comparison = {
-        "r1": {
-            "total": r1_result["total"],
-            "truncated": r1_result["truncated"],
-            "truncation_rate": r1_result["truncated"] / max(r1_result["total"], 1),
-        },
-        "r2": {
-            "total": r2_result["total"],
-            "truncated": r2_result["truncated"],
-            "truncation_rate": r2_result["truncated"] / max(r2_result["total"], 1),
-        },
-        "improvement": None,
+    return {
+        "run_dir": str(run_dir),
+        "run_type": "construct",
+        "stage": summary,
+        "decisions": decisions,
+        "human_review_queue": queue,
+        "automatically_human_verified": 0,
+        "teacher_gap_measured": False,
+        "scientific_status": "candidate_construction_only",
     }
 
-    if r1_result["total"] > 0 and r2_result["total"] > 0:
-        r1_rate = r1_result["truncated"] / r1_result["total"]
-        r2_rate = r2_result["truncated"] / r2_result["total"]
-        comparison["improvement"] = {
-            "absolute_reduction": r1_rate - r2_rate,
-            "relative_reduction": (r1_rate - r2_rate) / r1_rate if r1_rate > 0 else None,
-        }
 
+def analyze_run(run_dir: Path) -> dict:
+    name = run_dir.name.casefold()
+    if "screen" in name:
+        return analyze_screen_output(run_dir)
+    if "construct" in name:
+        return analyze_construct_output(run_dir)
+    raise ValueError("run directory name must contain 'screen' or 'construct'")
+
+
+def compact_comparison(first: dict, second: dict) -> dict:
+    """Compare matching raw stages without inventing missing-stage zeros."""
+
+    comparison = {}
+    if first["run_type"] != second["run_type"]:
+        raise ValueError("comparison requires two runs of the same type")
+    if first["run_type"] == "screen":
+        stages = ("blind", "audit")
+        first_stages, second_stages = first["stages"], second["stages"]
+    else:
+        stages = ("construct",)
+        first_stages = {"construct": first["stage"]}
+        second_stages = {"construct": second["stage"]}
+    for stage in stages:
+        before, after = first_stages[stage], second_stages[stage]
+        if before.get("status") == "not_available" or after.get("status") == "not_available":
+            comparison[stage] = {"status": "not_comparable"}
+            continue
+        comparison[stage] = {
+            "status": "comparable",
+            "before": {
+                "observed": before["observed"],
+                "parse_rate": before["parse_rate"],
+                "truncated_or_missing_eos": before["truncated_or_missing_eos"],
+            },
+            "after": {
+                "observed": after["observed"],
+                "parse_rate": after["parse_rate"],
+                "truncated_or_missing_eos": after["truncated_or_missing_eos"],
+            },
+            "parse_rate_delta": after["parse_rate"] - before["parse_rate"],
+        }
     return comparison
 
 
-def generate_review_priority(screen_result: dict, aligned_packet_path: Path = None) -> list:
-    """生成人工审核优先队列"""
-    priority_queue = []
-
-    # 优先级规则：
-    # 1. image_only 且无歧义 -> 高优先级
-    # 2. ambiguous -> 中优先级
-    # 3. external_required -> 低优先级（可能需要重构）
-
-    for candidate in screen_result.get("candidates", []):
-        category = candidate.get("category", "").lower()
-
-        if "image_only" in category:
-            priority = "high"
-        elif "ambiguous" in category:
-            priority = "medium"
-        elif "external" in category:
-            priority = "low"
-        else:
-            priority = "unknown"
-
-        priority_queue.append({
-            "candidate_id": candidate.get("candidate_id"),
-            "priority": priority,
-            "category": candidate.get("category"),
-            "reason": candidate.get("reason"),
-        })
-
-    # 按优先级排序
-    priority_order = {"high": 0, "medium": 1, "low": 2, "unknown": 3}
-    priority_queue.sort(key=lambda x: priority_order.get(x["priority"], 99))
-
-    return priority_queue
-
-
-def main():
-    parser = argparse.ArgumentParser(description="分析 teacher-gap 作业结果")
-    parser.add_argument("--run-dir", type=Path, required=True, help="作业档案目录")
-    parser.add_argument("--compare-r1", type=Path, help="r1 档案目录（用于对比）")
-    parser.add_argument("--aligned-packet", type=Path, help="C2 aligned 包路径")
-    parser.add_argument("--output", type=Path, help="输出 JSON 路径")
-
+def main() -> None:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--run-dir", type=Path, required=True)
+    parser.add_argument("--compare", type=Path, help="earlier archive of the same type")
+    parser.add_argument("--output", type=Path)
     args = parser.parse_args()
-
-    # 判断是 screen 还是 construct
-    run_name = args.run_dir.name.lower()
-    if "screen" in run_name:
-        result = analyze_screen_output(args.run_dir)
-    elif "construct" in run_name:
-        result = analyze_construct_output(args.run_dir)
-    else:
-        print("错误: 无法判断作业类型（名称中应包含 screen 或 construct）", file=sys.stderr)
-        sys.exit(1)
-
-    # 对比 r1 vs r2
-    if args.compare_r1:
-        comparison = compare_r1_r2(args.compare_r1, args.run_dir)
-        result["comparison_with_r1"] = comparison
-
-    # 生成审核优先队列（仅 screen）
-    if "screen" in run_name:
-        priority_queue = generate_review_priority(result, args.aligned_packet)
-        result["review_priority_queue"] = priority_queue
-
-    # 输出
-    output_json = json.dumps(result, indent=2, ensure_ascii=False)
-
+    if not args.run_dir.is_dir():
+        raise SystemExit(f"missing run directory: {args.run_dir}")
+    try:
+        result = analyze_run(args.run_dir)
+        if args.compare:
+            result["comparison"] = compact_comparison(analyze_run(args.compare), result)
+    except (OSError, ValueError, json.JSONDecodeError) as error:
+        raise SystemExit(str(error)) from error
+    text = json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True) + "\n"
     if args.output:
-        args.output.write_text(output_json, encoding="utf-8")
-        print(f"结果已写入: {args.output}")
-    else:
-        print(output_json)
-
-    # 打印摘要
-    print("\n=== 摘要 ===")
-    if "screen" in run_name:
-        print(f"总记录数: {result['total']}")
-        print(f"有效解析: {result['parsed_valid']}")
-        print(f"截断: {result['truncated']} ({result['truncated']/max(result['total'],1)*100:.1f}%)")
-        print(f"无效JSON: {result['invalid_json']}")
-        print(f"\n分类统计:")
-        print(f"  image_only: {result['image_only']}")
-        print(f"  external_required: {result['external_required']}")
-        print(f"  ambiguous: {result['ambiguous']}")
-    elif "construct" in run_name:
-        print(f"总记录数: {result['total']}")
-        print(f"成功构建: {result['constructed']}")
-        print(f"失败: {result['failed']}")
+        args.output.parent.mkdir(parents=True, exist_ok=True)
+        args.output.write_text(text, encoding="utf-8")
+    print(text, end="")
 
 
 if __name__ == "__main__":
