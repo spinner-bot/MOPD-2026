@@ -1,0 +1,12 @@
+{
+  "input_path": "research/main/outputs/runs/20260914T0200-teacher-gap-screen-c1-128-r7/parsed/construction-inputs.jsonl",
+  "input_available_after_screen": true,
+  "upstream_run_id": "20260914T0200-teacher-gap-screen-c1-128-r7",
+  "answer_contract": "m3vqa-answer-contract-v1",
+  "source_image_unique_required": true,
+  "runner_sha256": "a0d0467e9588edb9bdefda612af142eea4870a4e0a1f6ea1f173b66f96bf8a0e",
+  "processor_sha256": "7a63ecb86dba79ea1044f467223d0c4a4ed3873ed8033af71a79022f48d4b649",
+  "contract_sha256": "a73e293679f740dfb58de9be58c627456b973f813360119cb6bccb16222ac9db",
+  "gate_sha256": "b903048f34384e2a1e508209d3eef85cf1d9c09092e5207059b4ddbca91c38b1",
+  "submit_script_sha256": "c266bba9f9265569652487f8744859c80603e7aac1b5ee49e2dfdd8a6debd197"
+}

@@ -1,0 +1,13 @@
+{
+  "input_path": "research/main/outputs/runs/20260914T0152-m3vqa-answer-contract-c1-128/outputs/candidates.jsonl",
+  "input_sha256": "656b7eadcf96d33135242a8f7e7beda775558bd8f5a5807913337a4867d18392",
+  "records": 128,
+  "answer_contract": "m3vqa-answer-contract-v1",
+  "answer_contract_archive": "20260914T0152-m3vqa-answer-contract-c1-128",
+  "source_image_unique_required": true,
+  "runner_sha256": "a0d0467e9588edb9bdefda612af142eea4870a4e0a1f6ea1f173b66f96bf8a0e",
+  "processor_sha256": "7a63ecb86dba79ea1044f467223d0c4a4ed3873ed8033af71a79022f48d4b649",
+  "contract_sha256": "a73e293679f740dfb58de9be58c627456b973f813360119cb6bccb16222ac9db",
+  "gate_sha256": "b903048f34384e2a1e508209d3eef85cf1d9c09092e5207059b4ddbca91c38b1",
+  "submit_script_sha256": "2512aeb2281ce635342e7b3139352ee933a419fb08460211fb8ffe743d21dac3"
+}
