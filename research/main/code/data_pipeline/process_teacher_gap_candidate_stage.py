@@ -11,6 +11,7 @@ from pathlib import Path
 from extract_json_response import extract_json_object
 from teacher_gap_candidate_contract import (
     STAGES,
+    decision_lock_errors,
     is_construction_candidate,
     proposal_errors,
 )
@@ -60,6 +61,16 @@ def parse_records(rows: list[dict], stage: str) -> tuple[list[dict], list[dict],
             row_reasons.append("invalid_json")
         else:
             row_reasons.extend(proposal_errors(stage, proposal, raw.get("candidate", {})))
+            attempts = raw.get("attempts")
+            selected_attempt = attempts[-1] if isinstance(attempts, list) and attempts else {}
+            row_reasons.extend(
+                decision_lock_errors(
+                    proposal,
+                    selected_attempt.get("preserved_decision_fields", {})
+                    if isinstance(selected_attempt, dict)
+                    else {},
+                )
+            )
         output = {
             "candidate_id": raw.get("candidate_id"),
             "source_image_id": raw.get("source_image_id"),

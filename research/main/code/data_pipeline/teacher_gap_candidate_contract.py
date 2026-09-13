@@ -53,22 +53,24 @@ Return exactly one JSON object and no other text:
 
 COMPACT_BLIND_PROMPT = """Inspect the complete image and answer this closed-world audit question using no outside facts:
 {question}
+Recoverable first-attempt fields to preserve when present: {decision_lock}
 Return one compact JSON object, no markdown or analysis, with exactly these keys:
 {{"candidate_answer":"under 12 words","visible_evidence":["observation under 12 words","optional second observation under 12 words"],"image_is_necessary":true,"requires_unprovided_fact":false,"ambiguous":false,"uncertainty":"low|medium|high"}}
 Use 1-2 distinct visible_evidence items. Stop immediately after the closing brace."""
 
-COMPACT_AUDIT_PROMPT = """Audit whether the reference answer is uniquely entailed by the complete image and question, without outside facts.
+COMPACT_AUDIT_PROMPT = """Rewrite the first audit attempt as one schema-valid compact JSON object. Do not redo or reverse its recoverable high-level decision.
 Question: {question}
 Reference answer aliases: {answers}
-Return one compact JSON object, no markdown or analysis, with exactly these keys:
-{{"knowledge_dependency_label":"image_only|external_required|ambiguous","reason_codes":["short_code"],"reference_entailed":true,"unique_answer":true,"image_is_necessary":true,"full_image_reference_valid":true,"task_family":"R","reasoning_depth":2,"required_evidence":["E1","E2"],"minimal_reasoning_graph":{{"nodes":[{{"id":"e1","type":"evidence","claim":"E1"}},{{"id":"e2","type":"evidence","claim":"E2"}},{{"id":"h1","type":"intermediate","claim":"short intermediate"}},{{"id":"a","type":"answer","claim":"short answer"}}],"edges":[["e1","h1"],["e2","h1"],["h1","a"]]}},"explanation":"under 20 words"}}
-For a non-qualifying sample use JSON null for task_family, reasoning_depth 0, required_evidence [], and minimal_reasoning_graph {{"nodes":[],"edges":[]}}. Stop after the closing brace."""
+Locked decision fields: {decision_lock}
+Target shape for this record: {target_shape}
+Copy every locked value exactly. JSON null has no quotes. Include every key shown. For image_only only, replace short evidence/claim placeholders with image-grounded content while keeping a two-evidence DAG. Return no markdown or analysis and stop after the closing brace."""
 
 COMPACT_CONSTRUCT_PROMPT = """Using only the complete image and audited visual path, construct short guides and options for this question.
 Question: {question}
 Reference answer aliases: {answers}
 Required visual evidence: {required_evidence}
 Audited reasoning graph: {reasoning_graph}
+Recoverable first-attempt fields to preserve when present: {decision_lock}
 Return one compact JSON object, no markdown or analysis, with exactly these keys:
 {{"decision":"accept_candidate","guides":[{{"question":"under 16 words","answer":"under 12 words","supports_next":"existing node id"}}],"correct_answer_text":"one reference alias","distractors":["same-type option","same-type option","same-type option"],"generic_context_seed":"inspect-compare-verify","answer_leakage":false,"external_fact_injected":false,"rejection_reason":""}}
 Use 1-3 guides, never state the final answer in a guide, and stop after the closing brace. If safe construction is impossible, return the same keys with decision "reject", empty guides/options/answer/seed, both booleans false, and a short rejection_reason."""
@@ -127,6 +129,7 @@ def render_compact_stage_prompt(
     candidate: dict,
     stage: str,
     audit_proposal: dict | None = None,
+    primary_proposal: dict | None = None,
 ) -> str:
     """Render the recorded one-shot fallback prompt from the same allow-list."""
 
@@ -137,10 +140,18 @@ def render_compact_stage_prompt(
         raise ValueError(",".join(errors))
     question = _text(candidate["final_question_source"])
     answers = json.dumps(_answers(candidate), ensure_ascii=False)
+    decision_lock = fallback_decision_fields(stage, primary_proposal)
+    rendered_lock = json.dumps(decision_lock, ensure_ascii=False, sort_keys=True)
     if stage == "blind":
-        return COMPACT_BLIND_PROMPT.format(question=question)
+        return COMPACT_BLIND_PROMPT.format(question=question, decision_lock=rendered_lock)
     if stage == "audit":
-        return COMPACT_AUDIT_PROMPT.format(question=question, answers=answers)
+        target = audit_fallback_target(primary_proposal)
+        return COMPACT_AUDIT_PROMPT.format(
+            question=question,
+            answers=answers,
+            decision_lock=rendered_lock,
+            target_shape=json.dumps(target, ensure_ascii=False, separators=(",", ":")),
+        )
     if not isinstance(audit_proposal, dict):
         raise ValueError("construct stage requires audit_proposal")
     return COMPACT_CONSTRUCT_PROMPT.format(
@@ -148,7 +159,99 @@ def render_compact_stage_prompt(
         answers=answers,
         required_evidence=json.dumps(audit_proposal.get("required_evidence", []), ensure_ascii=False),
         reasoning_graph=json.dumps(audit_proposal.get("minimal_reasoning_graph", {}), ensure_ascii=False),
+        decision_lock=rendered_lock,
     )
+
+
+def fallback_decision_fields(stage: str, proposal: dict | None) -> dict:
+    """Return only valid high-level fields a compact retry must preserve.
+
+    Audit retries are conservative: an unparseable first attempt becomes
+    ``ambiguous`` rather than being promoted to an image-only candidate.
+    """
+
+    proposal = proposal if isinstance(proposal, dict) else {}
+    locked: dict[str, Any] = {}
+    if stage == "blind":
+        if _text(proposal.get("candidate_answer")):
+            locked["candidate_answer"] = _text(proposal["candidate_answer"])
+        for key in ("image_is_necessary", "requires_unprovided_fact", "ambiguous"):
+            if isinstance(proposal.get(key), bool):
+                locked[key] = proposal[key]
+        return locked
+    if stage == "audit":
+        label = proposal.get("knowledge_dependency_label")
+        if label not in KNOWLEDGE_LABELS:
+            label = "ambiguous"
+        locked["knowledge_dependency_label"] = label
+        for key in ("reference_entailed", "unique_answer", "image_is_necessary", "full_image_reference_valid"):
+            locked[key] = proposal[key] if isinstance(proposal.get(key), bool) else False
+        family = proposal.get("task_family")
+        locked["task_family"] = family if label == "image_only" and family in TASK_FAMILIES else None
+        return locked
+    if stage == "construct":
+        if proposal.get("decision") in {"accept_candidate", "reject"}:
+            locked["decision"] = proposal["decision"]
+        if _text(proposal.get("correct_answer_text")):
+            locked["correct_answer_text"] = _text(proposal["correct_answer_text"])
+        return locked
+    raise ValueError(f"unsupported stage: {stage}")
+
+
+def audit_fallback_target(primary_proposal: dict | None) -> dict:
+    """Build the record-specific audit shape shown to the compact retry."""
+
+    proposal = primary_proposal if isinstance(primary_proposal, dict) else {}
+    locked = fallback_decision_fields("audit", proposal)
+    reasons = proposal.get("reason_codes")
+    if not isinstance(reasons, list) or not reasons or any(not _text(value) for value in reasons):
+        reasons = ["unresolved_primary_schema"]
+    if locked["knowledge_dependency_label"] == "image_only":
+        explanation = _text(proposal.get("explanation")) or "Visible evidence supports the locked image-only decision."
+    else:
+        explanation = (
+            f"Primary audit marked this record {locked['knowledge_dependency_label']}; "
+            "it is not a closed-world image-only candidate."
+        )
+    target = {
+        "knowledge_dependency_label": locked["knowledge_dependency_label"],
+        "reason_codes": reasons,
+        "reference_entailed": locked["reference_entailed"],
+        "unique_answer": locked["unique_answer"],
+        "image_is_necessary": locked["image_is_necessary"],
+        "full_image_reference_valid": locked["full_image_reference_valid"],
+        "task_family": locked["task_family"],
+        "reasoning_depth": 0,
+        "required_evidence": [],
+        "minimal_reasoning_graph": {"nodes": [], "edges": []},
+        "explanation": explanation,
+    }
+    if locked["knowledge_dependency_label"] == "image_only":
+        target.update({
+            "task_family": locked["task_family"] or "R",
+            "reasoning_depth": 2,
+            "required_evidence": ["replace with first visible evidence", "replace with second visible evidence"],
+            "minimal_reasoning_graph": {
+                "nodes": [
+                    {"id": "e1", "type": "evidence", "claim": "replace with first visible evidence"},
+                    {"id": "e2", "type": "evidence", "claim": "replace with second visible evidence"},
+                    {"id": "h1", "type": "intermediate", "claim": "replace with intermediate relation"},
+                    {"id": "a", "type": "answer", "claim": "replace with answer claim"},
+                ],
+                "edges": [["e1", "h1"], ["e2", "h1"], ["h1", "a"]],
+            },
+        })
+    return target
+
+
+def decision_lock_errors(proposal: dict | None, locked: dict) -> list[str]:
+    """Reject a retry that changed any recoverable first-attempt decision."""
+
+    if not isinstance(proposal, dict):
+        return []
+    if any(proposal.get(key) != value for key, value in locked.items()):
+        return ["fallback_decision_mismatch"]
+    return []
 
 
 def validate_blind(proposal: dict) -> list[str]:

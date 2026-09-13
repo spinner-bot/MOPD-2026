@@ -20,6 +20,9 @@ from finalize_teacher_gap_manifests import (
     validate_human_review,
 )
 from teacher_gap_candidate_contract import (
+    audit_fallback_target,
+    decision_lock_errors,
+    fallback_decision_fields,
     is_construction_candidate,
     render_compact_stage_prompt,
     render_stage_prompt,
@@ -151,6 +154,39 @@ class TeacherGapCandidatePipelineTests(unittest.TestCase):
         repeated["visible_evidence"] = ["same observation", "Same   observation"]
         self.assertIn("duplicate_visible_evidence", validate_blind(repeated))
 
+    def test_audit_fallback_locks_external_decision_and_emits_json_null(self):
+        primary = audit()
+        primary.update({
+            "knowledge_dependency_label": "external_required",
+            "reference_entailed": False,
+            "unique_answer": False,
+            "task_family": "null",
+            "reasoning_depth": 0,
+            "required_evidence": [],
+            "minimal_reasoning_graph": {"nodes": [], "edges": []},
+        })
+        locked = fallback_decision_fields("audit", primary)
+        self.assertEqual(locked["knowledge_dependency_label"], "external_required")
+        self.assertIsNone(locked["task_family"])
+        target = audit_fallback_target(primary)
+        self.assertEqual(validate_audit(target), [])
+        prompt = render_compact_stage_prompt(candidate(), "audit", primary_proposal=primary)
+        self.assertIn('"knowledge_dependency_label":"external_required"', prompt)
+        self.assertIn('"task_family":null', prompt)
+        self.assertNotIn('"task_family":"null"', prompt)
+        flipped = dict(target)
+        flipped["knowledge_dependency_label"] = "image_only"
+        self.assertEqual(
+            decision_lock_errors(flipped, locked),
+            ["fallback_decision_mismatch"],
+        )
+
+    def test_unparseable_audit_fallback_is_conservatively_ambiguous(self):
+        target = audit_fallback_target(None)
+        self.assertEqual(target["knowledge_dependency_label"], "ambiguous")
+        self.assertIsNone(target["task_family"])
+        self.assertEqual(validate_audit(target), [])
+
     def test_valid_proposals_and_candidate_selection(self):
         self.assertEqual(validate_blind(blind()), [])
         self.assertEqual(validate_audit(audit()), [])
@@ -221,6 +257,24 @@ class TeacherGapCandidatePipelineTests(unittest.TestCase):
         self.assertEqual(rejected, [])
         self.assertNotIn("raw_model_output", parsed[0])
         self.assertEqual(summary["parse_rate"], 1.0)
+
+    def test_parse_rejects_fallback_that_changes_locked_decision(self):
+        proposal = blind()
+        proposal["ambiguous"] = True
+        raw = {
+            "candidate_id": "m3vqa-1",
+            "source_image_id": "image-1",
+            "stage": "blind",
+            "candidate": candidate(),
+            "eos_reached": True,
+            "truncated": False,
+            "raw_model_output": json.dumps(proposal),
+            "attempts": [{}, {"preserved_decision_fields": {"ambiguous": False}}],
+        }
+        parsed, rejected, summary = parse_records([raw], "blind")
+        self.assertEqual(parsed, [])
+        self.assertEqual(rejected[0]["rejection_reasons"], ["fallback_decision_mismatch"])
+        self.assertEqual(summary["rejection_reasons"], {"fallback_decision_mismatch": 1})
 
     def test_obvious_answer_leakage_fails_closed(self):
         leaked = construction()

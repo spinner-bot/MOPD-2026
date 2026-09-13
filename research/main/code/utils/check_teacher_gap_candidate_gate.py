@@ -15,7 +15,15 @@ sys.path.insert(0, str(ROOT / "data_pipeline"))
 
 from extract_json_response import extract_json_object
 from process_teacher_gap_candidate_stage import parse_records
-from teacher_gap_candidate_contract import STAGES, proposal_errors
+from teacher_gap_candidate_contract import (
+    STAGES,
+    decision_lock_errors,
+    fallback_decision_fields,
+    proposal_errors,
+    render_compact_stage_prompt,
+    render_stage_prompt,
+    stable_hash,
+)
 
 
 PROMPT_FIELDS = {
@@ -191,6 +199,13 @@ def summarize_and_validate(
                     computed_errors.append("invalid_json")
                 else:
                     computed_errors.extend(proposal_errors(stage, proposal, row.get("candidate", {})))
+                    computed_lock = {}
+                    if attempt_index == 1:
+                        computed_lock = fallback_decision_fields(
+                            stage,
+                            extract_json_object(str(attempts[0].get("raw_model_output", ""))),
+                        )
+                    computed_errors.extend(decision_lock_errors(proposal, computed_lock))
                 computed_errors = sorted(set(computed_errors))
                 if attempt.get("validation_errors") != computed_errors:
                     failures.append(f"{key}: attempt {attempt_index} validation_errors mismatch")
@@ -213,6 +228,31 @@ def summarize_and_validate(
                         failures.append(
                             f"{key}: attempt {attempt_index} max_new_tokens differs from generation_config"
                         )
+            try:
+                expected_primary_prompt = render_stage_prompt(
+                    row.get("candidate", {}), stage, row.get("audit_proposal")
+                )
+                if attempts[0].get("prompt_hash") != stable_hash(expected_primary_prompt):
+                    failures.append(f"{key}: primary prompt_hash differs from frozen renderer")
+                if attempts[0].get("preserved_decision_fields") != {}:
+                    failures.append(f"{key}: primary attempt must not preserve prior decisions")
+                if len(attempts) == 2:
+                    primary_proposal = extract_json_object(
+                        str(attempts[0].get("raw_model_output", ""))
+                    )
+                    expected_preserved = fallback_decision_fields(stage, primary_proposal)
+                    expected_fallback_prompt = render_compact_stage_prompt(
+                        row.get("candidate", {}),
+                        stage,
+                        row.get("audit_proposal"),
+                        primary_proposal,
+                    )
+                    if attempts[1].get("preserved_decision_fields") != expected_preserved:
+                        failures.append(f"{key}: fallback decision lock mismatch")
+                    if attempts[1].get("prompt_hash") != stable_hash(expected_fallback_prompt):
+                        failures.append(f"{key}: fallback prompt_hash differs from frozen renderer")
+            except (KeyError, TypeError, ValueError) as error:
+                failures.append(f"{key}: prompt reconstruction failed: {error}")
             chosen = attempts[-1]
             for field in (
                 "prompt_hash", "chat_template_hash", "input_tokens", "generated_tokens",
