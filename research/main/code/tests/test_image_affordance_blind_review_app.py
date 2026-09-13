@@ -77,6 +77,7 @@ class ImageAffordanceBlindReviewAppTests(unittest.TestCase):
             state = store.record(0)
             self.assertEqual(state["row"]["human_image_usable"], "")
             self.assertEqual(state["row"]["human_evidence_descriptions"], "")
+            self.assertEqual(state["row"]["human_verified"], "")
             record_id = state["row"]["calibration_record_id"]
             saved = store.save(record_id, {
                 "human_image_usable": False,

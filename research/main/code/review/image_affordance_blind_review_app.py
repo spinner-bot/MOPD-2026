@@ -170,6 +170,8 @@ class ReviewStore:
             self._validate_draft(self.rows)
         else:
             self.rows = copy.deepcopy(self.originals)
+            for row in self.rows:
+                row["human_verified"] = ""
         self._index_by_id = {
             row["calibration_record_id"]: index for index, row in enumerate(self.rows)
         }
