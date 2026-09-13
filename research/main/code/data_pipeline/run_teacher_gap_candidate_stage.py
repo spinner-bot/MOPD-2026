@@ -51,6 +51,7 @@ def main() -> None:
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--model", type=Path, required=True)
     parser.add_argument("--model-revision", required=True)
+    parser.add_argument("--code-commit", required=True)
     parser.add_argument("--image-root", type=Path, required=True)
     parser.add_argument("--rank", type=int, default=0)
     parser.add_argument("--world-size", type=int, default=1)
@@ -65,6 +66,11 @@ def main() -> None:
         raise SystemExit("max-new-tokens must be positive")
     if not args.model.is_dir():
         raise SystemExit(f"missing model directory: {args.model}")
+    current_commit = git_commit()
+    if current_commit != args.code_commit:
+        raise SystemExit(
+            f"code commit changed after submission: expected={args.code_commit} actual={current_commit}"
+        )
     image_root = args.image_root.resolve(strict=True)
 
     import torch
@@ -77,7 +83,6 @@ def main() -> None:
         args.model, torch_dtype="auto", local_files_only=True
     ).to("cuda").eval()
     eos_ids = collect_eos_ids(processor, model)
-    commit = git_commit()
     args.output.parent.mkdir(parents=True, exist_ok=True)
     selected = 0
 
@@ -98,7 +103,7 @@ def main() -> None:
                 "world_size": args.world_size,
                 "candidate": candidate,
                 "model_revision": args.model_revision,
-                "code_commit": commit,
+                "code_commit": args.code_commit,
                 "thinking_mode": args.thinking,
                 "generation_config": {
                     "do_sample": False,
