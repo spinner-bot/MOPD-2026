@@ -4,7 +4,7 @@
   "purpose": "Retry image-only affordance pilot with fail-closed candidate repair and explicit nested schema",
   "created_at_utc": "2026-09-13T19:07:43+00:00",
   "operator": "Codex (CINECA Leonardo)",
-  "status": "submitted_dependency",
+  "status": "cancelled_after_canary_semantic_stop",
   "slurm_job_id": "57599758",
   "git_commit": null,
   "input_records": 256,
@@ -28,5 +28,14 @@
     "reason": "serialize 4-GPU allocations"
   },
   "submitted_code_commit": "67f5af72bfa1aaf17723853793f2158cddb4d92f",
-  "run_worktree": "/leonardo/home/userexternal/rqian000/spinner-bot/MOPD-2026-codex-b1r3"
+  "run_worktree": "/leonardo/home/userexternal/rqian000/spinner-bot/MOPD-2026-codex-b1r3",
+  "started_at_local": "2026-09-13T21:12:00+02:00",
+  "ended_at_local": "2026-09-13T21:18:36+02:00",
+  "node": "lrdn1759",
+  "canary_parse_rate": 0.875,
+  "canary_machine_candidates": 7,
+  "full_started": true,
+  "full_elapsed_before_cancel": "00:00:24",
+  "full_records_written": 0,
+  "cancel_reason": "canary proposals systematically relabelled simple relations as two-step R"
 }
