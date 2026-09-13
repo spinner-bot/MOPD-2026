@@ -21,7 +21,12 @@ from exploratory_teacher_gap import (
 )
 from teacher_gap_inputs import COMMON_SHELL, render_teacher_gap_input, validate_generic_length
 from process_exploratory_teacher_gap import enrich_raw_record
-from run_exploratory_teacher_gap import allowed_token_function, frozen_schedule, main as run_teacher_gap
+from run_exploratory_teacher_gap import (
+    allowed_token_function,
+    choice_token_sequences,
+    frozen_schedule,
+    main as run_teacher_gap,
+)
 
 
 def manifest_sample(index: int) -> dict:
@@ -196,9 +201,11 @@ class ExploratoryTeacherGapTests(unittest.TestCase):
     def test_locked_manifest_requires_human_provenance_and_graph_contract(self):
         samples = [manifest_sample(index) for index in range(96)]
         samples[0]["human_reviewer"] = ""
+        samples[0]["human_reviewed_at"] = "2026-09-11T18:00:00"
         samples[1]["minimal_reasoning_graph"]["edges"] = [["missing", "a"]]
         errors = validate_locked_manifest(samples)
         self.assertTrue(any("human_reviewer" in error for error in errors))
+        self.assertTrue(any("requires timezone" in error for error in errors))
         self.assertTrue(any("unknown_endpoint" in error for error in errors))
 
     def test_common_shell_changes_only_privileged_block(self):
@@ -298,6 +305,21 @@ class ExploratoryTeacherGapTests(unittest.TestCase):
 
         self.assertEqual(allowed(0, FakeIds([1, 2, 3])), [10, 11, 12, 13])
         self.assertEqual(allowed(0, FakeIds([1, 2, 3, 10])), [99])
+
+    def test_choice_scores_require_equal_length_label_tokens(self):
+        class UnequalTokenizer:
+            def encode(self, value, add_special_tokens=False):
+                return [ord(value)] if value != "D" else [68, 69]
+
+        with self.assertRaisesRegex(ValueError, "equal lengths"):
+            choice_token_sequences(UnequalTokenizer())
+
+        rows = result_records(tq_gains=1, tqa_gains=1)
+        rows[0]["choice_token_ids"]["D"] = [4, 5]
+        self.assertTrue(any(
+            "choice_token_ids must have equal lengths" in error
+            for error in validate_result_records(rows)
+        ))
 
     def test_raw_result_enrichment_is_deterministic(self):
         row = result_records(tq_gains=1, tqa_gains=1)[0]

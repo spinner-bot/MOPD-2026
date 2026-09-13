@@ -56,6 +56,8 @@ def choice_token_sequences(tokenizer) -> dict[str, list[int]]:
     tuples = list(map(tuple, sequences.values()))
     if len(set(tuples)) != len(tuples):
         raise ValueError("choice label token sequences must be distinct")
+    if len({len(sequence) for sequence in tuples}) != 1:
+        raise ValueError("choice label token sequences must have equal lengths")
     for left in tuples:
         for right in tuples:
             if left != right and len(left) <= len(right) and right[: len(left)] == left:

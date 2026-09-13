@@ -11,6 +11,7 @@ import math
 import random
 import sys
 from collections import Counter, defaultdict
+from datetime import datetime
 from pathlib import Path
 
 
@@ -84,6 +85,13 @@ def validate_locked_manifest(samples: list[dict], expected_n: int = 96) -> list[
             errors.append(f"{row_id}: unique_answer must be true")
         if row.get("human_verified") is not True:
             errors.append(f"{row_id}: human_verified must be true")
+        reviewed_at = str(row.get("human_reviewed_at", "")).strip()
+        try:
+            parsed_time = datetime.fromisoformat(reviewed_at.replace("Z", "+00:00"))
+            if parsed_time.tzinfo is None or parsed_time.utcoffset() is None:
+                errors.append(f"{row_id}: human_reviewed_at requires timezone")
+        except ValueError:
+            errors.append(f"{row_id}: human_reviewed_at must be valid ISO 8601")
         if row.get("answer_leakage") not in {0, False}:
             errors.append(f"{row_id}: answer_leakage must be zero")
         if row.get("external_fact_injected") not in {0, False}:
@@ -282,6 +290,8 @@ def validate_result_records(
             or len({tuple(value) for value in choice_tokens.values()}) != len(CHOICES)
         ):
             errors.append(f"{key}: choice_token_ids must contain four distinct non-empty integer sequences")
+        elif len({len(value) for value in choice_tokens.values()}) != 1:
+            errors.append(f"{key}: choice_token_ids must have equal lengths")
 
     if records and parsed / len(records) < min_parse_rate:
         errors.append(f"parse rate {parsed / len(records):.6f} is below {min_parse_rate:.6f}")
