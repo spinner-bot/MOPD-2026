@@ -17,6 +17,8 @@ from finalize_teacher_gap_manifests import (
     arrange_options,
     duplicate_cluster_map,
     generic_context_for,
+    require_new_output_dir,
+    source_dataset_for_candidate,
     validate_human_review,
 )
 from teacher_gap_candidate_contract import (
@@ -37,6 +39,7 @@ from teacher_gap_candidate_contract import (
 def candidate() -> dict:
     return {
         "candidate_id": "m3vqa-1",
+        "source_dataset": "M3VQA",
         "source_image_id": "image-1",
         "image_original": "/work/image-1.jpg",
         "final_question_source": "Which shape is related to both marked objects?",
@@ -507,6 +510,21 @@ class TeacherGapCandidatePipelineTests(unittest.TestCase):
             path.write_text(json.dumps(payload), encoding="utf-8")
             mapping = duplicate_cluster_map(path)
         self.assertEqual(len(set(mapping.values())), 1)
+
+    def test_finalizer_requires_a_new_output_directory(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            require_new_output_dir(root / "new-run")
+            with self.assertRaisesRegex(ValueError, "new run ID"):
+                require_new_output_dir(root)
+
+    def test_finalizer_preserves_explicit_source_without_id_inference(self):
+        self.assertEqual(
+            source_dataset_for_candidate({"candidate_id": "m3vqa-1", "source_dataset": "NewSource"}),
+            "NewSource",
+        )
+        with self.assertRaisesRegex(ValueError, "candidate_missing_source_dataset"):
+            source_dataset_for_candidate({"candidate_id": "m3vqa-1"})
 
     def test_human_review_cannot_be_implicitly_filled(self):
         self.assertIn("human_decision_not_accept", validate_human_review({"candidate_id": "x"}))

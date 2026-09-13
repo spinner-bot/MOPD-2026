@@ -54,10 +54,30 @@ def load_jsonl(path: Path) -> list[dict]:
 
 
 def write_jsonl(path: Path, rows: list[dict]) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    with path.open("w", encoding="utf-8") as sink:
+    with path.open("x", encoding="utf-8") as sink:
         for row in rows:
             sink.write(json.dumps(row, ensure_ascii=False, sort_keys=True) + "\n")
+
+
+def write_json_exclusive(path: Path, value: dict) -> None:
+    with path.open("x", encoding="utf-8") as sink:
+        sink.write(json.dumps(value, ensure_ascii=False, indent=2, sort_keys=True) + "\n")
+
+
+def require_new_output_dir(path: Path) -> None:
+    """Reject reuse before reading reviews or loading the tokenizer."""
+
+    if path.exists():
+        raise ValueError(f"output directory already exists; use a new run ID: {path}")
+
+
+def source_dataset_for_candidate(candidate: dict) -> str:
+    """Return explicit provenance; never infer it from a candidate ID."""
+
+    value = str(candidate.get("source_dataset", "")).strip()
+    if not value:
+        raise ValueError("candidate_missing_source_dataset")
+    return value
 
 
 def duplicate_cluster_map(path: Path) -> dict[str, str]:
@@ -209,6 +229,11 @@ def main() -> None:
     parser.add_argument("--seed", type=int, default=20260911)
     args = parser.parse_args()
 
+    try:
+        require_new_output_dir(args.output_dir)
+    except ValueError as error:
+        raise SystemExit(str(error)) from error
+
     from transformers import AutoTokenizer
 
     constructed_rows = load_jsonl(args.constructed)
@@ -231,6 +256,10 @@ def main() -> None:
             candidate = construction.get("candidate", {})
             proposal = construction.get("proposal", {})
             reasons.extend(validate_constructed_row(construction))
+            try:
+                source_dataset_for_candidate(candidate)
+            except ValueError as error:
+                reasons.append(str(error))
             reasons.extend(
                 f"guide_graph:{error}"
                 for error in validate_guide_graph_alignment(
@@ -252,7 +281,7 @@ def main() -> None:
     ordered = list(unique_clusters.values())
     required = sum(PARTITION_SIZES.values())
     if len(ordered) < required:
-        args.output_dir.mkdir(parents=True, exist_ok=True)
+        args.output_dir.mkdir(parents=True, exist_ok=False)
         write_jsonl(args.output_dir / "finalization-rejects.jsonl", rejected)
         summary = {
             "human_reviews": len(reviews),
@@ -261,9 +290,7 @@ def main() -> None:
             "required": required,
             "status": "insufficient_human_verified_unique_clusters",
         }
-        (args.output_dir / "finalization-summary.json").write_text(
-            json.dumps(summary, ensure_ascii=False, indent=2, sort_keys=True) + "\n", encoding="utf-8"
-        )
+        write_json_exclusive(args.output_dir / "finalization-summary.json", summary)
         raise SystemExit(json.dumps(summary, ensure_ascii=False, sort_keys=True))
 
     tokenizer = AutoTokenizer.from_pretrained(args.tokenizer, local_files_only=True)
@@ -284,7 +311,7 @@ def main() -> None:
                 "sample_id": "tg-" + construction["candidate_id"],
                 "source_image_id": candidate["source_image_id"],
                 "source_cluster_id": item["cluster_id"],
-                "source_dataset": "M3VQA",
+                "source_dataset": source_dataset_for_candidate(candidate),
                 "source_record_id": construction["candidate_id"],
                 "image_original": str(image_path),
                 "image_checksum": sha256_file(image_path),
@@ -322,7 +349,7 @@ def main() -> None:
     isolation_errors = validate_partition_isolation(partitions)
     if isolation_errors:
         raise SystemExit("partition isolation failed: " + "; ".join(isolation_errors))
-    args.output_dir.mkdir(parents=True, exist_ok=True)
+    args.output_dir.mkdir(parents=True, exist_ok=False)
     hashes = {}
     for name, rows in partitions.items():
         path = args.output_dir / f"{name}.jsonl"
@@ -339,9 +366,7 @@ def main() -> None:
         "hashes": hashes,
         "status": "frozen",
     }
-    (args.output_dir / "finalization-summary.json").write_text(
-        json.dumps(summary, ensure_ascii=False, indent=2, sort_keys=True) + "\n", encoding="utf-8"
-    )
+    write_json_exclusive(args.output_dir / "finalization-summary.json", summary)
     print(json.dumps(summary, ensure_ascii=False, sort_keys=True))
 
 

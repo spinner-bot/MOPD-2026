@@ -116,6 +116,7 @@ JSON 布尔值必须写成不带引号的 `true`/`false`。`"yes"`、`"no"`、`1
 3. 运行 `finalize_teacher_gap_manifests.py`。其输出中的拒绝原因是修订依据；不得绕过或手工删除拒绝记录。
 4. 只有达到 8/32/96 三个互斥分区共 136 个不同近重复簇，并通过标签平衡、哈希和清单校验后，才可将状态记为 `frozen`。
 5. 任何机器输出或未经人工查看的记录均不得署名为人工审核。
+6. `--output-dir` 必须是尚不存在的新 run ID；终检拒绝复用空目录或覆盖任何既有输出。每条 construction candidate 还必须显式携带真实 `source_dataset`，冻结程序按记录原样传递，不从 ID 推断，也不统一改写为 M3VQA。
 
 ## 8. 关联文档
 
@@ -134,3 +135,4 @@ JSON 布尔值必须写成不带引号的 `true`/`false`。`"yes"`、`"no"`、`1
 | 2026-09-12 14:45 | claude code (local) | 创建：W2 teacher-gap pilot 后提前准备人工审核和交付指引。 |
 | 2026-09-13 22:29 | Codex (CINECA Leonardo) | 修订：统一 1017 冻结协议、审核包字段和终检程序，修复旧指南取值与机器契约不兼容。 |
 | 2026-09-14 04:40 | Codex (CINECA Leonardo) | 修订：同步 `586c1d4` 的 evidence/DAG 集合一致性和 R/PR 困难视觉节点字段；补齐历史修订表。 |
+| 2026-09-14 04:42 | Codex (CINECA Leonardo) | 修订：终检输出改为新 run ID 排他写入，并要求 construction candidate 显式携带真实图源，避免混合来源被静默写成 M3VQA。 |
