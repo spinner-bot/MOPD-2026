@@ -16,8 +16,8 @@
     "gpu_type": "A100",
     "time_limit": "48:00:00"
   },
-  "started_at": "2026-09-13T17:47:13+02:00",
-  "ended_at": "2026-09-13T17:52:23+02:00",
+  "started_at": "2026-09-13T17:42:28+02:00",
+  "ended_at": "2026-09-13T17:48:14+02:00",
   "compute_node": "lrdn1185",
   "submitted_code_commit": "2ab1ec36561a42199962ff5778f5903a1e5a4970"
 }
