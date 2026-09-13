@@ -24,7 +24,7 @@ from exploratory_teacher_gap import (
     validate_results_against_manifest,
 )
 from teacher_gap_inputs import COMMON_SHELL, render_teacher_gap_input, validate_generic_length
-from process_exploratory_teacher_gap import enrich_raw_record
+from process_exploratory_teacher_gap import enrich_raw_record, main as process_teacher_gap
 from run_exploratory_teacher_gap import (
     allowed_token_function,
     choice_token_sequences,
@@ -141,6 +141,86 @@ def result_records(tq_gains: int, tqa_gains: int, generic_gains: int = 1, logp_t
 
 
 class ExploratoryTeacherGapTests(unittest.TestCase):
+    def test_validate_cli_binds_complete_raw_to_manifest(self):
+        samples = [manifest_sample(index) for index in range(8)]
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            manifest = root / "canary.jsonl"
+            manifest.write_text(
+                "".join(json.dumps(row, sort_keys=True) + "\n" for row in samples),
+                encoding="utf-8",
+            )
+            manifest_hash = hashlib.sha256(manifest.read_bytes()).hexdigest()
+            schedule = frozen_schedule(samples, manifest_hash)
+            raw_rows = []
+            choice_tokens = {"A": [1], "B": [2], "C": [3], "D": [4]}
+            for schedule_index, (sample, condition) in enumerate(schedule):
+                answer = sample["final_answer"]
+                raw_rows.append({
+                    "sample_id": sample["sample_id"],
+                    "source_dataset": sample["source_dataset"],
+                    "source_record_id": sample["source_record_id"],
+                    "source_image_id": sample["source_image_id"],
+                    "source_cluster_id": sample["source_cluster_id"],
+                    "task_family": sample["task_family"],
+                    "reasoning_depth": sample["reasoning_depth"],
+                    "condition": condition,
+                    "schedule_index": schedule_index,
+                    "rank": schedule_index % 4,
+                    "world_size": 4,
+                    "manifest_hash": manifest_hash,
+                    "model_revision": "model-1",
+                    "processor_revision": "model-1",
+                    "code_commit": "commit-1",
+                    "prompt_hash": f"prompt-{sample['sample_id']}-{condition}",
+                    "shell_hash": "shell-1",
+                    "question_hash": hashlib.sha256(sample["final_question"].encode()).hexdigest(),
+                    "options_hash": hashlib.sha256(json.dumps(
+                        [sample[f"option_{choice}"] for choice in "ABCD"],
+                        ensure_ascii=False,
+                        separators=(",", ":"),
+                    ).encode()).hexdigest(),
+                    "correct_choice": answer,
+                    "choice_token_ids": choice_tokens,
+                    "choice_continuation_verified": True,
+                    "runtime_code_hashes": {"runner": "hash"},
+                    "chat_template": {"enable_thinking": False, "add_generation_prompt": True},
+                    "generation_config": {"do_sample": False, "constrained_to": list("ABCD")},
+                    "image_checksum": sample["image_checksum"],
+                    "choice_log_likelihoods": {
+                        choice: (0.0 if choice == answer else -1.0) for choice in "ABCD"
+                    },
+                    "generated_token_ids": choice_tokens[answer] + [99],
+                    "generated_tokens": 2,
+                    "eos_reached": True,
+                    "truncated": False,
+                    "raw_generation": answer,
+                    "model_dtype": "torch.bfloat16",
+                    "error": None,
+                })
+            raw = root / "raw.jsonl"
+            raw.write_text(
+                "".join(json.dumps(row, sort_keys=True) + "\n" for row in raw_rows),
+                encoding="utf-8",
+            )
+            parsed = root / "parsed.jsonl"
+            summary = root / "summary.json"
+            argv = [
+                "process_exploratory_teacher_gap.py",
+                "validate",
+                "--inputs", str(raw),
+                "--manifest", str(manifest),
+                "--expected-samples", "8",
+                "--parsed-output", str(parsed),
+                "--summary", str(summary),
+            ]
+            with patch("sys.argv", argv), patch("builtins.print"):
+                process_teacher_gap()
+            gate = json.loads(summary.read_text(encoding="utf-8"))
+            self.assertEqual(gate["status"], "passed")
+            self.assertEqual(gate["manifest_sha256"], manifest_hash)
+            self.assertEqual(len(parsed.read_text(encoding="utf-8").splitlines()), 32)
+
     def test_runner_refuses_a_commit_changed_after_submission(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
