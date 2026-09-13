@@ -65,10 +65,11 @@ def audit() -> dict:
         "minimal_reasoning_graph": {
             "nodes": [
                 {"id": "e1", "type": "evidence", "claim": "left connection"},
+                {"id": "e2", "type": "evidence", "claim": "right connection"},
                 {"id": "h1", "type": "intermediate", "claim": "shared endpoint"},
                 {"id": "a", "type": "answer", "claim": "the required shape"},
             ],
-            "edges": [["e1", "h1"], ["h1", "a"]],
+            "edges": [["e1", "h1"], ["e2", "h1"], ["h1", "a"]],
         },
         "explanation": "Two visible connections determine the shape.",
     }
@@ -136,11 +137,45 @@ class TeacherGapCandidatePipelineTests(unittest.TestCase):
         self.assertIn("1-4 distinct observations", prompt)
         self.assertIn("Do not repeat an observation", prompt)
 
+        too_many = blind()
+        too_many["visible_evidence"] = ["one", "two", "three", "four", "five"]
+        self.assertIn("invalid_visible_evidence", validate_blind(too_many))
+
+        repeated = blind()
+        repeated["visible_evidence"] = ["same observation", "Same   observation"]
+        self.assertIn("duplicate_visible_evidence", validate_blind(repeated))
+
     def test_valid_proposals_and_candidate_selection(self):
         self.assertEqual(validate_blind(blind()), [])
         self.assertEqual(validate_audit(audit()), [])
         self.assertEqual(validate_construct(construction(), ["triangle"]), [])
         self.assertTrue(is_construction_candidate(blind(), audit()))
+
+    def test_audit_rejects_nonminimal_or_inconsistent_reasoning_graphs(self):
+        one_evidence = audit()
+        one_evidence["minimal_reasoning_graph"] = {
+            "nodes": [
+                {"id": "e1", "type": "evidence", "claim": "one observation"},
+                {"id": "h1", "type": "intermediate", "claim": "derived relation"},
+                {"id": "a", "type": "answer", "claim": "answer"},
+            ],
+            "edges": [["e1", "h1"], ["h1", "a"]],
+        }
+        self.assertTrue(any("requires_2_evidence" in error for error in validate_audit(one_evidence)))
+
+        wrong_depth = audit()
+        wrong_depth["reasoning_depth"] = 3
+        self.assertTrue(any("depth_mismatch" in error for error in validate_audit(wrong_depth)))
+
+        disconnected = audit()
+        disconnected["minimal_reasoning_graph"]["nodes"].append(
+            {"id": "e3", "type": "evidence", "claim": "unused observation"}
+        )
+        self.assertTrue(any("outside_answer_path" in error for error in validate_audit(disconnected)))
+
+        cyclic = audit()
+        cyclic["minimal_reasoning_graph"]["edges"].append(["h1", "e1"])
+        self.assertTrue(validate_audit(cyclic))
 
     def test_external_audit_is_not_selected(self):
         external = audit()
@@ -148,6 +183,8 @@ class TeacherGapCandidatePipelineTests(unittest.TestCase):
             "knowledge_dependency_label": "external_required",
             "task_family": None,
             "reasoning_depth": 0,
+            "required_evidence": [],
+            "minimal_reasoning_graph": {"nodes": [], "edges": []},
         })
         self.assertEqual(validate_audit(external), [])
         selected, rejected, summary = select_construction(
@@ -204,6 +241,47 @@ class TeacherGapCandidatePipelineTests(unittest.TestCase):
 
     def test_human_review_cannot_be_implicitly_filled(self):
         self.assertIn("human_decision_not_accept", validate_human_review({"candidate_id": "x"}))
+
+    def test_human_review_uses_same_depth_and_graph_contract(self):
+        review = {
+            "candidate_id": "m3vqa-1",
+            "human_decision": "accept",
+            "human_knowledge_label": "image_only",
+            "human_task_family": "R",
+            "human_unique_answer": True,
+            "human_full_image_valid": True,
+            "human_guides_ok": True,
+            "human_options_ok": True,
+            "human_answer_leakage": False,
+            "human_external_fact_injected": False,
+            "human_reviewer": "reviewer-1",
+            "human_reviewed_at": "2026-09-13T22:29:00+08:00",
+            "human_required_evidence": ["left connection", "right connection"],
+            "human_reasoning_depth": 2,
+            "human_reasoning_graph": audit()["minimal_reasoning_graph"],
+        }
+        self.assertEqual(validate_human_review(review), [])
+        review["human_reasoning_depth"] = 3
+        self.assertTrue(any("depth_mismatch" in error for error in validate_human_review(review)))
+
+    def test_human_review_time_requires_iso_timezone(self):
+        review = {
+            "human_decision": "accept",
+            "human_knowledge_label": "image_only",
+            "human_task_family": "R",
+            "human_unique_answer": True,
+            "human_full_image_valid": True,
+            "human_guides_ok": True,
+            "human_options_ok": True,
+            "human_answer_leakage": False,
+            "human_external_fact_injected": False,
+            "human_reviewer": "reviewer-1",
+            "human_reviewed_at": "2026-09-13 22:29",
+            "human_required_evidence": ["left connection", "right connection"],
+            "human_reasoning_depth": 2,
+            "human_reasoning_graph": audit()["minimal_reasoning_graph"],
+        }
+        self.assertIn("human_reviewed_at_requires_timezone", validate_human_review(review))
 
     def test_option_arrangement_places_one_correct_answer(self):
         arranged = arrange_options(construction(), "C", "m3vqa-1")

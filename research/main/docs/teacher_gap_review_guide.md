@@ -1,118 +1,125 @@
-# Teacher-Gap 人工审核指引
+# Teacher-Gap 人工审核与交付指引
 
-**创建时间**：2026-09-12 14:45（UTC+8）  
-**作者**：claude code (local)  
-**触发原因**：W2 teacher-gap pilot 完成后需进行人工审核，提前准备指引文档
+**创建时间**：2026-09-12 14:45（UTC+8）
 
----
+**创建作者**：claude code (local)
 
-## 1. 审核目标
+**创建原因**：W2 teacher-gap pilot 完成后需进行人工审核，提前准备指引文档
 
-验证 W2 teacher-gap pilot 产出的候选集质量，确保：
-1. 候选问题仅依赖图像和题面可答（无需外部知识）
-2. 问题指代对完整图像成立（非 crop 视角）
-3. 引导问题序列（guides）形成有效推理路径
-4. 无答案泄漏（guides 不透露 final answer）
+**修改时间**：2026-09-13 22:29（UTC+8）
+
+**修改作者**：Codex (CINECA Leonardo)
+
+**修改原因**：统一 1017 冻结协议、审核包字段和终检程序，修复旧指南取值与机器契约不兼容的问题
 
 ---
 
-## 2. 审核材料
+## 1. 审核目的与边界
 
-### 2.1 C2 aligned 包（1024 条）
-位置：`outputs/runs/20260911T-c2-m3vqa-review-packet/outputs/`
+人工审核是从模型提议候选到冻结实验样本之间的强制质量门。审核者必须同时查看完整图像、最终问题、参考答案、机器生成的 guides 与选项，独立判断：
 
-| 文件 | 说明 |
-|---|---|
-| `review-aligned-1024.csv` | 1024 条 aligned 候选，`human_*` 字段待填 |
-| `review-tier-128.csv` | C1 短名单 128 条 |
-| `review-tier-512.csv` | 512 条扩展层 |
-| `review-tier-1024.csv` | 1024 条扩展层 |
+1. 问题和全部必要中间命题能否仅由图像与题面推出；
+2. 问题指代是否对完整图像成立，答案是否唯一；
+3. 样本是否确属 R 或 PR，而非单点识别式 P；
+4. 至少两个不同视觉证据是否共同进入同一条必要推理链；
+5. guides 和选项是否正确、有效，且不泄漏最终答案或注入外部事实。
 
-### 2.2 W2 筛选产物（待生成）
-W2 screen 作业完成后，产物位于：
-- `outputs/runs/20260911T*-teacher-gap-screen-*/outputs/`
-- `outputs/runs/20260912T*-teacher-gap-screen-*-r2/outputs/`
+机器的 blind、audit 和 construct 输出只是待审核提议，不能自动写成 `human_verified=true`。官方 M3VQA evidence 文本只允许用于实验结束后的来源分析，禁止进入 blind solver、entailment auditor、teacher 输入或人工判断的闭世界证据链。
 
-分类标签：
-- `image_only`：仅依赖图像可答（高优先级）
-- `external_required`：需要外部知识（低优先级，可能需要重构）
-- `ambiguous`：歧义或不确定（中优先级）
+## 2. 审核材料与权威格式
 
----
+模型构造完成后，先用 `build_teacher_gap_human_review_queue.py` 将通过结构校验的 construct 记录、blind/audit 提议、guides 和选项合并成完整审核队列。`review-*.csv` 便于浏览和分工；`review-*.jsonl` 是提交给 `finalize_teacher_gap_manifests.py` 的权威输入。旧 C2 审核包仅有原问题且字段不完整，不能直接用于冻结；必须从实际 W2B 构造产物生成新队列。
 
-## 3. 审核优先级
+CSV 中的数组、对象和布尔值容易被电子表格转成字符串。若在 CSV 中工作，交付前必须转换成下述 JSONL 类型，并通过终检程序。禁止手工填写 `human_verified`；该字段只在终检通过后由程序写入冻结清单。
 
-### 第一优先：W2 screen 产物中的 `image_only` 候选
-这些已通过机器筛选，确认不依赖外部知识，但仍需验证：
-- 问题对完整图像成立
-- 无歧义
-- guides 有效且无泄漏
+## 3. 单条记录的精确字段契约
 
-### 第二优先：C2 aligned 包的 borderline 样本
-机器质检中被评为 borderline 的样本需要人工终审。
-
-### 第三优先：`ambiguous` 候选
-需要人工判断是否可 salvage。
-
----
-
-## 4. 审核流程
-
-### 4.1 打开 CSV 文件
-使用 Excel、LibreOffice 或任何 CSV 编辑器打开 `review-*.csv`。
-
-### 4.2 逐条审核
-对每条记录，填写以下字段：
-
-| 字段 | 说明 | 取值 |
+| 字段 | JSON 类型 | 合格值或要求 |
 |---|---|---|
-| `human_knowledge_label` | 是否需要外部知识 | `none` / `some` / `heavy` |
-| `human_task_family` | 任务类型 | `P` / `R` / `PR` |
-| `human_unique_answer` | 答案是否唯一 | `yes` / `no` / `ambiguous` |
-| `human_full_image_valid` | 对完整图像是否成立 | `yes` / `no` / `partial` |
-| `human_required_evidence` | 必需的证据描述 | 自由文本 |
-| `human_reasoning_graph` | 推理图（E→H→A） | 自由文本或 JSON |
-| `human_guides_ok` | guides 是否有效 | `yes` / `no` / `partial` |
-| `human_options_ok` | 选项是否合理 | `yes` / `no` / `partial` |
-| `human_decision` | 最终决定 | `accept` / `borderline` / `reject` |
-| `human_notes` | 备注 | 自由文本 |
+| `human_knowledge_label` | string | 合格样本必须为 `image_only`；`external_required`、`ambiguous` 不能冻结 |
+| `human_task_family` | string | 合格样本必须为 `R` 或 `PR` |
+| `human_unique_answer` | boolean | 合格样本必须为 `true` |
+| `human_full_image_valid` | boolean | 合格样本必须为 `true` |
+| `human_required_evidence` | array[string] | 至少两个非空、互不替代的视觉证据 |
+| `human_reasoning_depth` | integer | 至少为 2，且等于图中从 evidence 到 answer 的最长边数 |
+| `human_reasoning_graph` | object | 满足第 4 节的最小有向无环图 |
+| `human_guides_ok` | boolean | 合格样本必须为 `true` |
+| `human_options_ok` | boolean | 合格样本必须为 `true` |
+| `human_answer_leakage` | boolean | 合格样本必须为 `false` |
+| `human_external_fact_injected` | boolean | 合格样本必须为 `false` |
+| `human_decision` | string | `accept` / `borderline` / `reject`；只有 `accept` 可冻结 |
+| `human_reviewer` | string | 审核者的稳定标识，不得为空 |
+| `human_reviewed_at` | string | 带时区的 ISO 8601 时间，例如 `2026-09-13T22:29:00+08:00` |
+| `human_notes` | string | 可为空；记录拒绝原因、争议点或修订说明 |
 
-### 4.3 使用审核表单
-详细检查清单见 `docs/human_audit_form.md`。
+JSON 布尔值必须写成不带引号的 `true`/`false`。`"yes"`、`"no"`、`1`、`0` 均不符合审核输入契约。
 
----
+## 4. 最小推理图契约
 
-## 5. 常见问题
+边的方向固定为 `[依赖节点, 被推出节点]`。每个合格图必须：
 
-### Q1: 如何判断"需要外部知识"？
-如果回答该问题需要查询 Wikipedia、百科、地理/历史事实、或题面未提供的常识，则标记为 `external_required`。
+- 恰有一个 `answer` 节点，至少一个 `intermediate` 节点，至少两个 `evidence` 节点；
+- 每个节点含唯一非空 `id`、合法 `type` 和非空 `claim`；
+- evidence 是根节点，answer 是汇点，非 evidence 节点有上游依赖；
+- 无自环、重边、未知端点和有向环；
+- 所有节点都位于通向唯一 answer 的祖先子图中，不得加入无用证据；
+- answer 的祖先中至少有两个 evidence；
+- `human_reasoning_depth` 等于 evidence 到 answer 的最长路径边数。
 
-### Q2: 如何判断"对完整图像成立"？
-检查问题的指代是否依赖 crop 视角。例如：
-- ❌ "bottom center 的物体是什么？"（依赖 crop 视角）
-- ✅ "图中飞行员佩戴的耳机是什么颜色？"（对完整图像成立）
+合格示例：
 
-### Q3: 如何判断"答案泄漏"？
-检查 guides 是否直接或间接透露 final answer。例如：
-- Final: "耳机是什么颜色？"
-- ❌ Guide: "它不是蓝色的。"（否定形式泄漏）
-- ✅ Guide: "飞行员佩戴了什么头部设备？"（无泄漏）
+```json
+{
+  "human_required_evidence": ["左侧标记连接到上顶点", "右侧标记连接到下顶点"],
+  "human_reasoning_depth": 2,
+  "human_reasoning_graph": {
+    "nodes": [
+      {"id": "e1", "type": "evidence", "claim": "左侧标记连接到上顶点"},
+      {"id": "e2", "type": "evidence", "claim": "右侧标记连接到下顶点"},
+      {"id": "h1", "type": "intermediate", "claim": "两个连接属于同一形状"},
+      {"id": "a", "type": "answer", "claim": "正确选项是三角形"}
+    ],
+    "edges": [["e1", "h1"], ["e2", "h1"], ["h1", "a"]]
+  }
+}
+```
 
----
+`required_evidence` 与图中 evidence claim 应表达同一组必要观察。若去掉任一证据答案仍可唯一推出，该样本不满足当前 R/PR 门槛，除非重新构造问题使该证据成为必要条件。
 
-## 6. 审核完成后
+## 5. 判定顺序
 
-1. 保存 CSV 文件
-2. 提交到 git：`git add research/main/data/review_templates/*.csv && git commit`
-3. 推送：`git push`
-4. 通知 admin 和 Codex
+1. **闭世界检查**：遮蔽参考答案和官方 evidence 文本，仅凭完整图像与题面判断可答性。需要百科、人物身份、历史地理事实或题面未给出的规则时，标为 `external_required`。
+2. **完整图像检查**：排除依赖原 teacher crop 方位的描述。例如原 crop 中的“图像底部”在完整图中不成立时，`human_full_image_valid=false`。
+3. **唯一答案检查**：四个选项中必须恰有一个由图像证据支持；合理多解或关键区域不可辨时拒绝。
+4. **R/PR 与图检查**：先列必要证据，再画最小 DAG，最后由最长路径填写 depth。单个局部属性读取归 P，不纳入当前 teacher-gap 冻结集。
+5. **guides 检查**：每问每答必须可由图像推出，并支持下一中间节点；删除某一步若不影响推理，应精简。
+6. **泄漏与注入检查**：guide 不得直接给出最终选项、同义改写答案、逐项排除到唯一答案，也不得引入图中没有的事实。
+7. **选项检查**：正确答案文本与参考答案一致，四个选项互异；干扰项应同类型且可被图像证据排除。
 
----
+任一冻结必需条件失败时填写实际观察结果，并将 `human_decision` 设为 `borderline` 或 `reject`。不要为了通过终检而把失败字段改成合格值。
 
-## 7. 引用
+每个 guide 的 `supports_next` 必须引用人工确认图中存在的 `intermediate` 或 `answer` 节点，且整组 guides 至少支持一个 intermediate 节点。若人工修订了节点 ID，必须同步修订 guide 引用。
 
-- 1017 号报告：teacher-gap 冻结协议
-- 1019 号报告：C2 M3VQA 富化与人工审核包
-- 1020 号报告：W2 滚动作业链清点
-- `docs/human_audit_form.md`：详细审核表单
-- `code/data_pipeline/build_m3vqa_teacher_gap_review_packet.py`：审核包生成脚本
+## 6. 完整 JSONL 合格示例
+
+```json
+{"candidate_id":"m3vqa-example","human_knowledge_label":"image_only","human_task_family":"R","human_unique_answer":true,"human_full_image_valid":true,"human_required_evidence":["左侧连接关系","右侧连接关系"],"human_reasoning_depth":2,"human_reasoning_graph":{"nodes":[{"id":"e1","type":"evidence","claim":"左侧连接关系"},{"id":"e2","type":"evidence","claim":"右侧连接关系"},{"id":"h1","type":"intermediate","claim":"两条关系指向同一图形"},{"id":"a","type":"answer","claim":"选择三角形"}],"edges":[["e1","h1"],["e2","h1"],["h1","a"]]},"human_guides_ok":true,"human_options_ok":true,"human_answer_leakage":false,"human_external_fact_injected":false,"human_decision":"accept","human_reviewer":"reviewer-01","human_reviewed_at":"2026-09-13T22:29:00+08:00","human_notes":""}
+```
+
+## 7. 交付与验收
+
+1. 保留原模型输出和初始空模板；完成稿使用新的文件名，禁止覆盖运行档案中的既有证据。
+2. 检查 `candidate_id` 唯一，JSONL 每行均能独立解析。
+3. 运行 `finalize_teacher_gap_manifests.py`。其输出中的拒绝原因是修订依据；不得绕过或手工删除拒绝记录。
+4. 只有达到 8/32/96 三个互斥分区共 136 个不同近重复簇，并通过标签平衡、哈希和清单校验后，才可将状态记为 `frozen`。
+5. 任何机器输出或未经人工查看的记录均不得署名为人工审核。
+
+## 8. 关联文档
+
+- 1017：teacher-gap 冻结协议
+- 1019：C2 M3VQA 富化与人工审核包
+- 1020：W2 滚动作业链清点
+- `code/data_pipeline/build_m3vqa_teacher_gap_review_packet.py`：空白审核模板生成器
+- `code/data_pipeline/build_teacher_gap_human_review_queue.py`：构造产物与人工字段的完整审核队列生成器
+- `code/data_pipeline/finalize_teacher_gap_manifests.py`：人工审核终检与冻结程序
+- `code/data_pipeline/reasoning_graph_contract.py`：推理图权威结构校验器

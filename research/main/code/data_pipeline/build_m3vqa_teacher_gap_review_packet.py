@@ -52,7 +52,7 @@ from audit_m3vqa_pilot_candidates import (  # noqa: E402
     url_domain,
 )
 
-RULES_VERSION = "c2-v1"
+RULES_VERSION = "c2-v2"
 DEFAULT_SEED = 20260911
 DEFAULT_TIERS = "128,512,1024"
 
@@ -62,10 +62,15 @@ HUMAN_FIELDS = (
     "human_unique_answer",
     "human_full_image_valid",
     "human_required_evidence",
+    "human_reasoning_depth",
     "human_reasoning_graph",
     "human_guides_ok",
     "human_options_ok",
+    "human_answer_leakage",
+    "human_external_fact_injected",
     "human_decision",
+    "human_reviewer",
+    "human_reviewed_at",
     "human_notes",
 )
 POSTHOC_WARNING = (
