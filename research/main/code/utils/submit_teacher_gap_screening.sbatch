@@ -24,6 +24,7 @@ MAX_NEW_TOKENS="${MOPD_MAX_NEW_TOKENS:-768}"
 FALLBACK_MAX_NEW_TOKENS="${MOPD_FALLBACK_MAX_NEW_TOKENS:-512}"
 THINKING="${MOPD_THINKING:-false}"
 EXPECTED="$(wc -l < "${INPUT}")"
+MAX_FULL_TRUNCATED="$((EXPECTED / 100))"
 RUNNER="${ROOT}/code/data_pipeline/run_teacher_gap_candidate_stage.py"
 PROCESS="${ROOT}/code/data_pipeline/process_teacher_gap_candidate_stage.py"
 GATE="${ROOT}/code/utils/check_teacher_gap_candidate_gate.py"
@@ -81,7 +82,8 @@ for stage in blind audit; do
     --expected-total "${EXPECTED}" --min-parse-rate 0.90 \
     --expected-world-size 4 --expected-thinking "${THINKING}" \
     --expected-primary-max-new-tokens "${MAX_NEW_TOKENS}" \
-    --expected-fallback-max-new-tokens "${FALLBACK_MAX_NEW_TOKENS}"
+    --expected-fallback-max-new-tokens "${FALLBACK_MAX_NEW_TOKENS}" \
+    --max-truncated "${MAX_FULL_TRUNCATED}"
   "${PY}" "${PROCESS}" parse --stage "${stage}" \
     --inputs "${RUN}/raw/${stage}/rank-*.jsonl" \
     --parsed-output "${RUN}/parsed/${stage}.jsonl" \

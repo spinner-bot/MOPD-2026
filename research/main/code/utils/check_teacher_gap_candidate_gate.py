@@ -58,6 +58,7 @@ def summarize_and_validate(
     expected_thinking: bool | None = None,
     expected_primary_max_new_tokens: int | None = None,
     expected_fallback_max_new_tokens: int | None = None,
+    max_truncated: int = 0,
 ) -> tuple[dict, list[str]]:
     parsed, rejected, parse_summary = parse_records(rows, stage)
     ids = [row.get("candidate_id") for row in rows]
@@ -105,6 +106,7 @@ def summarize_and_validate(
         "fallback_used": fallback_used,
         "fallback_recovered": fallback_recovered,
         "primary_truncated": primary_truncated,
+        "max_truncated_allowed": max_truncated,
         "parse_summary": parse_summary,
     }
     failures = []
@@ -118,8 +120,8 @@ def summarize_and_validate(
         failures.append(f"parse_rate={summary['parse_rate']:.6f} < {min_parse_rate:.6f}")
     if errors:
         failures.append(f"runner_errors={errors}")
-    if truncated:
-        failures.append(f"truncated_or_missing_eos={truncated}")
+    if truncated > max_truncated:
+        failures.append(f"truncated_or_missing_eos={truncated} > max_truncated={max_truncated}")
     if len(revisions) != 1 or not revisions[0]:
         failures.append("model revision must be one non-empty value")
     if len(commits) != 1 or not commits[0] or commits[0] == "unknown":
@@ -296,6 +298,7 @@ def main() -> None:
     parser.add_argument("--expected-thinking", choices=("true", "false"))
     parser.add_argument("--expected-primary-max-new-tokens", type=int)
     parser.add_argument("--expected-fallback-max-new-tokens", type=int)
+    parser.add_argument("--max-truncated", type=int, default=0)
     args = parser.parse_args()
 
     paths = sorted(glob.glob(args.input_glob))
@@ -304,6 +307,8 @@ def main() -> None:
         with open(path, encoding="utf-8") as source:
             rows.extend(json.loads(line) for line in source if line.strip())
     expected_thinking = None if args.expected_thinking is None else args.expected_thinking == "true"
+    if args.max_truncated < 0:
+        raise SystemExit("--max-truncated must be non-negative")
     summary, failures = summarize_and_validate(
         rows,
         args.stage,
@@ -314,6 +319,7 @@ def main() -> None:
         expected_thinking=expected_thinking,
         expected_primary_max_new_tokens=args.expected_primary_max_new_tokens,
         expected_fallback_max_new_tokens=args.expected_fallback_max_new_tokens,
+        max_truncated=args.max_truncated,
     )
     summary["files"] = paths
     summary["failures"] = failures

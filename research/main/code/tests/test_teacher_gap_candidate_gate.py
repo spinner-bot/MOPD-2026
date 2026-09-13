@@ -171,6 +171,45 @@ class CandidateGateTests(unittest.TestCase):
         self.assertIn("generation_config", joined)
         self.assertIn("input sharding", joined)
 
+    def test_full_gate_can_tolerate_one_explicitly_rejected_truncation(self):
+        row = raw_blind()
+        attempt = row["attempts"][0]
+        attempt.update({
+            "eos_reached": False,
+            "truncated": True,
+            "generated_tokens": 768,
+            "validation_errors": ["truncated_output"],
+            "schema_valid": False,
+        })
+        fallback = dict(attempt)
+        fallback.update({
+            "attempt_kind": "compact_fallback",
+            "max_new_tokens": 512,
+            "prompt_hash": stable_hash(render_compact_stage_prompt(row["candidate"], "blind")),
+            "generated_tokens": 512,
+        })
+        row.update({
+            "attempts": [attempt, fallback],
+            "attempt_count": 2,
+            "chosen_attempt": 1,
+            "fallback_used": True,
+            "fallback_recovered": False,
+            "primary_failure_reasons": ["truncated_output"],
+        })
+        for field in (
+            "prompt_hash", "chat_template_hash", "input_tokens", "generated_tokens",
+            "eos_reached", "truncated", "raw_model_output",
+        ):
+            row[field] = fallback[field]
+        _, strict_failures = summarize_and_validate([row], "blind", expected_total=1)
+        self.assertTrue(any("max_truncated=0" in failure for failure in strict_failures))
+        summary, bounded_failures = summarize_and_validate(
+            [row], "blind", expected_total=1, min_parse_rate=0.0, max_truncated=1
+        )
+        self.assertEqual(bounded_failures, [])
+        self.assertEqual(summary["valid_parsed"], 0)
+        self.assertEqual(summary["truncated_or_missing_eos"], 1)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -153,6 +153,7 @@ class TeacherGapCandidatePipelineTests(unittest.TestCase):
         repeated = blind()
         repeated["visible_evidence"] = ["same observation", "Same   observation"]
         self.assertIn("duplicate_visible_evidence", validate_blind(repeated))
+        self.assertEqual(fallback_decision_fields("blind", blind()), {})
 
     def test_audit_fallback_locks_external_decision_and_emits_json_null(self):
         primary = audit()

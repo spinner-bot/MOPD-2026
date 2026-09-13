@@ -53,7 +53,6 @@ Return exactly one JSON object and no other text:
 
 COMPACT_BLIND_PROMPT = """Inspect the complete image and answer this closed-world audit question using no outside facts:
 {question}
-Recoverable first-attempt fields to preserve when present: {decision_lock}
 Return one compact JSON object, no markdown or analysis, with exactly these keys:
 {{"candidate_answer":"under 12 words","visible_evidence":["observation under 12 words","optional second observation under 12 words"],"image_is_necessary":true,"requires_unprovided_fact":false,"ambiguous":false,"uncertainty":"low|medium|high"}}
 Use 1-2 distinct visible_evidence items. Stop immediately after the closing brace."""
@@ -173,11 +172,9 @@ def fallback_decision_fields(stage: str, proposal: dict | None) -> dict:
     proposal = proposal if isinstance(proposal, dict) else {}
     locked: dict[str, Any] = {}
     if stage == "blind":
-        if _text(proposal.get("candidate_answer")):
-            locked["candidate_answer"] = _text(proposal["candidate_answer"])
-        for key in ("image_is_necessary", "requires_unprovided_fact", "ambiguous"):
-            if isinstance(proposal.get(key), bool):
-                locked[key] = proposal[key]
+        # Blind answers are open-ended and may themselves contain the external
+        # premise that caused the schema failure.  Reusing them made one r5b
+        # retry loop.  The independent audit lock is the semantic safeguard.
         return locked
     if stage == "audit":
         label = proposal.get("knowledge_dependency_label")
