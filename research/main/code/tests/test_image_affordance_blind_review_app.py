@@ -89,6 +89,19 @@ class ImageAffordanceBlindReviewAppTests(unittest.TestCase):
             self.assertIs(draft["human_image_usable"], False)
             self.assertIsInstance(draft["human_evidence_descriptions"], list)
             self.assertEqual(store.input_path.read_bytes(), frozen_before)
+            reloaded = ReviewStore(
+                input_path=store.input_path,
+                image_root=store.image_root,
+                draft_path=store.draft_path,
+                export_prefix=store.export_prefix,
+                expected_input_sha256=store.input_sha256,
+                expected_records=2,
+            )
+            self.assertIs(reloaded.record(0)["row"]["human_image_usable"], False)
+            self.assertEqual(
+                reloaded.record(0)["row"]["human_evidence_descriptions"],
+                ["first visible fact", "second visible fact"],
+            )
 
     def test_unset_false_and_empty_array_are_distinct(self):
         self.assertEqual(validate_edit_updates({"human_image_usable": ""})["human_image_usable"], "")
