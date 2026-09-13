@@ -21,6 +21,7 @@ sys.path.insert(0, str(CODE_ROOT / "evaluation"))
 
 from exploratory_teacher_gap import validate_locked_manifest, validate_partition_isolation
 from teacher_gap_inputs import privileged_context, validate_generic_length
+from reasoning_graph_contract import validate_reasoning_graph
 from teacher_gap_candidate_contract import validate_construct
 
 
@@ -121,9 +122,15 @@ def validate_human_review(review: dict) -> list[str]:
     evidence = review.get("human_required_evidence")
     if not isinstance(evidence, list) or len(evidence) < 2 or any(not str(value).strip() for value in evidence):
         errors.append("invalid_human_required_evidence")
-    graph = review.get("human_reasoning_graph")
-    if not isinstance(graph, dict) or not isinstance(graph.get("nodes"), list) or not graph["nodes"]:
-        errors.append("invalid_human_reasoning_graph")
+    depth = review.get("human_reasoning_depth")
+    if not isinstance(depth, int) or isinstance(depth, bool) or depth < 2:
+        errors.append("invalid_human_reasoning_depth")
+    graph_errors, _ = validate_reasoning_graph(
+        review.get("human_reasoning_graph"),
+        declared_depth=depth,
+        require_two_evidence=True,
+    )
+    errors.extend(f"invalid_human_reasoning_graph:{error}" for error in graph_errors)
     return errors
 
 
@@ -238,6 +245,7 @@ def main() -> None:
                 "human_reviewed_at": review["human_reviewed_at"],
                 "answer_leakage": 0,
                 "required_evidence": review["human_required_evidence"],
+                "reasoning_depth": review["human_reasoning_depth"],
                 "minimal_reasoning_graph": review["human_reasoning_graph"],
             })
         generic = generic_context_for(rows, tokenizer)

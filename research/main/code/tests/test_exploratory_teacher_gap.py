@@ -48,13 +48,15 @@ def manifest_sample(index: int) -> dict:
         "human_reviewed_at": "2026-09-11T18:00:00+08:00",
         "answer_leakage": 0,
         "required_evidence": ["left relation", "right relation"],
+        "reasoning_depth": 2,
         "minimal_reasoning_graph": {
             "nodes": [
                 {"id": "e1", "type": "evidence", "claim": "left relation"},
+                {"id": "e2", "type": "evidence", "claim": "right relation"},
                 {"id": "h1", "type": "intermediate", "claim": "combined relation"},
                 {"id": "a", "type": "answer", "claim": "selected item"},
             ],
-            "edges": [["e1", "h1"], ["h1", "a"]],
+            "edges": [["e1", "h1"], ["e2", "h1"], ["h1", "a"]],
         },
         "guides": [
             {"question": "What relation is visible on the left?", "answer": "The first relation.", "supports_next": "h1"},
@@ -140,7 +142,7 @@ class ExploratoryTeacherGapTests(unittest.TestCase):
         samples[1]["minimal_reasoning_graph"]["edges"] = [["missing", "a"]]
         errors = validate_locked_manifest(samples)
         self.assertTrue(any("human_reviewer" in error for error in errors))
-        self.assertTrue(any("invalid edges" in error for error in errors))
+        self.assertTrue(any("unknown_endpoint" in error for error in errors))
 
     def test_common_shell_changes_only_privileged_block(self):
         sample = manifest_sample(0)

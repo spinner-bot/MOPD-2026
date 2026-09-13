@@ -12,6 +12,8 @@ import json
 import re
 from typing import Any
 
+from reasoning_graph_contract import validate_reasoning_graph
+
 
 STAGES = ("blind", "audit", "construct")
 KNOWLEDGE_LABELS = ("image_only", "external_required", "ambiguous")
@@ -35,7 +37,7 @@ Classify whether the answer and every necessary intermediate claim are entailed 
 image_only means uniquely answerable without any unprovided fact. external_required means at least one necessary fact is absent. ambiguous means the boundary, reference, image, or uniqueness cannot be verified.
 R requires at least two distinct visual entities/regions/states and at least two indispensable transformations. PR additionally requires a difficult local node on that same necessary chain.
 Return exactly one JSON object and no other text:
-{{"knowledge_dependency_label":"image_only|external_required|ambiguous","reason_codes":["code"],"reference_entailed":true,"unique_answer":true,"image_is_necessary":true,"full_image_reference_valid":true,"task_family":"R|PR|null","reasoning_depth":2,"required_evidence":["E1","E2"],"minimal_reasoning_graph":{{"nodes":[{{"id":"e1","type":"evidence","claim":"..."}},{{"id":"h1","type":"intermediate","claim":"..."}},{{"id":"a","type":"answer","claim":"..."}}],"edges":[["e1","h1"],["h1","a"]]}},"explanation":"brief"}}
+{{"knowledge_dependency_label":"image_only|external_required|ambiguous","reason_codes":["code"],"reference_entailed":true,"unique_answer":true,"image_is_necessary":true,"full_image_reference_valid":true,"task_family":"R|PR|null","reasoning_depth":2,"required_evidence":["E1","E2"],"minimal_reasoning_graph":{{"nodes":[{{"id":"e1","type":"evidence","claim":"..."}},{{"id":"e2","type":"evidence","claim":"..."}},{{"id":"h1","type":"intermediate","claim":"..."}},{{"id":"a","type":"answer","claim":"..."}}],"edges":[["e1","h1"],["e2","h1"],["h1","a"]]}},"explanation":"brief"}}
 Use null task_family and reasoning_depth 0 when the sample is not a qualifying R/PR candidate."""
 
 CONSTRUCT_PROMPT = """You are constructing candidate guides and multiple-choice options for a closed-world visual reasoning pilot.
@@ -114,30 +116,6 @@ def validate_blind(proposal: dict) -> list[str]:
     return errors
 
 
-def _validate_graph(graph: Any) -> list[str]:
-    if not isinstance(graph, dict):
-        return ["invalid_reasoning_graph"]
-    nodes, edges = graph.get("nodes"), graph.get("edges")
-    if not isinstance(nodes, list) or len(nodes) < 3 or not isinstance(edges, list) or len(edges) < 2:
-        return ["invalid_reasoning_graph"]
-    node_ids = set()
-    types = set()
-    for node in nodes:
-        if not isinstance(node, dict):
-            return ["invalid_reasoning_graph_node"]
-        node_id, node_type, claim = _text(node.get("id")), node.get("type"), _text(node.get("claim"))
-        if not node_id or node_type not in {"evidence", "intermediate", "answer"} or not claim:
-            return ["invalid_reasoning_graph_node"]
-        node_ids.add(node_id)
-        types.add(node_type)
-    if not {"evidence", "intermediate", "answer"}.issubset(types):
-        return ["reasoning_graph_missing_node_type"]
-    for edge in edges:
-        if not isinstance(edge, list) or len(edge) != 2 or any(_text(v) not in node_ids for v in edge):
-            return ["invalid_reasoning_graph_edge"]
-    return []
-
-
 def validate_audit(proposal: dict) -> list[str]:
     errors = []
     label = proposal.get("knowledge_dependency_label")
@@ -160,7 +138,12 @@ def validate_audit(proposal: dict) -> list[str]:
             errors.append("invalid_reasoning_depth")
         if not isinstance(evidence, list) or len(evidence) < 2 or any(not _text(item) for item in evidence):
             errors.append("invalid_required_evidence")
-        errors.extend(_validate_graph(proposal.get("minimal_reasoning_graph")))
+        graph_errors, _ = validate_reasoning_graph(
+            proposal.get("minimal_reasoning_graph"),
+            declared_depth=depth,
+            require_two_evidence=True,
+        )
+        errors.extend(graph_errors)
     else:
         if family not in {None, "null"}:
             errors.append("nonqualifying_task_family_must_be_null")
