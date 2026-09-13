@@ -154,8 +154,12 @@ def generic_context_for(samples: list[dict], tokenizer) -> str:
 
 def arrange_options(proposal: dict, correct_label: str, candidate_id: str) -> dict[str, str]:
     correct = str(proposal["correct_answer_text"]).strip()
+    def render(value) -> str:
+        if isinstance(value, list):
+            return json.dumps(value, ensure_ascii=False, separators=(",", ":"))
+        return str(value).strip()
     distractors = sorted(
-        [str(value).strip() for value in proposal["distractors"]],
+        [render(value) for value in proposal["distractors"]],
         key=lambda value: stable_hash(f"{candidate_id}\0{value}"),
     )
     values = iter(distractors)

@@ -213,8 +213,8 @@ class TeacherGapCandidatePipelineTests(unittest.TestCase):
         proposal = construction()
         proposal["correct_answer_text"] = '["Golden Retriever","Akita"]'
         proposal["distractors"] = [
-            '["Labrador","Akita"]',
-            '["Golden Retriever","Shiba Inu"]',
+            ["Labrador", "Akita"],
+            ["Golden Retriever", "Shiba Inu"],
             '["Labrador","Shiba Inu"]',
         ]
         proposal["guides"] = [
@@ -273,14 +273,16 @@ class TeacherGapCandidatePipelineTests(unittest.TestCase):
         proposal["guides"][0]["answer"] = "Ford and Ford are visible"
         self.assertIn("obvious_answer_leakage", validate_construct(proposal, multi, audit()))
 
-    def test_construct_fallback_locks_input_canonical_answer_not_invalid_primary(self):
+    def test_construct_fallback_allows_invalid_accept_to_fail_closed(self):
         primary = construction()
         primary["correct_answer_text"] = "The answer is triangle."
         locked = fallback_decision_fields("construct", primary, candidate())
-        self.assertEqual(locked, {
-            "decision": "accept_candidate",
-            "correct_answer_text": "triangle",
-        })
+        self.assertEqual(locked, {})
+        primary["decision"] = "reject"
+        self.assertEqual(
+            fallback_decision_fields("construct", primary, candidate()),
+            {"decision": "reject"},
+        )
 
     def test_audit_rejects_fallback_placeholders(self):
         placeholder = audit_fallback_target(audit())

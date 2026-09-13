@@ -52,7 +52,7 @@ Required answer cardinality: {answer_cardinality}
 Required visual evidence: {required_evidence}
 Audited reasoning graph: {reasoning_graph}
 
-Create 1-4 indispensable guide QA pairs and three plausible same-type distractors. Guides must support an existing non-evidence node in the audited graph, must be answerable from the image or prior guide state, and must not state/paraphrase the final answer or reveal an option label. Distractors must be rejectable from the image without outside knowledge. When answer cardinality is greater than one, every distractor must be a JSON array string with exactly that many non-empty string items.
+Create 1-4 indispensable guide QA pairs and three plausible same-type distractors. Each supports_next must name the existing graph node whose claim the guide elicits or supports; evidence, intermediate, and answer nodes are all valid targets. Guides must be answerable from the image or prior guide state and must not state/paraphrase the final answer or reveal an option label. Distractors must be rejectable from the image without outside knowledge. When answer cardinality is greater than one, every distractor must be a JSON array of exactly that many non-empty string items (a JSON-array string with the same content is also accepted).
 Return exactly one JSON object and no other text:
 {{"decision":"accept_candidate|reject","guides":[{{"question":"...","answer":"...","supports_next":"node id"}}],"correct_answer_text":"...","distractors":["...","...","..."],"generic_context_seed":"inspect-compare-verify","answer_leakage":false,"external_fact_injected":false,"rejection_reason":""}}"""
 
@@ -79,8 +79,8 @@ Required visual evidence: {required_evidence}
 Audited reasoning graph: {reasoning_graph}
 Recoverable first-attempt fields to preserve when present: {decision_lock}
 Return one compact JSON object, no markdown or analysis, with exactly these keys:
-{{"decision":"accept_candidate","guides":[{{"question":"under 16 words","answer":"under 12 words","supports_next":"existing node id"}}],"correct_answer_text":{canonical_answer_json},"distractors":["same-cardinality option","same-cardinality option","same-cardinality option"],"generic_context_seed":"inspect-compare-verify","answer_leakage":false,"external_fact_injected":false,"rejection_reason":""}}
-Use 1-3 guides. Every supports_next must name an existing non-evidence node in the audited graph, and at least one guide must support an intermediate node. Never state the final answer in a guide. When answer cardinality is greater than one, every distractor must be a JSON array string with exactly that many non-empty string items. Stop after the closing brace. If safe construction is impossible, return the same keys with decision "reject", empty guides/options/answer/seed, both booleans false, and a short rejection_reason."""
+{{"decision":"accept_candidate","guides":[{{"question":"under 16 words","answer":"under 12 words","supports_next":"existing node id"}}],"correct_answer_text":{canonical_answer_json},"distractors":{distractor_example},"generic_context_seed":"inspect-compare-verify","answer_leakage":false,"external_fact_injected":false,"rejection_reason":""}}
+Use 1-3 guides. Every supports_next must name the existing graph node whose claim the guide elicits or supports. Never state the complete final answer in a guide. When answer cardinality is greater than one, every distractor must be a JSON array of exactly that many non-empty string items. Stop after the closing brace. If safe construction is impossible, return the same keys with decision "reject", empty guides/options/answer/seed, both booleans false, and a short rejection_reason."""
 
 
 def stable_hash(value: str) -> str:
@@ -223,6 +223,16 @@ def render_compact_stage_prompt(
         required_evidence=json.dumps(audit_proposal.get("required_evidence", []), ensure_ascii=False),
         reasoning_graph=json.dumps(audit_proposal.get("minimal_reasoning_graph", {}), ensure_ascii=False),
         decision_lock=rendered_lock,
+        distractor_example=json.dumps(
+            [
+                [f"wrong item {option + 1}.{item + 1}" for item in range(len(_answers(candidate)))]
+                for option in range(3)
+            ]
+            if len(_answers(candidate)) > 1
+            else ["wrong option 1", "wrong option 2", "wrong option 3"],
+            ensure_ascii=False,
+            separators=(",", ":"),
+        ),
     )
 
 
@@ -255,13 +265,10 @@ def fallback_decision_fields(
         locked["task_family"] = family if label == "image_only" and family in TASK_FAMILIES else None
         return locked
     if stage == "construct":
-        if proposal.get("decision") in {"accept_candidate", "reject"}:
-            locked["decision"] = proposal["decision"]
-        if locked.get("decision") == "accept_candidate" and isinstance(candidate, dict):
-            if not validate_candidate(candidate):
-                # The complete correct option is an input invariant. Never
-                # preserve a primary answer already known to violate it.
-                locked["correct_answer_text"] = canonical_answer_text(candidate)
+        # A retry may conservatively downgrade an invalid accept proposal to
+        # reject. It must never promote a primary reject to accept.
+        if proposal.get("decision") == "reject":
+            locked["decision"] = "reject"
         return locked
     raise ValueError(f"unsupported stage: {stage}")
 
@@ -439,27 +446,34 @@ def _alias_occurrences(text: str, alias: str) -> int:
     return len(re.findall(rf"(?<!\w){re.escape(alias)}(?!\w)", text))
 
 
-def _valid_multi_item_option(value: str, cardinality: int) -> bool:
-    try:
-        parsed = json.loads(value)
-    except (TypeError, ValueError):
-        return False
+def _multi_item_option_values(value: Any) -> list[str] | None:
+    parsed = value
+    if isinstance(value, str):
+        try:
+            parsed = json.loads(value)
+        except ValueError:
+            return None
+    if not isinstance(parsed, list):
+        return None
+    if not all(isinstance(item, str) and _text(item) for item in parsed):
+        return None
+    return parsed
+
+
+def _valid_multi_item_option(value: Any, cardinality: int) -> bool:
+    parsed = _multi_item_option_values(value)
     return (
-        isinstance(parsed, list)
+        parsed is not None
         and len(parsed) == cardinality
-        and all(isinstance(item, str) and _text(item) for item in parsed)
     )
 
 
-def _option_distinct_key(value: str, cardinality: int) -> tuple[str, ...]:
+def _option_distinct_key(value: Any, cardinality: int) -> tuple[str, ...]:
     if cardinality <= 1:
-        return (_normalize_for_leakage(value),)
-    try:
-        parsed = json.loads(value)
-    except ValueError:
-        return ("invalid_option", value)
-    if not isinstance(parsed, list):
-        return ("invalid_option", value)
+        return (_normalize_for_leakage(_text(value)),)
+    parsed = _multi_item_option_values(value)
+    if parsed is None:
+        return ("invalid_option", _text(value))
     return tuple(sorted(_normalize_for_leakage(_text(item)) for item in parsed))
 
 
@@ -499,15 +513,18 @@ def validate_construct(
     if not correct or correct_raw != expected:
         errors.append("correct_answer_not_canonical_complete_answer")
     distractors = proposal.get("distractors")
-    if not isinstance(distractors, list) or len(distractors) != 3 or any(not _text(item) for item in distractors):
+    cardinality = len(_answers(candidate))
+    if not isinstance(distractors, list) or len(distractors) != 3:
         errors.append("invalid_distractors")
-    elif len(_answers(candidate)) > 1 and any(
-        not _valid_multi_item_option(_text(item), len(_answers(candidate)))
+    elif cardinality == 1 and any(not isinstance(item, str) or not _text(item) for item in distractors):
+        errors.append("invalid_distractors")
+    elif cardinality > 1 and any(
+        not _valid_multi_item_option(item, cardinality)
         for item in distractors
     ):
         errors.append("invalid_distractor_cardinality")
     elif len({
-        _option_distinct_key(_text(item), len(_answers(candidate)))
+        _option_distinct_key(item, cardinality)
         for item in [correct_raw, *distractors]
     }) != 4:
         errors.append("options_not_distinct")
