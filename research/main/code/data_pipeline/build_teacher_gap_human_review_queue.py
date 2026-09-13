@@ -25,7 +25,6 @@ from teacher_gap_candidate_contract import (
     validate_candidate,
     validate_construct,
 )
-from reasoning_graph_contract import validate_guide_graph_alignment
 
 
 MACHINE_FIELDS = (
@@ -34,6 +33,8 @@ MACHINE_FIELDS = (
     "image_path",
     "question",
     "reference_answers",
+    "reference_answer_alias_groups",
+    "canonical_answer_text",
     "blind_proposal",
     "audit_proposal",
     "construction_proposal",
@@ -87,17 +88,10 @@ def validate_constructed_row(row: dict) -> list[str]:
     else:
         errors.extend(
             f"construct:{error}"
-            for error in validate_construct(proposal, candidate.get("reference_answers", []))
+            for error in validate_construct(proposal, candidate, audit)
         )
         if proposal.get("decision") != "accept_candidate":
             errors.append("construction_decision_not_accept")
-        elif isinstance(audit, dict):
-            errors.extend(
-                f"guide_graph:{error}"
-                for error in validate_guide_graph_alignment(
-                    proposal.get("guides"), audit.get("minimal_reasoning_graph")
-                )
-            )
     return sorted(set(errors))
 
 
@@ -109,6 +103,8 @@ def queue_record(row: dict) -> dict:
         "image_path": candidate["image_original"],
         "question": candidate["final_question_source"],
         "reference_answers": candidate["reference_answers"],
+        "reference_answer_alias_groups": candidate["reference_answer_alias_groups"],
+        "canonical_answer_text": candidate["canonical_answer_text"],
         "blind_proposal": row["blind_proposal"],
         "audit_proposal": row["audit_proposal"],
         "construction_proposal": row["proposal"],

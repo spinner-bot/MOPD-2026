@@ -1,4 +1,44 @@
 {
-  "status": "prepared_not_submitted",
-  "slurm_job_id": null
+  "artifact_sha256": {
+    "canary/construct/rank-0.jsonl": "6a9872316f2020710ba70fff163524abf835e832f0a233db5c8ba80320f09fb4",
+    "canary/construct/rank-1.jsonl": "0d114c1e9dc9fea73a40dfc671b2451ee2cc784cf8b3c9b71e689d4a117c8f22",
+    "canary/construct/rank-2.jsonl": "7353325c35301a90a975f6013db36dc5b6da311567d544409528ee4764db8e71",
+    "canary/construct/rank-3.jsonl": "3dc7ea4ba1556063517a65c1de61baf9750851e5a0cced95dead25358743a907",
+    "command.txt": "9ca6987c2742ce21bdf53c390bece04b5226107758a4c8fd2912b89f67342836",
+    "config.resolved.yaml": "9cccd963406d114972eee9fb66bd336292b1e488a2040eea1f2efe72e76e1ce6",
+    "input_manifest.json": "ca400e1d74115176c3490443fc5654cc71c4aaa1c0486ca782b67969dc739685",
+    "logs/slurm-57580365.err": "7c16b49e1d6d6042b3b4a94d6a93e2fccdf8684ec6a9a404031dee42f1b4b094",
+    "logs/slurm-57580365.out": "93588d3b05331e9e0de495e4e47d567d0d7f7e84e980beb79d2b24a8f69b2e66",
+    "submit.sbatch": "c266bba9f9265569652487f8744859c80603e7aac1b5ee49e2dfdd8a6debd197",
+    "summaries/construct-canary.json": "a115a56d970b14fbf8e1457723c2ff3342d6743783ba5373d3c7029df805361c"
+  },
+  "canary": {
+    "fallback_recovered": 0,
+    "fallback_used": 8,
+    "observed": 8,
+    "parse_rate": 0.0,
+    "primary_truncated": 0,
+    "rejection_reasons": {
+      "correct_answer_not_reference_alias": 4,
+      "fallback_decision_mismatch": 1,
+      "invalid_distractors": 1,
+      "obvious_answer_leakage": 3
+    },
+    "runner_errors": 0,
+    "selected_truncated": 0,
+    "strict_valid": 0
+  },
+  "elapsed": "00:06:45",
+  "full_stage_started": false,
+  "fullpool_authorized": false,
+  "root_cause": [
+    "M3VQA_answers_list_misread_as_aliases",
+    "answer_evals_omitted",
+    "lexical_leakage_rule_confounds_atomic_answers_with_full_final_answer",
+    "fallback_locked_invalid_correct_answer_text"
+  ],
+  "slurm_job_id": "57580365",
+  "stage_reached": "canary_only",
+  "status": "failed_closed",
+  "submitted_code_commit": "1a595053ac0e6595322ae93ccc35a737174dbbc4"
 }

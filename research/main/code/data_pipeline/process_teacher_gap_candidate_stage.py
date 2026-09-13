@@ -60,7 +60,9 @@ def parse_records(rows: list[dict], stage: str) -> tuple[list[dict], list[dict],
         if proposal is None:
             row_reasons.append("invalid_json")
         else:
-            row_reasons.extend(proposal_errors(stage, proposal, raw.get("candidate", {})))
+            row_reasons.extend(proposal_errors(
+                stage, proposal, raw.get("candidate", {}), raw.get("audit_proposal")
+            ))
             attempts = raw.get("attempts")
             selected_attempt = attempts[-1] if isinstance(attempts, list) and attempts else {}
             row_reasons.extend(

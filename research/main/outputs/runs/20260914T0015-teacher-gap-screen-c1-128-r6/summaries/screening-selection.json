@@ -1,0 +1,18 @@
+{
+  "observed_candidate_ids": 128,
+  "rejected": 115,
+  "rejection_reasons": {
+    "audit_ambiguous": 1,
+    "audit_external_required": 113,
+    "audit_full_image_reference_valid_false": 36,
+    "audit_image_is_necessary_false": 51,
+    "audit_not_R_or_PR": 114,
+    "audit_reference_entailed_false": 96,
+    "audit_unique_answer_false": 96,
+    "blind_ambiguous": 4,
+    "blind_external_fact_risk": 7,
+    "missing_blind_proposal": 1
+  },
+  "selected_for_construction": 13,
+  "warning": "selected records are model candidates, not human-verified image_only/R truth"
+}

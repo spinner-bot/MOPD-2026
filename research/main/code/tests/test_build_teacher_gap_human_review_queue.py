@@ -25,6 +25,8 @@ def constructed() -> dict:
             "image_original": "/images/image-1.jpg",
             "final_question_source": "Which shape follows both visible relations?",
             "reference_answers": ["triangle"],
+            "reference_answer_alias_groups": [["triangle"]],
+            "canonical_answer_text": "triangle",
             "evidence": [["OFFICIAL EVIDENCE MUST NOT LEAK"]],
             "evidence_urls": ["https://example.invalid/secret"],
         },

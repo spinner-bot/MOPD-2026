@@ -1,0 +1,17 @@
+{
+  "knowledge_labels": {
+    "ambiguous": 1,
+    "external_required": 114,
+    "image_only": 13
+  },
+  "observed": 128,
+  "parse_rate": 1.0,
+  "parsed_valid": 128,
+  "rejected": 0,
+  "rejection_reasons": {},
+  "stage": "audit",
+  "task_families": {
+    "None": 115,
+    "R": 13
+  }
+}

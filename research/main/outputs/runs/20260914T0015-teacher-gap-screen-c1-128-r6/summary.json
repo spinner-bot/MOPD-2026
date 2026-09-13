@@ -1,4 +1,78 @@
 {
-  "status": "prepared_not_submitted",
-  "slurm_job_id": null
+  "artifact_sha256": {
+    "canary/audit/rank-0.jsonl": "e26e092595a184bbdc6ffef14b7c1c7f89a9c0107c73c6fd0b2b35aba5a9c8b4",
+    "canary/audit/rank-1.jsonl": "6368447e1d5f37ef84756b83eb828fbf22aa55b116a8600e390dfd1edc99181b",
+    "canary/audit/rank-2.jsonl": "a1300a88cf74abe9de6013a4ff28b00e729ac5e92d9474b01d1fe7b76765457c",
+    "canary/audit/rank-3.jsonl": "28a82ab46d4ae2be5deec3a4e46961846cc79f4a3cc51ecfdd39e6a1ee0f564f",
+    "canary/blind/rank-0.jsonl": "557bc373dc17faadb71f72299301a453231e09fb740342c0c71525fadd3182d2",
+    "canary/blind/rank-1.jsonl": "8009a52ee1671d60c24573bda527ab789c5134a3ab09e3f9522eae29cbbafdbf",
+    "canary/blind/rank-2.jsonl": "10ec0ac5cef2a73c0feb1b60df8fcd75f72a513099c0e1fec09664c90afae814",
+    "canary/blind/rank-3.jsonl": "9edb24466c44e9dd2f07cff894071eaf34dc1070942ff2f00be2ab72af2a6717",
+    "command.txt": "6268c8ee45e19d9e9b6b08515612542f8f1b01167497dd4afcf352ec1a400e52",
+    "config.resolved.yaml": "8a06abf83dab00505d1b7eb2456507300f0bbb496e9778d89c83f80636b21b7c",
+    "input_manifest.json": "51080654749ee5f602380a34621830d96f96598a3edb84acef907127b5df2e35",
+    "logs/slurm-57580364.err": "2c6f6d9c4362a6b106acfb6ce111245dc0855d08ebc6b924508970ee672cda30",
+    "logs/slurm-57580364.out": "83200085c651b3aeebfb4c8749f234260fd33aa0c1daa4441556788a90ccd137",
+    "parsed/audit.jsonl": "fe64fbf1a85fc446aa71275dac5f5ae11c5741911d4021d4a78cb2c43b87d920",
+    "parsed/blind.jsonl": "b0f45b45833dcfd2dcb10f922c5239e3f24a0423caa01ffcf9ff81f9e24a8c10",
+    "parsed/construction-inputs.jsonl": "1070aed9b885a84a29cb131343d1374fb1b425349ead0f50f347c7f139498465",
+    "raw/audit/rank-0.jsonl": "c9775b21502da9fd1054165351d32cfc3f195030e00d4c48df601c02ea6e8777",
+    "raw/audit/rank-1.jsonl": "f226ef6791dfffd03fb81936db80bb15501561ac974c8b59854d0e6519099bf7",
+    "raw/audit/rank-2.jsonl": "3057aaead26f3e328e5a4ff763a0cb02a011fcad3ea2f0a9ed8354681eee2cb5",
+    "raw/audit/rank-3.jsonl": "e393ecd0ea143058ddb5d2bf34fb9817f28e8ccb70d12674d0ceeee934461e57",
+    "raw/blind/rank-0.jsonl": "93281e24ccde5b513d6f630efcd0424099edf4a7edf80622b3bee2348a4c52fb",
+    "raw/blind/rank-1.jsonl": "ef1c10d645422eec899e862da043166e16fe5af0da1f40d2c49aeae8bfd7bfcc",
+    "raw/blind/rank-2.jsonl": "cdd6d8c9afb91a192d626423e309128dbac8beb05ecca8e78f26b1f45a4daf12",
+    "raw/blind/rank-3.jsonl": "599c19d1cc289e4daae5d098b6c550420d55264b681fb3d901a96ed7d2fd72e2",
+    "rejects/audit.jsonl": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "rejects/blind.jsonl": "4395a0b84a1de8b90ce4cedc6fe02bf0bb9625cce6afdd680595648013780e08",
+    "rejects/screening.jsonl": "e73485e9f197ddfa11addaf1edba9c27f59914c0eb1fabecdcf7806b320dafdf",
+    "submit.sbatch": "2512aeb2281ce635342e7b3139352ee933a419fb08460211fb8ffe743d21dac3",
+    "summaries/audit-canary.json": "7fc9ad24adcee073be779e09441e51f79502c0cd0403979f24f5006fb5851474",
+    "summaries/audit-completion.json": "0aa35f163bd7a7c3eaed236e6bbd0f0cb774af27dbae9a093021412ced294cfb",
+    "summaries/audit-parse.json": "861c32d1666986f404b07fbe1cfc81daee411ea8aca02b487c860cc5ac641022",
+    "summaries/blind-canary.json": "210dd10219d62710872c6ea1abab0b78802e45cff8054b1a62cab35b0af943e0",
+    "summaries/blind-completion.json": "09bff671cd9acf7c98dc166216d40234a206e4088327b29e20186bc5373e1b60",
+    "summaries/blind-parse.json": "4d4aa6601981d651194a232d5ed984bd3db865b6ae90609330738fc56f9df384",
+    "summaries/screening-selection.json": "264d6aaf0e15ef9c6f10c04eaf8619a8da96b160c64356eff907fd850cfb6b64"
+  },
+  "audit": {
+    "fallback_recovered": 77,
+    "fallback_used": 77,
+    "knowledge_labels": {
+      "ambiguous": 1,
+      "external_required": 114,
+      "image_only": 13
+    },
+    "observed": 128,
+    "parse_rate": 1.0,
+    "primary_truncated": 0,
+    "runner_errors": 0,
+    "selected_truncated": 0,
+    "strict_valid": 128,
+    "task_families": {
+      "None": 115,
+      "R": 13
+    }
+  },
+  "blind": {
+    "fallback_recovered": 8,
+    "fallback_used": 9,
+    "observed": 128,
+    "parse_rate": 0.9921875,
+    "primary_truncated": 5,
+    "runner_errors": 0,
+    "selected_truncated": 0,
+    "strict_valid": 127
+  },
+  "elapsed": "00:19:57",
+  "fullpool_authorized": false,
+  "scientific_validity": "invalidated_by_M3VQA_answers_vs_answer_evals_contract_error",
+  "selection": {
+    "rejected": 115,
+    "selected_for_construction": 13
+  },
+  "slurm_job_id": "57580364",
+  "status": "passed_structure_semantics_invalidated",
+  "submitted_code_commit": "1a595053ac0e6595322ae93ccc35a737174dbbc4"
 }

@@ -21,6 +21,7 @@ from finalize_teacher_gap_manifests import (
 )
 from teacher_gap_candidate_contract import (
     audit_fallback_target,
+    canonical_answer_text,
     decision_lock_errors,
     fallback_decision_fields,
     is_construction_candidate,
@@ -28,6 +29,7 @@ from teacher_gap_candidate_contract import (
     render_stage_prompt,
     validate_audit,
     validate_blind,
+    validate_candidate,
     validate_construct,
 )
 
@@ -39,6 +41,8 @@ def candidate() -> dict:
         "image_original": "/work/image-1.jpg",
         "final_question_source": "Which shape is related to both marked objects?",
         "reference_answers": ["triangle"],
+        "reference_answer_alias_groups": [["triangle"]],
+        "canonical_answer_text": "triangle",
         "evidence": [["TOP SECRET OFFICIAL EVIDENCE"]],
         "evidence_urls": ["https://example.invalid/secret"],
     }
@@ -191,8 +195,97 @@ class TeacherGapCandidatePipelineTests(unittest.TestCase):
     def test_valid_proposals_and_candidate_selection(self):
         self.assertEqual(validate_blind(blind()), [])
         self.assertEqual(validate_audit(audit()), [])
-        self.assertEqual(validate_construct(construction(), ["triangle"]), [])
+        self.assertEqual(validate_construct(construction(), candidate(), audit()), [])
         self.assertTrue(is_construction_candidate(blind(), audit()))
+
+    def test_multi_answer_target_is_one_complete_canonical_option(self):
+        multi = candidate()
+        multi.update({
+            "reference_answers": ["Golden Retriever", "Akita"],
+            "reference_answer_alias_groups": [
+                ["Golden Retriever", "Goldie"],
+                ["Akita", "Akita Inu"],
+            ],
+            "canonical_answer_text": '["Golden Retriever","Akita"]',
+        })
+        self.assertEqual(validate_candidate(multi), [])
+        self.assertEqual(canonical_answer_text(multi), '["Golden Retriever","Akita"]')
+        proposal = construction()
+        proposal["correct_answer_text"] = '["Golden Retriever","Akita"]'
+        proposal["distractors"] = [
+            '["Labrador","Akita"]',
+            '["Golden Retriever","Shiba Inu"]',
+            '["Labrador","Shiba Inu"]',
+        ]
+        proposal["guides"] = [
+            {"question": "Which breed is the left dog?", "answer": "Golden Retriever", "supports_next": "h1"},
+            {"question": "Which breed is the right dog?", "answer": "Akita", "supports_next": "a"},
+        ]
+        self.assertEqual(validate_construct(proposal, multi, audit()), [])
+        proposal["correct_answer_text"] = "Golden Retriever"
+        self.assertIn(
+            "correct_answer_not_canonical_complete_answer",
+            validate_construct(proposal, multi, audit()),
+        )
+
+    def test_multi_answer_distractors_preserve_target_cardinality(self):
+        multi = candidate()
+        multi.update({
+            "reference_answers": ["Ford", "Acura"],
+            "reference_answer_alias_groups": [["Ford"], ["Acura"]],
+            "canonical_answer_text": '["Ford","Acura"]',
+        })
+        proposal = construction()
+        proposal["correct_answer_text"] = multi["canonical_answer_text"]
+        proposal["distractors"] = [
+            '["Ford","Toyota"]', '["Nissan","Acura"]', '["Nissan","Toyota"]',
+        ]
+        self.assertEqual(validate_construct(proposal, multi, audit()), [])
+        proposal["distractors"][0] = "Ford"
+        self.assertIn("invalid_distractor_cardinality", validate_construct(proposal, multi, audit()))
+        proposal["distractors"][0] = '["Ford",""]'
+        self.assertIn("invalid_distractor_cardinality", validate_construct(proposal, multi, audit()))
+        proposal["distractors"][0] = '["Acura","Ford"]'
+        self.assertIn("options_not_distinct", validate_construct(proposal, multi, audit()))
+
+    def test_construct_gate_rejects_dangling_guide_target(self):
+        proposal = construction()
+        proposal["guides"][0]["supports_next"] = "missing-node"
+        self.assertTrue(any(
+            "unknown_supports_next" in reason
+            for reason in validate_construct(proposal, candidate(), audit())
+        ))
+
+    def test_repeated_answer_item_requires_repeated_mention_for_leakage(self):
+        multi = candidate()
+        multi.update({
+            "reference_answers": ["Ford", "Ford"],
+            "reference_answer_alias_groups": [["Ford"], ["Ford"]],
+            "canonical_answer_text": '["Ford","Ford"]',
+        })
+        proposal = construction()
+        proposal["correct_answer_text"] = multi["canonical_answer_text"]
+        proposal["distractors"] = [
+            '["Ford","Acura"]', '["Toyota","Ford"]', '["Toyota","Acura"]',
+        ]
+        proposal["guides"][0]["answer"] = "Ford is visible"
+        self.assertNotIn("obvious_answer_leakage", validate_construct(proposal, multi, audit()))
+        proposal["guides"][0]["answer"] = "Ford and Ford are visible"
+        self.assertIn("obvious_answer_leakage", validate_construct(proposal, multi, audit()))
+
+    def test_construct_fallback_locks_input_canonical_answer_not_invalid_primary(self):
+        primary = construction()
+        primary["correct_answer_text"] = "The answer is triangle."
+        locked = fallback_decision_fields("construct", primary, candidate())
+        self.assertEqual(locked, {
+            "decision": "accept_candidate",
+            "correct_answer_text": "triangle",
+        })
+
+    def test_audit_rejects_fallback_placeholders(self):
+        placeholder = audit_fallback_target(audit())
+        self.assertIn("placeholder_required_evidence", validate_audit(placeholder))
+        self.assertIn("placeholder_reasoning_graph", validate_audit(placeholder))
 
     def test_audit_rejects_nonminimal_or_inconsistent_reasoning_graphs(self):
         one_evidence = audit()
@@ -280,7 +373,7 @@ class TeacherGapCandidatePipelineTests(unittest.TestCase):
     def test_obvious_answer_leakage_fails_closed(self):
         leaked = construction()
         leaked["guides"][0]["answer"] = "The triangle is visible."
-        self.assertIn("obvious_answer_leakage", validate_construct(leaked, ["triangle"]))
+        self.assertIn("obvious_answer_leakage", validate_construct(leaked, candidate(), audit()))
 
     def test_duplicate_clusters_are_transitively_joined(self):
         payload = {
