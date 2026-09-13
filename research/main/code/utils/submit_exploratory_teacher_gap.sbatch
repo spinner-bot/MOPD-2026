@@ -84,6 +84,7 @@ run_manifest "${CANARY_MANIFEST}" 8 "${RUN}/raw/canary"
 assert_code_state
 "${PY}" "${PROCESS}" validate \
   --inputs "${RUN}/raw/canary/rank-*.jsonl" \
+  --manifest "${CANARY_MANIFEST}" \
   --expected-samples 8 \
   --parsed-output "${RUN}/parsed/canary.jsonl" \
   --summary "${RUN}/summaries/canary-gate.json"
@@ -95,6 +96,7 @@ run_manifest "${LOCKED_MANIFEST}" 96 "${RUN}/raw/locked"
 assert_code_state
 "${PY}" "${PROCESS}" validate \
   --inputs "${RUN}/raw/locked/rank-*.jsonl" \
+  --manifest "${LOCKED_MANIFEST}" \
   --expected-samples 96 \
   --parsed-output "${RUN}/parsed/locked.jsonl" \
   --summary "${RUN}/summaries/locked-gate.json"

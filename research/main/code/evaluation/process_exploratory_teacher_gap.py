@@ -13,7 +13,9 @@ from exploratory_teacher_gap import (
     CHOICES,
     decide_teacher_gap,
     validate_manifest_bundle,
+    validate_locked_manifest,
     validate_result_records,
+    validate_results_against_manifest,
 )
 
 
@@ -93,6 +95,7 @@ def main() -> None:
     subparsers = parser.add_subparsers(dest="command", required=True)
     validate_parser = subparsers.add_parser("validate")
     validate_parser.add_argument("--inputs", nargs="+", required=True)
+    validate_parser.add_argument("--manifest", type=Path, required=True)
     validate_parser.add_argument("--expected-samples", type=int, required=True)
     validate_parser.add_argument("--parsed-output", type=Path, required=True)
     validate_parser.add_argument("--summary", type=Path, required=True)
@@ -129,12 +132,17 @@ def main() -> None:
         if args.parsed_output.exists() or args.summary.exists():
             raise SystemExit("refusing to overwrite parsed output or validation summary")
         rows = [enrich_raw_record(row) for row in load_jsonl(args.inputs)]
+        samples = load_jsonl([str(args.manifest)])
+        manifest_hash = file_sha256(args.manifest)
         errors = validate_result_records(rows, expected_samples=args.expected_samples)
+        errors.extend(validate_locked_manifest(samples, expected_n=args.expected_samples))
+        errors.extend(validate_results_against_manifest(rows, samples, manifest_hash))
         summary = {
             "expected_samples": args.expected_samples,
             "expected_records": args.expected_samples * 4,
             "observed_records": len(rows),
             "unique_sample_condition": len({(row.get("sample_id"), row.get("condition")) for row in rows}),
+            "manifest_sha256": manifest_hash,
             "validation_errors": errors,
             "status": "passed" if not errors else "failed",
             "note": "No condition-level performance is emitted before the completeness gate passes.",

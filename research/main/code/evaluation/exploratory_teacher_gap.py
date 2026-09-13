@@ -6,6 +6,7 @@ contracts that must pass before a locked pilot can be interpreted.
 
 from __future__ import annotations
 
+import hashlib
 import json
 import math
 import random
@@ -164,6 +165,49 @@ def validate_manifest_bundle(partitions: dict[str, list[dict]]) -> list[str]:
             for error in validate_locked_manifest(partitions[name], expected_n=expected[name])
         )
     errors.extend(validate_partition_isolation(partitions))
+    return errors
+
+
+def validate_results_against_manifest(
+    records: list[dict], samples: list[dict], manifest_hash: str
+) -> list[str]:
+    """Bind raw records to the exact frozen sample metadata they claim to use."""
+
+    errors = []
+    expected = {str(row.get("sample_id", "")).strip(): row for row in samples}
+    if "" in expected or len(expected) != len(samples):
+        return ["manifest sample_id values must be non-empty and unique"]
+    observed_ids = {str(row.get("sample_id", "")).strip() for row in records}
+    if observed_ids != set(expected):
+        missing = sorted(set(expected) - observed_ids)
+        extra = sorted(observed_ids - set(expected))
+        errors.append(f"raw sample ids differ from manifest: missing={missing}, extra={extra}")
+
+    for index, row in enumerate(records):
+        sample_id = str(row.get("sample_id", "")).strip()
+        sample = expected.get(sample_id)
+        if sample is None:
+            continue
+        expected_values = {
+            "manifest_hash": manifest_hash,
+            "source_image_id": str(sample.get("source_image_id", "")),
+            "source_cluster_id": str(sample.get("source_cluster_id", "")),
+            "image_checksum": str(sample.get("image_checksum", "")),
+            "correct_choice": str(sample.get("final_answer", "")),
+            "question_hash": hashlib.sha256(
+                str(sample.get("final_question", "")).encode("utf-8")
+            ).hexdigest(),
+            "options_hash": hashlib.sha256(
+                json.dumps(
+                    [sample.get(f"option_{choice}") for choice in CHOICES],
+                    ensure_ascii=False,
+                    separators=(",", ":"),
+                ).encode("utf-8")
+            ).hexdigest(),
+        }
+        for field, value in expected_values.items():
+            if str(row.get(field, "")) != value:
+                errors.append(f"record-{index}/{sample_id}: {field} differs from frozen manifest")
     return errors
 
 

@@ -1,6 +1,8 @@
 """Contract tests for the frozen 1017 exploratory teacher-gap protocol."""
 
 import sys
+import hashlib
+import json
 import tempfile
 import unittest
 from pathlib import Path
@@ -18,6 +20,7 @@ from exploratory_teacher_gap import (
     validate_locked_manifest,
     validate_partition_isolation,
     validate_result_records,
+    validate_results_against_manifest,
 )
 from teacher_gap_inputs import COMMON_SHELL, render_teacher_gap_input, validate_generic_length
 from process_exploratory_teacher_gap import enrich_raw_record
@@ -299,6 +302,33 @@ class ExploratoryTeacherGapTests(unittest.TestCase):
         self.assertTrue(any("source_cluster_id" in error for error in errors))
         self.assertTrue(any("schedule_index" in error for error in errors))
         self.assertTrue(any("distinct prompt_hash" in error for error in errors))
+
+    def test_result_records_are_bound_to_exact_manifest_metadata(self):
+        samples = [manifest_sample(index) for index in range(96)]
+        manifest_hash = "frozen-manifest-hash"
+        rows = result_records(tq_gains=16, tqa_gains=18)
+        expected_by_id = {sample["sample_id"]: sample for sample in samples}
+        for row in rows:
+            sample = expected_by_id[row["sample_id"]]
+            row.update({
+                "manifest_hash": manifest_hash,
+                "source_image_id": sample["source_image_id"],
+                "source_cluster_id": sample["source_cluster_id"],
+                "image_checksum": sample["image_checksum"],
+                "correct_choice": sample["final_answer"],
+                "question_hash": hashlib.sha256(sample["final_question"].encode()).hexdigest(),
+                "options_hash": hashlib.sha256(json.dumps(
+                    [sample[f"option_{choice}"] for choice in "ABCD"],
+                    ensure_ascii=False,
+                    separators=(",", ":"),
+                ).encode()).hexdigest(),
+            })
+        self.assertEqual(validate_results_against_manifest(rows, samples, manifest_hash), [])
+        rows[0]["options_hash"] = "tampered"
+        rows[1]["manifest_hash"] = "other-manifest"
+        errors = validate_results_against_manifest(rows, samples, manifest_hash)
+        self.assertTrue(any("options_hash differs" in error for error in errors))
+        self.assertTrue(any("manifest_hash differs" in error for error in errors))
 
     def test_strong_tq_go(self):
         decision = decide_teacher_gap(
