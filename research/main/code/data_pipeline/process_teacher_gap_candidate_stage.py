@@ -11,6 +11,7 @@ from pathlib import Path
 from extract_json_response import extract_json_object
 from teacher_gap_candidate_contract import (
     STAGES,
+    decision_lock_errors,
     is_construction_candidate,
     proposal_errors,
 )
@@ -60,6 +61,16 @@ def parse_records(rows: list[dict], stage: str) -> tuple[list[dict], list[dict],
             row_reasons.append("invalid_json")
         else:
             row_reasons.extend(proposal_errors(stage, proposal, raw.get("candidate", {})))
+            attempts = raw.get("attempts")
+            selected_attempt = attempts[-1] if isinstance(attempts, list) and attempts else {}
+            row_reasons.extend(
+                decision_lock_errors(
+                    proposal,
+                    selected_attempt.get("preserved_decision_fields", {})
+                    if isinstance(selected_attempt, dict)
+                    else {},
+                )
+            )
         output = {
             "candidate_id": raw.get("candidate_id"),
             "source_image_id": raw.get("source_image_id"),
@@ -69,12 +80,22 @@ def parse_records(rows: list[dict], stage: str) -> tuple[list[dict], list[dict],
             "parse_method": parse_method,
             "raw_record_provenance": {
                 "rank": raw.get("rank"),
+                "input_index": raw.get("input_index"),
+                "world_size": raw.get("world_size"),
                 "model_revision": raw.get("model_revision"),
                 "code_commit": raw.get("code_commit"),
+                "model_dtype": raw.get("model_dtype"),
                 "image_checksum": raw.get("image_checksum"),
                 "prompt_hash": raw.get("prompt_hash"),
                 "chat_template_hash": raw.get("chat_template_hash"),
                 "thinking_mode": raw.get("thinking_mode"),
+                "chat_template": raw.get("chat_template"),
+                "generation_config": raw.get("generation_config"),
+                "attempt_count": raw.get("attempt_count"),
+                "chosen_attempt": raw.get("chosen_attempt"),
+                "fallback_used": raw.get("fallback_used"),
+                "fallback_recovered": raw.get("fallback_recovered"),
+                "primary_failure_reasons": raw.get("primary_failure_reasons"),
             },
         }
         if stage == "construct":

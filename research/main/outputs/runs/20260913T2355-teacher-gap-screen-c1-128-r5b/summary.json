@@ -1,0 +1,64 @@
+{
+  "artifact_sha256": {
+    "canary/blind/rank-0.jsonl": "5d5842de736e538d37f4a1cabeca45b02fd66651c42bc4dc623d725bcb071a79",
+    "canary/blind/rank-1.jsonl": "06c2df134aedec898451c6acb2f01b636cba02b8c8ede426f0353277a490d5ce",
+    "canary/blind/rank-2.jsonl": "0119ebdfacf499b43ef155dc6bfbb07f6950927739d99fe3cc9ed8c079e7af46",
+    "canary/blind/rank-3.jsonl": "3c7a790f4cf6806f76fd00e1670443d8cecbc96e130e653f3e79629091253c7b",
+    "command.txt": "0aa5443539d2513e3f636d98ab7cb43f3fb108523a45de1c399763a156daa67a",
+    "config.resolved.yaml": "6cb795e9ea45777a018ee7baa90d2b6f72f4d0815e82e1ff1bfe63be5d8dd879",
+    "input_manifest.json": "4eab208f791cdc9e9d6726ef29fd1f1a9c4627c47ef0d15717217b85e6b53d24",
+    "logs/slurm-57579114.err": "2a6abb1e8dcefd1d48f8acc04d7030e3e84a90f16bf1ecbf8da9c1e46840070a",
+    "logs/slurm-57579114.out": "f6b89d7ad740b214ff8bf4c393954bf5b74ecae0fa34a21e3f1ef1b19827300a",
+    "raw/blind/rank-0.jsonl": "729360371c6e1b09ceb1396814c48fb6555ee3db5c3961874b912560ddf32ab8",
+    "raw/blind/rank-1.jsonl": "2fd1694bb54d8f508dd7040b589c6d61bd86a0f13063b52623cac8902bf29501",
+    "raw/blind/rank-2.jsonl": "9b1f55e3df13989200738c144a63d2016aa848e0ea66102e6c9087df2da54c13",
+    "raw/blind/rank-3.jsonl": "c7b50bea43af72ccbd7c89b46cbdac1718011406e66ef006ef6cb7def8932f32",
+    "submit.sbatch": "5707fe07497f15bd2f0423d7ae1e449ae396f5eb443accf437af54732c9bf06f",
+    "summaries/blind-canary.json": "4bf0532cf67c733d9b6d94a999577d82b8cdfaede790dab16d2234187f226485",
+    "summaries/blind-completion.json": "e17503617824487dac5ecf19abf42299db388a6b87328052a7cd558214f8f76c"
+  },
+  "audit": "not_run",
+  "blind_canary": {
+    "fallback_recovered": 0,
+    "fallback_used": 0,
+    "gate": "passed",
+    "observed": 8,
+    "parse_rate": 1.0,
+    "selected_truncated": 0,
+    "strict_valid": 8
+  },
+  "blind_full": {
+    "fallback_recovered": 7,
+    "fallback_used": 9,
+    "final_rejection_reasons": {
+      "invalid_json": 1,
+      "invalid_visible_evidence": 1,
+      "truncated_output": 1
+    },
+    "gate": "failed",
+    "observed": 128,
+    "parse_rate": 0.984375,
+    "primary_truncated": 5,
+    "runner_errors": 0,
+    "selected_truncated": 1,
+    "strict_valid": 126
+  },
+  "construct": "cancelled_dependency_zero_runtime",
+  "decision": "restore the empirically validated r4 blind compact prompt; keep audit/construct locks; treat bounded strict rejects as data attrition while keeping canary zero-truncation",
+  "dependent_construct_job_id": "57579118",
+  "elapsed": "00:09:03",
+  "problem_record": {
+    "candidate_id": "m3vqa-data_0007820",
+    "cause": "blind decision-lock text preserved a semantically unreliable answer and induced evidence repetition",
+    "fallback_failure": [
+      "invalid_json",
+      "truncated_output"
+    ],
+    "fallback_generated_tokens": 512,
+    "primary_failure": [
+      "invalid_visible_evidence"
+    ]
+  },
+  "slurm_job_id": "57579114",
+  "status": "failed_closed"
+}

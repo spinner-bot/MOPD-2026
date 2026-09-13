@@ -1,0 +1,60 @@
+{
+  "code_commits": [
+    "ae9600fa163af2ecedfa2b5e901d28964f3b3d4d"
+  ],
+  "failures": [
+    "parse_rate=0.500000 < 0.750000"
+  ],
+  "fallback_recovered": 2,
+  "fallback_used": 6,
+  "files": [
+    "/leonardo/home/userexternal/rqian000/spinner-bot/MOPD-2026/research/main/outputs/runs/20260913T2320-teacher-gap-screen-c1-128-r4/canary/audit/rank-0.jsonl",
+    "/leonardo/home/userexternal/rqian000/spinner-bot/MOPD-2026/research/main/outputs/runs/20260913T2320-teacher-gap-screen-c1-128-r4/canary/audit/rank-1.jsonl",
+    "/leonardo/home/userexternal/rqian000/spinner-bot/MOPD-2026/research/main/outputs/runs/20260913T2320-teacher-gap-screen-c1-128-r4/canary/audit/rank-2.jsonl",
+    "/leonardo/home/userexternal/rqian000/spinner-bot/MOPD-2026/research/main/outputs/runs/20260913T2320-teacher-gap-screen-c1-128-r4/canary/audit/rank-3.jsonl"
+  ],
+  "generation_configs": [
+    "{\"do_sample\":false,\"fallback_max_new_tokens\":512,\"max_attempts\":2,\"primary_max_new_tokens\":768,\"structured_output_repetition_constraints\":\"disabled\"}"
+  ],
+  "model_dtypes": [
+    "torch.bfloat16"
+  ],
+  "model_revisions": [
+    "c202236235762e1c871ad0ccb60c8ee5ba337b9a"
+  ],
+  "parse_rate": 0.5,
+  "parse_summary": {
+    "knowledge_labels": {
+      "external_required": 2,
+      "image_only": 2
+    },
+    "observed": 8,
+    "parse_rate": 0.5,
+    "parsed_valid": 4,
+    "rejected": 4,
+    "rejection_reasons": {
+      "invalid_json": 2,
+      "missing_explanation": 1,
+      "nonqualifying_task_family_must_be_null": 1
+    },
+    "stage": "audit",
+    "task_families": {
+      "None": 2,
+      "R": 2
+    }
+  },
+  "primary_truncated": 0,
+  "rejected": 4,
+  "runner_errors": 0,
+  "stage": "audit",
+  "thinking_modes": [
+    "False"
+  ],
+  "total": 8,
+  "truncated_or_missing_eos": 0,
+  "unique_candidate_ids": 8,
+  "valid_parsed": 4,
+  "world_sizes": [
+    4
+  ]
+}

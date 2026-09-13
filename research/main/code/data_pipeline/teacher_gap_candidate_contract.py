@@ -12,6 +12,8 @@ import json
 import re
 from typing import Any
 
+from reasoning_graph_contract import validate_reasoning_graph
+
 
 STAGES = ("blind", "audit", "construct")
 KNOWLEDGE_LABELS = ("image_only", "external_required", "ambiguous")
@@ -35,8 +37,8 @@ Classify whether the answer and every necessary intermediate claim are entailed 
 image_only means uniquely answerable without any unprovided fact. external_required means at least one necessary fact is absent. ambiguous means the boundary, reference, image, or uniqueness cannot be verified.
 R requires at least two distinct visual entities/regions/states and at least two indispensable transformations. PR additionally requires a difficult local node on that same necessary chain.
 Return exactly one JSON object and no other text:
-{{"knowledge_dependency_label":"image_only|external_required|ambiguous","reason_codes":["code"],"reference_entailed":true,"unique_answer":true,"image_is_necessary":true,"full_image_reference_valid":true,"task_family":"R|PR|null","reasoning_depth":2,"required_evidence":["E1","E2"],"minimal_reasoning_graph":{{"nodes":[{{"id":"e1","type":"evidence","claim":"..."}},{{"id":"h1","type":"intermediate","claim":"..."}},{{"id":"a","type":"answer","claim":"..."}}],"edges":[["e1","h1"],["h1","a"]]}},"explanation":"brief"}}
-Use null task_family and reasoning_depth 0 when the sample is not a qualifying R/PR candidate."""
+{{"knowledge_dependency_label":"image_only|external_required|ambiguous","reason_codes":["code"],"reference_entailed":true,"unique_answer":true,"image_is_necessary":true,"full_image_reference_valid":true,"task_family":"R|PR|null","reasoning_depth":2,"required_evidence":["E1","E2"],"minimal_reasoning_graph":{{"nodes":[{{"id":"e1","type":"evidence","claim":"..."}},{{"id":"e2","type":"evidence","claim":"..."}},{{"id":"h1","type":"intermediate","claim":"..."}},{{"id":"a","type":"answer","claim":"..."}}],"edges":[["e1","h1"],["e2","h1"],["h1","a"]]}},"explanation":"brief"}}
+For a non-qualifying sample use JSON null for task_family, reasoning_depth 0, an empty required_evidence list, and {{"nodes":[],"edges":[]}} for minimal_reasoning_graph."""
 
 CONSTRUCT_PROMPT = """You are constructing candidate guides and multiple-choice options for a closed-world visual reasoning pilot.
 Use only the supplied complete image, question, reference answer aliases, and audited visual evidence/path. Never use Wikipedia evidence or URLs.
@@ -48,6 +50,29 @@ Audited reasoning graph: {reasoning_graph}
 Create 1-4 indispensable guide QA pairs and three plausible same-type distractors. Guides must support the next reasoning node, must be answerable from the image or prior guide state, and must not state/paraphrase the final answer or reveal an option label. Distractors must be rejectable from the image without outside knowledge.
 Return exactly one JSON object and no other text:
 {{"decision":"accept_candidate|reject","guides":[{{"question":"...","answer":"...","supports_next":"node id"}}],"correct_answer_text":"...","distractors":["...","...","..."],"generic_context_seed":"inspect-compare-verify","answer_leakage":false,"external_fact_injected":false,"rejection_reason":""}}"""
+
+COMPACT_BLIND_PROMPT = """Inspect the complete image and answer this closed-world audit question using no outside facts:
+{question}
+Return one compact JSON object, no markdown or analysis, with exactly these keys:
+{{"candidate_answer":"under 12 words","visible_evidence":["observation under 12 words","optional second observation under 12 words"],"image_is_necessary":true,"requires_unprovided_fact":false,"ambiguous":false,"uncertainty":"low|medium|high"}}
+Use 1-2 distinct visible_evidence items. Stop immediately after the closing brace."""
+
+COMPACT_AUDIT_PROMPT = """Rewrite the first audit attempt as one schema-valid compact JSON object. Do not redo or reverse its recoverable high-level decision.
+Question: {question}
+Reference answer aliases: {answers}
+Locked decision fields: {decision_lock}
+Target shape for this record: {target_shape}
+Copy every locked value exactly. JSON null has no quotes. Include every key shown. For image_only only, replace short evidence/claim placeholders with image-grounded content while keeping a two-evidence DAG. Return no markdown or analysis and stop after the closing brace."""
+
+COMPACT_CONSTRUCT_PROMPT = """Using only the complete image and audited visual path, construct short guides and options for this question.
+Question: {question}
+Reference answer aliases: {answers}
+Required visual evidence: {required_evidence}
+Audited reasoning graph: {reasoning_graph}
+Recoverable first-attempt fields to preserve when present: {decision_lock}
+Return one compact JSON object, no markdown or analysis, with exactly these keys:
+{{"decision":"accept_candidate","guides":[{{"question":"under 16 words","answer":"under 12 words","supports_next":"existing node id"}}],"correct_answer_text":"one reference alias","distractors":["same-type option","same-type option","same-type option"],"generic_context_seed":"inspect-compare-verify","answer_leakage":false,"external_fact_injected":false,"rejection_reason":""}}
+Use 1-3 guides, never state the final answer in a guide, and stop after the closing brace. If safe construction is impossible, return the same keys with decision "reject", empty guides/options/answer/seed, both booleans false, and a short rejection_reason."""
 
 
 def stable_hash(value: str) -> str:
@@ -99,43 +124,150 @@ def render_stage_prompt(candidate: dict, stage: str, audit_proposal: dict | None
     )
 
 
+def render_compact_stage_prompt(
+    candidate: dict,
+    stage: str,
+    audit_proposal: dict | None = None,
+    primary_proposal: dict | None = None,
+) -> str:
+    """Render the recorded one-shot fallback prompt from the same allow-list."""
+
+    if stage not in STAGES:
+        raise ValueError(f"unsupported stage: {stage}")
+    errors = validate_candidate(candidate)
+    if errors:
+        raise ValueError(",".join(errors))
+    question = _text(candidate["final_question_source"])
+    answers = json.dumps(_answers(candidate), ensure_ascii=False)
+    decision_lock = fallback_decision_fields(stage, primary_proposal)
+    rendered_lock = json.dumps(decision_lock, ensure_ascii=False, sort_keys=True)
+    if stage == "blind":
+        return COMPACT_BLIND_PROMPT.format(question=question, decision_lock=rendered_lock)
+    if stage == "audit":
+        target = audit_fallback_target(primary_proposal)
+        return COMPACT_AUDIT_PROMPT.format(
+            question=question,
+            answers=answers,
+            decision_lock=rendered_lock,
+            target_shape=json.dumps(target, ensure_ascii=False, separators=(",", ":")),
+        )
+    if not isinstance(audit_proposal, dict):
+        raise ValueError("construct stage requires audit_proposal")
+    return COMPACT_CONSTRUCT_PROMPT.format(
+        question=question,
+        answers=answers,
+        required_evidence=json.dumps(audit_proposal.get("required_evidence", []), ensure_ascii=False),
+        reasoning_graph=json.dumps(audit_proposal.get("minimal_reasoning_graph", {}), ensure_ascii=False),
+        decision_lock=rendered_lock,
+    )
+
+
+def fallback_decision_fields(stage: str, proposal: dict | None) -> dict:
+    """Return only valid high-level fields a compact retry must preserve.
+
+    Audit retries are conservative: an unparseable first attempt becomes
+    ``ambiguous`` rather than being promoted to an image-only candidate.
+    """
+
+    proposal = proposal if isinstance(proposal, dict) else {}
+    locked: dict[str, Any] = {}
+    if stage == "blind":
+        # Blind answers are open-ended and may themselves contain the external
+        # premise that caused the schema failure.  Reusing them made one r5b
+        # retry loop.  The independent audit lock is the semantic safeguard.
+        return locked
+    if stage == "audit":
+        label = proposal.get("knowledge_dependency_label")
+        if label not in KNOWLEDGE_LABELS:
+            label = "ambiguous"
+        locked["knowledge_dependency_label"] = label
+        for key in ("reference_entailed", "unique_answer", "image_is_necessary", "full_image_reference_valid"):
+            locked[key] = proposal[key] if isinstance(proposal.get(key), bool) else False
+        family = proposal.get("task_family")
+        locked["task_family"] = family if label == "image_only" and family in TASK_FAMILIES else None
+        return locked
+    if stage == "construct":
+        if proposal.get("decision") in {"accept_candidate", "reject"}:
+            locked["decision"] = proposal["decision"]
+        if _text(proposal.get("correct_answer_text")):
+            locked["correct_answer_text"] = _text(proposal["correct_answer_text"])
+        return locked
+    raise ValueError(f"unsupported stage: {stage}")
+
+
+def audit_fallback_target(primary_proposal: dict | None) -> dict:
+    """Build the record-specific audit shape shown to the compact retry."""
+
+    proposal = primary_proposal if isinstance(primary_proposal, dict) else {}
+    locked = fallback_decision_fields("audit", proposal)
+    reasons = proposal.get("reason_codes")
+    if not isinstance(reasons, list) or not reasons or any(not _text(value) for value in reasons):
+        reasons = ["unresolved_primary_schema"]
+    if locked["knowledge_dependency_label"] == "image_only":
+        explanation = _text(proposal.get("explanation")) or "Visible evidence supports the locked image-only decision."
+    else:
+        explanation = (
+            f"Primary audit marked this record {locked['knowledge_dependency_label']}; "
+            "it is not a closed-world image-only candidate."
+        )
+    target = {
+        "knowledge_dependency_label": locked["knowledge_dependency_label"],
+        "reason_codes": reasons,
+        "reference_entailed": locked["reference_entailed"],
+        "unique_answer": locked["unique_answer"],
+        "image_is_necessary": locked["image_is_necessary"],
+        "full_image_reference_valid": locked["full_image_reference_valid"],
+        "task_family": locked["task_family"],
+        "reasoning_depth": 0,
+        "required_evidence": [],
+        "minimal_reasoning_graph": {"nodes": [], "edges": []},
+        "explanation": explanation,
+    }
+    if locked["knowledge_dependency_label"] == "image_only":
+        target.update({
+            "task_family": locked["task_family"] or "R",
+            "reasoning_depth": 2,
+            "required_evidence": ["replace with first visible evidence", "replace with second visible evidence"],
+            "minimal_reasoning_graph": {
+                "nodes": [
+                    {"id": "e1", "type": "evidence", "claim": "replace with first visible evidence"},
+                    {"id": "e2", "type": "evidence", "claim": "replace with second visible evidence"},
+                    {"id": "h1", "type": "intermediate", "claim": "replace with intermediate relation"},
+                    {"id": "a", "type": "answer", "claim": "replace with answer claim"},
+                ],
+                "edges": [["e1", "h1"], ["e2", "h1"], ["h1", "a"]],
+            },
+        })
+    return target
+
+
+def decision_lock_errors(proposal: dict | None, locked: dict) -> list[str]:
+    """Reject a retry that changed any recoverable first-attempt decision."""
+
+    if not isinstance(proposal, dict):
+        return []
+    if any(proposal.get(key) != value for key, value in locked.items()):
+        return ["fallback_decision_mismatch"]
+    return []
+
+
 def validate_blind(proposal: dict) -> list[str]:
     errors = []
     if not _text(proposal.get("candidate_answer")):
         errors.append("missing_candidate_answer")
     evidence = proposal.get("visible_evidence")
-    if not isinstance(evidence, list) or not evidence or any(not _text(item) for item in evidence):
+    if not isinstance(evidence, list) or not 1 <= len(evidence) <= 4 or any(not _text(item) for item in evidence):
         errors.append("invalid_visible_evidence")
+    elif any(len(_text(item).split()) > 24 for item in evidence):
+        errors.append("visible_evidence_item_too_long")
+    elif len({_normalize_for_leakage(_text(item)) for item in evidence}) != len(evidence):
+        errors.append("duplicate_visible_evidence")
     for key in ("image_is_necessary", "requires_unprovided_fact", "ambiguous"):
         if not isinstance(proposal.get(key), bool):
             errors.append(f"invalid_{key}")
     if not _text(proposal.get("uncertainty")):
         errors.append("missing_uncertainty")
     return errors
-
-
-def _validate_graph(graph: Any) -> list[str]:
-    if not isinstance(graph, dict):
-        return ["invalid_reasoning_graph"]
-    nodes, edges = graph.get("nodes"), graph.get("edges")
-    if not isinstance(nodes, list) or len(nodes) < 3 or not isinstance(edges, list) or len(edges) < 2:
-        return ["invalid_reasoning_graph"]
-    node_ids = set()
-    types = set()
-    for node in nodes:
-        if not isinstance(node, dict):
-            return ["invalid_reasoning_graph_node"]
-        node_id, node_type, claim = _text(node.get("id")), node.get("type"), _text(node.get("claim"))
-        if not node_id or node_type not in {"evidence", "intermediate", "answer"} or not claim:
-            return ["invalid_reasoning_graph_node"]
-        node_ids.add(node_id)
-        types.add(node_type)
-    if not {"evidence", "intermediate", "answer"}.issubset(types):
-        return ["reasoning_graph_missing_node_type"]
-    for edge in edges:
-        if not isinstance(edge, list) or len(edge) != 2 or any(_text(v) not in node_ids for v in edge):
-            return ["invalid_reasoning_graph_edge"]
-    return []
 
 
 def validate_audit(proposal: dict) -> list[str]:
@@ -160,12 +292,24 @@ def validate_audit(proposal: dict) -> list[str]:
             errors.append("invalid_reasoning_depth")
         if not isinstance(evidence, list) or len(evidence) < 2 or any(not _text(item) for item in evidence):
             errors.append("invalid_required_evidence")
-        errors.extend(_validate_graph(proposal.get("minimal_reasoning_graph")))
+        elif len({_normalize_for_leakage(_text(item)) for item in evidence}) != len(evidence):
+            errors.append("duplicate_required_evidence")
+        graph_errors, _ = validate_reasoning_graph(
+            proposal.get("minimal_reasoning_graph"),
+            declared_depth=depth,
+            require_two_evidence=True,
+        )
+        errors.extend(graph_errors)
     else:
-        if family not in {None, "null"}:
+        if family is not None:
             errors.append("nonqualifying_task_family_must_be_null")
-        if depth not in {0, None}:
+        if depth != 0 or isinstance(depth, bool):
             errors.append("nonqualifying_reasoning_depth_must_be_zero")
+        if not isinstance(evidence, list) or evidence:
+            errors.append("nonqualifying_required_evidence_must_be_empty")
+        graph = proposal.get("minimal_reasoning_graph")
+        if not isinstance(graph, dict) or graph.get("nodes") != [] or graph.get("edges") != []:
+            errors.append("nonqualifying_reasoning_graph_must_be_empty")
     if not _text(proposal.get("explanation")):
         errors.append("missing_explanation")
     return errors
@@ -220,6 +364,10 @@ def validate_construct(proposal: dict, reference_answers: list[str]) -> list[str
             errors.append(f"{key}_not_false")
     if obvious_answer_leakage(proposal, reference_answers):
         errors.append("obvious_answer_leakage")
+    if not _text(proposal.get("generic_context_seed")):
+        errors.append("missing_generic_context_seed")
+    if _text(proposal.get("rejection_reason")):
+        errors.append("accepted_candidate_has_rejection_reason")
     return errors
 
 

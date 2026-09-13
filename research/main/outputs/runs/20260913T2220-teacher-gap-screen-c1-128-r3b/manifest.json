@@ -1,0 +1,22 @@
+{
+  "run_id": "20260913T2220-teacher-gap-screen-c1-128-r3b",
+  "stage": "W2A",
+  "purpose": "Pinned-commit validation of strict JSON screening without repetition constraints",
+  "created_at_utc": "2026-09-13T14:14:38.297363+00:00",
+  "started_at": "2026-09-13T16:47:13+02:00",
+  "ended_at": "2026-09-13T16:57:42+02:00",
+  "operator": "Codex (CINECA Leonardo)",
+  "submit_hostname": "login07.leonardo.local",
+  "compute_node": "lrdn1867",
+  "archive_initialization_commit": "d9c345151bc0da0914d1cfda3faf073b8f9cc759",
+  "submitted_code_commit": "1d5e8cdfe965bc0235ceb7b1db217f184afd0aed",
+  "slurm_job_id": "57568703",
+  "resources": {
+    "nodes": 1,
+    "tasks": 4,
+    "gpus": 4,
+    "gpu_type": "A100",
+    "time_limit": "48:00:00"
+  },
+  "status": "failed_closed"
+}

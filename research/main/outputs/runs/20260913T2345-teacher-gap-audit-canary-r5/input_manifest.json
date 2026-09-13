@@ -1,0 +1,12 @@
+{
+  "input_path": "research/main/outputs/runs/20260911T-c1-m3vqa-field-audit/outputs/candidate-shortlist-128.jsonl",
+  "input_sha256": "3dcf3aced17e5b5f6dbc19c64ba19fe75dc51db451b3ab539925d9a52c16fd7d",
+  "source_records": 128,
+  "canary_records": 8,
+  "r5_implementation_commit": "5841e2d",
+  "runner_sha256": "394247935ecb1f996c06ca7790db2c4b4c3b147fa3798877ddc9c57f5c4913f6",
+  "contract_sha256": "af4c42c3b8662ce939ba0c422c777debddbd9ccc3c2cfbea59f7482b1a16096d",
+  "parser_sha256": "7a63ecb86dba79ea1044f467223d0c4a4ed3873ed8033af71a79022f48d4b649",
+  "gate_sha256": "b02c0188649011210a93e508c4ada45344cfbbd5d9a9420fb4a38d9759c37766",
+  "submit_script_sha256": "bc0115a4aa1641454720e4881d7aeda49124f93edb3633e6da7a9b1020ff47ce"
+}

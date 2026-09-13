@@ -1,0 +1,36 @@
+{
+  "artifact_sha256": {
+    "canary/audit/rank-0.jsonl": "e9a20ace3e4a03890ed167cd587e1d5338cf3dc52e68073fbc32e6ae67bb60f3",
+    "canary/audit/rank-1.jsonl": "2d1da194c1396998a2991b91ce366cb6f63cb8c97c7b19049e2ef99a046d762b",
+    "canary/audit/rank-2.jsonl": "2e70261436866ff68e62e07acff019c9a67ab46f59e83a83a3e4d9a120001b84",
+    "canary/audit/rank-3.jsonl": "35218b80ec9bf3ce05014743d0df83190bcb973107f3a135aa868cdde3fbd192",
+    "command.txt": "841b2c9a192eade6df8079442151347bbbd7ec48a65ff5e894713670a520a97c",
+    "config.resolved.yaml": "187299bfad39488da35f54357cc560e152206557a69f1e029bd49b2e39757e5d",
+    "input_manifest.json": "009099f6dc6c901b995c549454731881d4a2c015f6776b2d09bc09792a983096",
+    "logs/slurm-57578132.err": "701c991ec2a82d8b024245cc69b93234981619c97660595cdb0d34e024817ba5",
+    "logs/slurm-57578132.out": "d45ce76f86ad292d33a1da9bf6f8a69d2df6afaa53663ac00e7f0fd091aafcc0",
+    "submit.sbatch": "bc0115a4aa1641454720e4881d7aeda49124f93edb3633e6da7a9b1020ff47ce",
+    "summaries/audit-canary.json": "4ad778310c91fc1b6885f4884f88ab2b3fca9e07b43595efcb7339b2b700a843"
+  },
+  "decision": "submit new pinned C1 screen->construct chain",
+  "decision_lock_mismatches": 0,
+  "elapsed": "00:05:46",
+  "fallback_recovered": 6,
+  "fallback_used": 6,
+  "knowledge_labels": {
+    "external_required": 7,
+    "image_only": 1
+  },
+  "observed": 8,
+  "parse_rate": 1.0,
+  "primary_truncated": 0,
+  "runner_errors": 0,
+  "selected_truncated": 0,
+  "slurm_job_id": "57578132",
+  "status": "passed",
+  "strict_valid": 8,
+  "task_families": {
+    "None": 7,
+    "R": 1
+  }
+}

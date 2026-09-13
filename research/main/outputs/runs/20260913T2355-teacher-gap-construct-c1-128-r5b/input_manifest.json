@@ -1,0 +1,15 @@
+{
+  "input_path": "research/main/outputs/runs/20260913T2355-teacher-gap-screen-c1-128-r5b/parsed/construction-inputs.jsonl",
+  "input_sha256": "resolved_after_screening",
+  "records": "resolved_after_screening",
+  "source_image_unique_required": true,
+  "r5_implementation_commit": "5841e2d",
+  "r5_audit_canary_job": "57578132",
+  "r5_audit_canary_status": "passed_8_of_8",
+  "runner_sha256": "394247935ecb1f996c06ca7790db2c4b4c3b147fa3798877ddc9c57f5c4913f6",
+  "processor_sha256": "7a63ecb86dba79ea1044f467223d0c4a4ed3873ed8033af71a79022f48d4b649",
+  "contract_sha256": "af4c42c3b8662ce939ba0c422c777debddbd9ccc3c2cfbea59f7482b1a16096d",
+  "gate_sha256": "b02c0188649011210a93e508c4ada45344cfbbd5d9a9420fb4a38d9759c37766",
+  "submit_script_sha256": "0c2c4bc5ed19c63f29f947ba2df7d535f0af558ebdd42c98ff4402d51a4eedfb",
+  "producer_run_id": "20260913T2355-teacher-gap-screen-c1-128-r5b"
+}
