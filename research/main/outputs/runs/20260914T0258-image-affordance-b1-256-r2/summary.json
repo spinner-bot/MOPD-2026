@@ -1,9 +1,19 @@
 {
-  "status": "submitted",
+  "status": "failed_closed_canary",
   "slurm_job_id": "57598570",
   "human_verified": 0,
   "supersedes_run_id": "20260914T0248-image-affordance-b1-256",
   "correction_only": "runtime_python_path",
   "submitted_code_commit": "73762bdac944e300e5c119e77373bc9245b8520d",
-  "run_worktree": "/leonardo/home/userexternal/rqian000/spinner-bot/MOPD-2026-codex-b1r2"
+  "run_worktree": "/leonardo/home/userexternal/rqian000/spinner-bot/MOPD-2026-codex-b1r2",
+  "canary_total": 8,
+  "valid_parsed": 1,
+  "parse_rate": 0.125,
+  "machine_candidates": 1,
+  "fallback_used": 7,
+  "fallback_recovered": 0,
+  "runner_errors": 0,
+  "final_truncated": 2,
+  "full_ran": false,
+  "human_verified": 0
 }
