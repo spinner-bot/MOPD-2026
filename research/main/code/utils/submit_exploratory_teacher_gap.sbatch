@@ -14,6 +14,7 @@ set -euo pipefail
 
 ROOT="${MOPD_ROOT:?set MOPD_ROOT to research/main}"
 CANARY_MANIFEST="${MOPD_CANARY_MANIFEST:?set 8-sample canary manifest}"
+DEV_MANIFEST="${MOPD_DEV_MANIFEST:?set 32-sample construction/dev manifest}"
 LOCKED_MANIFEST="${MOPD_LOCKED_MANIFEST:?set 96-sample locked manifest}"
 RUN="${ROOT}/outputs/runs/${MOPD_RUN_ID:?set MOPD_RUN_ID}"
 PY="${MOPD_PYTHON:-/leonardo_scratch/fast/AIFAC_F02_774/rqian000/envs/mopd-stage0-py311/bin/python}"
@@ -28,6 +29,7 @@ PROCESS="${ROOT}/code/evaluation/process_exploratory_teacher_gap.py"
 [[ -x "${PY}" ]] || { echo "missing Python environment: ${PY}" >&2; exit 2; }
 [[ -d "${MODEL}" ]] || { echo "missing base 4B model: ${MODEL}" >&2; exit 2; }
 [[ -f "${CANARY_MANIFEST}" ]] || { echo "missing canary manifest" >&2; exit 2; }
+[[ -f "${DEV_MANIFEST}" ]] || { echo "missing dev manifest" >&2; exit 2; }
 [[ -f "${LOCKED_MANIFEST}" ]] || { echo "missing locked manifest" >&2; exit 2; }
 [[ -f "${RUN}/manifest.json" ]] || { echo "initialize run archive first: ${RUN}" >&2; exit 2; }
 ACTUAL_COMMIT="$(git -C "${ROOT}" rev-parse HEAD)"
@@ -37,6 +39,13 @@ ACTUAL_COMMIT="$(git -C "${ROOT}" rev-parse HEAD)"
 }
 mkdir -p "${RUN}"/{raw,parsed,summaries,logs}
 export ROOT RUN PY MODEL IMAGE_ROOT REVISION EXPECTED_COMMIT RUNNER
+
+echo "[W3 preflight] validate frozen 8/32/96 bundle and partition isolation"
+"${PY}" "${PROCESS}" validate-manifests \
+  --canary "${CANARY_MANIFEST}" \
+  --dev "${DEV_MANIFEST}" \
+  --locked "${LOCKED_MANIFEST}" \
+  --summary "${RUN}/summaries/manifest-bundle-gate.json"
 
 run_manifest() {
   local manifest="$1" expected="$2" destination="$3"

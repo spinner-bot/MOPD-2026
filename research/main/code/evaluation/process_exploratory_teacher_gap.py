@@ -5,10 +5,16 @@ from __future__ import annotations
 import argparse
 import glob
 import json
+import hashlib
 import math
 from pathlib import Path
 
-from exploratory_teacher_gap import CHOICES, decide_teacher_gap, validate_result_records
+from exploratory_teacher_gap import (
+    CHOICES,
+    decide_teacher_gap,
+    validate_manifest_bundle,
+    validate_result_records,
+)
 
 
 def load_jsonl(patterns: list[str]) -> list[dict]:
@@ -28,6 +34,10 @@ def write_jsonl(path: Path, rows: list[dict]) -> None:
     with path.open("w", encoding="utf-8") as sink:
         for row in rows:
             sink.write(json.dumps(row, ensure_ascii=False, sort_keys=True) + "\n")
+
+
+def file_sha256(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
 def parse_constrained_answer(raw: dict) -> tuple[str | None, str | None]:
@@ -85,9 +95,33 @@ def main() -> None:
     decide_parser.add_argument("--expected-samples", type=int, default=96)
     decide_parser.add_argument("--leakage-free", action="store_true", required=True)
     decide_parser.add_argument("--output", type=Path, required=True)
+    bundle_parser = subparsers.add_parser("validate-manifests")
+    bundle_parser.add_argument("--canary", type=Path, required=True)
+    bundle_parser.add_argument("--dev", type=Path, required=True)
+    bundle_parser.add_argument("--locked", type=Path, required=True)
+    bundle_parser.add_argument("--summary", type=Path, required=True)
     args = parser.parse_args()
 
-    if args.command == "validate":
+    if args.command == "validate-manifests":
+        paths = {"canary": args.canary, "dev": args.dev, "locked": args.locked}
+        partitions = {name: load_jsonl([str(path)]) for name, path in paths.items()}
+        errors = validate_manifest_bundle(partitions)
+        summary = {
+            "status": "passed" if not errors else "failed",
+            "partition_records": {name: len(rows) for name, rows in partitions.items()},
+            "partition_sha256": {name: file_sha256(path) for name, path in paths.items()},
+            "validation_errors": errors,
+            "performance_results_read": False,
+        }
+        args.summary.parent.mkdir(parents=True, exist_ok=True)
+        args.summary.write_text(
+            json.dumps(summary, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
+            encoding="utf-8",
+        )
+        print(json.dumps(summary, ensure_ascii=False, sort_keys=True))
+        if errors:
+            raise SystemExit("teacher-gap manifest bundle FAILED: " + "; ".join(errors))
+    elif args.command == "validate":
         rows = [enrich_raw_record(row) for row in load_jsonl(args.inputs)]
         errors = validate_result_records(rows, expected_samples=args.expected_samples)
         summary = {

@@ -40,6 +40,11 @@ def validate_locked_manifest(samples: list[dict], expected_n: int = 96) -> list[
         errors.append("sample_id values must be unique")
     if len(set(source_ids)) != len(source_ids):
         errors.append("source_image_id values must be unique")
+    cluster_ids = [str(row.get("source_cluster_id", "")).strip() for row in samples]
+    if any(not value for value in cluster_ids):
+        errors.append("missing source_cluster_id")
+    if len(set(cluster_ids)) != len(cluster_ids):
+        errors.append("source_cluster_id values must be unique")
 
     labels = Counter(row.get("final_answer") for row in samples)
     if expected_n % len(CHOICES) == 0:
@@ -135,6 +140,22 @@ def validate_partition_isolation(partitions: dict[str, list[dict]]) -> list[str]
                     )
                 else:
                     cluster_owners[cluster_id] = name
+    return errors
+
+
+def validate_manifest_bundle(partitions: dict[str, list[dict]]) -> list[str]:
+    """Validate the frozen 8/32/96 manifests together before GPU inference."""
+
+    expected = {"canary": 8, "dev": 32, "locked": 96}
+    errors = []
+    if set(partitions) != set(expected):
+        return ["manifest bundle must contain canary, dev, and locked partitions"]
+    for name in ("canary", "dev", "locked"):
+        errors.extend(
+            f"{name}: {error}"
+            for error in validate_locked_manifest(partitions[name], expected_n=expected[name])
+        )
+    errors.extend(validate_partition_isolation(partitions))
     return errors
 
 

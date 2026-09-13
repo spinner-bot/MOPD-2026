@@ -14,6 +14,7 @@ from exploratory_teacher_gap import (
     CONDITIONS,
     decide_teacher_gap,
     exact_mcnemar_one_sided,
+    validate_manifest_bundle,
     validate_locked_manifest,
     validate_partition_isolation,
     validate_result_records,
@@ -147,6 +148,25 @@ class ExploratoryTeacherGapTests(unittest.TestCase):
         self.assertTrue(any("source_image_id" in error for error in errors))
         self.assertTrue(any("balanced" in error for error in errors))
         self.assertTrue(validate_partition_isolation({"dev": samples[:1], "locked": samples[:1]}))
+
+    def test_locked_manifest_rejects_duplicate_near_duplicate_cluster(self):
+        samples = [manifest_sample(index) for index in range(96)]
+        samples[95]["source_cluster_id"] = samples[0]["source_cluster_id"]
+        self.assertTrue(any(
+            "source_cluster_id values must be unique" in error
+            for error in validate_locked_manifest(samples)
+        ))
+
+    def test_manifest_bundle_requires_isolated_8_32_96_partitions(self):
+        partitions = {
+            "canary": [manifest_sample(index) for index in range(8)],
+            "dev": [manifest_sample(index) for index in range(8, 40)],
+            "locked": [manifest_sample(index) for index in range(40, 136)],
+        }
+        self.assertEqual(validate_manifest_bundle(partitions), [])
+        partitions["locked"][0]["source_cluster_id"] = partitions["canary"][0]["source_cluster_id"]
+        errors = validate_manifest_bundle(partitions)
+        self.assertTrue(any("overlaps canary and locked" in error for error in errors))
 
     def test_locked_manifest_requires_human_provenance_and_graph_contract(self):
         samples = [manifest_sample(index) for index in range(96)]
