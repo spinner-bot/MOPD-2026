@@ -56,8 +56,6 @@ def main() -> None:
     parser.add_argument("--world-size", type=int, default=1)
     parser.add_argument("--limit", type=int, default=0, help="per-rank record limit; zero means all")
     parser.add_argument("--max-new-tokens", type=int, default=1536)
-    parser.add_argument("--repetition-penalty", type=float, default=1.05)
-    parser.add_argument("--no-repeat-ngram-size", type=int, default=4)
     parser.add_argument("--thinking", action="store_true")
     args = parser.parse_args()
 
@@ -65,10 +63,6 @@ def main() -> None:
         raise SystemExit("rank must satisfy 0 <= rank < world-size")
     if args.max_new_tokens < 1:
         raise SystemExit("max-new-tokens must be positive")
-    if args.repetition_penalty < 1.0:
-        raise SystemExit("repetition-penalty must be at least 1.0")
-    if args.no_repeat_ngram_size < 0:
-        raise SystemExit("no-repeat-ngram-size must be non-negative")
     if not args.model.is_dir():
         raise SystemExit(f"missing model directory: {args.model}")
     image_root = args.image_root.resolve(strict=True)
@@ -109,8 +103,10 @@ def main() -> None:
                 "generation_config": {
                     "do_sample": False,
                     "max_new_tokens": args.max_new_tokens,
-                    "repetition_penalty": args.repetition_penalty,
-                    "no_repeat_ngram_size": args.no_repeat_ngram_size,
+                    # Repetition constraints are deliberately disabled for the
+                    # exact JSON schema. r2's no-repeat n-gram constraint
+                    # systematically corrupted repeated field-name tokens.
+                    "structured_output_repetition_constraints": "disabled",
                 },
                 "prompt_fields_used": (
                     ["image_original", "final_question_source"]
@@ -157,8 +153,6 @@ def main() -> None:
                     **inputs,
                     max_new_tokens=args.max_new_tokens,
                     do_sample=False,
-                    repetition_penalty=args.repetition_penalty,
-                    no_repeat_ngram_size=args.no_repeat_ngram_size,
                 )
                 new_tokens = generated[0, inputs.input_ids.shape[1]:]
                 eos_reached = any(int(token) in eos_ids for token in new_tokens)
