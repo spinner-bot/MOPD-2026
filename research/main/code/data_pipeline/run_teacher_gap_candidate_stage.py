@@ -99,12 +99,18 @@ def main() -> None:
                 "candidate_id": candidate.get("candidate_id"),
                 "source_image_id": candidate.get("source_image_id"),
                 "stage": args.stage,
+                "input_index": index,
                 "rank": args.rank,
                 "world_size": args.world_size,
                 "candidate": candidate,
                 "model_revision": args.model_revision,
                 "code_commit": args.code_commit,
                 "thinking_mode": args.thinking,
+                "chat_template": {
+                    "enable_thinking": args.thinking,
+                    "add_generation_prompt": True,
+                },
+                "model_dtype": str(getattr(model, "dtype", "unknown")),
                 "generation_config": {
                     "do_sample": False,
                     "max_new_tokens": args.max_new_tokens,

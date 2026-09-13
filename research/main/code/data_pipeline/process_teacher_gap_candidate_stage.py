@@ -69,12 +69,17 @@ def parse_records(rows: list[dict], stage: str) -> tuple[list[dict], list[dict],
             "parse_method": parse_method,
             "raw_record_provenance": {
                 "rank": raw.get("rank"),
+                "input_index": raw.get("input_index"),
+                "world_size": raw.get("world_size"),
                 "model_revision": raw.get("model_revision"),
                 "code_commit": raw.get("code_commit"),
+                "model_dtype": raw.get("model_dtype"),
                 "image_checksum": raw.get("image_checksum"),
                 "prompt_hash": raw.get("prompt_hash"),
                 "chat_template_hash": raw.get("chat_template_hash"),
                 "thinking_mode": raw.get("thinking_mode"),
+                "chat_template": raw.get("chat_template"),
+                "generation_config": raw.get("generation_config"),
             },
         }
         if stage == "construct":

@@ -108,6 +108,7 @@ def main() -> None:
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--model", type=Path, required=True)
     parser.add_argument("--model-revision", required=True)
+    parser.add_argument("--code-commit", required=True)
     parser.add_argument("--image-root", type=Path, required=True)
     parser.add_argument("--rank", type=int, default=0)
     parser.add_argument("--world-size", type=int, default=1)
@@ -117,6 +118,11 @@ def main() -> None:
 
     if args.world_size < 1 or not 0 <= args.rank < args.world_size:
         raise SystemExit("rank must satisfy 0 <= rank < world-size")
+    current_commit = git_commit()
+    if current_commit != args.code_commit:
+        raise SystemExit(
+            f"code commit changed after submission: expected={args.code_commit} actual={current_commit}"
+        )
     samples = load_jsonl(args.manifest)
     manifest_errors = validate_locked_manifest(samples, expected_n=args.expected_samples)
     if manifest_errors:
@@ -145,11 +151,12 @@ def main() -> None:
         eos_ids.add(tokenizer_eos)
     if not eos_ids:
         raise SystemExit("no EOS token ids available")
-    pad_token_id = getattr(processor.tokenizer, "pad_token_id", None) or min(eos_ids)
+    pad_token_id = getattr(processor.tokenizer, "pad_token_id", None)
+    if pad_token_id is None:
+        pad_token_id = min(eos_ids)
 
     schedule = frozen_schedule(samples, manifest_hash)
     args.output.parent.mkdir(parents=True, exist_ok=True)
-    commit = git_commit()
     processed = 0
     with args.output.open("w", encoding="utf-8") as sink, torch.inference_mode():
         for schedule_index, (sample, condition) in enumerate(schedule):
@@ -162,6 +169,7 @@ def main() -> None:
             record = {
                 "sample_id": sample["sample_id"],
                 "source_image_id": sample["source_image_id"],
+                "source_cluster_id": sample["source_cluster_id"],
                 "condition": condition,
                 "schedule_index": schedule_index,
                 "rank": args.rank,
@@ -169,7 +177,7 @@ def main() -> None:
                 "manifest_hash": manifest_hash,
                 "model_revision": args.model_revision,
                 "processor_revision": args.model_revision,
-                "code_commit": commit,
+                "code_commit": args.code_commit,
                 "prompt_hash": rendered.prompt_hash,
                 "shell_hash": rendered.shell_hash,
                 "question_hash": sha256_bytes(sample["final_question"].encode("utf-8")),

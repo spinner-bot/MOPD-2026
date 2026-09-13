@@ -13,6 +13,7 @@ import hashlib
 import json
 import sys
 from collections import Counter
+from datetime import datetime
 from pathlib import Path
 
 
@@ -21,7 +22,8 @@ sys.path.insert(0, str(CODE_ROOT / "evaluation"))
 
 from exploratory_teacher_gap import validate_locked_manifest, validate_partition_isolation
 from teacher_gap_inputs import privileged_context, validate_generic_length
-from teacher_gap_candidate_contract import validate_construct
+from build_teacher_gap_human_review_queue import validate_constructed_row
+from reasoning_graph_contract import validate_guide_graph_alignment, validate_reasoning_graph
 
 
 PARTITION_SIZES = {"canary": 8, "dev": 32, "locked": 96}
@@ -116,14 +118,28 @@ def validate_human_review(review: dict) -> list[str]:
             errors.append(f"{key}_not_false")
     if not str(review.get("human_reviewer", "")).strip():
         errors.append("missing_human_reviewer")
-    if not str(review.get("human_reviewed_at", "")).strip():
+    reviewed_at = str(review.get("human_reviewed_at", "")).strip()
+    if not reviewed_at:
         errors.append("missing_human_reviewed_at")
+    else:
+        try:
+            parsed_time = datetime.fromisoformat(reviewed_at.replace("Z", "+00:00"))
+            if parsed_time.tzinfo is None or parsed_time.utcoffset() is None:
+                errors.append("human_reviewed_at_requires_timezone")
+        except ValueError:
+            errors.append("invalid_human_reviewed_at")
     evidence = review.get("human_required_evidence")
     if not isinstance(evidence, list) or len(evidence) < 2 or any(not str(value).strip() for value in evidence):
         errors.append("invalid_human_required_evidence")
-    graph = review.get("human_reasoning_graph")
-    if not isinstance(graph, dict) or not isinstance(graph.get("nodes"), list) or not graph["nodes"]:
-        errors.append("invalid_human_reasoning_graph")
+    depth = review.get("human_reasoning_depth")
+    if not isinstance(depth, int) or isinstance(depth, bool) or depth < 2:
+        errors.append("invalid_human_reasoning_depth")
+    graph_errors, _ = validate_reasoning_graph(
+        review.get("human_reasoning_graph"),
+        declared_depth=depth,
+        require_two_evidence=True,
+    )
+    errors.extend(f"invalid_human_reasoning_graph:{error}" for error in graph_errors)
     return errors
 
 
@@ -158,7 +174,11 @@ def main() -> None:
 
     from transformers import AutoTokenizer
 
-    constructed = {row["candidate_id"]: row for row in load_jsonl(args.constructed)}
+    constructed_rows = load_jsonl(args.constructed)
+    constructed_ids = [str(row.get("candidate_id", "")).strip() for row in constructed_rows]
+    if any(not value for value in constructed_ids) or len(set(constructed_ids)) != len(constructed_ids):
+        raise SystemExit("constructed candidate_id values must be non-empty and unique")
+    constructed = dict(zip(constructed_ids, constructed_rows))
     reviews = load_jsonl(args.human_review)
     if len({row.get("candidate_id") for row in reviews}) != len(reviews):
         raise SystemExit("human review candidate_id values must be unique")
@@ -173,7 +193,13 @@ def main() -> None:
         else:
             candidate = construction.get("candidate", {})
             proposal = construction.get("proposal", {})
-            reasons.extend(validate_construct(proposal, candidate.get("reference_answers", [])))
+            reasons.extend(validate_constructed_row(construction))
+            reasons.extend(
+                f"guide_graph:{error}"
+                for error in validate_guide_graph_alignment(
+                    proposal.get("guides"), review.get("human_reasoning_graph")
+                )
+            )
             image_path = str(candidate.get("image_original", ""))
             if image_path not in cluster_by_path:
                 reasons.append("image_missing_from_cluster_map")
@@ -233,11 +259,14 @@ def main() -> None:
                 "knowledge_dependency_label": "image_only",
                 "task_family": review["human_task_family"],
                 "full_image_reference_valid": True,
+                "unique_answer": True,
                 "human_verified": True,
                 "human_reviewer": review["human_reviewer"],
                 "human_reviewed_at": review["human_reviewed_at"],
                 "answer_leakage": 0,
+                "external_fact_injected": 0,
                 "required_evidence": review["human_required_evidence"],
+                "reasoning_depth": review["human_reasoning_depth"],
                 "minimal_reasoning_graph": review["human_reasoning_graph"],
             })
         generic = generic_context_for(rows, tokenizer)

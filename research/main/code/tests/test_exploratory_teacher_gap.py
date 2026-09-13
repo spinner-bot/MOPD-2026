@@ -1,8 +1,10 @@
 """Contract tests for the frozen 1017 exploratory teacher-gap protocol."""
 
 import sys
+import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -18,7 +20,7 @@ from exploratory_teacher_gap import (
 )
 from teacher_gap_inputs import COMMON_SHELL, render_teacher_gap_input, validate_generic_length
 from process_exploratory_teacher_gap import enrich_raw_record
-from run_exploratory_teacher_gap import allowed_token_function, frozen_schedule
+from run_exploratory_teacher_gap import allowed_token_function, frozen_schedule, main as run_teacher_gap
 
 
 def manifest_sample(index: int) -> dict:
@@ -41,18 +43,22 @@ def manifest_sample(index: int) -> dict:
         "knowledge_dependency_label": "image_only",
         "task_family": "R",
         "full_image_reference_valid": True,
+        "unique_answer": True,
         "human_verified": True,
         "human_reviewer": "reviewer-1",
         "human_reviewed_at": "2026-09-11T18:00:00+08:00",
         "answer_leakage": 0,
+        "external_fact_injected": 0,
         "required_evidence": ["left relation", "right relation"],
+        "reasoning_depth": 2,
         "minimal_reasoning_graph": {
             "nodes": [
                 {"id": "e1", "type": "evidence", "claim": "left relation"},
+                {"id": "e2", "type": "evidence", "claim": "right relation"},
                 {"id": "h1", "type": "intermediate", "claim": "combined relation"},
                 {"id": "a", "type": "answer", "claim": "selected item"},
             ],
-            "edges": [["e1", "h1"], ["h1", "a"]],
+            "edges": [["e1", "h1"], ["e2", "h1"], ["h1", "a"]],
         },
         "guides": [
             {"question": "What relation is visible on the left?", "answer": "The first relation.", "supports_next": "h1"},
@@ -63,6 +69,7 @@ def manifest_sample(index: int) -> dict:
 
 def result_records(tq_gains: int, tqa_gains: int, generic_gains: int = 1, logp_tq: float = 0.30, logp_tqa: float = 0.35) -> list[dict]:
     rows = []
+    schedule_index = 0
     for index in range(96):
         baseline = index < 48
         correct_by_condition = {
@@ -76,7 +83,11 @@ def result_records(tq_gains: int, tqa_gains: int, generic_gains: int = 1, logp_t
             rows.append({
                 "sample_id": f"sample-{index:03d}",
                 "source_image_id": f"image-{index:03d}",
+                "source_cluster_id": f"cluster-{index:03d}",
                 "condition": condition,
+                "schedule_index": schedule_index,
+                "rank": schedule_index % 4,
+                "world_size": 4,
                 "correct": correct_by_condition[condition],
                 "correct_choice": "A",
                 "correct_log_prob": -1.0 + deltas[condition],
@@ -91,15 +102,42 @@ def result_records(tq_gains: int, tqa_gains: int, generic_gains: int = 1, logp_t
                 "processor_revision": "processor-1",
                 "code_commit": "commit-1",
                 "shell_hash": "shell-1",
+                "model_dtype": "torch.bfloat16",
+                "chat_template": {"enable_thinking": False, "add_generation_prompt": True},
+                "generation_config": {"do_sample": False, "constrained_to": ["A", "B", "C", "D"]},
+                "choice_token_ids": {"A": [1], "B": [2], "C": [3], "D": [4]},
                 "image_checksum": f"image-sha-{index}",
                 "question_hash": f"question-sha-{index}",
                 "options_hash": f"options-sha-{index}",
                 "prompt_hash": f"prompt-{index}-{condition}",
             })
+            schedule_index += 1
     return rows
 
 
 class ExploratoryTeacherGapTests(unittest.TestCase):
+    def test_runner_refuses_a_commit_changed_after_submission(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            model = root / "model"
+            model.mkdir()
+            manifest = root / "manifest.jsonl"
+            manifest.write_text("", encoding="utf-8")
+            argv = [
+                "run_exploratory_teacher_gap.py",
+                "--manifest", str(manifest),
+                "--output", str(root / "output.jsonl"),
+                "--model", str(model),
+                "--model-revision", "model-revision",
+                "--code-commit", "submitted-commit",
+                "--image-root", str(root),
+            ]
+            with patch("sys.argv", argv), patch(
+                "run_exploratory_teacher_gap.git_commit", return_value="newer-commit"
+            ):
+                with self.assertRaisesRegex(SystemExit, "code commit changed after submission"):
+                    run_teacher_gap()
+
     def test_locked_manifest_fails_closed_on_overlap_and_balance(self):
         samples = [manifest_sample(index) for index in range(96)]
         self.assertEqual(validate_locked_manifest(samples), [])
@@ -116,7 +154,7 @@ class ExploratoryTeacherGapTests(unittest.TestCase):
         samples[1]["minimal_reasoning_graph"]["edges"] = [["missing", "a"]]
         errors = validate_locked_manifest(samples)
         self.assertTrue(any("human_reviewer" in error for error in errors))
-        self.assertTrue(any("invalid edges" in error for error in errors))
+        self.assertTrue(any("unknown_endpoint" in error for error in errors))
 
     def test_common_shell_changes_only_privileged_block(self):
         sample = manifest_sample(0)
@@ -152,6 +190,18 @@ class ExploratoryTeacherGapTests(unittest.TestCase):
             decide_teacher_gap(rows, leakage_free=True, n_bootstrap=200)["decision"],
             "INVALID",
         )
+
+    def test_result_gate_rejects_condition_and_schedule_drift(self):
+        rows = result_records(tq_gains=16, tqa_gains=18)
+        rows[0]["chat_template"]["enable_thinking"] = True
+        rows[1]["source_cluster_id"] = "wrong-cluster"
+        rows[2]["schedule_index"] = rows[1]["schedule_index"]
+        rows[3]["prompt_hash"] = rows[2]["prompt_hash"]
+        errors = validate_result_records(rows)
+        self.assertTrue(any("chat_template" in error for error in errors))
+        self.assertTrue(any("source_cluster_id" in error for error in errors))
+        self.assertTrue(any("schedule_index" in error for error in errors))
+        self.assertTrue(any("distinct prompt_hash" in error for error in errors))
 
     def test_strong_tq_go(self):
         decision = decide_teacher_gap(
