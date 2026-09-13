@@ -162,6 +162,8 @@ B2a 的 `human_verified` 是审核者对盲审字段的签名，与 `teacher_gap
 
 若安排两位审核者，两人必须先各自得到 32/32 valid，再计算 candidate/noncandidate 一致性和 R/PR 一致性；分歧通过第三份显式 adjudication 记录解决，不能让后审核者覆盖先审核者文件。
 
+1039 的 B2a 路由分析器 `analyze_image_affordance_blind_calibration.py` 也要求 `--output` 为尚不存在的新路径并排他创建；0、1–7、8–32 三档裁决摘要不能原地覆盖。
+
 ## 6. 第二阶段揭示规则
 
 第一阶段文件和哈希锁定前，禁止查看 B1。锁定后按同一 `image_candidate_id` 揭示机器 proposal，仅用于评价：
@@ -207,3 +209,4 @@ B2b 的 `--output` 与 `--summary` 同样必须是互不相同且尚不存在的
 | 2026-09-14 04:47 | Codex (CINECA Leonardo) | 修订：引用 B2a 技术解码预检；要求核对原生像素和缩放，禁止图像增强产生证据。 |
 | 2026-09-14 05:02 | Codex (CINECA Leonardo) | 修订：finalizer 的 accepted/rejected/summary 改为互异新路径和排他写入；重试使用新版本文件名。 |
 | 2026-09-14 05:05 | Codex (CINECA Leonardo) | 修订：B2b 锁后揭示包与摘要同步改为互异新路径和排他写入，保留先人后机联结证据。 |
+| 2026-09-14 05:08 | Codex (CINECA Leonardo) | 修订：B2a 路由分析摘要改为新路径排他写入，防止三档来源裁决被原地替换。 |

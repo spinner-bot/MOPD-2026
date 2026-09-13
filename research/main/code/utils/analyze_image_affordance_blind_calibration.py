@@ -16,7 +16,7 @@ PIPELINE_DIR = Path(__file__).resolve().parents[1] / "data_pipeline"
 sys.path.insert(0, str(PIPELINE_DIR))
 
 from build_image_affordance_blind_calibration import load_jsonl, stable_packet_sha256
-from finalize_image_affordance_blind_review import finalize
+from finalize_image_affordance_blind_review import finalize, require_new_outputs, write_json_exclusive
 
 
 EXPECTED_PACKET_SHA256 = "b61839ddb4111f1be5d2d67f165c40dc05cd10daf8d5ca02a202b707a1057a58"
@@ -115,6 +115,7 @@ def main() -> None:
     parser.add_argument("--expected-records", type=int, default=EXPECTED_RECORDS)
     args = parser.parse_args()
     try:
+        require_new_outputs([args.output])
         result = analyze(
             load_jsonl(args.original),
             load_jsonl(args.reviewed),
@@ -124,11 +125,7 @@ def main() -> None:
     except (OSError, ValueError, json.JSONDecodeError) as error:
         raise SystemExit(str(error)) from error
     result["reviewed_packet_sha256"] = hashlib.sha256(args.reviewed.read_bytes()).hexdigest()
-    args.output.parent.mkdir(parents=True, exist_ok=True)
-    args.output.write_text(
-        json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
-        encoding="utf-8",
-    )
+    write_json_exclusive(args.output, result)
     print(json.dumps(result, ensure_ascii=False, sort_keys=True))
 
 
