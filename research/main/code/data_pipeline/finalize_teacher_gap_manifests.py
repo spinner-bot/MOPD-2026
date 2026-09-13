@@ -21,7 +21,7 @@ sys.path.insert(0, str(CODE_ROOT / "evaluation"))
 
 from exploratory_teacher_gap import validate_locked_manifest, validate_partition_isolation
 from teacher_gap_inputs import privileged_context, validate_generic_length
-from reasoning_graph_contract import validate_reasoning_graph
+from reasoning_graph_contract import validate_guide_graph_alignment, validate_reasoning_graph
 from teacher_gap_candidate_contract import validate_construct
 
 
@@ -181,6 +181,12 @@ def main() -> None:
             candidate = construction.get("candidate", {})
             proposal = construction.get("proposal", {})
             reasons.extend(validate_construct(proposal, candidate.get("reference_answers", [])))
+            reasons.extend(
+                f"guide_graph:{error}"
+                for error in validate_guide_graph_alignment(
+                    proposal.get("guides"), review.get("human_reasoning_graph")
+                )
+            )
             image_path = str(candidate.get("image_original", ""))
             if image_path not in cluster_by_path:
                 reasons.append("image_missing_from_cluster_map")

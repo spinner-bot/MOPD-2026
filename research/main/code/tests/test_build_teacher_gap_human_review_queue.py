@@ -98,6 +98,13 @@ class HumanReviewQueueTests(unittest.TestCase):
         self.assertEqual(len(rejected), 1)
         self.assertEqual(summary["automatically_human_verified"], 0)
 
+    def test_dangling_guide_target_never_enters_queue(self):
+        row = constructed()
+        row["proposal"]["guides"][0]["supports_next"] = "missing-node"
+        queued, rejected, _ = build_queue([row])
+        self.assertEqual(queued, [])
+        self.assertTrue(any("unknown_supports_next" in error for error in rejected[0]["rejection_reasons"]))
+
     def test_duplicate_candidate_ids_fail_closed(self):
         queued, rejected, _ = build_queue([constructed(), constructed()])
         self.assertEqual(len(queued), 1)

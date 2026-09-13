@@ -98,6 +98,8 @@ JSON 布尔值必须写成不带引号的 `true`/`false`。`"yes"`、`"no"`、`1
 
 任一冻结必需条件失败时填写实际观察结果，并将 `human_decision` 设为 `borderline` 或 `reject`。不要为了通过终检而把失败字段改成合格值。
 
+每个 guide 的 `supports_next` 必须引用人工确认图中存在的 `intermediate` 或 `answer` 节点，且整组 guides 至少支持一个 intermediate 节点。若人工修订了节点 ID，必须同步修订 guide 引用。
+
 ## 6. 完整 JSONL 合格示例
 
 ```json
