@@ -5,12 +5,14 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "code" / "data_pipeline"))
 
 from process_teacher_gap_candidate_stage import parse_records, select_construction
+from run_teacher_gap_candidate_stage import main as run_candidate_stage
 from finalize_teacher_gap_manifests import (
     arrange_options,
     duplicate_cluster_map,
@@ -100,6 +102,29 @@ def parsed_row(stage: str, proposal: dict) -> dict:
 
 
 class TeacherGapCandidatePipelineTests(unittest.TestCase):
+    def test_runner_refuses_a_commit_changed_after_submission(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            model = root / "model"
+            model.mkdir()
+            source = root / "input.jsonl"
+            source.write_text("", encoding="utf-8")
+            argv = [
+                "run_teacher_gap_candidate_stage.py",
+                "--stage", "blind",
+                "--input", str(source),
+                "--output", str(root / "output.jsonl"),
+                "--model", str(model),
+                "--model-revision", "model-revision",
+                "--code-commit", "submitted-commit",
+                "--image-root", str(root),
+            ]
+            with patch("sys.argv", argv), patch(
+                "run_teacher_gap_candidate_stage.git_commit", return_value="newer-commit"
+            ):
+                with self.assertRaisesRegex(SystemExit, "code commit changed after submission"):
+                    run_candidate_stage()
+
     def test_prompts_never_include_official_evidence(self):
         for stage in ("blind", "audit", "construct"):
             prompt = render_stage_prompt(candidate(), stage, audit() if stage == "construct" else None)
