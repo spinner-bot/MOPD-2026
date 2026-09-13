@@ -8,7 +8,7 @@ import json
 import subprocess
 from pathlib import Path
 
-from exploratory_teacher_gap import CHOICES, CONDITIONS, validate_locked_manifest
+from exploratory_teacher_gap import CHOICES, frozen_schedule, validate_locked_manifest
 from teacher_gap_inputs import render_teacher_gap_input, validate_generic_length
 
 
@@ -51,16 +51,6 @@ def git_commit() -> str:
 def load_jsonl(path: Path) -> list[dict]:
     with path.open(encoding="utf-8") as source:
         return [json.loads(line) for line in source if line.strip()]
-
-
-def frozen_schedule(samples: list[dict], manifest_hash: str) -> list[tuple[dict, str]]:
-    pairs = [(sample, condition) for sample in samples for condition in CONDITIONS]
-    return sorted(
-        pairs,
-        key=lambda pair: sha256_bytes(
-            f"{manifest_hash}\0{pair[0]['sample_id']}\0{pair[1]}".encode("utf-8")
-        ),
-    )
 
 
 def choice_token_sequences(tokenizer) -> dict[str, list[int]]:

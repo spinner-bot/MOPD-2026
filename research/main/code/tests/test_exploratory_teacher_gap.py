@@ -16,6 +16,7 @@ from exploratory_teacher_gap import (
     CONDITIONS,
     decide_teacher_gap,
     exact_mcnemar_one_sided,
+    frozen_schedule,
     validate_manifest_bundle,
     validate_locked_manifest,
     validate_partition_isolation,
@@ -27,7 +28,6 @@ from process_exploratory_teacher_gap import enrich_raw_record
 from run_exploratory_teacher_gap import (
     allowed_token_function,
     choice_token_sequences,
-    frozen_schedule,
     main as run_teacher_gap,
     runtime_code_hashes,
     validate_choice_continuations,
@@ -348,12 +348,23 @@ class ExploratoryTeacherGapTests(unittest.TestCase):
                     separators=(",", ":"),
                 ).encode()).hexdigest(),
             })
+        schedule = {
+            (sample["sample_id"], condition): index
+            for index, (sample, condition) in enumerate(frozen_schedule(samples, manifest_hash))
+        }
+        for row in rows:
+            row["schedule_index"] = schedule[(row["sample_id"], row["condition"])]
+            row["rank"] = row["schedule_index"] % 4
         self.assertEqual(validate_results_against_manifest(rows, samples, manifest_hash), [])
         rows[0]["options_hash"] = "tampered"
         rows[1]["manifest_hash"] = "other-manifest"
+        rows[2]["schedule_index"], rows[3]["schedule_index"] = (
+            rows[3]["schedule_index"], rows[2]["schedule_index"]
+        )
         errors = validate_results_against_manifest(rows, samples, manifest_hash)
         self.assertTrue(any("options_hash differs" in error for error in errors))
         self.assertTrue(any("manifest_hash differs" in error for error in errors))
+        self.assertTrue(any("schedule_index differs" in error for error in errors))
 
     def test_strong_tq_go(self):
         decision = decide_teacher_gap(

@@ -26,6 +26,18 @@ CONDITIONS = ("S", "T_Q", "T_QA", "T_generic")
 CHOICES = ("A", "B", "C", "D")
 
 
+def frozen_schedule(samples: list[dict], manifest_hash: str) -> list[tuple[dict, str]]:
+    """Return the deterministic sample-condition order shared by runner and gate."""
+
+    pairs = [(sample, condition) for sample in samples for condition in CONDITIONS]
+    return sorted(
+        pairs,
+        key=lambda pair: hashlib.sha256(
+            f"{manifest_hash}\0{pair[0]['sample_id']}\0{pair[1]}".encode("utf-8")
+        ).hexdigest(),
+    )
+
+
 def validate_locked_manifest(samples: list[dict], expected_n: int = 96) -> list[str]:
     """Validate content-independent invariants of the locked pilot manifest."""
 
@@ -227,11 +239,21 @@ def validate_results_against_manifest(
         extra = sorted(observed_ids - set(expected))
         errors.append(f"raw sample ids differ from manifest: missing={missing}, extra={extra}")
 
+    expected_schedule = {
+        (str(sample["sample_id"]), condition): index
+        for index, (sample, condition) in enumerate(frozen_schedule(samples, manifest_hash))
+    }
+
     for index, row in enumerate(records):
         sample_id = str(row.get("sample_id", "")).strip()
         sample = expected.get(sample_id)
         if sample is None:
             continue
+        schedule_key = (sample_id, str(row.get("condition", "")))
+        if row.get("schedule_index") != expected_schedule.get(schedule_key):
+            errors.append(
+                f"record-{index}/{sample_id}: schedule_index differs from frozen schedule"
+            )
         expected_values = {
             "manifest_hash": manifest_hash,
             "source_dataset": str(sample.get("source_dataset", "")),
