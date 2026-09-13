@@ -67,6 +67,7 @@ def manifest_sample(index: int) -> dict:
 
 def result_records(tq_gains: int, tqa_gains: int, generic_gains: int = 1, logp_tq: float = 0.30, logp_tqa: float = 0.35) -> list[dict]:
     rows = []
+    schedule_index = 0
     for index in range(96):
         baseline = index < 48
         correct_by_condition = {
@@ -80,7 +81,11 @@ def result_records(tq_gains: int, tqa_gains: int, generic_gains: int = 1, logp_t
             rows.append({
                 "sample_id": f"sample-{index:03d}",
                 "source_image_id": f"image-{index:03d}",
+                "source_cluster_id": f"cluster-{index:03d}",
                 "condition": condition,
+                "schedule_index": schedule_index,
+                "rank": schedule_index % 4,
+                "world_size": 4,
                 "correct": correct_by_condition[condition],
                 "correct_choice": "A",
                 "correct_log_prob": -1.0 + deltas[condition],
@@ -95,11 +100,16 @@ def result_records(tq_gains: int, tqa_gains: int, generic_gains: int = 1, logp_t
                 "processor_revision": "processor-1",
                 "code_commit": "commit-1",
                 "shell_hash": "shell-1",
+                "model_dtype": "torch.bfloat16",
+                "chat_template": {"enable_thinking": False, "add_generation_prompt": True},
+                "generation_config": {"do_sample": False, "constrained_to": ["A", "B", "C", "D"]},
+                "choice_token_ids": {"A": [1], "B": [2], "C": [3], "D": [4]},
                 "image_checksum": f"image-sha-{index}",
                 "question_hash": f"question-sha-{index}",
                 "options_hash": f"options-sha-{index}",
                 "prompt_hash": f"prompt-{index}-{condition}",
             })
+            schedule_index += 1
     return rows
 
 
@@ -178,6 +188,18 @@ class ExploratoryTeacherGapTests(unittest.TestCase):
             decide_teacher_gap(rows, leakage_free=True, n_bootstrap=200)["decision"],
             "INVALID",
         )
+
+    def test_result_gate_rejects_condition_and_schedule_drift(self):
+        rows = result_records(tq_gains=16, tqa_gains=18)
+        rows[0]["chat_template"]["enable_thinking"] = True
+        rows[1]["source_cluster_id"] = "wrong-cluster"
+        rows[2]["schedule_index"] = rows[1]["schedule_index"]
+        rows[3]["prompt_hash"] = rows[2]["prompt_hash"]
+        errors = validate_result_records(rows)
+        self.assertTrue(any("chat_template" in error for error in errors))
+        self.assertTrue(any("source_cluster_id" in error for error in errors))
+        self.assertTrue(any("schedule_index" in error for error in errors))
+        self.assertTrue(any("distinct prompt_hash" in error for error in errors))
 
     def test_strong_tq_go(self):
         decision = decide_teacher_gap(

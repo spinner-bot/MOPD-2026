@@ -151,7 +151,9 @@ def main() -> None:
         eos_ids.add(tokenizer_eos)
     if not eos_ids:
         raise SystemExit("no EOS token ids available")
-    pad_token_id = getattr(processor.tokenizer, "pad_token_id", None) or min(eos_ids)
+    pad_token_id = getattr(processor.tokenizer, "pad_token_id", None)
+    if pad_token_id is None:
+        pad_token_id = min(eos_ids)
 
     schedule = frozen_schedule(samples, manifest_hash)
     args.output.parent.mkdir(parents=True, exist_ok=True)
@@ -167,6 +169,7 @@ def main() -> None:
             record = {
                 "sample_id": sample["sample_id"],
                 "source_image_id": sample["source_image_id"],
+                "source_cluster_id": sample["source_cluster_id"],
                 "condition": condition,
                 "schedule_index": schedule_index,
                 "rank": args.rank,
