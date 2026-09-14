@@ -1,0 +1,22 @@
+{
+  "status": "failed_closed_canary",
+  "slurm_job_id": "57595439",
+  "code_commit": "aa11b60df5475f1aead0ff83d0a073163641adca",
+  "canary_total": 8,
+  "valid_parsed": 2,
+  "parse_rate": 0.25,
+  "decisions": {
+    "accept_candidate": 1,
+    "reject": 1
+  },
+  "fallback_used": 7,
+  "fallback_recovered": 1,
+  "runner_errors": 0,
+  "final_truncated": 0,
+  "rejection_reasons": {
+    "invalid_distractor_cardinality": 5,
+    "options_not_distinct": 1
+  },
+  "full_ran": false,
+  "human_verified": 0
+}

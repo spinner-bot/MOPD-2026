@@ -1,0 +1,10 @@
+{
+  "automatically_human_verified": 0,
+  "calibration_records": 32,
+  "machine_proposals_exposed": false,
+  "packet_sha256": "b61839ddb4111f1be5d2d67f165c40dc05cd10daf8d5ca02a202b707a1057a58",
+  "rules_version": "image-affordance-blind-calibration-v1",
+  "selection": "ordered prefix of frozen question-free image sample",
+  "source_questions_exposed": false,
+  "source_records": 256
+}

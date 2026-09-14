@@ -1,0 +1,40 @@
+{
+  "accuracy_delta": 0.08,
+  "locked_samples": 96,
+  "method": "unconditional exact one-sided McNemar power via Binomial(N,d) discordant counts",
+  "one_sided_alpha": 0.025,
+  "rows": [
+    {
+      "discordance_rate": 0.1,
+      "minimum_n_for_target_power": 125,
+      "power_at_locked_n": 0.6426601453683044
+    },
+    {
+      "discordance_rate": 0.15,
+      "minimum_n_for_target_power": 198,
+      "power_at_locked_n": 0.44072263193908906
+    },
+    {
+      "discordance_rate": 0.2,
+      "minimum_n_for_target_power": 258,
+      "power_at_locked_n": 0.33918216127043366
+    },
+    {
+      "discordance_rate": 0.3,
+      "minimum_n_for_target_power": 387,
+      "power_at_locked_n": 0.23102521216828031
+    },
+    {
+      "discordance_rate": 0.4,
+      "minimum_n_for_target_power": 510,
+      "power_at_locked_n": 0.18884118542217965
+    },
+    {
+      "discordance_rate": 0.5,
+      "minimum_n_for_target_power": 634,
+      "power_at_locked_n": 0.1621371115509262
+    }
+  ],
+  "scope": "paired binary accuracy only; correct-answer log-probability and Generic-T criteria are not modeled",
+  "target_power": 0.8
+}

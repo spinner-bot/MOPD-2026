@@ -1,0 +1,41 @@
+{
+  "run_id": "20260914T0308-image-affordance-b1-256-r3",
+  "stage": "image-first-B1",
+  "purpose": "Retry image-only affordance pilot with fail-closed candidate repair and explicit nested schema",
+  "created_at_utc": "2026-09-13T19:07:43+00:00",
+  "operator": "Codex (CINECA Leonardo)",
+  "status": "cancelled_after_canary_semantic_stop",
+  "slurm_job_id": "57599758",
+  "git_commit": null,
+  "input_records": 256,
+  "input_sha256": "e69b6d14fe8da625720af1ee7198213b909c682c10e2313003f43c2c139debf4",
+  "source_questions_exposed": false,
+  "teacher_gap_results_used_for_selection": false,
+  "human_verified": 0,
+  "resources": {
+    "nodes": 1,
+    "tasks": 4,
+    "gpus": 4,
+    "gpu_type": "A100",
+    "time_limit": "48:00:00"
+  },
+  "supersedes_run_id": "20260914T0258-image-affordance-b1-256-r2",
+  "superseded_job_id": "57598570",
+  "repair_commit": "be1e4e9",
+  "dependency": {
+    "type": "afterany",
+    "slurm_job_id": "57599082",
+    "reason": "serialize 4-GPU allocations"
+  },
+  "submitted_code_commit": "67f5af72bfa1aaf17723853793f2158cddb4d92f",
+  "run_worktree": "/leonardo/home/userexternal/rqian000/spinner-bot/MOPD-2026-codex-b1r3",
+  "started_at_local": "2026-09-13T21:12:00+02:00",
+  "ended_at_local": "2026-09-13T21:18:36+02:00",
+  "node": "lrdn1759",
+  "canary_parse_rate": 0.875,
+  "canary_machine_candidates": 7,
+  "full_started": true,
+  "full_elapsed_before_cancel": "00:00:24",
+  "full_records_written": 0,
+  "cancel_reason": "canary proposals systematically relabelled simple relations as two-step R"
+}

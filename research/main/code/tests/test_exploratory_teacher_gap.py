@@ -1,6 +1,9 @@
 """Contract tests for the frozen 1017 exploratory teacher-gap protocol."""
 
 import sys
+import copy
+import hashlib
+import json
 import tempfile
 import unittest
 from pathlib import Path
@@ -12,21 +15,46 @@ sys.path.insert(0, str(ROOT / "code" / "evaluation"))
 
 from exploratory_teacher_gap import (
     CONDITIONS,
+    NATURAL_ROTATION_CONDITIONS,
+    aggregate_natural_rotation_results,
     decide_teacher_gap,
+    decide_teacher_gap_label_rotation,
+    expand_natural_rotation_manifest,
     exact_mcnemar_one_sided,
+    frozen_schedule,
+    validate_manifest_bundle,
+    validate_manifest_profile,
     validate_locked_manifest,
+    validate_natural_rotation_manifest,
     validate_partition_isolation,
     validate_result_records,
+    validate_results_against_manifest,
 )
+from exploratory_teacher_gap import TEACHER_GAP_DECISION_RULE_HASH
 from teacher_gap_inputs import COMMON_SHELL, render_teacher_gap_input, validate_generic_length
-from process_exploratory_teacher_gap import enrich_raw_record
-from run_exploratory_teacher_gap import allowed_token_function, frozen_schedule, main as run_teacher_gap
+from process_exploratory_teacher_gap import (
+    MODEL_ASSET_CHECKSUMS_SHA256,
+    MODEL_ASSET_REVISIONS_SHA256,
+    enrich_raw_record,
+    main as process_teacher_gap,
+    validate_model_asset_gate,
+)
+from run_exploratory_teacher_gap import (
+    allowed_token_function,
+    choice_token_sequences,
+    conditional_choice_scores,
+    main as run_teacher_gap,
+    runtime_code_hashes,
+    validate_choice_continuations,
+)
 
 
 def manifest_sample(index: int) -> dict:
     label = "ABCD"[index % 4]
-    return {
+    sample = {
         "sample_id": f"sample-{index:03d}",
+        "dataset_role": "G0-locked-method-selection",
+        "selection_uses_model_effect": False,
         "source_image_id": f"image-{index:03d}",
         "source_cluster_id": f"cluster-{index:03d}",
         "source_dataset": "M3VQA",
@@ -40,6 +68,36 @@ def manifest_sample(index: int) -> dict:
         "option_D": f"delta-{index}",
         "final_answer": label,
         "generic_context": "Inspect the relevant visible elements, compare the choices, and verify the conclusion.",
+        "generic_context_t_q": "Inspect the relevant visible elements, compare the choices, and verify the conclusion.",
+        "generic_context_t_qa": "Inspect each visible element carefully, compare every relation in order, check each intermediate step, and verify the final conclusion.",
+        "generic_length_control": {
+            "algorithm": "neutral-prefix-nearest-per-sample-v1",
+            "neutral_word_bank_sha256": "a" * 64,
+            "tokenizer_source": "/frozen/tokenizer",
+            "tokenizer_revision": "c" * 40,
+            "tokenizer_artifact_sha256": {"tokenizer.json": "b" * 64},
+            "tolerance": 0.10,
+            "T_Q_vs_T_generic_Q": {
+                "sample_id": f"sample-{index:03d}",
+                "treatment_tokens": 10,
+                "control_tokens": 10,
+                "relative_difference": 0.0,
+                "passes": True,
+            },
+            "T_QA_vs_T_generic_QA": {
+                "sample_id": f"sample-{index:03d}",
+                "treatment_tokens": 20,
+                "control_tokens": 20,
+                "relative_difference": 0.0,
+                "passes": True,
+            },
+        },
+        "finalization_provenance": {
+            "code_commit": "d" * 40,
+            "runtime_code_sha256": {"finalizer.py": "e" * 64},
+            "input_sha256": {"human_review": "f" * 64},
+            "seed": 20260911,
+        },
         "knowledge_dependency_label": "image_only",
         "task_family": "R",
         "full_image_reference_valid": True,
@@ -50,6 +108,7 @@ def manifest_sample(index: int) -> dict:
         "answer_leakage": 0,
         "external_fact_injected": 0,
         "required_evidence": ["left relation", "right relation"],
+        "difficult_visual_evidence": [],
         "reasoning_depth": 2,
         "minimal_reasoning_graph": {
             "nodes": [
@@ -65,6 +124,8 @@ def manifest_sample(index: int) -> dict:
             {"question": "How does it apply on the right?", "answer": "In the same order.", "supports_next": "a"},
         ],
     }
+    sample["canonical_answer_text"] = sample[f"option_{label}"]
+    return sample
 
 
 def result_records(tq_gains: int, tqa_gains: int, generic_gains: int = 1, logp_tq: float = 0.30, logp_tqa: float = 0.35) -> list[dict]:
@@ -82,8 +143,12 @@ def result_records(tq_gains: int, tqa_gains: int, generic_gains: int = 1, logp_t
         for condition in CONDITIONS:
             rows.append({
                 "sample_id": f"sample-{index:03d}",
+                "source_dataset": "M3VQA",
+                "source_record_id": f"m3vqa-{index:03d}",
                 "source_image_id": f"image-{index:03d}",
                 "source_cluster_id": f"cluster-{index:03d}",
+                "task_family": "R",
+                "reasoning_depth": 2,
                 "condition": condition,
                 "schedule_index": schedule_index,
                 "rank": schedule_index % 4,
@@ -106,6 +171,13 @@ def result_records(tq_gains: int, tqa_gains: int, generic_gains: int = 1, logp_t
                 "chat_template": {"enable_thinking": False, "add_generation_prompt": True},
                 "generation_config": {"do_sample": False, "constrained_to": ["A", "B", "C", "D"]},
                 "choice_token_ids": {"A": [1], "B": [2], "C": [3], "D": [4]},
+                "choice_continuation_verified": True,
+                "runtime_code_hashes": {
+                    "exploratory_teacher_gap.py": "hash-1",
+                    "reasoning_graph_contract.py": "hash-2",
+                    "run_exploratory_teacher_gap.py": "hash-3",
+                    "teacher_gap_inputs.py": "hash-4",
+                },
                 "image_checksum": f"image-sha-{index}",
                 "question_hash": f"question-sha-{index}",
                 "options_hash": f"options-sha-{index}",
@@ -115,7 +187,367 @@ def result_records(tq_gains: int, tqa_gains: int, generic_gains: int = 1, logp_t
     return rows
 
 
+def write_model_asset_gate(path: Path, revision: str = "model-1") -> None:
+    digest = "a" * 64
+    path.write_text(json.dumps({
+        "status": "passed",
+        "repo": "Qwen/Qwen3.5-4B",
+        "revision": revision,
+        "revisions_inventory_sha256": MODEL_ASSET_REVISIONS_SHA256,
+        "checksums_inventory_sha256": MODEL_ASSET_CHECKSUMS_SHA256,
+        "expected_files": 1,
+        "observed_files": 1,
+        "missing_files": [],
+        "unexpected_files": [],
+        "files": {
+            "config.json": {
+                "matches": True,
+                "expected_sha256": digest,
+                "actual_sha256": digest,
+            }
+        },
+        "validation_errors": [],
+    }), encoding="utf-8")
+
+
 class ExploratoryTeacherGapTests(unittest.TestCase):
+    def test_legacy_fixed_label_decide_cli_is_not_exposed(self):
+        argv = ["process_exploratory_teacher_gap.py", "decide"]
+        with patch("sys.argv", argv), patch("sys.stderr"):
+            with self.assertRaises(SystemExit) as caught:
+                process_teacher_gap()
+        self.assertEqual(caught.exception.code, 2)
+
+    def test_natural_rotation_validate_and_decide_cli_end_to_end(self):
+        samples = [manifest_sample(index) for index in range(8)]
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            base = root / "base.jsonl"
+            base.write_text("".join(json.dumps(row, sort_keys=True) + "\n" for row in samples), encoding="utf-8")
+            base_hash = hashlib.sha256(base.read_bytes()).hexdigest()
+            expanded = expand_natural_rotation_manifest(samples, base_hash)
+            manifest = root / "rotation.jsonl"
+            manifest.write_text("".join(json.dumps(row, sort_keys=True) + "\n" for row in expanded), encoding="utf-8")
+            manifest_hash = hashlib.sha256(manifest.read_bytes()).hexdigest()
+            schedule = frozen_schedule(expanded, manifest_hash, NATURAL_ROTATION_CONDITIONS)
+            choice_tokens = {choice: [index + 1] for index, choice in enumerate("ABCD")}
+            label_bias = {"A": 20.0, "B": 10.0, "C": 0.0, "D": -10.0}
+            raw_rows = []
+            for schedule_index, (sample, condition) in enumerate(schedule):
+                mapping = sample["displayed_label_to_semantic_option"]
+                correct_semantic = sample["correct_semantic_option_id"]
+                target = correct_semantic if condition == "T_QA" else "ABCD"[("ABCD".index(correct_semantic) + 1) % 4]
+                scores = {
+                    displayed: label_bias[displayed] + (40.0 if semantic == target else 0.0)
+                    for displayed, semantic in mapping.items()
+                }
+                parsed = max("ABCD", key=lambda choice: scores[choice])
+                row = {
+                    "sample_id": sample["sample_id"],
+                    "source_dataset": sample["source_dataset"],
+                    "source_record_id": sample["source_record_id"],
+                    "source_image_id": sample["source_image_id"],
+                    "source_cluster_id": sample["source_cluster_id"],
+                    "task_family": sample["task_family"],
+                    "reasoning_depth": sample["reasoning_depth"],
+                    "condition": condition,
+                    "schedule_index": schedule_index,
+                    "rank": schedule_index % 4,
+                    "world_size": 4,
+                    "manifest_hash": manifest_hash,
+                    "model_revision": "model-1",
+                    "processor_revision": "model-1",
+                    "code_commit": "commit-1",
+                    "runtime_code_hashes": {"runner": "hash"},
+                    "prompt_hash": f"prompt-{sample['sample_id']}-{condition}",
+                    "shell_hash": "shell-1",
+                    "question_hash": hashlib.sha256(sample["final_question"].encode()).hexdigest(),
+                    "options_hash": hashlib.sha256(json.dumps(
+                        [sample[f"option_{choice}"] for choice in "ABCD"],
+                        ensure_ascii=False, separators=(",", ":"),
+                    ).encode()).hexdigest(),
+                    "correct_choice": sample["final_answer"],
+                    "choice_token_ids": choice_tokens,
+                    "chat_template": {"enable_thinking": False, "add_generation_prompt": True},
+                    "generation_config": {"do_sample": False, "constrained_to": list("ABCD")},
+                    "image_checksum": sample["image_checksum"],
+                    "choice_log_likelihoods": scores,
+                    "choice_continuation_verified": True,
+                    "generated_token_ids": choice_tokens[parsed] + [99],
+                    "generated_tokens": 2,
+                    "eos_reached": True,
+                    "truncated": False,
+                    "raw_generation": parsed,
+                    "model_dtype": "torch.bfloat16",
+                    "error": None,
+                }
+                for field in (
+                    "experiment_role", "base_sample_id", "base_manifest_sha256", "label_rotation",
+                    "rotation_spec_hash", "semantic_options", "correct_semantic_option_id",
+                    "displayed_label_to_semantic_option",
+                ):
+                    row[field] = sample[field]
+                raw_rows.append(row)
+            raw = root / "raw.jsonl"
+            raw.write_text("".join(json.dumps(row, sort_keys=True) + "\n" for row in raw_rows), encoding="utf-8")
+            parsed = root / "parsed.jsonl"
+            gate = root / "gate.json"
+            asset_gate = root / "model-asset-gate.json"
+            write_model_asset_gate(asset_gate)
+            argv = [
+                "process_exploratory_teacher_gap.py", "validate", "--inputs", str(raw),
+                "--manifest", str(manifest), "--base-manifest", str(base),
+                "--manifest-profile", "natural_rotation", "--expected-samples", "32",
+                "--model-asset-gate", str(asset_gate),
+                "--parsed-output", str(parsed), "--summary", str(gate),
+            ]
+            with patch("sys.argv", argv), patch("builtins.print"):
+                process_teacher_gap()
+            self.assertEqual(json.loads(gate.read_text())["status"], "passed")
+            decision_path = root / "decision.json"
+            argv = [
+                "process_exploratory_teacher_gap.py", "decide-natural-label-rotation",
+                "--input", str(parsed), "--manifest", str(manifest),
+                "--base-manifest", str(base), "--expected-samples", "8",
+                "--model-asset-gate", str(asset_gate),
+                "--leakage-free", "--output", str(decision_path),
+            ]
+            with patch("sys.argv", argv), patch("builtins.print"):
+                process_teacher_gap()
+            decision = json.loads(decision_path.read_text())
+            self.assertEqual(decision["decision"], "GO_T_QA")
+            self.assertEqual(decision["n_samples"], 8)
+            self.assertEqual(decision["n_condition_records"], 160)
+            self.assertEqual(decision["matched_generic_controls"], {
+                "T_Q": "T_generic_Q", "T_QA": "T_generic_QA"
+            })
+            self.assertEqual(
+                decision["model_asset_gate_sha256"],
+                hashlib.sha256(asset_gate.read_bytes()).hexdigest(),
+            )
+
+    def test_natural_rotation_preflight_cli_binds_base_assets_and_tokenizer(self):
+        class Tokenizer:
+            @staticmethod
+            def encode(text, add_special_tokens=False):
+                return [ord(text)] if text in "ABCD" and len(text) == 1 else list(range(20))
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            image_dir = root / "images"
+            image_dir.mkdir()
+            samples = [manifest_sample(index) for index in range(8)]
+            for index, sample in enumerate(samples):
+                content = f"image-{index}".encode()
+                (image_dir / f"{index:03d}.jpg").write_bytes(content)
+                sample["image_checksum"] = hashlib.sha256(content).hexdigest()
+            base = root / "base.jsonl"
+            base.write_text("".join(json.dumps(row, sort_keys=True) + "\n" for row in samples), encoding="utf-8")
+            base_hash = hashlib.sha256(base.read_bytes()).hexdigest()
+            expanded = expand_natural_rotation_manifest(samples, base_hash)
+            manifest = root / "rotation.jsonl"
+            manifest.write_text("".join(json.dumps(row, sort_keys=True) + "\n" for row in expanded), encoding="utf-8")
+            tokenizer_root = root / "tokenizer"
+            tokenizer_root.mkdir()
+            summary = root / "preflight.json"
+            argv = [
+                "process_exploratory_teacher_gap.py", "validate-natural-label-rotation-manifest",
+                "--manifest", str(manifest), "--base-manifest", str(base),
+                "--expected-samples", "8", "--image-root", str(root),
+                "--tokenizer", str(tokenizer_root), "--summary", str(summary),
+            ]
+            with patch("sys.argv", argv), patch(
+                "transformers.AutoTokenizer.from_pretrained", return_value=Tokenizer()
+            ), patch("builtins.print"):
+                process_teacher_gap()
+            result = json.loads(summary.read_text(encoding="utf-8"))
+            self.assertEqual(result["status"], "passed")
+            self.assertEqual(result["manifest_records"], 32)
+            self.assertFalse(result["performance_results_read"])
+            self.assertFalse(result["gpu_used"])
+
+    def test_natural_rotation_manifest_and_semantic_aggregation(self):
+        samples = [manifest_sample(index) for index in range(8)]
+        payload = "".join(json.dumps(row, sort_keys=True) + "\n" for row in samples).encode()
+        base_hash = hashlib.sha256(payload).hexdigest()
+        expanded = expand_natural_rotation_manifest(samples, base_hash)
+        self.assertEqual(validate_natural_rotation_manifest(expanded, samples, base_hash, 32), [])
+        self.assertEqual(validate_manifest_profile(
+            expanded, 32, "natural_rotation", samples, base_hash
+        ), [])
+        self.assertEqual(len(expanded), 32)
+        self.assertEqual({row["source_record_id"] for row in expanded}, {row["source_record_id"] for row in samples})
+        mutated = json.loads(json.dumps(expanded))
+        mutated[0]["displayed_label_to_semantic_option"]["A"] = "D"
+        self.assertTrue(validate_natural_rotation_manifest(mutated, samples, base_hash, 32))
+
+        label_bias = {"A": 20.0, "B": 10.0, "C": 0.0, "D": -10.0}
+        records = []
+        for row in expanded:
+            mapping = row["displayed_label_to_semantic_option"]
+            correct = row["correct_semantic_option_id"]
+            wrong = "ABCD"[("ABCD".index(correct) + 1) % 4]
+            for condition in NATURAL_ROTATION_CONDITIONS:
+                target = correct if condition == "T_QA" else wrong
+                scores = {
+                    displayed: label_bias[displayed] + (40.0 if semantic == target else 0.0)
+                    for displayed, semantic in mapping.items()
+                }
+                records.append({
+                    "base_sample_id": row["base_sample_id"],
+                    "condition": condition,
+                    "label_rotation": row["label_rotation"],
+                    "displayed_label_to_semantic_option": mapping,
+                    "choice_log_likelihoods": scores,
+                    "parsed_answer": max("ABCD", key=lambda choice: scores[choice]),
+                    "correct_semantic_option_id": correct,
+                    "source_cluster_id": row["source_cluster_id"],
+                })
+        observations, errors = aggregate_natural_rotation_results(records, expected_samples=8)
+        self.assertEqual(errors, [])
+        self.assertEqual(len(observations), 40)
+        self.assertEqual(sum(row["correct"] for row in observations if row["condition"] == "S"), 0)
+        self.assertEqual(sum(row["correct"] for row in observations if row["condition"] == "T_QA"), 8)
+        self.assertTrue(all("mapped_generation_vote_tie" in row for row in observations))
+        decision = decide_teacher_gap_label_rotation(
+            records, leakage_free=True, expected_samples=8, n_bootstrap=100
+        )
+        self.assertEqual(decision["decision"], "GO_T_QA")
+        self.assertEqual(decision["n_samples"], 8)
+        self.assertEqual(decision["n_rotation_views"], 32)
+        self.assertEqual(decision["n_condition_records"], 160)
+        self.assertFalse(decision["generation_vote_used_for_decision"])
+
+        matched_control_records = copy.deepcopy(records)
+        for row in matched_control_records:
+            if row["condition"] != "T_generic_QA":
+                continue
+            correct = row["correct_semantic_option_id"]
+            row["choice_log_likelihoods"] = {
+                displayed: (40.0 if semantic == correct else 0.0)
+                for displayed, semantic in row["displayed_label_to_semantic_option"].items()
+            }
+        controlled = decide_teacher_gap_label_rotation(
+            matched_control_records, leakage_free=True, expected_samples=8, n_bootstrap=100
+        )
+        self.assertEqual(controlled["decision"], "REVISE")
+        self.assertEqual(
+            controlled["comparisons"]["T_QA"]["matched_generic_condition"],
+            "T_generic_QA",
+        )
+
+    def test_validate_cli_binds_complete_raw_to_manifest(self):
+        samples = [manifest_sample(index) for index in range(8)]
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            manifest = root / "canary.jsonl"
+            manifest.write_text(
+                "".join(json.dumps(row, sort_keys=True) + "\n" for row in samples),
+                encoding="utf-8",
+            )
+            manifest_hash = hashlib.sha256(manifest.read_bytes()).hexdigest()
+            schedule = frozen_schedule(samples, manifest_hash)
+            raw_rows = []
+            choice_tokens = {"A": [1], "B": [2], "C": [3], "D": [4]}
+            for schedule_index, (sample, condition) in enumerate(schedule):
+                answer = sample["final_answer"]
+                raw_rows.append({
+                    "sample_id": sample["sample_id"],
+                    "source_dataset": sample["source_dataset"],
+                    "source_record_id": sample["source_record_id"],
+                    "source_image_id": sample["source_image_id"],
+                    "source_cluster_id": sample["source_cluster_id"],
+                    "task_family": sample["task_family"],
+                    "reasoning_depth": sample["reasoning_depth"],
+                    "condition": condition,
+                    "schedule_index": schedule_index,
+                    "rank": schedule_index % 4,
+                    "world_size": 4,
+                    "manifest_hash": manifest_hash,
+                    "model_revision": "model-1",
+                    "processor_revision": "model-1",
+                    "code_commit": "commit-1",
+                    "prompt_hash": f"prompt-{sample['sample_id']}-{condition}",
+                    "shell_hash": "shell-1",
+                    "question_hash": hashlib.sha256(sample["final_question"].encode()).hexdigest(),
+                    "options_hash": hashlib.sha256(json.dumps(
+                        [sample[f"option_{choice}"] for choice in "ABCD"],
+                        ensure_ascii=False,
+                        separators=(",", ":"),
+                    ).encode()).hexdigest(),
+                    "correct_choice": answer,
+                    "choice_token_ids": choice_tokens,
+                    "choice_continuation_verified": True,
+                    "runtime_code_hashes": {"runner": "hash"},
+                    "chat_template": {"enable_thinking": False, "add_generation_prompt": True},
+                    "generation_config": {"do_sample": False, "constrained_to": list("ABCD")},
+                    "image_checksum": sample["image_checksum"],
+                    "choice_log_likelihoods": {
+                        choice: (0.0 if choice == answer else -1.0) for choice in "ABCD"
+                    },
+                    "generated_token_ids": choice_tokens[answer] + [99],
+                    "generated_tokens": 2,
+                    "eos_reached": True,
+                    "truncated": False,
+                    "raw_generation": answer,
+                    "model_dtype": "torch.bfloat16",
+                    "error": None,
+                })
+            raw = root / "raw.jsonl"
+            raw.write_text(
+                "".join(json.dumps(row, sort_keys=True) + "\n" for row in raw_rows),
+                encoding="utf-8",
+            )
+            parsed = root / "parsed.jsonl"
+            summary = root / "summary.json"
+            asset_gate = root / "model-asset-gate.json"
+            write_model_asset_gate(asset_gate)
+            argv = [
+                "process_exploratory_teacher_gap.py",
+                "validate",
+                "--inputs", str(raw),
+                "--manifest", str(manifest),
+                "--expected-samples", "8",
+                "--model-asset-gate", str(asset_gate),
+                "--parsed-output", str(parsed),
+                "--summary", str(summary),
+            ]
+            with patch("sys.argv", argv), patch("builtins.print"):
+                process_teacher_gap()
+            gate = json.loads(summary.read_text(encoding="utf-8"))
+            self.assertEqual(gate["status"], "passed")
+            self.assertEqual(gate["manifest_sha256"], manifest_hash)
+            self.assertEqual(
+                gate["model_asset_gate_sha256"],
+                hashlib.sha256(asset_gate.read_bytes()).hexdigest(),
+            )
+            self.assertEqual(len(parsed.read_text(encoding="utf-8").splitlines()), 32)
+
+    def test_model_asset_gate_must_match_result_revision_and_inventory(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            gate = root / "model-asset-gate.json"
+            write_model_asset_gate(gate, revision="wrong-model")
+            records = result_records(1, 1)
+            errors, gate_hash = validate_model_asset_gate(gate, records)
+            self.assertEqual(gate_hash, hashlib.sha256(gate.read_bytes()).hexdigest())
+            self.assertIn("model asset gate revision differs from result records", errors)
+
+            payload = json.loads(gate.read_text())
+            payload["revision"] = "model-1"
+            payload["checksums_inventory_sha256"] = "b" * 64
+            gate.write_text(json.dumps(payload), encoding="utf-8")
+            errors, _ = validate_model_asset_gate(gate, records)
+            self.assertIn("model asset gate uses the wrong checksum inventory", errors)
+
+            payload["files"] = None
+            gate.write_text(json.dumps(payload), encoding="utf-8")
+            errors, _ = validate_model_asset_gate(gate, records)
+            self.assertIn("model asset gate file inventory is incomplete", errors)
+            missing_errors, missing_hash = validate_model_asset_gate(root / "missing.json", records)
+            self.assertEqual(missing_hash, "")
+            self.assertTrue(missing_errors[0].startswith("invalid model asset gate"))
+
     def test_runner_refuses_a_commit_changed_after_submission(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
@@ -138,6 +570,95 @@ class ExploratoryTeacherGapTests(unittest.TestCase):
                 with self.assertRaisesRegex(SystemExit, "code commit changed after submission"):
                     run_teacher_gap()
 
+    def test_runner_refuses_to_overwrite_raw_output(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            model = root / "model"
+            model.mkdir()
+            manifest = root / "manifest.jsonl"
+            manifest.write_text("", encoding="utf-8")
+            output = root / "raw.jsonl"
+            output.write_text("immutable\n", encoding="utf-8")
+            argv = [
+                "run_exploratory_teacher_gap.py",
+                "--manifest", str(manifest),
+                "--output", str(output),
+                "--model", str(model),
+                "--model-revision", "model-revision",
+                "--code-commit", "same-commit",
+                "--image-root", str(root),
+            ]
+            with patch("sys.argv", argv), patch(
+                "run_exploratory_teacher_gap.git_commit", return_value="same-commit"
+            ):
+                with self.assertRaisesRegex(SystemExit, "refusing to overwrite"):
+                    run_teacher_gap()
+            self.assertEqual(output.read_text(encoding="utf-8"), "immutable\n")
+
+    def test_runner_records_all_runtime_code_hashes(self):
+        hashes = runtime_code_hashes()
+        self.assertEqual(
+            set(hashes),
+            {
+                "exploratory_teacher_gap.py",
+                "g_pc0.py",
+                "reasoning_graph_contract.py",
+                "run_exploratory_teacher_gap.py",
+                "teacher_gap_inputs.py",
+            },
+        )
+        self.assertTrue(all(len(value) == 64 for value in hashes.values()))
+
+    def test_choice_continuation_must_preserve_template_boundary(self):
+        class CharacterTokenizer:
+            @staticmethod
+            def encode(text, add_special_tokens=False):
+                return [ord(value) for value in text]
+
+        sequences = {choice: [ord(choice)] for choice in "ABCD"}
+        validate_choice_continuations(CharacterTokenizer(), "assistant\n", sequences)
+        with self.assertRaisesRegex(ValueError, "differs from frozen"):
+            validate_choice_continuations(
+                CharacterTokenizer(), "assistant\n", {**sequences, "A": [999]}
+            )
+
+        class RetokenizingTokenizer:
+            @staticmethod
+            def encode(text, add_special_tokens=False):
+                return [1] if text == "prefix" else [2]
+
+        with self.assertRaisesRegex(ValueError, "retokenizes"):
+            validate_choice_continuations(
+                RetokenizingTokenizer(), "prefix", {choice: [index] for index, choice in enumerate("ABCD")}
+            )
+
+    def test_choice_scoring_extends_multimodal_token_types(self):
+        import torch
+
+        class Model:
+            def __call__(self, **kwargs):
+                self.assert_shapes(kwargs)
+                return type("Output", (), {"logits": torch.zeros(1, 3, 128)})()
+
+            @staticmethod
+            def assert_shapes(kwargs):
+                assert tuple(kwargs["input_ids"].shape) == (1, 3)
+                assert tuple(kwargs["attention_mask"].shape) == (1, 3)
+                assert tuple(kwargs["mm_token_type_ids"].shape) == (1, 3)
+                assert kwargs["mm_token_type_ids"][0, -1].item() == 0
+
+        inputs = {
+            "input_ids": torch.tensor([[10, 11]]),
+            "attention_mask": torch.tensor([[1, 1]]),
+            "mm_token_type_ids": torch.tensor([[1, 0]]),
+            "pixel_values": torch.zeros(5, 7),
+        }
+        scores = conditional_choice_scores(
+            Model(), inputs, {choice: [32 + index] for index, choice in enumerate("ABCD")}, torch
+        )
+        self.assertEqual(set(scores), set("ABCD"))
+        self.assertEqual(tuple(inputs["mm_token_type_ids"].shape), (1, 2))
+
     def test_locked_manifest_fails_closed_on_overlap_and_balance(self):
         samples = [manifest_sample(index) for index in range(96)]
         self.assertEqual(validate_locked_manifest(samples), [])
@@ -148,13 +669,68 @@ class ExploratoryTeacherGapTests(unittest.TestCase):
         self.assertTrue(any("balanced" in error for error in errors))
         self.assertTrue(validate_partition_isolation({"dev": samples[:1], "locked": samples[:1]}))
 
+    def test_locked_manifest_rejects_duplicate_near_duplicate_cluster(self):
+        samples = [manifest_sample(index) for index in range(96)]
+        samples[95]["source_cluster_id"] = samples[0]["source_cluster_id"]
+        self.assertTrue(any(
+            "source_cluster_id values must be unique" in error
+            for error in validate_locked_manifest(samples)
+        ))
+
+    def test_locked_manifest_rejects_effect_selected_membership(self):
+        samples = [manifest_sample(index) for index in range(96)]
+        samples[0]["teacher_gap_S_T"] = 0.25
+        samples[1].pop("selection_uses_model_effect")
+        errors = validate_locked_manifest(samples)
+        self.assertTrue(any("contains_effect_fields:teacher_gap_S_T" in error for error in errors))
+        self.assertTrue(any(
+            "confirmatory_role_requires_selection_uses_model_effect_false" in error
+            for error in errors
+        ))
+
+    def test_manifest_bundle_requires_isolated_8_32_96_partitions(self):
+        partitions = {
+            "canary": [manifest_sample(index) for index in range(8)],
+            "dev": [manifest_sample(index) for index in range(8, 40)],
+            "locked": [manifest_sample(index) for index in range(40, 136)],
+        }
+        self.assertEqual(validate_manifest_bundle(partitions), [])
+        partitions["locked"][0]["source_cluster_id"] = partitions["canary"][0]["source_cluster_id"]
+        errors = validate_manifest_bundle(partitions)
+        self.assertTrue(any("overlaps canary and locked" in error for error in errors))
+
     def test_locked_manifest_requires_human_provenance_and_graph_contract(self):
         samples = [manifest_sample(index) for index in range(96)]
         samples[0]["human_reviewer"] = ""
+        samples[0]["human_reviewed_at"] = "2026-09-11T18:00:00"
         samples[1]["minimal_reasoning_graph"]["edges"] = [["missing", "a"]]
         errors = validate_locked_manifest(samples)
         self.assertTrue(any("human_reviewer" in error for error in errors))
+        self.assertTrue(any("requires timezone" in error for error in errors))
         self.assertTrue(any("unknown_endpoint" in error for error in errors))
+
+    def test_locked_manifest_requires_consistent_per_sample_length_provenance(self):
+        samples = [manifest_sample(index) for index in range(96)]
+        samples[0].pop("generic_length_control")
+        samples[1]["generic_length_control"]["T_Q_vs_T_generic_Q"]["relative_difference"] = 0.5
+        samples[2].pop("finalization_provenance")
+        samples[3]["finalization_provenance"]["code_commit"] = "short"
+        errors = validate_locked_manifest(samples)
+        self.assertTrue(any("generic_length_control must be an object" in error for error in errors))
+        self.assertTrue(any("inconsistent generic length difference" in error for error in errors))
+        self.assertTrue(any("per-sample generic length contract failed" in error for error in errors))
+        self.assertTrue(any("finalization_provenance must be an object" in error for error in errors))
+        self.assertTrue(any("invalid finalizer code commit" in error for error in errors))
+
+    def test_locked_manifest_preserves_answer_and_r_pr_evidence_semantics(self):
+        samples = [manifest_sample(index) for index in range(96)]
+        samples[0]["canonical_answer_text"] = "not the correct option"
+        samples[1]["required_evidence"] = ["other evidence", "right relation"]
+        samples[2]["task_family"] = "PR"
+        errors = validate_locked_manifest(samples)
+        self.assertTrue(any("correct option must equal canonical" in error for error in errors))
+        self.assertTrue(any("required_evidence must match graph" in error for error in errors))
+        self.assertTrue(any("PR requires difficult" in error for error in errors))
 
     def test_common_shell_changes_only_privileged_block(self):
         sample = manifest_sample(0)
@@ -173,6 +749,62 @@ class ExploratoryTeacherGapTests(unittest.TestCase):
             sample["guides"] = [{"question": "one two three four five six seven eight?", "answer": "unused"}]
         result = validate_generic_length(samples, lambda text: len(text.split()), tolerance=0.20)
         self.assertTrue(result["passes"])
+
+    def test_dual_generic_length_matches_each_structured_condition(self):
+        samples = [manifest_sample(0), manifest_sample(1)]
+        for sample in samples:
+            sample["generic_context_t_q"] = "one two three four five six seven eight nine ten"
+            sample["generic_context_t_qa"] = "one two three four five six seven eight nine ten eleven twelve thirteen fourteen fifteen sixteen seventeen eighteen"
+            sample["guides"] = [{
+                "question": "one two three four five six seven eight nine",
+                "answer": "ten eleven twelve thirteen fourteen",
+            }]
+        result = validate_generic_length(
+            samples, lambda text: len(text.split()), tolerance=0.35, dual_control=True
+        )
+        self.assertTrue(result["dual_control"])
+        self.assertEqual(set(result["comparisons"]), {
+            "T_Q_vs_T_generic_Q", "T_QA_vs_T_generic_QA"
+        })
+        self.assertTrue(result["passes"])
+
+    def test_dual_generic_rejects_sample_outlier_despite_matching_medians(self):
+        samples = [manifest_sample(index) for index in range(3)]
+        treatment_lengths = (10, 20, 30)
+        control_lengths = (1, 20, 30)
+        for sample, treatment_length, control_length in zip(samples, treatment_lengths, control_lengths):
+            sample["guides"] = [{
+                "question": " ".join(["q"] * treatment_length),
+                "answer": "unused",
+            }]
+            sample["generic_context_t_q"] = " ".join(["g"] * control_length)
+            sample["generic_context_t_qa"] = " ".join(["g"] * (treatment_length + 6))
+        result = validate_generic_length(
+            samples, lambda text: len(text.split()), tolerance=0.10, dual_control=True
+        )
+        comparison = result["comparisons"]["T_Q_vs_T_generic_Q"]
+        self.assertEqual(comparison["treatment_median_tokens"], 22.0)
+        self.assertEqual(comparison["control_median_tokens"], 20.0)
+        self.assertLess(comparison["relative_difference"], 0.10)
+        self.assertFalse(comparison["passes"])
+        self.assertEqual(comparison["failed_sample_ids"], ["sample-000"])
+        self.assertFalse(result["passes"])
+
+    def test_dual_generic_collapses_identical_rotation_views_to_base_sample(self):
+        sample = manifest_sample(0)
+        sample["base_sample_id"] = sample["sample_id"]
+        rotations = []
+        for rotation in range(4):
+            row = copy.deepcopy(sample)
+            row["sample_id"] = f"{sample['sample_id']}--lr{rotation}"
+            rotations.append(row)
+        result = validate_generic_length(
+            rotations, lambda text: len(text.split()), tolerance=1.0, dual_control=True
+        )
+        for comparison in result["comparisons"].values():
+            self.assertEqual(len(comparison["sample_checks"]), 1)
+            self.assertEqual(comparison["sample_checks"][0]["sample_id"], "sample-000")
+            self.assertTrue(comparison["sample_checks"][0]["duplicate_consistent"])
 
     def test_exact_mcnemar_is_directional(self):
         baseline = [False] * 16
@@ -197,11 +829,57 @@ class ExploratoryTeacherGapTests(unittest.TestCase):
         rows[1]["source_cluster_id"] = "wrong-cluster"
         rows[2]["schedule_index"] = rows[1]["schedule_index"]
         rows[3]["prompt_hash"] = rows[2]["prompt_hash"]
+        rows[4]["task_family"] = "P"
+        rows[5]["reasoning_depth"] = "2"
         errors = validate_result_records(rows)
         self.assertTrue(any("chat_template" in error for error in errors))
         self.assertTrue(any("source_cluster_id" in error for error in errors))
         self.assertTrue(any("schedule_index" in error for error in errors))
         self.assertTrue(any("distinct prompt_hash" in error for error in errors))
+        self.assertTrue(any("task_family must be R or PR" in error for error in errors))
+        self.assertTrue(any("reasoning_depth must be an integer" in error for error in errors))
+
+    def test_result_records_are_bound_to_exact_manifest_metadata(self):
+        samples = [manifest_sample(index) for index in range(96)]
+        manifest_hash = "frozen-manifest-hash"
+        rows = result_records(tq_gains=16, tqa_gains=18)
+        expected_by_id = {sample["sample_id"]: sample for sample in samples}
+        for row in rows:
+            sample = expected_by_id[row["sample_id"]]
+            row.update({
+                "manifest_hash": manifest_hash,
+                "source_dataset": sample["source_dataset"],
+                "source_record_id": sample["source_record_id"],
+                "source_image_id": sample["source_image_id"],
+                "source_cluster_id": sample["source_cluster_id"],
+                "task_family": sample["task_family"],
+                "reasoning_depth": sample["reasoning_depth"],
+                "image_checksum": sample["image_checksum"],
+                "correct_choice": sample["final_answer"],
+                "question_hash": hashlib.sha256(sample["final_question"].encode()).hexdigest(),
+                "options_hash": hashlib.sha256(json.dumps(
+                    [sample[f"option_{choice}"] for choice in "ABCD"],
+                    ensure_ascii=False,
+                    separators=(",", ":"),
+                ).encode()).hexdigest(),
+            })
+        schedule = {
+            (sample["sample_id"], condition): index
+            for index, (sample, condition) in enumerate(frozen_schedule(samples, manifest_hash))
+        }
+        for row in rows:
+            row["schedule_index"] = schedule[(row["sample_id"], row["condition"])]
+            row["rank"] = row["schedule_index"] % 4
+        self.assertEqual(validate_results_against_manifest(rows, samples, manifest_hash), [])
+        rows[0]["options_hash"] = "tampered"
+        rows[1]["manifest_hash"] = "other-manifest"
+        rows[2]["schedule_index"], rows[3]["schedule_index"] = (
+            rows[3]["schedule_index"], rows[2]["schedule_index"]
+        )
+        errors = validate_results_against_manifest(rows, samples, manifest_hash)
+        self.assertTrue(any("options_hash differs" in error for error in errors))
+        self.assertTrue(any("manifest_hash differs" in error for error in errors))
+        self.assertTrue(any("schedule_index differs" in error for error in errors))
 
     def test_strong_tq_go(self):
         decision = decide_teacher_gap(
@@ -210,6 +888,8 @@ class ExploratoryTeacherGapTests(unittest.TestCase):
             n_bootstrap=500,
         )
         self.assertEqual(decision["decision"], "GO_T_Q")
+        self.assertEqual(decision["decision_rule"]["sha256"], TEACHER_GAP_DECISION_RULE_HASH)
+        self.assertEqual(decision["decision_rule"]["bootstrap_samples"], 500)
 
     def test_tqa_pivot_when_questions_alone_are_weak(self):
         decision = decide_teacher_gap(
@@ -218,6 +898,27 @@ class ExploratoryTeacherGapTests(unittest.TestCase):
             n_bootstrap=500,
         )
         self.assertEqual(decision["decision"], "GO_T_QA")
+
+    def test_generic_logp_outlier_cannot_satisfy_stability_gate(self):
+        records = result_records(
+            tq_gains=0,
+            tqa_gains=16,
+            generic_gains=16,
+            logp_tq=0.0,
+            logp_tqa=0.30,
+        )
+        generic_rows = [row for row in records if row["condition"] == "T_generic"]
+        for row in generic_rows:
+            row["correct_log_prob"] = -0.70
+            row["choice_log_likelihoods"][row["correct_choice"]] = -0.70
+        generic_rows[0]["correct_log_prob"] = -12.70
+        generic_rows[0]["choice_log_likelihoods"][generic_rows[0]["correct_choice"]] = -12.70
+        decision = decide_teacher_gap(records, leakage_free=True, n_bootstrap=2_000)
+        control = decision["comparisons"]["T_QA"]
+        self.assertGreaterEqual(control["correct_log_prob_delta_vs_generic"], 0.10)
+        self.assertLessEqual(control["correct_log_prob_vs_generic"]["ci_lower"], 0)
+        self.assertFalse(control["structured_advantage"]["passes"])
+        self.assertEqual(decision["decision"], "REVISE")
 
     def test_stop_current_recipe_when_oracle_is_null(self):
         decision = decide_teacher_gap(
@@ -234,6 +935,16 @@ class ExploratoryTeacherGapTests(unittest.TestCase):
             n_bootstrap=500,
         )
         self.assertEqual(decision["decision"], "REVISE")
+
+    def test_leakage_prevents_false_stop_on_null_effect(self):
+        records = result_records(
+            tq_gains=0, tqa_gains=0, generic_gains=0, logp_tq=0.0, logp_tqa=0.0
+        )
+        clean = decide_teacher_gap(records, leakage_free=True, n_bootstrap=500)
+        contaminated = decide_teacher_gap(records, leakage_free=False, n_bootstrap=500)
+        self.assertEqual(clean["decision"], "STOP_CURRENT_RECIPE")
+        self.assertEqual(contaminated["decision"], "REVISE")
+        self.assertFalse(contaminated["leakage_free"])
 
     def test_frozen_schedule_is_deterministic_and_complete(self):
         samples = [manifest_sample(0), manifest_sample(1)]
@@ -253,6 +964,21 @@ class ExploratoryTeacherGapTests(unittest.TestCase):
 
         self.assertEqual(allowed(0, FakeIds([1, 2, 3])), [10, 11, 12, 13])
         self.assertEqual(allowed(0, FakeIds([1, 2, 3, 10])), [99])
+
+    def test_choice_scores_require_equal_length_label_tokens(self):
+        class UnequalTokenizer:
+            def encode(self, value, add_special_tokens=False):
+                return [ord(value)] if value != "D" else [68, 69]
+
+        with self.assertRaisesRegex(ValueError, "equal lengths"):
+            choice_token_sequences(UnequalTokenizer())
+
+        rows = result_records(tq_gains=1, tqa_gains=1)
+        rows[0]["choice_token_ids"]["D"] = [4, 5]
+        self.assertTrue(any(
+            "choice_token_ids must have equal lengths" in error
+            for error in validate_result_records(rows)
+        ))
 
     def test_raw_result_enrichment_is_deterministic(self):
         row = result_records(tq_gains=1, tqa_gains=1)[0]

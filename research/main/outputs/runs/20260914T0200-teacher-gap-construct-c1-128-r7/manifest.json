@@ -6,8 +6,8 @@
   "operator": "Codex (CINECA Leonardo)",
   "hostname": "login07.leonardo.local",
   "git_commit": "d2ceb00b016b312e4975af83836799d5047b79be",
-  "slurm_job_id": null,
-  "status": "prepared_not_submitted",
+  "slurm_job_id": "57593318",
+  "status": "cancelled_before_start_for_contract_hardening",
   "submit_hostname": "login07.leonardo.local",
   "resources": {
     "nodes": 1,
@@ -15,5 +15,10 @@
     "gpus": 4,
     "gpu_type": "A100",
     "time_limit": "48:00:00"
-  }
+  },
+  "code_commit_at_submission": "21f54f08caaae7e8e8c743b0b81e0230e8432ea7",
+  "slurm_state": "CANCELLED",
+  "elapsed": "00:00:00",
+  "cancellation_local": "2026-09-13T20:10:39+02:00",
+  "gpu_executed": false
 }

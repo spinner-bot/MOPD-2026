@@ -1,0 +1,36 @@
+{
+  "status": "failed_closed_full_gate",
+  "slurm_job_id": "57596665",
+  "submitted_code_commit": "49c7ee8ca8171b30cbc4d15e866cc208162ed58e",
+  "run_worktree": "/leonardo/home/userexternal/rqian000/spinner-bot/MOPD-2026-codex-r7c",
+  "canary": {
+    "total": 8,
+    "valid_parsed": 7,
+    "parse_rate": 0.875,
+    "gate_passed": true
+  },
+  "full": {
+    "total": 8,
+    "valid_parsed": 7,
+    "parse_rate": 0.875,
+    "gate_passed": false,
+    "gate_failure": "parse_rate=0.875000 < 0.900000"
+  },
+  "decisions": {
+    "accept_candidate": 7
+  },
+  "fallback_used": 5,
+  "fallback_recovered": 4,
+  "runner_errors": 0,
+  "final_truncated": 0,
+  "rejection_reasons": {
+    "invalid_distractors": 1
+  },
+  "human_verified": 0,
+  "superseded_submission": {
+    "slurm_job_id": "57596627",
+    "state": "cancelled_before_start",
+    "elapsed": "00:00:00",
+    "reason": "incorrect expected commit string in submission environment"
+  }
+}

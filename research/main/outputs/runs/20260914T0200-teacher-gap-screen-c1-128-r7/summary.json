@@ -1,4 +1,40 @@
 {
-  "status": "prepared_not_submitted",
-  "slurm_job_id": null
+  "status": "completed",
+  "slurm_job_id": "57593306",
+  "code_commit": "21f54f08caaae7e8e8c743b0b81e0230e8432ea7",
+  "blind_canary": {
+    "valid": 8,
+    "total": 8
+  },
+  "blind_full": {
+    "valid": 127,
+    "total": 128,
+    "fallback_used": 9,
+    "fallback_recovered": 8,
+    "final_truncated": 0,
+    "runner_errors": 0
+  },
+  "audit_canary": {
+    "valid": 8,
+    "total": 8,
+    "fallback_used": 6,
+    "fallback_recovered": 6
+  },
+  "audit_full": {
+    "valid": 127,
+    "total": 128,
+    "fallback_used": 88,
+    "fallback_recovered": 87,
+    "final_truncated": 1,
+    "runner_errors": 0,
+    "knowledge_labels": {
+      "external_required": 115,
+      "ambiguous": 4,
+      "image_only": 8
+    }
+  },
+  "selected_for_construction": 8,
+  "construction_input_sha256": "82f977aafb5c7153aefcfd38e2e005bf38c7d5d5b7ffc6935da2acc19cdb5843",
+  "human_verified": 0,
+  "interpretation": "machine screen candidates only; original-question C1 yield, not image affordance or teacher effect"
 }

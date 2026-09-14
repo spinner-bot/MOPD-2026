@@ -36,7 +36,7 @@ Canonical complete answer: {canonical_answer}
 Accepted aliases grouped by required answer item: {answer_alias_groups}
 
 The canonical answer may be a JSON array string. If so, every array item is required; the items are not interchangeable aliases.
-Classify whether the complete answer and every necessary intermediate claim are entailed by the image/question.
+Classify whether the complete answer and every necessary intermediate claim are entailed by the image/question. Every evidence-node claim must be a direct visual observation, never a statement about what the question asks or a general learned association. The answer-node claim must explicitly cover every canonical answer item without denying any required item.
 image_only means uniquely answerable without any unprovided fact. external_required means at least one necessary fact is absent. ambiguous means the boundary, reference, image, or uniqueness cannot be verified.
 R requires at least two distinct visual entities/regions/states and at least two indispensable transformations. PR additionally requires a difficult local node on that same necessary chain.
 Return exactly one JSON object and no other text:
@@ -52,7 +52,7 @@ Required answer cardinality: {answer_cardinality}
 Required visual evidence: {required_evidence}
 Audited reasoning graph: {reasoning_graph}
 
-Create 1-4 indispensable guide QA pairs and three plausible same-type distractors. Guides must support an existing non-evidence node in the audited graph, must be answerable from the image or prior guide state, and must not state/paraphrase the final answer or reveal an option label. Distractors must be rejectable from the image without outside knowledge. When answer cardinality is greater than one, every distractor must be a JSON array string with exactly that many non-empty string items.
+Create 1-4 indispensable guide QA pairs and three plausible same-type distractors. Each supports_next must name the existing graph node whose claim the guide elicits or supports; evidence, intermediate, and answer nodes are all valid targets. Guides must be answerable from the image or prior guide state and must not state/paraphrase the final answer or reveal an option label. Distractors must be rejectable from the image without outside knowledge. When answer cardinality is greater than one, every distractor must be a JSON array of exactly that many non-empty string items (a JSON-array string with the same content is also accepted).
 Return exactly one JSON object and no other text:
 {{"decision":"accept_candidate|reject","guides":[{{"question":"...","answer":"...","supports_next":"node id"}}],"correct_answer_text":"...","distractors":["...","...","..."],"generic_context_seed":"inspect-compare-verify","answer_leakage":false,"external_fact_injected":false,"rejection_reason":""}}"""
 
@@ -79,8 +79,8 @@ Required visual evidence: {required_evidence}
 Audited reasoning graph: {reasoning_graph}
 Recoverable first-attempt fields to preserve when present: {decision_lock}
 Return one compact JSON object, no markdown or analysis, with exactly these keys:
-{{"decision":"accept_candidate","guides":[{{"question":"under 16 words","answer":"under 12 words","supports_next":"existing node id"}}],"correct_answer_text":{canonical_answer_json},"distractors":["same-cardinality option","same-cardinality option","same-cardinality option"],"generic_context_seed":"inspect-compare-verify","answer_leakage":false,"external_fact_injected":false,"rejection_reason":""}}
-Use 1-3 guides. Every supports_next must name an existing non-evidence node in the audited graph, and at least one guide must support an intermediate node. Never state the final answer in a guide. When answer cardinality is greater than one, every distractor must be a JSON array string with exactly that many non-empty string items. Stop after the closing brace. If safe construction is impossible, return the same keys with decision "reject", empty guides/options/answer/seed, both booleans false, and a short rejection_reason."""
+{{"decision":"accept_candidate","guides":[{{"question":"under 16 words","answer":"under 12 words","supports_next":"existing node id"}}],"correct_answer_text":{canonical_answer_json},"distractors":{distractor_example},"generic_context_seed":"inspect-compare-verify","answer_leakage":false,"external_fact_injected":false,"rejection_reason":""}}
+Use 1-3 guides. Every supports_next must name the existing graph node whose claim the guide elicits or supports. Never state the complete final answer in a guide. When answer cardinality is greater than one, every distractor must be a JSON array of exactly that many non-empty string items. Stop after the closing brace. If safe construction is impossible, return the same keys with decision "reject", empty guides/options/answer/seed, both booleans false, and a short rejection_reason."""
 
 
 def stable_hash(value: str) -> str:
@@ -223,6 +223,16 @@ def render_compact_stage_prompt(
         required_evidence=json.dumps(audit_proposal.get("required_evidence", []), ensure_ascii=False),
         reasoning_graph=json.dumps(audit_proposal.get("minimal_reasoning_graph", {}), ensure_ascii=False),
         decision_lock=rendered_lock,
+        distractor_example=json.dumps(
+            [
+                [f"wrong item {option + 1}.{item + 1}" for item in range(len(_answers(candidate)))]
+                for option in range(3)
+            ]
+            if len(_answers(candidate)) > 1
+            else ["wrong option 1", "wrong option 2", "wrong option 3"],
+            ensure_ascii=False,
+            separators=(",", ":"),
+        ),
     )
 
 
@@ -255,13 +265,10 @@ def fallback_decision_fields(
         locked["task_family"] = family if label == "image_only" and family in TASK_FAMILIES else None
         return locked
     if stage == "construct":
-        if proposal.get("decision") in {"accept_candidate", "reject"}:
-            locked["decision"] = proposal["decision"]
-        if locked.get("decision") == "accept_candidate" and isinstance(candidate, dict):
-            if not validate_candidate(candidate):
-                # The complete correct option is an input invariant. Never
-                # preserve a primary answer already known to violate it.
-                locked["correct_answer_text"] = canonical_answer_text(candidate)
+        # A retry may conservatively downgrade an invalid accept proposal to
+        # reject. It must never promote a primary reject to accept.
+        if proposal.get("decision") == "reject":
+            locked["decision"] = "reject"
         return locked
     raise ValueError(f"unsupported stage: {stage}")
 
@@ -341,7 +348,7 @@ def validate_blind(proposal: dict) -> list[str]:
     return errors
 
 
-def validate_audit(proposal: dict) -> list[str]:
+def validate_audit(proposal: dict, candidate: dict | None = None) -> list[str]:
     errors = []
     label = proposal.get("knowledge_dependency_label")
     if label not in KNOWLEDGE_LABELS:
@@ -380,6 +387,37 @@ def validate_audit(proposal: dict) -> list[str]:
                 for node in graph["nodes"]
             ):
                 errors.append("placeholder_reasoning_graph")
+            evidence_claims = [_text(item) for item in evidence] + [
+                _text(node.get("claim")) for node in graph["nodes"]
+                if isinstance(node, dict) and node.get("type") == "evidence"
+            ]
+            if any(_is_meta_or_nonvisual_evidence(claim) for claim in evidence_claims):
+                errors.append("nonvisual_or_meta_evidence_claim")
+            entailment_claims = (
+                [_text(item) for item in evidence]
+                + [
+                    _text(node.get("claim")) for node in graph["nodes"]
+                    if isinstance(node, dict)
+                ]
+                + [_text(proposal.get("explanation"))]
+            )
+            if (
+                proposal.get("reference_entailed") is True
+                and proposal.get("unique_answer") is True
+                and any(_is_hedged_or_associative_entailment(claim) for claim in entailment_claims)
+            ):
+                errors.append("hedged_or_associative_entailment")
+            if isinstance(candidate, dict):
+                answer_claims = [
+                    _text(node.get("claim")) for node in graph["nodes"]
+                    if isinstance(node, dict) and node.get("type") == "answer"
+                ]
+                if len(answer_claims) == 1 and not _claim_covers_complete_answer(answer_claims[0], candidate):
+                    errors.append("answer_node_missing_canonical_item")
+                if len(answer_claims) == 1 and _claim_negates_required_answer(answer_claims[0], candidate):
+                    errors.append("answer_node_negates_required_item")
+                if _entailed_explanation_conflict(proposal.get("explanation"), candidate):
+                    errors.append("reference_entailment_explanation_conflict")
     else:
         if family is not None:
             errors.append("nonqualifying_task_family_must_be_null")
@@ -402,6 +440,99 @@ def _normalize_for_leakage(value: str) -> str:
 def _is_placeholder_text(value: Any) -> bool:
     normalized = _normalize_for_leakage(_text(value))
     return normalized in {"e1", "e2", "evidence 1", "evidence 2"} or "replace with" in normalized
+
+
+def _is_meta_or_nonvisual_evidence(value: Any) -> bool:
+    normalized = _normalize_for_leakage(_text(value))
+    phrases = (
+        "the question asks", "question asks", "the question states",
+        "reference answer", "canonical answer", "from the options",
+        "well known", "is traditionally", "is a traditional",
+        "is associated with", "are associated with",
+        "which is indicative of", "which are indicative of",
+        "is characteristic of", "are characteristic of",
+    )
+    return any(phrase in normalized for phrase in phrases)
+
+
+def _is_hedged_or_associative_entailment(value: Any) -> bool:
+    """Detect claims that cannot support a unique, image-entailed answer.
+
+    Explicit uncertainty is incompatible with ``reference_entailed=true`` and
+    ``unique_answer=true``.  Association language is narrower: it is rejected
+    only when used to infer a latent identity or category, so ordinary visual
+    reasoning such as a shadow indicating light direction remains admissible.
+    """
+
+    normalized = _normalize_for_leakage(_text(value))
+    words = set(normalized.split())
+    if words & {"likely", "probably", "perhaps", "maybe", "possibly"}:
+        return True
+    if "or similar" in normalized:
+        return True
+
+    association = any(phrase in normalized for phrase in (
+        "suggest", "imply", "typical of", "indicative of",
+        "characteristic of", "associated with",
+    ))
+    latent_category = words & {
+        "affiliation", "affiliations", "brand", "brands", "event", "events",
+        "identity", "identities", "manufacturer", "manufacturers", "nationality",
+        "occupation", "occupations", "profession", "professional", "professions",
+        "species",
+    }
+    return association and bool(latent_category)
+
+
+def _claim_covers_complete_answer(claim: str, candidate: dict) -> bool:
+    text = _normalize_for_leakage(claim)
+    groups = [
+        tuple(sorted({_normalize_for_leakage(alias) for alias in group if _normalize_for_leakage(alias)}))
+        for group in _answer_alias_groups(candidate)
+    ]
+    required_groups = Counter(groups)
+    return bool(groups) and all(
+        max((_alias_occurrences(text, alias) for alias in group), default=0) >= multiplicity
+        for group, multiplicity in required_groups.items()
+    )
+
+
+def _claim_negates_required_answer(value: Any, candidate: dict) -> bool:
+    normalized = _normalize_for_leakage(_text(value))
+    clauses = re.split(r"[.;:]|\bbut\b|\bhowever\b", normalized)
+    absence = ("not present", "not shown", "not visible", "is absent", "are absent")
+    aliases = {
+        _normalize_for_leakage(alias)
+        for group in _answer_alias_groups(candidate)
+        for alias in group
+        if _normalize_for_leakage(alias)
+    }
+    return any(
+        any(_alias_occurrences(clause, alias) for alias in aliases)
+        and any(phrase in clause for phrase in absence)
+        for clause in clauses
+    )
+
+
+def _entailed_explanation_conflict(value: Any, candidate: dict) -> bool:
+    normalized = _normalize_for_leakage(_text(value))
+    absence = any(phrase in normalized for phrase in (
+        "not visually represented", "not represented in the image",
+        "not present in the image", "not shown in the image",
+        "absent from the image",
+    ))
+    aliases = {
+        _normalize_for_leakage(alias)
+        for group in _answer_alias_groups(candidate)
+        for alias in group
+        if _normalize_for_leakage(alias)
+    }
+    target = (
+        "reference answer" in normalized
+        or "canonical answer" in normalized
+        or any(_alias_occurrences(normalized, alias) for alias in aliases)
+    )
+    return absence and target
 
 
 def obvious_answer_leakage(proposal: dict, candidate: dict) -> bool:
@@ -439,27 +570,34 @@ def _alias_occurrences(text: str, alias: str) -> int:
     return len(re.findall(rf"(?<!\w){re.escape(alias)}(?!\w)", text))
 
 
-def _valid_multi_item_option(value: str, cardinality: int) -> bool:
-    try:
-        parsed = json.loads(value)
-    except (TypeError, ValueError):
-        return False
+def _multi_item_option_values(value: Any) -> list[str] | None:
+    parsed = value
+    if isinstance(value, str):
+        try:
+            parsed = json.loads(value)
+        except ValueError:
+            return None
+    if not isinstance(parsed, list):
+        return None
+    if not all(isinstance(item, str) and _text(item) for item in parsed):
+        return None
+    return parsed
+
+
+def _valid_multi_item_option(value: Any, cardinality: int) -> bool:
+    parsed = _multi_item_option_values(value)
     return (
-        isinstance(parsed, list)
+        parsed is not None
         and len(parsed) == cardinality
-        and all(isinstance(item, str) and _text(item) for item in parsed)
     )
 
 
-def _option_distinct_key(value: str, cardinality: int) -> tuple[str, ...]:
+def _option_distinct_key(value: Any, cardinality: int) -> tuple[str, ...]:
     if cardinality <= 1:
-        return (_normalize_for_leakage(value),)
-    try:
-        parsed = json.loads(value)
-    except ValueError:
-        return ("invalid_option", value)
-    if not isinstance(parsed, list):
-        return ("invalid_option", value)
+        return (_normalize_for_leakage(_text(value)),)
+    parsed = _multi_item_option_values(value)
+    if parsed is None:
+        return ("invalid_option", _text(value))
     return tuple(sorted(_normalize_for_leakage(_text(item)) for item in parsed))
 
 
@@ -499,15 +637,18 @@ def validate_construct(
     if not correct or correct_raw != expected:
         errors.append("correct_answer_not_canonical_complete_answer")
     distractors = proposal.get("distractors")
-    if not isinstance(distractors, list) or len(distractors) != 3 or any(not _text(item) for item in distractors):
+    cardinality = len(_answers(candidate))
+    if not isinstance(distractors, list) or len(distractors) != 3:
         errors.append("invalid_distractors")
-    elif len(_answers(candidate)) > 1 and any(
-        not _valid_multi_item_option(_text(item), len(_answers(candidate)))
+    elif cardinality == 1 and any(not isinstance(item, str) or not _text(item) for item in distractors):
+        errors.append("invalid_distractors")
+    elif cardinality > 1 and any(
+        not _valid_multi_item_option(item, cardinality)
         for item in distractors
     ):
         errors.append("invalid_distractor_cardinality")
     elif len({
-        _option_distinct_key(_text(item), len(_answers(candidate)))
+        _option_distinct_key(item, cardinality)
         for item in [correct_raw, *distractors]
     }) != 4:
         errors.append("options_not_distinct")
@@ -534,18 +675,18 @@ def proposal_errors(
     if stage == "blind":
         return validate_blind(proposal)
     if stage == "audit":
-        return validate_audit(proposal)
+        return validate_audit(proposal, candidate)
     if stage == "construct":
         return validate_construct(proposal, candidate, audit_proposal)
     return ["unsupported_stage"]
 
 
-def is_construction_candidate(blind: dict, audit: dict) -> bool:
+def is_construction_candidate(blind: dict, audit: dict, candidate: dict | None = None) -> bool:
     """Conservative model-candidate rule; human verification is still mandatory."""
 
     return (
         not validate_blind(blind)
-        and not validate_audit(audit)
+        and not validate_audit(audit, candidate)
         and blind.get("image_is_necessary") is True
         and blind.get("requires_unprovided_fact") is False
         and blind.get("ambiguous") is False

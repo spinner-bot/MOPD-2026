@@ -1,5 +1,15 @@
 # Stage 0 及后续实验共用数据预处理执行清单
 
+**创建时间**：2026-09-09 22:12（UTC+8）
+
+**创建作者**：Codex (CINECA Leonardo)
+
+**最近修改时间**：2026-09-14 12:43（UTC+8）
+
+**最近修改作者**：Codex (CINECA Leonardo)
+
+**最近修改原因**：依据 1076 将小规模 100% 人工 G 与 8K 自动生产 G 分层，并把训练数据的人类抽查改成带置信区间和双人子样本的 fail-closed 质量门。
+
 本清单覆盖 Stage 0、Stage 1、主实验和分层分析的共同数据基础。所有候选、模型生成结果、人工修订和冻结版本都必须保留；Stage 0 只能使用其中通过全部准入门槛的独立 screening 子集。
 
 ## 角色与模型分工
@@ -179,6 +189,8 @@ D 还执行：schema/path 检查、选项唯一性、bbox 边界、guide 与答�
 
 验收：所有分层均达到抽查比例；borderline 清零；人工确认的泄漏、歧义和错误记录移入 rejects；输出一致率或 Cohen's kappa（若有双审核）。
 
+**1076 质量层补充**：G0/G1、validation 和 internal-test 的 G 为 `G_gold`，必须 100% 人工复核。Stage1 train 的 auto-accepted 为 `G_prod`，每版本随机审核量取 `max(400, ceil(5%×N))`，并满足总体有效率 Wilson 95% 下界 ≥0.95、四类关键错误率各自上界 ≤0.02；至少 100 条双人独立复核。未通过时整个 production 版本不得进入训练，不能只删除 audit 失败行后继续。
+
 ### T07：冻结正式数据与无泄漏切分（D，较高难度）
 
 输入：T06 通过样本。
@@ -189,6 +201,7 @@ D 还执行：schema/path 检查、选项唯一性、bbox 边界、guide 与答�
 2. Stage 0 固定 400–600 条，覆盖 P/R/PR、四种策略、depth 1–4+；筛选 seed 和实际每层计数写入 manifest。
 3. 使用 `validate_formal_stage0_dataset`、`split_dataset.py`、泄漏检测和输入渲染验证器；任何错误都阻断冻结。
 4. 对每个 JSONL、图像索引、prompt、模型 revision 和控制文本生成 SHA-256；输出 `05_frozen/manifest.json`、`splits.jsonl`、`checksums.sha256`、`rejected_ids.jsonl`。
+5. 保存 `g_quality_tier=gold|prod`、随机 audit membership/summary、分层计数、关键错误区间、双人一致性和 prod/gold teacher-gap retention；缺失或未过门时拒绝冻结 Stage1 train。
 
 验收：所有正式 Stage 0 条件可渲染；无图像/近重复泄漏；所有必需层覆盖；哈希、版本和样本列表完整。仅此目录允许被 GPU runner 读取。
 
@@ -237,3 +250,12 @@ GPU 作业处于 `PENDING` 时，继续执行下列任务；它们不读取尚�
 ## 每个任务的最低留档
 
 每个任务必须保存：输入 manifest、提交时的 Git commit、模型/脚本版本、实际命令、Slurm 资源、prompt 文件及哈希、原始模型输出、接受/拒绝 ID、拒绝原因、输出哈希、`summary.json` 和 `report.md`。模型输出中含有样本内容时保存在 Work payload，并在 main 的 run archive 保存不可变路径与 SHA-256。
+
+## 修订记录
+
+| 时间（UTC+8） | 作者 | 触发原因 |
+|---|---|---|
+| 2026-09-09 22:12 | Codex (CINECA Leonardo) | 创建：把正式方案的数据预处理职责落实为 T00–T08 共用执行清单。 |
+| 2026-09-09 23:03 | Codex (CINECA Leonardo) | 修订：增加 GPU 排队期间的确定性工作和滚动提交规则。 |
+| 2026-09-09 23:08 | Codex (CINECA Leonardo) | 修订：要求语义预处理保留可审计模型调用、raw 输出、prompt 和版本。 |
+| 2026-09-14 12:43 | Codex (CINECA Leonardo) | 修订：依据 1076 增加 `G_gold/G_prod`、至少 400/5% 审计、关键错误率区间、双人子样本和冻结门。 |

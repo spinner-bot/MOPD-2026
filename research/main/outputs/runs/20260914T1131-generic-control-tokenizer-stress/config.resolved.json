@@ -1,0 +1,9 @@
+{
+  "answer_word_counts": [1, 4, 12, 24],
+  "conditions": ["T_Q", "T_QA"],
+  "guide_counts": [1, 2, 3, 4],
+  "model_path": "/leonardo_scratch/large/userexternal/rqian000/models/Qwen3.5-4B-base",
+  "model_revision": "851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a",
+  "question_word_counts": [4, 8, 16, 32, 48],
+  "tolerance": 0.1
+}

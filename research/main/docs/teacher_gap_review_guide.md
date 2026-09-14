@@ -6,11 +6,11 @@
 
 **创建原因**：W2 teacher-gap pilot 完成后需进行人工审核，提前准备指引文档
 
-**修改时间**：2026-09-13 22:29（UTC+8）
+**修改时间**：2026-09-14 11:55（UTC+8）
 
 **修改作者**：Codex (CINECA Leonardo)
 
-**修改原因**：统一 1017 冻结协议、审核包字段和终检程序，修复旧指南取值与机器契约不兼容的问题
+**修改原因**：同步 1065/`f2ffb85` 已实现的审核覆盖与图片身份门
 
 ---
 
@@ -41,6 +41,7 @@ CSV 中的数组、对象和布尔值容易被电子表格转成字符串。若�
 | `human_unique_answer` | boolean | 合格样本必须为 `true` |
 | `human_full_image_valid` | boolean | 合格样本必须为 `true` |
 | `human_required_evidence` | array[string] | 至少两个非空、互不替代的视觉证据 |
+| `human_difficult_visual_evidence` | array[string] | R 必须为空；PR 至少一项，且每项逐字来自 `human_required_evidence` |
 | `human_reasoning_depth` | integer | 至少为 2，且等于图中从 evidence 到 answer 的最长边数 |
 | `human_reasoning_graph` | object | 满足第 4 节的最小有向无环图 |
 | `human_guides_ok` | boolean | 合格样本必须为 `true` |
@@ -86,6 +87,8 @@ JSON 布尔值必须写成不带引号的 `true`/`false`。`"yes"`、`"no"`、`1
 
 `required_evidence` 与图中 evidence claim 应表达同一组必要观察。若去掉任一证据答案仍可唯一推出，该样本不满足当前 R/PR 门槛，除非重新构造问题使该证据成为必要条件。
 
+终检按忽略大小写和首尾空白后的集合，要求 `human_required_evidence` 与推理图全部 evidence claim 精确一致且互不重复。PR 必须从该集合指出至少一个真实困难局部节点；R 的困难节点列表必须为空。只改 `human_task_family` 而不提供困难必要证据，不能把 R 升级为 PR。
+
 ## 5. 判定顺序
 
 1. **闭世界检查**：遮蔽参考答案和官方 evidence 文本，仅凭完整图像与题面判断可答性。需要百科、人物身份、历史地理事实或题面未给出的规则时，标为 `external_required`。
@@ -103,7 +106,7 @@ JSON 布尔值必须写成不带引号的 `true`/`false`。`"yes"`、`"no"`、`1
 ## 6. 完整 JSONL 合格示例
 
 ```json
-{"candidate_id":"m3vqa-example","human_knowledge_label":"image_only","human_task_family":"R","human_unique_answer":true,"human_full_image_valid":true,"human_required_evidence":["左侧连接关系","右侧连接关系"],"human_reasoning_depth":2,"human_reasoning_graph":{"nodes":[{"id":"e1","type":"evidence","claim":"左侧连接关系"},{"id":"e2","type":"evidence","claim":"右侧连接关系"},{"id":"h1","type":"intermediate","claim":"两条关系指向同一图形"},{"id":"a","type":"answer","claim":"选择三角形"}],"edges":[["e1","h1"],["e2","h1"],["h1","a"]]},"human_guides_ok":true,"human_options_ok":true,"human_answer_leakage":false,"human_external_fact_injected":false,"human_decision":"accept","human_reviewer":"reviewer-01","human_reviewed_at":"2026-09-13T22:29:00+08:00","human_notes":""}
+{"candidate_id":"m3vqa-example","human_knowledge_label":"image_only","human_task_family":"R","human_unique_answer":true,"human_full_image_valid":true,"human_required_evidence":["左侧连接关系","右侧连接关系"],"human_difficult_visual_evidence":[],"human_reasoning_depth":2,"human_reasoning_graph":{"nodes":[{"id":"e1","type":"evidence","claim":"左侧连接关系"},{"id":"e2","type":"evidence","claim":"右侧连接关系"},{"id":"h1","type":"intermediate","claim":"两条关系指向同一图形"},{"id":"a","type":"answer","claim":"选择三角形"}],"edges":[["e1","h1"],["e2","h1"],["h1","a"]]},"human_guides_ok":true,"human_options_ok":true,"human_answer_leakage":false,"human_external_fact_injected":false,"human_decision":"accept","human_reviewer":"reviewer-01","human_reviewed_at":"2026-09-13T22:29:00+08:00","human_notes":""}
 ```
 
 ## 7. 交付与验收
@@ -113,6 +116,11 @@ JSON 布尔值必须写成不带引号的 `true`/`false`。`"yes"`、`"no"`、`1
 3. 运行 `finalize_teacher_gap_manifests.py`。其输出中的拒绝原因是修订依据；不得绕过或手工删除拒绝记录。
 4. 只有达到 8/32/96 三个互斥分区共 136 个不同近重复簇，并通过标签平衡、哈希和清单校验后，才可将状态记为 `frozen`。
 5. 任何机器输出或未经人工查看的记录均不得署名为人工审核。
+6. `--output-dir` 必须是尚不存在的新 run ID；终检拒绝复用空目录或覆盖任何既有输出。每条 construction candidate 还必须显式携带真实 `source_dataset`，冻结程序按记录原样传递，不从 ID 推断，也不统一改写为 M3VQA。
+7. frozen manifest 保留 `canonical_answer_text` 与 `difficult_visual_evidence`；bundle gate 会重新核对正确选项文本、required evidence 与 DAG、R/PR 困难节点规则，以及 guide 的 `supports_next`。人工终检通过后的语义 provenance 不得在导出时丢弃。
+8. 冻结器必须传入 `--code-commit "$(git rev-parse HEAD)"` 与 40 位 `--tokenizer-revision`；summary 和每条 base manifest 将绑定输入文件、运行源码及 tokenizer artifact 的 SHA-256。短提交、HEAD 不一致或运行源码有 tracked 修改均拒绝。
+9. 人工完成稿必须保留固定审核队列的全部 ID，包括 `borderline` 和 `reject`，不得只交付 accept。`--constructed` 必须是该批队列对应且预先哈希的精确 construction source；冻结器拒绝缺失、额外和结构无效 ID。
+10. 冻结器逐条重算图片 SHA-256 并与 duplicate-cluster map 对照；文件缺失或哈希漂移时拒绝该条，不能沿用旧簇 ID 或用新哈希静默覆盖清单。
 
 ## 8. 关联文档
 
@@ -123,3 +131,16 @@ JSON 布尔值必须写成不带引号的 `true`/`false`。`"yes"`、`"no"`、`1
 - `code/data_pipeline/build_teacher_gap_human_review_queue.py`：构造产物与人工字段的完整审核队列生成器
 - `code/data_pipeline/finalize_teacher_gap_manifests.py`：人工审核终检与冻结程序
 - `code/data_pipeline/reasoning_graph_contract.py`：推理图权威结构校验器
+
+## 9. 修订记录
+
+| 时间（UTC+8） | 作者 | 触发原因 |
+|---|---|---|
+| 2026-09-12 14:45 | claude code (local) | 创建：W2 teacher-gap pilot 后提前准备人工审核和交付指引。 |
+| 2026-09-13 22:29 | Codex (CINECA Leonardo) | 修订：统一 1017 冻结协议、审核包字段和终检程序，修复旧指南取值与机器契约不兼容。 |
+| 2026-09-14 04:40 | Codex (CINECA Leonardo) | 修订：同步 `586c1d4` 的 evidence/DAG 集合一致性和 R/PR 困难视觉节点字段；补齐历史修订表。 |
+| 2026-09-14 04:38 | Codex (CINECA Leonardo) | 修订：终检输出改为新 run ID 排他写入，并要求 construction candidate 显式携带真实图源，避免混合来源被静默写成 M3VQA。 |
+| 2026-09-14 04:46 | Codex (CINECA Leonardo) | 修订：冻结清单保留 canonical answer 与困难视觉证据，使 bundle gate 可独立重验答案、证据/DAG、R/PR 和 guide 对齐。 |
+| 2026-09-14 11:27 | Codex (CINECA Leonardo) | 修订：依据 1060/`6c11452` 增加冻结器完整 commit、tokenizer revision、输入与源码 SHA-256 合同。 |
+| 2026-09-14 11:52 | Codex (CINECA Leonardo) | 修订：依据 1064 增加固定 queue source 全覆盖和 duplicate-cluster map 图片字节重验要求，防止完成稿删行和过期簇身份。 |
+| 2026-09-14 11:55 | Codex (CINECA Leonardo) | 修订：记录 1065/`f2ffb85` 已实现集合与图片身份门；全套测试增至 178。 |

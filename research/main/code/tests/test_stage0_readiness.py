@@ -66,31 +66,23 @@ class Stage0ReadinessTests(unittest.TestCase):
         self.assertTrue(splits["stage0"])
         self.assertEqual(validate_split(splits), [])
 
-    def test_empty_or_unpaired_gate_cannot_pass(self):
-        self.assertEqual(check_stage0_go_criteria({})["overall_go"], False)
-        metrics = {
-            "T_Q": [metric_row(.1, .2)],
-            "T_QA": [metric_row(.1, .2)],
-            "T_random": [metric_row(.0, .0)],
-            "T_generic": [metric_row(.0, .0)],
+    def test_legacy_stage0_decider_is_permanently_retired(self):
+        tempting_metrics = {
+            "T_Q": [metric_row(.80, 2.0), metric_row(.80, 2.0)],
+            "T_QA": [metric_row(.70, 1.5), metric_row(.70, 1.5)],
+            "T_random": [metric_row(.0, .0), metric_row(.0, .0)],
+            "T_generic": [metric_row(.0, .0), metric_row(.0, .0)],
         }
-        self.assertEqual(check_stage0_go_criteria(metrics)["overall_go"], False)
-
-    def test_gate_requires_all_evidence(self):
-        metrics = {
-            "T_Q": [metric_row(.08, .25), metric_row(.08, .25)],
-            "T_QA": [metric_row(.05, .15), metric_row(.05, .15)],
-            "T_random": [metric_row(.01, .01), metric_row(.01, .01)],
-            "T_generic": [metric_row(.01, .01), metric_row(.01, .01)],
-        }
-        tests = {
-            "T_Q": {"significant": True},
-            "T_Q_vs_T_random": {"significant": True},
-            "T_Q_vs_T_generic": {"significant": True},
-        }
-        decision = check_stage0_go_criteria(metrics, paired_tests=tests)
-        self.assertTrue(decision["overall_go"])
-        self.assertEqual(decision["selected_text_method"], "T_Q")
+        tempting_tests = {name: {"significant": True} for name in (
+            "T_Q", "T_Q_vs_T_random", "T_Q_vs_T_generic"
+        )}
+        decision = check_stage0_go_criteria(tempting_metrics, paired_tests=tempting_tests)
+        self.assertFalse(decision["overall_go"])
+        self.assertEqual(decision["status"], "retired_unsafe")
+        self.assertEqual(
+            decision["replacement"],
+            "exploratory_teacher_gap.decide_teacher_gap_label_rotation",
+        )
 
     def test_run_archive_is_immutable(self):
         with tempfile.TemporaryDirectory() as tmp:

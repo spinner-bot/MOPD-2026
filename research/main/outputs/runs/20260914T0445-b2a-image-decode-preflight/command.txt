@@ -1,0 +1,4 @@
+/leonardo_scratch/fast/AIFAC_F02_774/rqian000/envs/mopd-stage0-py311/bin/python - <<'PY'
+# Read frozen B2a JSONL; resolve and SHA-256 each image; Pillow verify/open;
+# record only byte size, format, mode, width and height; create no semantic labels.
+PY

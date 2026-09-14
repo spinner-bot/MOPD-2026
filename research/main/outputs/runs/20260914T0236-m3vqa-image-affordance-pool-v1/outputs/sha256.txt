@@ -1,0 +1,5 @@
+64bfa11c6fd7895990e65d351387e6b9dc0676dd73ae90caf25676af9caac5ea  /leonardo_scratch/large/userexternal/rqian000/data/m3vqa/processed/c1-audit/source-normalized-m3vqa.jsonl
+fa262ca84407c995956115aed645a7a24416aeed1f20a7741e7a5b35a6fb7ebb  research/main/code/data_pipeline/build_m3vqa_image_affordance_pool.py
+d16bc8ab8954c8dc782b1d3d029ab6b4ad23d20f1ba62b9da948347ec39e927b  /leonardo_scratch/large/userexternal/rqian000/data/m3vqa/processed/image-affordance-v1/run1/images.jsonl
+d16bc8ab8954c8dc782b1d3d029ab6b4ad23d20f1ba62b9da948347ec39e927b  /leonardo_scratch/large/userexternal/rqian000/data/m3vqa/processed/image-affordance-v1/run2/images.jsonl
+e69b6d14fe8da625720af1ee7198213b909c682c10e2313003f43c2c139debf4  /leonardo_scratch/large/userexternal/rqian000/data/m3vqa/processed/image-affordance-v1/run2/sample-256.jsonl

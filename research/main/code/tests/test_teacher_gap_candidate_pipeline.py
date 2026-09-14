@@ -1,6 +1,7 @@
 """CPU contract tests for the 1016 candidate screening/construction stages."""
 
 import json
+import hashlib
 import sys
 import tempfile
 import unittest
@@ -15,9 +16,16 @@ from process_teacher_gap_candidate_stage import parse_records, select_constructi
 from run_teacher_gap_candidate_stage import main as run_candidate_stage
 from finalize_teacher_gap_manifests import (
     arrange_options,
+    assert_code_state,
     duplicate_cluster_map,
+    duplicate_cluster_metadata,
+    generic_candidate_pool,
     generic_context_for,
+    require_new_output_dir,
+    review_coverage,
+    source_dataset_for_candidate,
     validate_human_review,
+    verify_image_checksum,
 )
 from teacher_gap_candidate_contract import (
     audit_fallback_target,
@@ -37,6 +45,7 @@ from teacher_gap_candidate_contract import (
 def candidate() -> dict:
     return {
         "candidate_id": "m3vqa-1",
+        "source_dataset": "M3VQA",
         "source_image_id": "image-1",
         "image_original": "/work/image-1.jpg",
         "final_question_source": "Which shape is related to both marked objects?",
@@ -75,7 +84,7 @@ def audit() -> dict:
                 {"id": "e1", "type": "evidence", "claim": "left connection"},
                 {"id": "e2", "type": "evidence", "claim": "right connection"},
                 {"id": "h1", "type": "intermediate", "claim": "shared endpoint"},
-                {"id": "a", "type": "answer", "claim": "the required shape"},
+                {"id": "a", "type": "answer", "claim": "triangle"},
             ],
             "edges": [["e1", "h1"], ["e2", "h1"], ["h1", "a"]],
         },
@@ -111,6 +120,10 @@ def parsed_row(stage: str, proposal: dict) -> dict:
 
 
 class TeacherGapCandidatePipelineTests(unittest.TestCase):
+    def test_finalizer_rejects_abbreviated_code_commit_before_git_calls(self):
+        with self.assertRaisesRegex(ValueError, "full 40-character"):
+            assert_code_state("abc1234")
+
     def test_runner_refuses_a_commit_changed_after_submission(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
@@ -194,9 +207,122 @@ class TeacherGapCandidatePipelineTests(unittest.TestCase):
 
     def test_valid_proposals_and_candidate_selection(self):
         self.assertEqual(validate_blind(blind()), [])
-        self.assertEqual(validate_audit(audit()), [])
+        self.assertEqual(validate_audit(audit(), candidate()), [])
         self.assertEqual(validate_construct(construction(), candidate(), audit()), [])
-        self.assertTrue(is_construction_candidate(blind(), audit()))
+        self.assertTrue(is_construction_candidate(blind(), audit(), candidate()))
+
+    def test_audit_requires_direct_visual_evidence(self):
+        meta = audit()
+        meta["minimal_reasoning_graph"]["nodes"][1]["claim"] = "The question asks for the shape."
+        self.assertIn("nonvisual_or_meta_evidence_claim", validate_audit(meta, candidate()))
+
+        learned = audit()
+        learned["required_evidence"][1] = "This symbol is traditionally associated with triangles."
+        self.assertIn("nonvisual_or_meta_evidence_claim", validate_audit(learned, candidate()))
+
+    def test_audit_rejects_uncertainty_as_unique_visual_entailment(self):
+        hedged = audit()
+        hedged["required_evidence"][1] = (
+            "The black SUV is a different make, likely a Mahindra or similar brand."
+        )
+        hedged["minimal_reasoning_graph"]["nodes"][1]["claim"] = hedged["required_evidence"][1]
+        self.assertIn(
+            "hedged_or_associative_entailment",
+            validate_audit(hedged, candidate()),
+        )
+
+    def test_audit_rejects_scene_association_as_latent_professional_identity(self):
+        associative = audit()
+        associative["required_evidence"] = [
+            "Both people wear formal attire typical of red carpet events.",
+            "The setting strongly suggests a professional event.",
+        ]
+        associative["minimal_reasoning_graph"]["nodes"][0]["claim"] = (
+            associative["required_evidence"][0]
+        )
+        associative["minimal_reasoning_graph"]["nodes"][1]["claim"] = (
+            associative["required_evidence"][1]
+        )
+        associative["minimal_reasoning_graph"]["nodes"][2]["claim"] = (
+            "Attending together implies a shared professional affiliation."
+        )
+        self.assertIn(
+            "hedged_or_associative_entailment",
+            validate_audit(associative, candidate()),
+        )
+
+    def test_audit_allows_deterministic_visual_relation_inference(self):
+        relational = audit()
+        relational["minimal_reasoning_graph"]["nodes"][2]["claim"] = (
+            "The two shadows suggest a shared light direction."
+        )
+        self.assertNotIn(
+            "hedged_or_associative_entailment",
+            validate_audit(relational, candidate()),
+        )
+
+    def test_audit_answer_node_must_cover_complete_reference(self):
+        multi = candidate()
+        multi.update({
+            "reference_answers": ["horse", "animal power"],
+            "reference_answer_alias_groups": [["horse"], ["animal power"]],
+            "canonical_answer_text": '["horse","animal power"]',
+        })
+        incomplete = audit()
+        incomplete["minimal_reasoning_graph"]["nodes"][-1]["claim"] = "The answer is animal power."
+        self.assertIn(
+            "answer_node_missing_canonical_item",
+            validate_audit(incomplete, multi),
+        )
+
+    def test_audit_answer_node_rejects_denial_of_required_item(self):
+        multi = candidate()
+        multi.update({
+            "reference_answers": ["Ford", "Acura", "Suzuki"],
+            "reference_answer_alias_groups": [["Ford"], ["Acura"], ["Suzuki"]],
+            "canonical_answer_text": '["Ford","Acura","Suzuki"]',
+        })
+        contradictory = audit()
+        contradictory["minimal_reasoning_graph"]["nodes"][-1]["claim"] = (
+            "Ford is present; Acura and Suzuki are not present."
+        )
+        errors = validate_audit(contradictory, multi)
+        self.assertNotIn("answer_node_missing_canonical_item", errors)
+        self.assertIn("answer_node_negates_required_item", errors)
+
+    def test_audit_explanation_cannot_admit_missing_reference_item(self):
+        multi = candidate()
+        multi.update({
+            "reference_answers": ["Mexican cuisine", "Danish cuisine"],
+            "reference_answer_alias_groups": [["Mexican cuisine"], ["Danish cuisine"]],
+            "canonical_answer_text": '["Mexican cuisine","Danish cuisine"]',
+        })
+        contradictory = audit()
+        contradictory["minimal_reasoning_graph"]["nodes"][-1]["claim"] = (
+            "Mexican cuisine and Danish cuisine."
+        )
+        contradictory["explanation"] = (
+            "Danish cuisine is not visually represented, but the reference answer includes it."
+        )
+        self.assertIn(
+            "reference_entailment_explanation_conflict",
+            validate_audit(contradictory, multi),
+        )
+
+    def test_audit_repeated_reference_item_requires_repeated_answer_mention(self):
+        repeated = candidate()
+        repeated.update({
+            "reference_answers": ["Japanese cuisine", "Japanese cuisine"],
+            "reference_answer_alias_groups": [["Japanese cuisine"], ["Japanese cuisine"]],
+            "canonical_answer_text": '["Japanese cuisine","Japanese cuisine"]',
+        })
+        proposal = audit()
+        proposal["minimal_reasoning_graph"]["nodes"][-1]["claim"] = "Japanese cuisine"
+        self.assertIn("answer_node_missing_canonical_item", validate_audit(proposal, repeated))
+        proposal["minimal_reasoning_graph"]["nodes"][-1]["claim"] = (
+            "Japanese cuisine and Japanese cuisine"
+        )
+        self.assertNotIn("answer_node_missing_canonical_item", validate_audit(proposal, repeated))
 
     def test_multi_answer_target_is_one_complete_canonical_option(self):
         multi = candidate()
@@ -213,8 +339,8 @@ class TeacherGapCandidatePipelineTests(unittest.TestCase):
         proposal = construction()
         proposal["correct_answer_text"] = '["Golden Retriever","Akita"]'
         proposal["distractors"] = [
-            '["Labrador","Akita"]',
-            '["Golden Retriever","Shiba Inu"]',
+            ["Labrador", "Akita"],
+            ["Golden Retriever", "Shiba Inu"],
             '["Labrador","Shiba Inu"]',
         ]
         proposal["guides"] = [
@@ -273,14 +399,16 @@ class TeacherGapCandidatePipelineTests(unittest.TestCase):
         proposal["guides"][0]["answer"] = "Ford and Ford are visible"
         self.assertIn("obvious_answer_leakage", validate_construct(proposal, multi, audit()))
 
-    def test_construct_fallback_locks_input_canonical_answer_not_invalid_primary(self):
+    def test_construct_fallback_allows_invalid_accept_to_fail_closed(self):
         primary = construction()
         primary["correct_answer_text"] = "The answer is triangle."
         locked = fallback_decision_fields("construct", primary, candidate())
-        self.assertEqual(locked, {
-            "decision": "accept_candidate",
-            "correct_answer_text": "triangle",
-        })
+        self.assertEqual(locked, {})
+        primary["decision"] = "reject"
+        self.assertEqual(
+            fallback_decision_fields("construct", primary, candidate()),
+            {"decision": "reject"},
+        )
 
     def test_audit_rejects_fallback_placeholders(self):
         placeholder = audit_fallback_target(audit())
@@ -393,6 +521,69 @@ class TeacherGapCandidatePipelineTests(unittest.TestCase):
             mapping = duplicate_cluster_map(path)
         self.assertEqual(len(set(mapping.values())), 1)
 
+    def test_review_coverage_requires_every_queue_eligible_candidate(self):
+        row = parsed_row("construct", construction())
+        row["blind_proposal"] = blind()
+        row["audit_proposal"] = audit()
+        complete = review_coverage([row], [{"candidate_id": "m3vqa-1"}])
+        self.assertTrue(complete["passes"])
+
+        missing = review_coverage([row], [])
+        self.assertEqual(missing["missing_candidate_ids"], ["m3vqa-1"])
+        self.assertFalse(missing["passes"])
+
+        unexpected = review_coverage([row], [{"candidate_id": "unknown"}])
+        self.assertEqual(unexpected["unexpected_candidate_ids"], ["unknown"])
+        self.assertFalse(unexpected["passes"])
+
+        invalid = dict(row)
+        invalid["proposal"] = {**construction(), "decision": "reject"}
+        invalid_review = review_coverage([invalid], [{"candidate_id": "m3vqa-1"}])
+        self.assertEqual(invalid_review["queue_eligible"], 0)
+        self.assertEqual(invalid_review["unexpected_candidate_ids"], ["m3vqa-1"])
+
+    def test_cluster_inventory_binds_current_image_bytes(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            image = root / "image.jpg"
+            image.write_bytes(b"frozen-image")
+            digest = hashlib.sha256(image.read_bytes()).hexdigest()
+            cluster_path = root / "clusters.json"
+            cluster_path.write_text(json.dumps({
+                "images": [{"image_original": str(image), "sha256": digest}],
+                "duplicate_clusters": [],
+            }), encoding="utf-8")
+
+            mapping, hashes = duplicate_cluster_metadata(cluster_path)
+            self.assertIn(str(image), mapping)
+            self.assertEqual(hashes[str(image)], digest)
+            actual, errors = verify_image_checksum(image, hashes[str(image)])
+            self.assertEqual(actual, digest)
+            self.assertEqual(errors, [])
+
+            image.write_bytes(b"changed-image")
+            _, errors = verify_image_checksum(image, hashes[str(image)])
+            self.assertEqual(errors, ["image_checksum_mismatch_with_cluster_map"])
+            image.unlink()
+            actual, errors = verify_image_checksum(image, hashes[str(image)])
+            self.assertIsNone(actual)
+            self.assertEqual(errors, ["image_file_missing"])
+
+    def test_finalizer_requires_a_new_output_directory(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            require_new_output_dir(root / "new-run")
+            with self.assertRaisesRegex(ValueError, "new run ID"):
+                require_new_output_dir(root)
+
+    def test_finalizer_preserves_explicit_source_without_id_inference(self):
+        self.assertEqual(
+            source_dataset_for_candidate({"candidate_id": "m3vqa-1", "source_dataset": "NewSource"}),
+            "NewSource",
+        )
+        with self.assertRaisesRegex(ValueError, "candidate_missing_source_dataset"):
+            source_dataset_for_candidate({"candidate_id": "m3vqa-1"})
+
     def test_human_review_cannot_be_implicitly_filled(self):
         self.assertIn("human_decision_not_accept", validate_human_review({"candidate_id": "x"}))
 
@@ -411,6 +602,7 @@ class TeacherGapCandidatePipelineTests(unittest.TestCase):
             "human_reviewer": "reviewer-1",
             "human_reviewed_at": "2026-09-13T22:29:00+08:00",
             "human_required_evidence": ["left connection", "right connection"],
+            "human_difficult_visual_evidence": [],
             "human_reasoning_depth": 2,
             "human_reasoning_graph": audit()["minimal_reasoning_graph"],
         }
@@ -432,10 +624,39 @@ class TeacherGapCandidatePipelineTests(unittest.TestCase):
             "human_reviewer": "reviewer-1",
             "human_reviewed_at": "2026-09-13 22:29",
             "human_required_evidence": ["left connection", "right connection"],
+            "human_difficult_visual_evidence": [],
             "human_reasoning_depth": 2,
             "human_reasoning_graph": audit()["minimal_reasoning_graph"],
         }
         self.assertIn("human_reviewed_at_requires_timezone", validate_human_review(review))
+
+    def test_human_review_evidence_and_pr_difficulty_are_structural(self):
+        review = {
+            "human_decision": "accept",
+            "human_knowledge_label": "image_only",
+            "human_task_family": "PR",
+            "human_unique_answer": True,
+            "human_full_image_valid": True,
+            "human_guides_ok": True,
+            "human_options_ok": True,
+            "human_answer_leakage": False,
+            "human_external_fact_injected": False,
+            "human_reviewer": "reviewer-1",
+            "human_reviewed_at": "2026-09-13T22:29:00+08:00",
+            "human_required_evidence": ["left connection", "right connection"],
+            "human_difficult_visual_evidence": [],
+            "human_reasoning_depth": 2,
+            "human_reasoning_graph": audit()["minimal_reasoning_graph"],
+        }
+        errors = validate_human_review(review)
+        self.assertIn("human_PR_requires_difficult_visual_evidence", errors)
+        review["human_difficult_visual_evidence"] = ["left connection"]
+        self.assertEqual(validate_human_review(review), [])
+        review["human_required_evidence"] = ["different evidence", "right connection"]
+        self.assertIn(
+            "human_required_evidence_must_match_graph_evidence",
+            validate_human_review(review),
+        )
 
     def test_option_arrangement_places_one_correct_answer(self):
         arranged = arrange_options(construction(), "C", "m3vqa-1")
@@ -454,8 +675,46 @@ class TeacherGapCandidatePipelineTests(unittest.TestCase):
                 {"question": "nine ten eleven twelve thirteen fourteen", "answer": "unused"},
             ]
         }
-        context = generic_context_for([sample], FakeTokenizer())
-        self.assertGreater(len(context.split()), 5)
+        question_context = generic_context_for([sample], FakeTokenizer(), "T_Q")
+        qa_context = generic_context_for([sample], FakeTokenizer(), "T_QA")
+        self.assertGreater(len(question_context.split()), 5)
+        self.assertGreater(len(qa_context.split()), len(question_context.split()))
+
+    def test_generic_context_depends_on_length_not_guide_semantics(self):
+        class FakeTokenizer:
+            @staticmethod
+            def encode(text, add_special_tokens=False):
+                return text.split()
+
+        first = {"guides": [{"question": "one two three four five six", "answer": "seven eight"}]}
+        second = {"guides": [{"question": "red blue green white black gold", "answer": "north south"}]}
+        self.assertEqual(
+            generic_context_for([first], FakeTokenizer(), "T_QA"),
+            generic_context_for([second], FakeTokenizer(), "T_QA"),
+        )
+
+    def test_precomputed_generic_pool_preserves_selection(self):
+        class FakeTokenizer:
+            @staticmethod
+            def encode(text, add_special_tokens=False):
+                return text.split()
+
+        sample = {"guides": [{"question": "one two three four five six", "answer": "seven eight"}]}
+        pool = generic_candidate_pool(FakeTokenizer())
+        self.assertEqual(
+            generic_context_for([sample], FakeTokenizer(), "T_QA"),
+            generic_context_for([sample], FakeTokenizer(), "T_QA", pool),
+        )
+
+    def test_generic_context_rejects_partition_level_construction(self):
+        class FakeTokenizer:
+            @staticmethod
+            def encode(text, add_special_tokens=False):
+                return text.split()
+
+        sample = {"guides": [{"question": "one two three four five six", "answer": "seven"}]}
+        with self.assertRaisesRegex(ValueError, "exactly one sample"):
+            generic_context_for([sample, sample], FakeTokenizer(), "T_Q")
 
 
 if __name__ == "__main__":

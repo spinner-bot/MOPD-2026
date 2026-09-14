@@ -1,0 +1,12 @@
+{
+  "input_question_records": 13125,
+  "output_images": 10565,
+  "question_fields_exposed": false,
+  "rejected_groups_or_rows": 0,
+  "rules_version": "m3vqa-image-affordance-pool-v1",
+  "sample_records": 256,
+  "sample_seed": 20260914,
+  "sample_selection": "sha256(seed\\0image_candidate_id)",
+  "selection_uses_teacher_gap_results": false,
+  "unique_source_image_ids": 10565
+}

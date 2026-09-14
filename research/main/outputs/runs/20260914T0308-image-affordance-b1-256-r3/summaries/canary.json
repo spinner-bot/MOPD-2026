@@ -1,0 +1,41 @@
+{
+  "code_commits": [
+    "67f5af72bfa1aaf17723853793f2158cddb4d92f"
+  ],
+  "failures": [],
+  "fallback_recovered": 2,
+  "fallback_used": 3,
+  "files": [
+    "/leonardo/home/userexternal/rqian000/spinner-bot/MOPD-2026-codex-b1r3/research/main/outputs/runs/20260914T0308-image-affordance-b1-256-r3/canary/image-affordance/rank-0.jsonl",
+    "/leonardo/home/userexternal/rqian000/spinner-bot/MOPD-2026-codex-b1r3/research/main/outputs/runs/20260914T0308-image-affordance-b1-256-r3/canary/image-affordance/rank-1.jsonl",
+    "/leonardo/home/userexternal/rqian000/spinner-bot/MOPD-2026-codex-b1r3/research/main/outputs/runs/20260914T0308-image-affordance-b1-256-r3/canary/image-affordance/rank-2.jsonl",
+    "/leonardo/home/userexternal/rqian000/spinner-bot/MOPD-2026-codex-b1r3/research/main/outputs/runs/20260914T0308-image-affordance-b1-256-r3/canary/image-affordance/rank-3.jsonl"
+  ],
+  "generation_configs": [
+    "{\"do_sample\":false,\"fallback_max_new_tokens\":768,\"max_attempts\":2,\"primary_max_new_tokens\":1024,\"structured_output_repetition_constraints\":\"disabled\"}"
+  ],
+  "model_revisions": [
+    "c202236235762e1c871ad0ccb60c8ee5ba337b9a"
+  ],
+  "parse_rate": 0.875,
+  "parse_summary": {
+    "decisions": {
+      "candidate": 7
+    },
+    "human_verified": 0,
+    "machine_candidates": 7,
+    "observed": 8,
+    "parse_rate": 0.875,
+    "parsed_valid": 7,
+    "rejected": 1,
+    "rejection_reasons": {
+      "entity_1_invalid_region": 1,
+      "entity_2_invalid_region": 1
+    }
+  },
+  "rejected": 1,
+  "runner_errors": 0,
+  "total": 8,
+  "truncated_or_missing_eos": 0,
+  "valid_parsed": 7
+}

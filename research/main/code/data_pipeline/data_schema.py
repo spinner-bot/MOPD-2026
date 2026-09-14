@@ -46,7 +46,9 @@ class GuidingQuestion:
     """单个引导问题"""
     question: str
     answer: str
-    dependency_score: float = 0.0  # 删除该 guide 后的性能下降
+    # Legacy semantic-review score. Experimental-model deletion effects belong
+    # in analysis artifacts and must never be written here for data selection.
+    dependency_score: float = 0.0
 
 
 @dataclass
@@ -116,15 +118,19 @@ class SampleMetadata:
     visual_dependency: VisualDependency = VisualDependency.MEDIUM
 
     # === 引导质量评分 ===
-    guide_dependency_score: float = 0.0   # 引导依赖性
+    # Legacy semantic-review score (D_sem), not model log-prob contribution.
+    guide_dependency_score: float = 0.0
     guide_relevance_score: float = 0.0    # 引导相关性
     guide_answerability_score: float = 0.0  # 引导可回答性
     answer_leakage_score: float = 0.0     # 答案泄漏程度（0 = 无泄漏）
 
-    # === Teacher Gap（训练前测量）===
-    teacher_gap_S_T: float = 0.0  # Student vs Teacher (full)
-    teacher_gap_S_V: float = 0.0  # Student vs Teacher-V
-    teacher_gap_V_T: float = 0.0  # Teacher-V vs Teacher-T
+    # === Teacher Gap（结果后分析；不得参与样本准入）===
+    # None means that no result has been attached. These legacy fields remain
+    # readable for compatibility, but locked manifests should keep effects in
+    # separate analysis artifacts linked by manifest hash (1082).
+    teacher_gap_S_T: Optional[float] = None
+    teacher_gap_S_V: Optional[float] = None
+    teacher_gap_V_T: Optional[float] = None
 
     # === 版本与验证 ===
     human_verified: bool = False

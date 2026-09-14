@@ -82,7 +82,7 @@ def validate_constructed_row(row: dict) -> list[str]:
     if not isinstance(audit, dict):
         errors.append("audit_proposal_not_object")
     else:
-        errors.extend(f"audit:{error}" for error in validate_audit(audit))
+        errors.extend(f"audit:{error}" for error in validate_audit(audit, candidate))
     if not isinstance(proposal, dict):
         errors.append("construction_proposal_not_object")
     else:

@@ -1,0 +1,13 @@
+stage: W2B
+input_records: 8
+upstream_screen_run: 20260914T0200-teacher-gap-screen-c1-128-r7
+thinking: false
+do_sample: false
+primary_max_new_tokens: 768
+fallback_max_new_tokens: 512
+structured_multi_options: enabled
+guide_evidence_node_alignment: enabled
+target_cardinality_gate: enabled
+dangling_guide_target_gate: enabled
+canary_min_parse_rate: 0.75
+full_min_parse_rate: 0.90

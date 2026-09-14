@@ -165,7 +165,8 @@ def select_construction(blind_rows: list[dict], audit_rows: list[dict]) -> tuple
         blind = blind_row.get("proposal") if blind_row else None
         audit = audit_row.get("proposal") if audit_row else None
         reasons = screening_reasons(blind, audit)
-        if not reasons and is_construction_candidate(blind, audit):
+        candidate = (audit_row or blind_row or {}).get("candidate", {})
+        if not reasons and is_construction_candidate(blind, audit, candidate):
             selected.append({
                 "candidate_id": candidate_id,
                 "source_image_id": audit_row["source_image_id"],

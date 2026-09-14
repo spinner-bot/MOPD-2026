@@ -1,0 +1,87 @@
+{
+  "code_commits": [
+    "63b9bf4b1b3cb409afa45c66c5913e04fa0d9faa"
+  ],
+  "failures": [
+    "m3vqa-data_0000110: attempts must contain primary and optional fallback",
+    "m3vqa-data_0000110: missing chat_template_hash",
+    "m3vqa-data_0000110: missing image_checksum",
+    "m3vqa-data_0000110: missing prompt_hash",
+    "m3vqa-data_0000663: attempts must contain primary and optional fallback",
+    "m3vqa-data_0000663: missing chat_template_hash",
+    "m3vqa-data_0000663: missing image_checksum",
+    "m3vqa-data_0000663: missing prompt_hash",
+    "m3vqa-data_0001163: attempts must contain primary and optional fallback",
+    "m3vqa-data_0001163: missing chat_template_hash",
+    "m3vqa-data_0001163: missing image_checksum",
+    "m3vqa-data_0001163: missing prompt_hash",
+    "m3vqa-data_0001179: attempts must contain primary and optional fallback",
+    "m3vqa-data_0001179: missing chat_template_hash",
+    "m3vqa-data_0001179: missing image_checksum",
+    "m3vqa-data_0001179: missing prompt_hash",
+    "m3vqa-data_0001682: attempts must contain primary and optional fallback",
+    "m3vqa-data_0001682: missing chat_template_hash",
+    "m3vqa-data_0001682: missing image_checksum",
+    "m3vqa-data_0001682: missing prompt_hash",
+    "m3vqa-data_0002129: attempts must contain primary and optional fallback",
+    "m3vqa-data_0002129: missing chat_template_hash",
+    "m3vqa-data_0002129: missing image_checksum",
+    "m3vqa-data_0002129: missing prompt_hash",
+    "m3vqa-data_0002144: attempts must contain primary and optional fallback",
+    "m3vqa-data_0002144: missing chat_template_hash",
+    "m3vqa-data_0002144: missing image_checksum",
+    "m3vqa-data_0002144: missing prompt_hash",
+    "m3vqa-data_0002253: attempts must contain primary and optional fallback",
+    "m3vqa-data_0002253: missing chat_template_hash",
+    "m3vqa-data_0002253: missing image_checksum",
+    "m3vqa-data_0002253: missing prompt_hash",
+    "parse_rate=0.000000 < 0.750000",
+    "runner_errors=8",
+    "truncated_or_missing_eos=8 > max_truncated=0"
+  ],
+  "fallback_recovered": 0,
+  "fallback_used": 0,
+  "files": [
+    "/leonardo/home/userexternal/rqian000/spinner-bot/MOPD-2026-codex-r8/research/main/outputs/runs/20260914T0302-teacher-gap-screen-c1-128-r8/canary/blind/rank-0.jsonl",
+    "/leonardo/home/userexternal/rqian000/spinner-bot/MOPD-2026-codex-r8/research/main/outputs/runs/20260914T0302-teacher-gap-screen-c1-128-r8/canary/blind/rank-1.jsonl",
+    "/leonardo/home/userexternal/rqian000/spinner-bot/MOPD-2026-codex-r8/research/main/outputs/runs/20260914T0302-teacher-gap-screen-c1-128-r8/canary/blind/rank-2.jsonl",
+    "/leonardo/home/userexternal/rqian000/spinner-bot/MOPD-2026-codex-r8/research/main/outputs/runs/20260914T0302-teacher-gap-screen-c1-128-r8/canary/blind/rank-3.jsonl"
+  ],
+  "generation_configs": [
+    "{\"do_sample\":false,\"fallback_max_new_tokens\":512,\"max_attempts\":2,\"primary_max_new_tokens\":768,\"structured_output_repetition_constraints\":\"disabled\"}"
+  ],
+  "max_truncated_allowed": 0,
+  "model_dtypes": [
+    "torch.bfloat16"
+  ],
+  "model_revisions": [
+    "c202236235762e1c871ad0ccb60c8ee5ba337b9a"
+  ],
+  "parse_rate": 0.0,
+  "parse_summary": {
+    "observed": 8,
+    "parse_rate": 0.0,
+    "parsed_valid": 0,
+    "rejected": 8,
+    "rejection_reasons": {
+      "invalid_json": 8,
+      "runner_error": 8,
+      "truncated_output": 8
+    },
+    "stage": "blind"
+  },
+  "primary_truncated": 0,
+  "rejected": 8,
+  "runner_errors": 8,
+  "stage": "blind",
+  "thinking_modes": [
+    "False"
+  ],
+  "total": 8,
+  "truncated_or_missing_eos": 8,
+  "unique_candidate_ids": 8,
+  "valid_parsed": 0,
+  "world_sizes": [
+    4
+  ]
+}

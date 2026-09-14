@@ -1,4 +1,7 @@
 {
-  "status": "prepared_not_submitted",
-  "slurm_job_id": null
+  "status": "cancelled_before_start_for_contract_hardening",
+  "slurm_job_id": "57593318",
+  "gpu_executed": false,
+  "construct_records": 0,
+  "reason": "1033 construction validity gate hardening; r7b will consume completed r7 screen outputs"
 }
