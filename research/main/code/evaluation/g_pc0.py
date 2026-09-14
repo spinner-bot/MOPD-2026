@@ -606,6 +606,77 @@ def decide_g_pc0_label_rotation(
     }
 
 
+def diagnose_g_pc0_label_rotation(records: list[dict], frozen_decision: str) -> dict[str, Any]:
+    """Emit posthoc descriptive views without changing the 1046 decision."""
+
+    recomputed = decide_g_pc0_label_rotation(records)
+    if recomputed.get("decision") == "INVALID":
+        raise ValueError("label-rotation diagnosis requires complete valid record structure")
+    aggregated = recomputed["aggregated_records"]
+    conditions = ("S", "T_Q", "T_QA", "T_generic")
+    table = {(row["base_sample_id"], row["condition"]): row for row in aggregated}
+    base_ids = sorted({row["base_sample_id"] for row in aggregated})
+    flips = []
+    for base_id in base_ids:
+        baseline = table[(base_id, "S")]
+        treatment = table[(base_id, "T_QA")]
+        if baseline["correct"] != treatment["correct"]:
+            flips.append({
+                "base_sample_id": base_id,
+                "positive_control_family": baseline["positive_control_family"],
+                "correct_semantic_option_id": baseline["correct_semantic_option_id"],
+                "s_prediction": baseline["semantic_prediction"],
+                "tqa_prediction": treatment["semantic_prediction"],
+                "direction": "gain" if treatment["correct"] else "regression",
+            })
+    family_correct = {}
+    for family in FAMILIES:
+        family_correct[family] = {
+            condition: sum(
+                row["correct"]
+                for row in aggregated
+                if row["condition"] == condition and row["positive_control_family"] == family
+            )
+            for condition in conditions
+        }
+        family_correct[family]["n"] = sum(
+            row["condition"] == "S" and row["positive_control_family"] == family
+            for row in aggregated
+        )
+    metrics = {}
+    for condition in conditions:
+        condition_rows = [row for row in aggregated if row["condition"] == condition]
+        margins = []
+        for row in condition_rows:
+            scores = row["semantic_mean_log_likelihoods"]
+            correct = row["correct_semantic_option_id"]
+            margins.append(scores[correct] - max(scores[choice] for choice in CHOICES if choice != correct))
+        raw_rows = [row for row in records if row.get("condition") == condition]
+        metrics[condition] = {
+            "semantic_correct": sum(row["correct"] for row in condition_rows),
+            "semantic_prediction_counts": dict(sorted(Counter(row["semantic_prediction"] for row in condition_rows).items())),
+            "mapped_generation_vote_correct": sum(row["mapped_generation_vote_correct"] for row in condition_rows),
+            "raw_displayed_prediction_counts": dict(sorted(Counter(str(row["parsed_answer"]) for row in raw_rows).items())),
+            "correct_semantic_margin": {
+                "mean": sum(margins) / len(margins),
+                "median": (sorted(margins)[7] + sorted(margins)[8]) / 2,
+                "min": min(margins),
+                "max": max(margins),
+            },
+        }
+    return {
+        "analysis_status": "posthoc_descriptive",
+        "frozen_decision": frozen_decision,
+        "recomputed_decision": recomputed["decision"],
+        "decision_changed": False,
+        "paired_s_to_tqa_flips": flips,
+        "per_family_descriptive_only": family_correct,
+        "condition_metrics": metrics,
+        "natural_image_claim_authorized": False,
+        "training_data_authorized": False,
+    }
+
+
 def write_json_exclusive(path: Path, value: dict) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("x", encoding="utf-8") as sink:

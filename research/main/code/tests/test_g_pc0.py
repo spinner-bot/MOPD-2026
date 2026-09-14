@@ -25,6 +25,7 @@ from g_pc0 import (
     decide_g_pc0,
     decide_g_pc0_label_rotation,
     diagnose_g_pc0,
+    diagnose_g_pc0_label_rotation,
     label_rotation_mapping,
     validate_g_pc0_assets,
     validate_g_pc0_manifest,
@@ -325,6 +326,10 @@ class GPC0Tests(unittest.TestCase):
         self.assertFalse(decision["gpc0_v1_decision_changed"])
         self.assertFalse(decision["natural_image_claim_authorized"])
         self.assertFalse(decision["training_data_authorized"])
+        diagnostic = diagnose_g_pc0_label_rotation(records, decision["decision"])
+        self.assertEqual(len(diagnostic["paired_s_to_tqa_flips"]), 4)
+        self.assertTrue(all(row["direction"] == "gain" for row in diagnostic["paired_s_to_tqa_flips"]))
+        self.assertFalse(diagnostic["decision_changed"])
 
 
 if __name__ == "__main__":

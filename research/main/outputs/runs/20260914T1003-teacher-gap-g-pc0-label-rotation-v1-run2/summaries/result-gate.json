@@ -1,0 +1,10 @@
+{
+  "expected_records": 256,
+  "expected_samples": 64,
+  "manifest_sha256": "f485cc5f2d973d38d896a31afb1a22208251ea662da10f35c18969454ed031fc",
+  "note": "No condition-level performance is emitted before the completeness gate passes.",
+  "observed_records": 256,
+  "status": "passed",
+  "unique_sample_condition": 256,
+  "validation_errors": []
+}

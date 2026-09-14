@@ -21,6 +21,7 @@ from g_pc0 import (
     decide_g_pc0,
     decide_g_pc0_label_rotation,
     diagnose_g_pc0,
+    diagnose_g_pc0_label_rotation,
     validate_g_pc0_assets,
     write_json_exclusive,
 )
@@ -145,6 +146,13 @@ def main() -> None:
     rotation_decide_parser.add_argument("--base-manifest", type=Path, required=True)
     rotation_decide_parser.add_argument("--image-root", type=Path, required=True)
     rotation_decide_parser.add_argument("--output", type=Path, required=True)
+    rotation_diagnose_parser = subparsers.add_parser("diagnose-label-rotation")
+    rotation_diagnose_parser.add_argument("--input", type=Path, required=True)
+    rotation_diagnose_parser.add_argument("--manifest", type=Path, required=True)
+    rotation_diagnose_parser.add_argument("--base-manifest", type=Path, required=True)
+    rotation_diagnose_parser.add_argument("--image-root", type=Path, required=True)
+    rotation_diagnose_parser.add_argument("--decision", type=Path, required=True)
+    rotation_diagnose_parser.add_argument("--output", type=Path, required=True)
     bundle_parser = subparsers.add_parser("validate-manifests")
     bundle_parser.add_argument("--canary", type=Path, required=True)
     bundle_parser.add_argument("--dev", type=Path, required=True)
@@ -315,6 +323,36 @@ def main() -> None:
         print(json.dumps(decision, ensure_ascii=False, sort_keys=True))
         if decision["decision"] == "INVALID":
             raise SystemExit("G-PC0 label-rotation decision refused invalid records")
+    elif args.command == "diagnose-label-rotation":
+        if args.output.exists():
+            raise SystemExit(f"refusing to overwrite diagnostic output: {args.output}")
+        rows = load_jsonl([str(args.input)])
+        samples = load_jsonl([str(args.manifest)])
+        base_samples = load_jsonl([str(args.base_manifest)])
+        manifest_hash = file_sha256(args.manifest)
+        base_hash = file_sha256(args.base_manifest)
+        errors = validate_result_records(rows, expected_samples=64)
+        errors.extend(validate_manifest_profile(
+            samples,
+            expected_n=64,
+            manifest_profile="g_pc0_rotation",
+            base_samples=base_samples,
+            base_manifest_hash=base_hash,
+        ))
+        errors.extend(validate_g_pc0_assets(samples, args.image_root))
+        errors.extend(validate_results_against_manifest(rows, samples, manifest_hash))
+        decision = json.loads(args.decision.read_text(encoding="utf-8"))
+        if decision.get("manifest_sha256") != manifest_hash or decision.get("base_manifest_sha256") != base_hash:
+            errors.append("decision manifest binding differs from frozen manifests")
+        if errors:
+            raise SystemExit("label-rotation diagnosis refused invalid inputs: " + "; ".join(sorted(set(errors))))
+        diagnostic = diagnose_g_pc0_label_rotation(rows, str(decision.get("decision", "")))
+        if diagnostic["recomputed_decision"] != decision.get("decision"):
+            raise SystemExit("posthoc diagnostic recomputation differs from frozen decision")
+        diagnostic["manifest_sha256"] = manifest_hash
+        diagnostic["base_manifest_sha256"] = base_hash
+        write_json_exclusive(args.output, diagnostic)
+        print(json.dumps(diagnostic, ensure_ascii=False, sort_keys=True))
     elif args.command == "diagnose-positive-control":
         if args.output.exists():
             raise SystemExit(f"refusing to overwrite diagnostic output: {args.output}")
