@@ -19,7 +19,7 @@ B2a 判断的是：**只看这张完整图片，人是否能提出一个自然�
 - 任一模型在 S/T 条件下的结果；
 - 其他审核者对同图的判断。
 
-界面也不得显示 `source_dataset`、`source_image_id`、`image_candidate_id` 或图片路径。审核者只用随机化的 `calibration_record_id` 导航；服务端保留的来源身份仅供哈希校验和第一阶段锁定后的联结，不能进入浏览器 API。
+界面也不得显示 `calibration_record_id`、`source_dataset`、`source_image_id`、`image_candidate_id` 或图片路径。审核者只用 `review-item-0000` 形式的无来源顺序令牌导航；服务端保留的真实 ID 仅供哈希校验、draft 保存和第一阶段锁定后的联结，不能进入浏览器 API、保存请求或图片 URL。
 
 机器可以提供图片浏览界面和字段校验，但不得生成、改写或预填任何 `human_*` 字段。
 
@@ -231,3 +231,4 @@ B2b 的 `--output` 与 `--summary` 同样必须是互不相同且尚不存在的
 | 2026-09-14 05:17 | Codex (CINECA Leonardo) | 修订：finalizer CLI 自身固定原始 32 包 hash/条数，并在 summary 保存 original/reviewed 两份输入 hash。 |
 | 2026-09-14 05:30 | Codex (CINECA Leonardo) | 修订：加入 C4 标准库 loopback 界面启动命令、SSH 本地转发边界，以及 draft 可续写/final 排他创建规则。 |
 | 2026-09-14 12:21 | Codex (CINECA Leonardo) | 修订：依据 1069/1070 隐藏可反查原题的来源身份，要求 draft/finalizer 严格 schema，并把图片校验绑定到实际响应字节。 |
+| 2026-09-14 12:28 | Codex (CINECA Leonardo) | 修订：真实 calibration ID 含数据源前缀；依据 `beaad97` 把索引、保存和图片 URL 全部改为无来源序号令牌。 |
