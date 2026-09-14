@@ -30,6 +30,7 @@ from exploratory_teacher_gap import (
     validate_result_records,
     validate_results_against_manifest,
 )
+from exploratory_teacher_gap import TEACHER_GAP_DECISION_RULE_HASH
 from teacher_gap_inputs import COMMON_SHELL, render_teacher_gap_input, validate_generic_length
 from process_exploratory_teacher_gap import enrich_raw_record, main as process_teacher_gap
 from run_exploratory_teacher_gap import (
@@ -798,6 +799,8 @@ class ExploratoryTeacherGapTests(unittest.TestCase):
             n_bootstrap=500,
         )
         self.assertEqual(decision["decision"], "GO_T_Q")
+        self.assertEqual(decision["decision_rule"]["sha256"], TEACHER_GAP_DECISION_RULE_HASH)
+        self.assertEqual(decision["decision_rule"]["bootstrap_samples"], 500)
 
     def test_tqa_pivot_when_questions_alone_are_weak(self):
         decision = decide_teacher_gap(

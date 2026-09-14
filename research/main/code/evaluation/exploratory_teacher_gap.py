@@ -42,6 +42,41 @@ NATURAL_ROTATION_SPEC = {
 NATURAL_ROTATION_SPEC_HASH = hashlib.sha256(
     json.dumps(NATURAL_ROTATION_SPEC, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode()
 ).hexdigest()
+TEACHER_GAP_DECISION_RULE = {
+    "version": "1017-v0.5-1061",
+    "go": {
+        "accuracy_delta_vs_S_min": 0.08,
+        "holm_p_value_lt": 0.05,
+        "correct_log_prob_vs_S_mean_min": 0.15,
+        "correct_log_prob_vs_S_ci_lower_gt": 0.0,
+        "net_flips_vs_S_positive": True,
+    },
+    "matched_generic_either": {
+        "accuracy_branch": {
+            "accuracy_delta_min": 0.04,
+            "net_flips_positive": True,
+        },
+        "correct_log_prob_branch": {
+            "mean_delta_min": 0.10,
+            "ci_lower_gt": 0.0,
+        },
+    },
+    "stop_T_QA": {
+        "accuracy_delta_vs_S_lt": 0.03,
+        "correct_log_prob_mean_lt_or_ci_includes_zero": [0.05, 0.0],
+        "net_flips_vs_S_nonpositive": True,
+        "requires_leakage_free": True,
+    },
+    "holm_family": ["T_Q_vs_S", "T_QA_vs_S"],
+}
+TEACHER_GAP_DECISION_RULE_HASH = hashlib.sha256(
+    json.dumps(
+        TEACHER_GAP_DECISION_RULE,
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+    ).encode()
+).hexdigest()
 
 
 def validate_manifest_profile(
@@ -901,14 +936,18 @@ def _decide_teacher_gap_validated(
     for condition in comparisons:
         comparisons[condition]["mcnemar_vs_S"]["holm_p_value"] = adjusted[condition]
         result = comparisons[condition]
+        generic_rule = TEACHER_GAP_DECISION_RULE["matched_generic_either"]
         accuracy_branch = (
-            result["accuracy_delta_vs_generic"] >= 0.04
+            result["accuracy_delta_vs_generic"]
+            >= generic_rule["accuracy_branch"]["accuracy_delta_min"]
             and result["mcnemar_vs_generic"]["gains"]
             > result["mcnemar_vs_generic"]["regressions"]
         )
         logp_branch = (
-            result["correct_log_prob_vs_generic"]["mean_diff"] >= 0.10
-            and result["correct_log_prob_vs_generic"]["ci_lower"] > 0
+            result["correct_log_prob_vs_generic"]["mean_diff"]
+            >= generic_rule["correct_log_prob_branch"]["mean_delta_min"]
+            and result["correct_log_prob_vs_generic"]["ci_lower"]
+            > generic_rule["correct_log_prob_branch"]["ci_lower_gt"]
         )
         result["structured_advantage"] = {
             "accuracy_branch": accuracy_branch,
@@ -918,12 +957,15 @@ def _decide_teacher_gap_validated(
 
     def strong_go(condition: str) -> bool:
         result = comparisons[condition]
+        rule = TEACHER_GAP_DECISION_RULE["go"]
         return (
             leakage_free
-            and result["accuracy_delta_vs_S"] >= 0.08
-            and result["mcnemar_vs_S"]["holm_p_value"] < 0.05
-            and result["correct_log_prob_vs_S"]["mean_diff"] >= 0.15
-            and result["correct_log_prob_vs_S"]["ci_lower"] > 0
+            and result["accuracy_delta_vs_S"] >= rule["accuracy_delta_vs_S_min"]
+            and result["mcnemar_vs_S"]["holm_p_value"] < rule["holm_p_value_lt"]
+            and result["correct_log_prob_vs_S"]["mean_diff"]
+            >= rule["correct_log_prob_vs_S_mean_min"]
+            and result["correct_log_prob_vs_S"]["ci_lower"]
+            > rule["correct_log_prob_vs_S_ci_lower_gt"]
             and result["structured_advantage"]["passes"]
             and result["mcnemar_vs_S"]["gains"] > result["mcnemar_vs_S"]["regressions"]
         )
@@ -934,11 +976,15 @@ def _decide_teacher_gap_validated(
         decision = "GO_T_QA"
     else:
         oracle = comparisons["T_QA"]
+        stop_rule = TEACHER_GAP_DECISION_RULE["stop_T_QA"]
+        stop_logp_mean, stop_logp_ci = stop_rule[
+            "correct_log_prob_mean_lt_or_ci_includes_zero"
+        ]
         stop = (
-            oracle["accuracy_delta_vs_S"] < 0.03
+            oracle["accuracy_delta_vs_S"] < stop_rule["accuracy_delta_vs_S_lt"]
             and (
-                oracle["correct_log_prob_vs_S"]["mean_diff"] < 0.05
-                or oracle["correct_log_prob_vs_S"]["ci_lower"] <= 0
+                oracle["correct_log_prob_vs_S"]["mean_diff"] < stop_logp_mean
+                or oracle["correct_log_prob_vs_S"]["ci_lower"] <= stop_logp_ci
             )
             and oracle["mcnemar_vs_S"]["gains"] <= oracle["mcnemar_vs_S"]["regressions"]
         )
@@ -951,6 +997,12 @@ def _decide_teacher_gap_validated(
         "n_samples": len(ids),
         "matched_generic_controls": generic_controls,
         "comparisons": comparisons,
+        "decision_rule": {
+            "spec": TEACHER_GAP_DECISION_RULE,
+            "sha256": TEACHER_GAP_DECISION_RULE_HASH,
+            "bootstrap_samples": n_bootstrap,
+            "bootstrap_seed": seed,
+        },
     }
 
 
@@ -1076,7 +1128,7 @@ def decide_teacher_gap_label_rotation(
     n_bootstrap: int = 10_000,
     seed: int = 20260911,
 ) -> dict:
-    """Apply 1017 v0.3 to base-sample semantic observations from four rotations."""
+    """Apply 1017 v0.5 to base-sample semantic observations from four rotations."""
 
     observations, aggregation_errors = aggregate_natural_rotation_results(records, expected_samples)
     errors = sorted(set((validation_errors or []) + aggregation_errors))
@@ -1097,6 +1149,9 @@ def decide_teacher_gap_label_rotation(
             "accuracy_delta_vs_generic": "semantic_accuracy_delta_vs_generic",
             "correct_log_prob_vs_S": "semantic_correct_log_prob_vs_S",
             "correct_log_prob_delta_vs_generic": "semantic_correct_log_prob_delta_vs_generic",
+            "mcnemar_vs_generic": "semantic_accuracy_paired_flips_vs_matched_generic",
+            "correct_log_prob_vs_generic": "semantic_correct_log_prob_vs_matched_generic",
+            "structured_advantage": "1061_matched_control_stability_branches",
         },
         "statistical_unit": "base_sample",
         "n_rotation_views": expected_samples * 4,
