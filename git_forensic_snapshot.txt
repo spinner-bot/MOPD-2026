@@ -1,0 +1,1716 @@
+===== BRANCHES =====
+  amf                               33cae688 research/main/idea1/分支/5.amf: add closing report (branch deprecated)
+  idea1                             4b618b7b merge preparing
+  idea2                             6cde4441 [origin/idea2] Merge remote-tracking branch 'origin/idea2' into idea2
+* main                              e2f2007d [origin/main] 修正1032中的引用范围（1029-1033→1027-1031）
+  mbd                               888e4cb8 research/main/idea1/分支/2.mbd: add closing report (branch deprecated)
+  mcd                               4ba1ffed research/main/idea1/分支/1.mcd: add closing report (branch deprecated)
+  modd                              12110bae research/main/idea1/分支/4.modd: add closing report (branch deprecated)
+  repro                             a56b8e27 repro: add server-recovery checklist and fill paper baseline values in eval guide
+  tamr                              8d815a24 research/main/idea1/分支/3.tamr: add closing report (branch deprecated)
+  remotes/origin/HEAD               -> origin/main
+  remotes/origin/amf                99cdabf8 research/main/idea1/分支/5.amf/sync: add deploy package (module, test, deploy.sh, instructions)
+  remotes/origin/codex/r4-monitor   f8bc0b8b docs: update expansion plan for W2 r5
+  remotes/origin/codex/w3-hardening adde7931 Harden W2 candidate stage provenance gates
+  remotes/origin/idea1              fca21fe4 research/main/idea1: archive old report as 01, add 02 five-branch code framework & deploy package progress report
+  remotes/origin/idea2              6cde4441 Merge remote-tracking branch 'origin/idea2' into idea2
+  remotes/origin/main               e2f2007d 修正1032中的引用范围（1029-1033→1027-1031）
+  remotes/origin/mbd                9518fcc9 research/main/idea1/分支/2.mbd/sync: add deploy package (module, test, deploy.sh, instructions)
+  remotes/origin/mcd                f905aed5 research/main/idea1/分支/1.mcd/code/test_mcd_distillation.py: add unit test (run on server with torch)
+  remotes/origin/modd               49a4fcf5 research/main/idea1/分支/4.modd/sync: add deploy package (module, test, deploy.sh, instructions)
+  remotes/origin/repro              f71dd71c reproduction/1. Vision-OPD/评估执行指南.md: fill known paper baseline values in comparison table
+  remotes/origin/tamr               70206073 research/main/idea1/分支/3.tamr/sync: add deploy package (module, test, deploy.sh, instructions)
+
+===== BRANCH CREATION ORDER =====
+  repro a56b8e27 repro: add server-recovery checklist and fill paper baseline values in eval guide
+  mcd   4ba1ffed research/main/idea1/分支/1.mcd: add closing report (branch deprecated)
+  mbd   888e4cb8 research/main/idea1/分支/2.mbd: add closing report (branch deprecated)
+  tamr  8d815a24 research/main/idea1/分支/3.tamr: add closing report (branch deprecated)
+  modd  12110bae research/main/idea1/分支/4.modd: add closing report (branch deprecated)
+  amf   33cae688 research/main/idea1/分支/5.amf: add closing report (branch deprecated)
+  idea1 4b618b7b merge preparing
+  idea2 6cde4441 [origin/idea2] Merge remote-tracking branch 'origin/idea2' into idea2
+* main  e2f2007d [origin/main] 修正1032中的引用范围（1029-1033→1027-1031）
+
+===== ALL REFS =====
+2026-08-28 23:05:12 +0800 | origin/mcd | f905aed5 | research/main/idea1/分支/1.mcd/code/test_mcd_distillation.py: add unit test (run on server with torch)
+2026-08-28 23:08:38 +0800 | origin/repro | f71dd71c | reproduction/1. Vision-OPD/评估执行指南.md: fill known paper baseline values in comparison table
+2026-08-28 23:14:18 +0800 | origin/mbd | 9518fcc9 | research/main/idea1/分支/2.mbd/sync: add deploy package (module, test, deploy.sh, instructions)
+2026-08-28 23:14:53 +0800 | origin/tamr | 70206073 | research/main/idea1/分支/3.tamr/sync: add deploy package (module, test, deploy.sh, instructions)
+2026-08-28 23:15:22 +0800 | origin/modd | 49a4fcf5 | research/main/idea1/分支/4.modd/sync: add deploy package (module, test, deploy.sh, instructions)
+2026-08-28 23:15:45 +0800 | origin/amf | 99cdabf8 | research/main/idea1/分支/5.amf/sync: add deploy package (module, test, deploy.sh, instructions)
+2026-08-28 23:22:54 +0800 | origin/idea1 | fca21fe4 | research/main/idea1: archive old report as 01, add 02 five-branch code framework & deploy package progress report
+2026-09-02 15:07:57 +0800 | repro | a56b8e27 | repro: add server-recovery checklist and fill paper baseline values in eval guide
+2026-09-02 15:09:20 +0800 | mcd | 4ba1ffed | research/main/idea1/分支/1.mcd: add closing report (branch deprecated)
+2026-09-02 15:10:15 +0800 | mbd | 888e4cb8 | research/main/idea1/分支/2.mbd: add closing report (branch deprecated)
+2026-09-02 15:11:13 +0800 | tamr | 8d815a24 | research/main/idea1/分支/3.tamr: add closing report (branch deprecated)
+2026-09-02 15:12:00 +0800 | modd | 12110bae | research/main/idea1/分支/4.modd: add closing report (branch deprecated)
+2026-09-02 15:13:28 +0800 | amf | 33cae688 | research/main/idea1/分支/5.amf: add closing report (branch deprecated)
+2026-09-02 15:21:09 +0800 | idea1 | 4b618b7b | merge preparing
+2026-09-07 12:07:52 +0800 | idea2 | 6cde4441 | Merge remote-tracking branch 'origin/idea2' into idea2
+2026-09-07 12:07:52 +0800 | origin/idea2 | 6cde4441 | Merge remote-tracking branch 'origin/idea2' into idea2
+2026-09-13 16:47:20 +0200 | origin/codex/w3-hardening | adde7931 | Harden W2 candidate stage provenance gates
+2026-09-13 17:51:13 +0200 | origin/codex/r4-monitor | f8bc0b8b | docs: update expansion plan for W2 r5
+2026-09-14 15:16:56 +0800 | main | e2f2007d | 修正1032中的引用范围（1029-1033→1027-1031）
+2026-09-14 15:16:56 +0800 | origin | e2f2007d | 修正1032中的引用范围（1029-1033→1027-1031）
+2026-09-14 15:16:56 +0800 | origin/main | e2f2007d | 修正1032中的引用范围（1029-1033→1027-1031）
+
+===== GRAPH =====
+* e2f2007d (HEAD -> main, origin/main, origin/HEAD) 修正1032中的引用范围（1029-1033→1027-1031）
+* 1d885205 修正1013中的编号引用范围（1029-1022→1027-1030，1026/1021→1024/1027）
+* 4651950e 重编号1023-1033→1021-1031（整体前移2位），更新所有内部引用
+* 56ae6683 1033-1032
+*   d30b67dd Merge branch 'main' of github.com:spinner-bot/MOPD-2026
+|\  
+* | 2ce39d9f 修正版本管理规范：必须使用--no-ff保护完整历史
+| * 1cf3574c Merge branch 'main' of github.com:spinner-bot/MOPD-2026
+|/| 
+* | 7e447c84 添加1034：W2验证子集数据规范（重点文档）
+| * fc379517 research: freeze G1 population and cluster weights
+| * 50933407 fix: register authoritative evaluation entrypoints
+| * 7ab17ad5 docs: checkpoint autonomous research audit
+| * ceb14e5b fix: remove legacy fixed-label decision CLI
+| * 364f8699 fix: retire unsafe Stage 0 selector
+| * 21e3d2f6 research: balance visual opportunity across families
+| * ebb837a5 research: balance G opportunity across task families
+| * 0d6d840f fix: honor clustered factorial inference
+| * f1e3c31c research: freeze OPSD response alignment checks
+| * 2b9d89e8 research: freeze paired failure denominators
+| * 22176d54 fix: block model-effect selected manifests
+| * 15faa570 research: separate semantic and model guide dependency
+| * 7c360fca research: separate guide authors from evaluators
+| * 788b8e4c research: freeze confirmatory claim hierarchy
+| * 7bd164a7 docs: checkpoint overnight research planning
+| * d7678d30 research: control visual privilege content effects
+| * 0813daaa research: gate 9B training on scale bridge
+| * 22847adb docs: record B2a launch preflight
+| * 322553f2 research: calibrate production guide quality
+| * ff9c9160 research: preserve evaluation sets during source expansion
+| * 0ebdb698 docs: record transactional B2a drafts
+| * 342f9b80 fix: make B2a draft saves transactional
+| * 916f0f48 research: bind B2a draft memory to exports
+| * 44ddec70 research: isolate method selection from transfer tests
+| * ff83815f research: control Stage1 structure-specific transfer
+| * 28d6cc69 docs: record opaque B2a browser identities
+| * beaad979 fix: tokenize B2a browser identities
+| * 59c0d3a3 research: hide embedded B2a source identifiers
+| * 0883a399 docs: record B2a blind boundary hardening
+| * 174bc6e9 fix: harden B2a blind review boundary
+| * f516a265 research: minimize B2a blind review exposure
+| * 89d1244f docs: refresh G0 implementation status
+| * f7def3a0 docs: bind model asset proof to G0 decisions
+| * d6a52217 fix: bind G0 decisions to model asset gate
+| * 5c59d64a research: separate G1 bottleneck from difficulty
+| * 8820867b docs: record local model asset gates
+| * f392b19e feat: verify local model assets before GPU runs
+| * 6fdd0e17 research: require local model asset verification
+| * fbc49440 docs: record pinned worktree smoke test
+| * eb66e034 docs: record natural input identity gates
+| * f2ffb854 fix: bind natural reviews to image inventory
+| * 5d6dfe2b research: bind review coverage and image identity
+| * 0448300a docs: define pinned Slurm worktree workflow
+| * 4b418fa5 fix: reserve worktree helper stdout for exports
+| * a294fba6 fix: make pinned worktree exports shell-safe
+| * 637219bc fix: persist run archives outside pinned worktrees
+| * 4a7ab83b feat: support pinned worktrees for Slurm runs
+| * 12f56999 docs: bind G0 decisions to rule hash
+| * bc803e56 feat: hash and emit G0 decision rule
+| * d3fa6f3c docs: record matched-control stability implementation
+| * 863bcb28 fix: enforce matched-control stability for G0
+| * 1d067e82 research: define matched-control stability gate
+| * c5390b4e audit: archive generic tokenizer stress grid
+| * bb0c8a23 perf: cache neutral control token lengths
+| * 5a319762 docs: record natural finalizer provenance contract
+| * 6c114520 feat: bind natural manifest finalization provenance
+| * 70f31e14 docs: record Python module shadowing fix
+| * e67f981d fix: avoid shadowing Python statistics module
+| * 522844dd docs: record per-sample control implementation
+| * 730f53a8 fix: audit length controls by base sample
+| * a4f967fe feat: match natural text controls per sample
+| * f7ecc132 research: preregister per-sample length controls
+| * bdb7427d research: pair G1 text controls by length
+| * 179e5867 audit: archive G-PC0 control length mismatch
+| * ec4b4bee docs: upgrade natural G0 to matched controls
+| * ec2bbb19 feat: pair natural G0 with dual length controls
+| * a7f51794 research: preregister dual length controls for natural G0
+| * cb4b0143 docs: require clean data for G0 Stop
+| * 353b920e fix: prevent contaminated pilot from returning Stop
+| * f84465da docs: require full commit pins for runs
+| * 401a9423 fix: reject abbreviated experiment commit pins
+| * a53fe28e docs: map effect-first gates onto formal stages
+| * 599b1453 docs: make formal choice evaluation label robust
+| * 36b4fe5f test: cover label-robust pipeline end to end
+| * 91b07ab2 audit: archive rotation vote abstentions
+| * 4c98f415 audit: correct descriptive rotation vote ties
+| * ecbbc94a fix: mark tied rotation votes as abstentions
+| * ab486042 feat: make natural teacher gap label robust
+| * 65eac527 research: record label-robust G signal
+| * 14934f7f research: freeze G-PC0 label rotation diagnostic
+| * bac66ad3 research: record G-PC0 ingestion failure
+| * 3ce2058b fix: align multimodal choice scoring inputs
+| * 52b89d27 feat: freeze G-PC0 mechanism control
+| * 90e5eefa test: verify B2a draft resume
+| * 67a3ab49 test: cover missing B2a image failure
+| * 665aa6b6 fix: reject blind packet schema aliases
+| * d110a68e fix: keep B2a signature initially unset
+| * 1decf419 docs: complete C4 blind review interface
+| * 5db1caa2 feat: add loopback B2a blind review app
+| * baad26cb docs: transfer C4 implementation ownership
+| * 1c87ca8d fix: bind B2a finalizer to frozen packet
+| * 5cd133ee docs: index G positive control design
+| * 6726c545 docs: preregister privileged text positive control
+| * 98ed3d32 fix: preserve B2a routing decisions
+| * e18064be fix: preserve B2b reveal outputs
+| * 8763735f fix: preserve B2a finalizer outputs
+| * 4f4920eb docs: record result gate integration test
+| * e3f9b384 test: exercise manifest-bound result CLI
+| * afdf5d26 fix: bind results to frozen schedule
+| * 18c9a2c6 docs: sync data mainline hardening status
+| * cd2c610c fix: preserve result subgroup provenance
+| * f46ce192 fix: preserve frozen semantic provenance
+| * 92206e35 fix: bind results to frozen manifests
+| * 4c19ab92 fix: verify choice tokenizer continuations
+| * 4e18abf9 fix: pin teacher gap runtime code state
+| * ffce1e19 fix: freeze manifest outputs and provenance
+| * 488856a2 docs: audit B2a deterministic sampling
+| * 927a7292 docs: archive B2a image decode preflight
+| * f03d39e2 docs: align human R PR evidence review
+| * 586c1d4e fix: enforce human R PR evidence semantics
+| * 6a3cb76f fix: validate G0 review times and choice tokens
+| * 9571de1e docs: freeze immutable G0 run behavior
+| * ebd94f3d fix: preserve immutable G0 run outputs
+| * c5c54e60 docs: record G0 manifest bundle gate
+| * 040d55e5 fix: enforce G0 partition isolation preflight
+| * 06d2b690 docs: converge current data-main status
+| * 9a52bb9a docs: preregister B3 construction canary
+| * 59bdd551 docs: define locked B2b comparison workflow
+| * 5dc2b025 feat: gate post-lock B2b machine reveal
+| * 9bc8c0ce docs: define G0 pilot power boundary
+| * 51ca650e feat: audit G0 McNemar pilot power
+| * 5e0a4e27 feat: freeze B2a source routing rules
+| * 5795d5fd docs: archive strict r7 semantic replay
+| * a2bdae74 fix: reject hedged visual entailment claims
+| * 4b064c27 docs: pin C4 to standard-library UI
+| * 72fff316 docs: assign Claude B2a blind review UI
+| * 9af2c49c docs: align dataset manifest with scratch layout
+| * 2897b7b6 docs: define within-image task-family confirmation design
+| * 5c291b97 data: define B2a blind review protocol
+| * 83dba6af docs: record storage compatibility recovery
+| * cf76b286 docs: freeze task-bottleneck and affordance calibration decision
+| * 6df60b4b archive: record r8b storage-relocation failure
+| * 763d964c data: validate signed B2a blind reviews
+| * f72d8bda archive: freeze B2a blind calibration packet
+| *   2d90651c Merge branch 'codex/b2a-calibration'
+| |\  
+| | * 864bca9d data: add blind image-affordance calibration packet
+| |/  
+| * e99ce9de archive: record B1 semantic stop
+| * ae41787b archive: record r8b resolved-root submission
+| * 8c5537fb archive: prepare r8b resolved-root screen
+| * a4cf77bb archive: record r8 storage-root rejection
+| * 4b242072 archive: record B1 affordance r3 submission
+| * 67f5af72 archive: prepare B1 affordance r3
+| * be1e4e97 fix: let invalid affordance candidates fail closed
+| * 772db34e archive: record B1 canary contract failure
+| * bafcb116 archive: record r8 semantic screen submission
+| * 63b9bf4b archive: prepare r8 semantic screen
+| * 9087eff4 feat: add complete B2 affordance review queue
+| * e174c3bc archive: record B1 affordance rerun submission
+| * 73762bda archive: prepare B1 affordance rerun
+| * 1942a020 fix: use migrated Python path for B1
+| * 8d2a9831 archive: record B1 preflight failure
+| * bd08167c fix: reject semantically invalid audit paths
+| * 5bbad81d archive: record r7c construct gate result
+| * 16477cda archive: record B1 affordance submission
+| * e5edf8d9 archive: prepare B1 image affordance pilot
+| * b8822b0a feat: add image-only affordance screen
+| * 92b318e6 docs: start image-first M3VQA branch
+| * e24277a8 archive: freeze question-free M3VQA image pool
+| * 985a84a2 archive: record corrected W2 r7c submission
+| * 49c7ee8c archive: prepare W2 r7c representation check
+| * 1739d73a archive: record W2 r7b canary rejection
+| * 195bc057 fix: align guides and structured multi-options
+| * 4892a362 feat: sample image-only affordance pilots
+| * 739fbd13 feat: define question-free affordance contract
+| * 8e7e4926 feat: build question-firewalled image pool
+| * c267122a archive: record W2 r7b submission
+| * aa11b60d archive: prepare pinned W2 r7b construction
+| * 07445026 archive: record cancelled W2 r7 construct dependency
+| * b6a690bd archive: record W2 r7 screen result
+| *   de3ad888 Merge branch 'main' of github.com:spinner-bot/MOPD-2026
+| |\  
+| |/  
+|/|   
+* | 5df16a6e Merge branch 'main' of github.com:spinner-bot/MOPD-2026
+|\| 
+| * a16c3271 docs: split hardened W2 r7b construction
+* | 119b9b89 更新sbatch脚本路径：迁移到新存储结构
+| * 99e477c0 fix: harden multi-answer construction gate
+| *   d32cd001 Merge branch 'codex/r4-monitor'
+| |\  
+| * | 21f54f08 archive: prepare pinned W2 r7 C1 chain
+| * | d2ceb008 docs: freeze W2 r7 answer semantics
+| * | 030dee4b archive: rebuild C1 answer contract
+| * | 5c0ec1d8 fix: preserve M3VQA answer cardinality
+| * | 1481f137 archive: record W2 r6 answer-contract failure
+| * |   ddb4de35 Merge branch 'main' of github.com:spinner-bot/MOPD-2026
+| |\ \  
+| |/ /  
+|/| |   
+* | | eabeadad 添加Leonardo存储规范和数据迁移方案
+* | | 531d21c4 更新1013：补充r5/r5b/r6迭代状态，r6正在运行
+* | | 0087fdce 更新版本管理规范：禁用--no-ff参数
+* | | 87c2a576 Merge branch 'main' of github.com:spinner-bot/MOPD-2026
+|\| | 
+| * | 1a595053 archive: prepare pinned W2 r6 C1 chain
+| * | 94513ba3 docs: freeze W2 r6 bounded-screen protocol
+| * | 4459d6a4 Restore blind retry and bound W2 full rejects
+| * | 6b81fb2e archive: record W2 r5b blind fallback failure
+| | * f8bc0b8b (origin/codex/r4-monitor) docs: update expansion plan for W2 r5
+| |/  
+| * 88a4426d archive: prepare pinned W2 r5b C1 chain
+| * c9bbd28a archive: correct r5 canary Slurm timestamps
+| * f03c497b archive: record passing W2 r5 audit canary
+| * 2ab1ec36 archive: prepare W2 r5 audit canary
+| * 4ee30d43 docs: freeze W2 r5 audit repair protocol
+| * 5841e2d7 Lock W2 fallback decisions during schema repair
+| * 6036d79e docs: record W2 r4 audit canary diagnosis
+| *   b9ebbec9 Merge teacher-gap expansion plan
+| |\  
+| * | 7c5ecc2f archive: record W2 r4 audit canary failure
+| | * 0cea6d29 docs: plan teacher-gap expansion and human review
+| |/  
+| * ae9600fa archive: prepare pinned W2 r4 validation
+| * 254b1bb4 docs: freeze W2 r4 fallback protocol
+| * 36a569d4 Add auditable compact fallback for W2 generation
+| *   02773e76 Merge teacher-gap pipeline hardening
+| |\  
+| * | 77e08418 archive: record pinned W2 r3b failure
+| | * adde7931 (origin/codex/w3-hardening) Harden W2 candidate stage provenance gates
+| | * 45c4c37c Harden teacher-gap review identity chain
+| | * f5e7d281 Validate guide targets against reasoning graph
+| | * bca12728 docs: archive teacher-gap contract hardening
+| | * c9517257 Enforce frozen teacher-gap result provenance
+| | * aa4d59b8 Add complete teacher-gap human review queue
+| | * d7d3d354 Harden teacher-gap review and graph contracts
+| | * e5f02e04 fix: analyze actual W2 archive schema
+| | * ea4b5f8a feat: pin frozen pilot to submitted commit
+| |/  
+| * 1d5e8cdf archive: initialize pinned W2 C1 r3b chain
+| * d9c34515 docs: record cancelled unpinned W2 attempt
+| * ab2f194b feat: fail closed on construction code drift
+| * 42aa9b79 feat: fail closed on screening code drift
+| * 591d5dcd feat: pin candidate runs to submitted commit
+| * bcda1b84 archive: record W2 C1 r3 jobs
+| * 9940f155 archive: initialize W2 C1 r3 validation chain
+| * 1b35d2aa docs: diagnose W2 structured-output regression
+| * 49352a45 fix: disable unsafe repetition controls in construction
+| * c597b65a fix: disable unsafe repetition controls in screening
+| * 37795774 fix: preserve strict JSON keys in candidate generation
+| *   20ba5785 Merge branch 'main' of github.com:spinner-bot/MOPD-2026
+| |\  
+| |/  
+|/|   
+* | b7712e23 撰写Codex交接文档v2（1028）
+* | 674bb329 添加teacher-gap人工审核指引
+* | fce130da 更新1013：添加W2 teacher-gap pilot状态
+* | 9bf210d6 添加teacher-gap结果分析脚本
+| *   62d910a9 Merge branch 'main' of github.com:spinner-bot/MOPD-2026
+| |\  
+| |/  
+|/|   
+* | 97c2665a 添加no-ff规则
+* | 61277974 Merge branch 'main' of github.com:spinner-bot/MOPD-2026
+|\| 
+* | bf2093d5 stop using ustc H200 server
+| * 412fb566 Record fullpool c1 retry submissions
+| * 57c9a4f6 Archive fullpool c1 W2 retry
+| * 75e29587 Record W2 retry construction submissions
+| * 3fd82c37 Record W2 retry screen submissions
+| * fa22892c Archive bounded-output W2 retries
+| * e8992f44 Constrain construction generation repetition
+| * d374cef8 Parameterize screening generation controls
+| * bf6231eb Constrain candidate generation repetition
+| * 2296e7db Bound blind evidence output
+| *   513b76ae Merge remote main before pushing 1026
+| |\  
+| |/  
+|/|   
+| * 61316b22 Add W2 job status report 1026
+* | 20a0825c fix(archives): resolve report(server_previous) conflict in 10 rolling-chain archives - template content verified subsumed by report.md + manifest.json (purpose match 10/10), resolution note appended, duplicates removed
+* | f6e9bc18 merge: origin/main (admin 拉取指令)
+|\| 
+| *   3707bdc5 Merge branch 'main' of github.com:spinner-bot/MOPD-2026
+| |\  
+| |/  
+|/|   
+| * 940d4fca Document retained checkpoint artifacts
+| * 26cfd65c Track retained run artifacts and job logs
+| * ffdf8284 Archive previous idea2 research
+* | c19156ef docs(1024): Codex handover pack #2 - renumbering map, full timeline of quota-outage period, 12-job rolling chain, decision list, restart checklist
+| *   d76ca46c Merge remote-tracking branch 'origin/main'
+| |\  
+| * | ebb51c3e Add teacher gap run reports
+* | | d57fedef docs(1020): W2 rolling job chain inventory + status - 12 jobs all PENDING (screen 128/974/9463 in 4 chunks + 6 chained constructs), coverage accounting, gates unchanged
+| |/  
+|/|   
+* | af7ffe00 docs(W2): sync fullpool archive manifests + chunk input SHA256SUMS from Leonardo
+* | d527d082 docs(W2): fullpool construct archives c0-c3 (fix missing dirs in 8a54069)
+* | 8a540690 docs(W2): fullpool pre-paid screening archives c0-c3 (screen 57331297-300 -> construct 57331301-304, afterok chains) - admin rolling-submission order, 9463 records in 4 deterministic chunks
+* | 179f0536 docs(W2): exp974 rolling chain archives (57330106 screen -> 57330107 construct, afterok) - admin-ordered pre-paid expansion screening
+* | ac4e8498 docs(1019): C2 completed - enriched nested tiers + Codex-aligned packet, human review guide, SSH recovery notes, takeover snapshot
+* | 10d320ea docs(C2): run archive 20260911T-c2-m3vqa-review-packet - double-run identical outputs (14 files), command/report backfilled, aligned-1024 packet
+* | 73f02208 test(C2): aligned-packet contract tests incl fail-closed unknown id (12/12 pass)
+* | 24c73d52 feat(C2): --aligned packet over Codex frozen 1024 expansion (20260911T1910) - bridges GPU screening set with human review templates
+* | 760ab7f1 merge: origin/main (C2 push前同步)
+|\| 
+* | c9459c25 test(C2): W2A contract compatibility test (10/10 pass)
+* | 7fb8e411 fix(C2): flat top-level W2A compat fields (validate_candidate drop-in for run_teacher_gap_candidate_stage)
+* | 388c300d chore(C2): initialize run archive 20260911T-c2-m3vqa-review-packet
+* | 7997faac test(C2): 9 contract tests - join miss, duplicate image, determinism/nesting, evidence leak ban, blank human fields, fail-closed shortlist
+* | aa2d3812 feat(C2): deterministic M3VQA enrichment + human review packet generator (1018 §5.3) - nested tiers 128/512/1024, evidence-text firewall, blank human fields
+| * 3e594ed2 docs: archive deterministic 1024-record screening expansion
+* | 036143fe merge: origin/main (C2 开工前同步)
+|\| 
+| *   efa0b81e merge: origin/main (storage quota report and coordination)
+| |\  
+| |/  
+|/|   
+| * 0e369042 docs: archive C1 duplicate-cluster audit
+* | 7bfcb207 merge: origin/main (Codex 1018执行更新等)
+|\| 
+| * f2561cf7 docs: queue dependent teacher-gap construction run
+* |   a19586e3 merge: origin/main (Codex 128条筛选run启动 + 1018状态更新)
+|\ \  
+| | * 4ddd5fae fix: require human provenance in locked manifests
+| |/  
+* |   ea1139bb merge: origin/main (Codex teacher-gap env recovery完成)
+|\ \  
+| | * 31bb9e80 docs(1018): record teacher-gap execution status
+| | * 7830ccab docs: initialize 128-record teacher-gap screening run
+| |/  
+* | 07ecba16 docs(1023): 存储配额分析报告 - 导师200G上限, 四目录归属双候选判定, 项目足迹对账, 零修改
+| * b562db5b docs: complete pinned teacher-gap environment recovery
+| * 392f6613 docs: archive teacher-gap environment recovery
+| * f8d17ca3 fix: make environment import check robust
+| * 055f274c fix: constrain teacher-gap images to audited root
+| * 377f4d91 fix: install teacher-gap environment from offline wheelhouse
+| * 28676c6f feat: freeze human-reviewed teacher-gap manifests
+| * a571bcbc feat: add pinned teacher-gap environment job
+| * bc611817 docs: archive pinned teacher-gap model restoration
+| *   2124735e merge: origin/main (report renumbering and C2 coordination)
+| |\  
+| |/  
+|/|   
+| * 93e2e1c2 feat: implement frozen four-condition teacher-gap runner
+| * 5f56de30 feat: add fail-closed teacher-gap candidate pipeline
+* | 707a797b merge: origin/main (Codex restore pinned teacher-gap model assets)
+|\| 
+* | 74914f09 docs(1015): §4.3编号预留表对齐1018§6实际分配 (1018=加速计划,1019=C2,1020-1022=Codex)
+* | 01e0e2ac docs(1018): 旧编号引用同步顺延 (1014/1015/1016→1015/1016/1017) - admin授权代改, 规划内容零改动
+| * 16b6b0b8 feat: restore pinned teacher-gap model assets
+* | 6c40a524 merge: origin/main (Codex accelerated teacher-gap plan + C2 assignment)
+|\| 
+| * 6cdadd33 docs: plan accelerated teacher-gap completion and assign C2
+| *   588d3522 Merge branch 'main' of github.com:spinner-bot/MOPD-2026
+| |\  
+* | | 6ced1a5e 0000 md->txt
+* | | d6a47fa7 docs: renumber 1016->1017 (teacher-gap探索协议) - 文件名+文内引用同步顺延, 协议内容零改动
+* | | 210de564 +1014
+* | | fbac3867 docs: renumber 1015->1016 (M3VQA字段与候选抽样审计) - 文件名+文内引用同步顺延
+* | | a1c1e2b6 docs: renumber 1014->1015 (夜间协同规划) - admin插入新1014, 文件名+文内引用同步顺延
+| |/  
+|/|   
+| *   52452fe8 Merge branch 'main' of github.com:spinner-bot/MOPD-2026
+| |\  
+* | | 2976e8f6 1016+T
+* | | c08a7676 1014+T
+| |/  
+|/|   
+* | a1027248 docs(1015): C1 completed - field inventory, zero-discrimination URL clue finding, 128 shortlist, 16 representatives, schema gaps for W2
+* | 3ff2e781 docs(C1): run archive 20260911T-c1-m3vqa-field-audit - commands, results, hashes
+* | 89b8de48 fix(C1): deterministic top-up for representative sample to meet 12-20 floor
+* | abc541a9 merge: origin/main (pre-push sync)
+|\| 
+* | dfeb075a docs(1015): payload deletion incident report - C1 blocked, asset inventory, 33GiB minimal rebuild path, decisions for Codex
+| * d3d24263 fix: migrate M3VQA materialization to current storage
+| * 991804aa feat: enforce exploratory teacher-gap contracts
+| * 20b0fcda docs: freeze closed-world teacher-gap pilot protocol
+| *   dbb56765 Merge remote-tracking branch 'origin/main'
+| |\  
+| |/  
+|/|   
+* | 381a8f8d feat(C1): deterministic M3VQA field/external-knowledge-clue audit and stratified 128 shortlist script (1014 §4.2)
+* | 5aa7308a merge: origin/main (Codex overnight work)
+|\| 
+| * 901efd64 docs: plan overnight data-line collaboration
+* | e4a0411e docs(1013): fix self-references after admin renumbering (1012=midterm, 1013=this); align midterm new filename
+| *   9427c9f8 merge: origin/main (sync data-line updates)
+| |\  
+| |/  
+|/|   
+* | df29df26 1012_B -> 1013
+* | f1374147 finish 1012数据主线
+* | 73ab3736 rename 1012
+* | c2ace2dc merge: origin/main (Leonardo sync of 1012 and renumbering)
+|\| 
+* | da516ef5 文档规范
+| *   6d75a16c merge: origin/main (report renumbering 0001-0011, 1012 consolidated data-mainline report)
+| |\  
+| |/  
+|/|   
+* | 74f5f7ea docs(1012): align references to restructured midterm assessment (一-六+附录1-3); record ruling precedence on worker-model thinking
+* | d31fe4d7 merge: origin/main (Codex expanded midterm assessment)
+|\| 
+* | c7efc512 docs(1012): consolidated data-mainline report - T00-T08 definitions, status, timeline, risks, decision ledger, evidence index
+| * 00b28ca2 docs: integrate midterm review and meeting record
+* | df3c45f0 add 1012数据主线
+* | 45099b4d move 0910交接文档
+* | 452b41a9 merge: origin/main (data-pipeline midterm assessment, data-strategy discussion)
+|\| 
+* | 9c45a44c 10
+* | dcd12659 0009
+* | e0176780 0008
+* | 6eeca738 0007
+| * 23191f43 docs: archive data-strategy discussion
+* | 988e8f94 0006
+* | 1a1de227 0005
+* | 79cbf60c 0004
+* | 671753f7 0003
+* | d1651e4c 0002
+| * 71ed2b6e docs: add data-pipeline midterm assessment
+* | a1488d99 0001
+| *   97b87cbb merge: origin/main (9101 meeting records and handover updates)
+| |\  
+| |/  
+|/|   
+* | 9b012798 chore: gitignore __pycache__
+* | 9bdcfb88 docs: add 9101 meeting records (核心实验——方案报告与数据主线进展, 2026-09-10)
+* | b277b41f docs: correct owner identity in handover doc - spinner-bot is the project owner; generalize non-project job references
+* | 4eea9041 docs: record owner decision - no history rewrite for credential file (2FA protects), issue closed
+* | 0f3ac3d5 merge: origin/main (Leonardo sync of handover)
+|\| 
+| *   85db7aaa merge: origin/main (credential untrack + Codex handover document)
+| |\  
+| |/  
+|/|   
+* | ea461757 docs: comprehensive handover document for Codex after context loss (specs, environment, T02 timeline, code map, lessons, decision boundaries)
+* | 11c9459c security: untrack CINECA credential file (contains password), add to gitignore; local copy preserved
+* | 007218cc merge: origin/main (Leonardo sync merges)
+|\| 
+| *   e0f7305d merge: origin/main (v2.1 results and progress report update)
+| |\  
+| |/  
+|/|   
+* | fd7f6322 docs: progress report update - v2.1 gate pass, A/B flip validated, full-pipeline wall-clock options for P-layer decision
+* | 4b790da3 docs: v2.1 pilot results - gate PASSED, 353/1200 accepted, bbox median IoU 0.894 vs ground truth, 1375/h throughput
+| *   877bbb60 merge: origin/main (thinking A/B results)
+| |\  
+| |/  
+|/|   
+* | 422f6c70 docs: thinking A/B results - 60% flip rate is genuine perception (IoU vs ground truth), 3072 budget truncates 33%
+| *   0559d49d merge: origin/main (T02 failure diagnosis report)
+| |\  
+| |/  
+|/|   
+* | 223cca9f merge: origin/main (Leonardo archives for v2.1 pilot and thinking A/B)
+|\| 
+* | 77427216 docs: T02 failure diagnosis report - v1 dual defects, v2 canary evidence, crop-relative P-layer finding, v2.1+A/B submissions
+| * 67496892 docs: archive v2.1 pilot (57154729-36) and thinking A/B (57154737) submissions
+| *   813dc427 merge: origin/main (canary gate fix, --thinking flag, A/B sbatch)
+| |\  
+| |/  
+|/|   
+* | abbce034 feat: T02 thinking-mode A/B sbatch (96 canary candidates, 3072 budget)
+* | b3c7cc39 feat: T02 runner --thinking flag for A/B experiments (default off, production unchanged)
+* | a3bfeaff fix: canary gate blocks on config health only; accept_rate informational (v2 canary evidence: 26% is data property, crop-relative questions)
+| *   b189f7e5 merge: origin/main (T03-T05 thinking/truncation fixes)
+| |\  
+| |/  
+|/|   
+* | f76d7239 merge: origin/main (Leonardo archive b626839 for T02 pilot v2 submission)
+|\| 
+* | bee8f2d3 fix: T05 validator distinguishes truncated_output
+* | a78bf2b7 fix: T04 validator distinguishes truncated_output
+* | 45206d78 fix: T03 validator distinguishes truncated_output
+* | 18acc5e2 fix: T05 runner - disable thinking, robust JSON extraction, truncation flag, 512 token cap
+* | 9c266455 fix: T04 runner - disable thinking, robust JSON extraction, truncation flag, 768 token cap
+* | eb3b46c6 fix: T03 runner - disable thinking, robust JSON extraction, truncation flag, 1024 token cap
+* | 447e16d7 feat: shared generation-audit helpers (EOS cap detection) for T0x runners
+| * b6268399 docs: archive T02 pilot v2 submission (57151182-84) with v1 failure diagnosis
+| *   87736172 merge: origin/main (T02 v2 fixes: thinking off, norm1000 geometry, canary chain)
+| |\  
+| |/  
+|/|   
+* | fa588581 feat: parameterize T02 validation output paths via MOPD_T02_TAG
+* | c757abf5 feat: T02 pilot v2 sbatch with in-allocation canary stage
+* | 4219eb7e feat: fail-closed CPU canary gate for T02 pilot v2
+* | f5e7d9f4 fix: distinguish truncated_output from invalid_json in T02 validator
+* | b4f14054 fix: apply bbox geometry normalization in T02 reparse
+* | b2cc8611 fix: T02 runner v2 - disable thinking, 1024 token cap, norm1000 prompt, truncation flag, canary limit
+* | 111459ea feat: deterministic norm1000->pixel bbox geometry for T02
+* | 45d03fcf merge: origin/main (61b7958 T02 terminal JSON recovery)
+|\| 
+| * 61b79581 fix: preserve and recover terminal JSON from T02 responses
+* | 8e95d77a Merge branch 'main' of github.com:spinner-bot/MOPD-2026
+|\| 
+| * 0c905b53 feat: materialize deterministic T04 controls in pipeline
+| * a92720b0 docs: record unattended T02 automation plan
+| * 12da9ad6 docs: correct project progress against Stage 0 evidence
+| *   a5b0a95d Merge branch 'main' of github.com:spinner-bot/MOPD-2026
+| |\  
+| |/  
+|/|   
+* |   1c6e413b merge: accept idea2 branch (resolve .gitignore with simpler version, keep archived materials)
+|\ \  
+* \ \   23240cf7 Merge branch 'main' of github.com:spinner-bot/MOPD-2026
+|\ \ \  
+| | |/  
+| |/|   
+| * | 166e74ad feat: fail closed on incomplete T02 pilot output
+| * |   ebd8aef0 Merge branch 'main' of github.com:spinner-bot/MOPD-2026
+| |\ \  
+| |/ /  
+|/| |   
+| * | 499f80e5 feat: validate T02 automatically after pilot completion
+* | | b4fbe690 docs: update progress report with T03-T05 runners and today's activity
+* | | 911e971d Merge branch 'main' of github.com:spinner-bot/MOPD-2026
+|\| | 
+| * | b562bcc1 feat: chain T02 through T05 in one allocation
+| * | 1bb51280 feat: validate and route T04 option proposals
+| * |   0ffa0861 Merge branch 'main' of github.com:spinner-bot/MOPD-2026
+| |\ \  
+| |/ /  
+|/| |   
+| * | 1bc5c980 feat: add T04 local option review runner
+* | | 2cc90c4c Merge branch 'main' of github.com:spinner-bot/MOPD-2026
+|\| | 
+| * | 09818d4b feat: add T05 independent quality runners
+| * |   7448e7e8 Merge branch 'main' of github.com:spinner-bot/MOPD-2026
+| |\ \  
+| |/ /  
+|/| |   
+| * | c081b87e feat: add T03 local generation and validation runners
+* | | e5bf4711 Merge branch 'main' of github.com:spinner-bot/MOPD-2026
+|\| | 
+* | | a7602e46 fix: correct 40G A100 as BAAI-Aquila, already decommissioned
+| * | fc2621de docs: archive queued T02 four-GPU pilot
+* | | dc653405 Merge branch 'main' of github.com:spinner-bot/MOPD-2026
+|\| | 
+| * | 73484f23 test: cover T03 through T05 preprocessing contracts
+| * | cab613d4 docs: retain T01 admission audit with T07 run
+| * |   7ff98895 Merge branch 'main' of github.com:spinner-bot/MOPD-2026
+| |\ \  
+| |/ /  
+|/| |   
+| * | f6395378 docs: archive T07 grouped split dry run
+* | | fc21c8ef docs: add full-project progress report 2026-09-09
+* | | 21011565 Merge branch 'main' of github.com:spinner-bot/MOPD-2026
+|\| | 
+| * |   fab936b8 Merge branch 'main' of github.com:spinner-bot/MOPD-2026
+| |\ \  
+| |/ /  
+|/| |   
+| * | 1ca4928b fix: isolate near duplicate clusters in T07 dry run
+* | | 4a87e327 docs: update README with meeting/feishu and meeting/wechat structure
+* | | 6e93f2eb rename: meeting/会议记录 -> meeting/feishu
+* | | c5e6c11c Merge branch 'main' of github.com:spinner-bot/MOPD-2026
+|\| | 
+* | | 45083133 rename: meeting/weixin -> meeting/wechat
+| * | e989a22e feat: dry-run leakage-safe grouped splits
+| * |   dc0e53a3 Merge branch 'main' of github.com:spinner-bot/MOPD-2026
+| |\ \  
+| |/ /  
+|/| |   
+* | | 7faebfbc meeting: add weixin chat log on server migration (40G A100 -> H200)
+* | | 256e3ed2 Merge branch 'main' of github.com:spinner-bot/MOPD-2026
+|\| | 
+| * | dc9011a8 feat: load manifest-declared frozen datasets
+| * | 587c6b89 feat: add T06 human review record template
+| * | a825aed9 feat: define deterministic T05 quality gate
+| * | c23644cf feat: freeze deterministic T04 text controls
+| * |   acf9987a Merge branch 'main' of github.com:spinner-bot/MOPD-2026
+| |\ \  
+| |/ /  
+|/| |   
+| * | 2e041f2e feat: validate T03 guide generation contract
+* | | 8aa59740 reproduction: organize Vision-OPD docs into docs/ subfolder
+* | | 2762a90f docs: update root README with project structure and status
+* | | 34ba3dcc Merge branch 'main' of github.com:spinner-bot/MOPD-2026
+|\| | 
+* | | 27639a63 gitignore: add venv/.venv/env patterns
+| * |   28231185 Merge branch 'main' of github.com:spinner-bot/MOPD-2026
+| |\ \  
+| |/ /  
+|/| |   
+| * | 1524c5a5 docs: require auditable model calls for semantic preprocessing
+* | | ce9531e5 papers: move demo-pt2.html into pt.2/
+* | | 93fd16bd Merge branch 'main' of github.com:spinner-bot/MOPD-2026
+|\| | 
+* | | 292439bd archive: consolidate outputs/mnist-cnn into outputs/mnist
+* | | daef574b 1
+| * | c37f40f5 feat: cluster duplicate candidate images
+| * |   d989f734 Merge branch 'main' of github.com:spinner-bot/MOPD-2026
+| |\ \  
+| |/ /  
+|/| |   
+| * | d7889150 docs: schedule deterministic work during GPU queue waits
+* | | 0f77918c Merge branch 'main' of github.com:spinner-bot/MOPD-2026
+|\| | 
+* | | f4f8c0b1 meeting: add .gitkeep to empty meeting folders (7041/7091/7161/8131/9021/9022)
+* | | 706391fd reproduction: move README into Vision-OPD subfolder
+* | | e776fea6 reproduction: reorganize docs and demos into subfolder
+* | | ea781fb3 archive: move knowledge notes to archive/notes/
+* | | da12721c ignore csv_0
+* | | 69ac74ad archive: add extracted idea1 files
+* | | 1d3b416f del idea1.7z
+* | | fdf2da6b rename demo
+* | | b4240ebe archive diagn+.zip 2
+* | | 88d3c415 archive diagn+.zip
+* | | ed61f141 del diagn+.zip
+| * | d88e8203 feat: validate T02 visual structure proposals
+* | | 6a59e828 archive: move previous idea2 research
+* | | 7ec18a71 archive: move HTML demo overviews
+* | | 84e54cbd archive: move MNIST outputs
+* | | f6332a23 archive: move MNIST test scripts
+* | | a2672d2e archive: restructure with clear hierarchy (data/mnist, diagnostics)
+* | | 97ee1e2d archive: move MNIST data/
+* | | 9e1936a1 archive: move old git-diagnostics zip
+* | | caab96c2 create archive/ folder for outdated or semi-outdated files
+| * | eac4e6a2 fix: launch all T02 GPU shards with srun
+| * | 471ba133 feat: add multi-GPU T02 visual structure runner
+| * | 8c82613e feat: deterministically shard high-reasoning candidates
+| * | 520f5432 data: complete T01 candidate pool normalization
+| * |   909f0ad6 Merge branch 'main' of github.com:spinner-bot/MOPD-2026
+| |\ \  
+| |/ /  
+|/| |   
+| * |   dc0880e1 Merge branch 'main' of github.com:spinner-bot/MOPD-2026
+| |\ \  
+* | | | c678cc14 gitignore: add .idea/ and CINECA Leonardo/ (contains password)
+| * | | feaf15af feat: build provenance-preserving Stage 0 candidate pool
+* | | | 770e81d5 update version spec: distinguish Claude/Codex/spinner-bot authors
+| |/ /  
+|/| |   
+* | | a3602a96 Merge branch 'main' of github.com:spinner-bot/MOPD-2026
+|\| | 
+* | |   f653cafe Merge branch 'main' of github.com:spinner-bot/MOPD-2026
+|\ \ \  
+| | * | 7938cdad data: complete T00 source asset inventory
+| |/ /  
+| * | 5762d230 feat: inventory pinned source assets
+| * | af9d084e feat: materialize M3VQA source images
+* | | ac7ac360 Merge branch 'main' of github.com:spinner-bot/MOPD-2026
+|\| | 
+| * | de672475 docs: define shared data preparation execution plan
+| * | 721addb2 docs: record Stage 0 asset preparation
+| * | 792fd382 feat: create M3VQA Stage 0 annotation queue
+| * | 69b97e1b chore: lock Stage 0 runtime dependencies
+| * | 3473b929 feat: block incomplete Stage 0 datasets
+| * | 0e0116bc feat: normalize Vision-OPD visual controls
+| * | cbd4ba7d feat: add resumable Vision-OPD asset preparation
+| * | ae26af10 feat: audit candidate Stage 0 source data
+
+===== FULL LOG =====
+e2f2007d | 2026-09-14 15:16:56 +0800 | claude code (local) |  (HEAD -> main, origin/main, origin/HEAD) | 修正1032中的引用范围（1029-1033→1027-1031）
+1d885205 | 2026-09-14 15:15:23 +0800 | claude code (local) |  | 修正1013中的编号引用范围（1029-1022→1027-1030，1026/1021→1024/1027）
+4651950e | 2026-09-14 15:13:53 +0800 | claude code (local) |  | 重编号1023-1033→1021-1031（整体前移2位），更新所有内部引用
+56ae6683 | 2026-09-14 15:11:16 +0800 | claude code (local) |  | 1033-1032
+d30b67dd | 2026-09-14 14:33:26 +0800 | claude code (local) |  | Merge branch 'main' of github.com:spinner-bot/MOPD-2026
+2ce39d9f | 2026-09-14 14:33:07 +0800 | claude code (local) |  | 修正版本管理规范：必须使用--no-ff保护完整历史
+1cf3574c | 2026-09-14 14:20:52 +0800 | claude code (local) |  | Merge branch 'main' of github.com:spinner-bot/MOPD-2026
+7e447c84 | 2026-09-14 14:20:03 +0800 | claude code (local) |  | 添加1034：W2验证子集数据规范（重点文档）
+fc379517 | 2026-09-14 07:48:59 +0200 | Codex (CINECA Leonardo) |  | research: freeze G1 population and cluster weights
+50933407 | 2026-09-14 07:46:29 +0200 | Codex (CINECA Leonardo) |  | fix: register authoritative evaluation entrypoints
+7ab17ad5 | 2026-09-14 07:42:40 +0200 | Codex (CINECA Leonardo) |  | docs: checkpoint autonomous research audit
+ceb14e5b | 2026-09-14 07:40:58 +0200 | Codex (CINECA Leonardo) |  | fix: remove legacy fixed-label decision CLI
+364f8699 | 2026-09-14 07:38:24 +0200 | Codex (CINECA Leonardo) |  | fix: retire unsafe Stage 0 selector
+21e3d2f6 | 2026-09-14 07:35:16 +0200 | Codex (CINECA Leonardo) |  | research: balance visual opportunity across families
+ebb837a5 | 2026-09-14 07:31:58 +0200 | Codex (CINECA Leonardo) |  | research: balance G opportunity across task families
+0d6d840f | 2026-09-14 07:27:51 +0200 | Codex (CINECA Leonardo) |  | fix: honor clustered factorial inference
+f1e3c31c | 2026-09-14 07:22:18 +0200 | Codex (CINECA Leonardo) |  | research: freeze OPSD response alignment checks
+2b9d89e8 | 2026-09-14 07:19:37 +0200 | Codex (CINECA Leonardo) |  | research: freeze paired failure denominators
+22176d54 | 2026-09-14 07:15:43 +0200 | Codex (CINECA Leonardo) |  | fix: block model-effect selected manifests
+15faa570 | 2026-09-14 07:08:07 +0200 | Codex (CINECA Leonardo) |  | research: separate semantic and model guide dependency
+7c360fca | 2026-09-14 07:05:34 +0200 | Codex (CINECA Leonardo) |  | research: separate guide authors from evaluators
+788b8e4c | 2026-09-14 07:00:33 +0200 | Codex (CINECA Leonardo) |  | research: freeze confirmatory claim hierarchy
+7bd164a7 | 2026-09-14 06:57:38 +0200 | Codex (CINECA Leonardo) |  | docs: checkpoint overnight research planning
+d7678d30 | 2026-09-14 06:55:39 +0200 | Codex (CINECA Leonardo) |  | research: control visual privilege content effects
+0813daaa | 2026-09-14 06:52:18 +0200 | Codex (CINECA Leonardo) |  | research: gate 9B training on scale bridge
+22847adb | 2026-09-14 06:47:17 +0200 | Codex (CINECA Leonardo) |  | docs: record B2a launch preflight
+322553f2 | 2026-09-14 06:45:10 +0200 | Codex (CINECA Leonardo) |  | research: calibrate production guide quality
+ff9c9160 | 2026-09-14 06:42:31 +0200 | Codex (CINECA Leonardo) |  | research: preserve evaluation sets during source expansion
+0ebdb698 | 2026-09-14 06:40:40 +0200 | Codex (CINECA Leonardo) |  | docs: record transactional B2a drafts
+342f9b80 | 2026-09-14 06:37:30 +0200 | Codex (CINECA Leonardo) |  | fix: make B2a draft saves transactional
+916f0f48 | 2026-09-14 06:35:34 +0200 | Codex (CINECA Leonardo) |  | research: bind B2a draft memory to exports
+44ddec70 | 2026-09-14 06:33:35 +0200 | Codex (CINECA Leonardo) |  | research: isolate method selection from transfer tests
+ff83815f | 2026-09-14 06:31:39 +0200 | Codex (CINECA Leonardo) |  | research: control Stage1 structure-specific transfer
+28d6cc69 | 2026-09-14 06:29:27 +0200 | Codex (CINECA Leonardo) |  | docs: record opaque B2a browser identities
+beaad979 | 2026-09-14 06:27:50 +0200 | Codex (CINECA Leonardo) |  | fix: tokenize B2a browser identities
+59c0d3a3 | 2026-09-14 06:25:25 +0200 | Codex (CINECA Leonardo) |  | research: hide embedded B2a source identifiers
+0883a399 | 2026-09-14 06:23:38 +0200 | Codex (CINECA Leonardo) |  | docs: record B2a blind boundary hardening
+174bc6e9 | 2026-09-14 06:20:51 +0200 | Codex (CINECA Leonardo) |  | fix: harden B2a blind review boundary
+f516a265 | 2026-09-14 06:18:37 +0200 | Codex (CINECA Leonardo) |  | research: minimize B2a blind review exposure
+89d1244f | 2026-09-14 06:15:40 +0200 | Codex (CINECA Leonardo) |  | docs: refresh G0 implementation status
+f7def3a0 | 2026-09-14 06:15:01 +0200 | Codex (CINECA Leonardo) |  | docs: bind model asset proof to G0 decisions
+d6a52217 | 2026-09-14 06:14:05 +0200 | Codex (CINECA Leonardo) |  | fix: bind G0 decisions to model asset gate
+5c59d64a | 2026-09-14 06:09:50 +0200 | Codex (CINECA Leonardo) |  | research: separate G1 bottleneck from difficulty
+8820867b | 2026-09-14 06:07:28 +0200 | Codex (CINECA Leonardo) |  | docs: record local model asset gates
+f392b19e | 2026-09-14 06:06:26 +0200 | Codex (CINECA Leonardo) |  | feat: verify local model assets before GPU runs
+6fdd0e17 | 2026-09-14 06:01:57 +0200 | Codex (CINECA Leonardo) |  | research: require local model asset verification
+fbc49440 | 2026-09-14 05:58:38 +0200 | Codex (CINECA Leonardo) |  | docs: record pinned worktree smoke test
+eb66e034 | 2026-09-14 05:57:17 +0200 | Codex (CINECA Leonardo) |  | docs: record natural input identity gates
+f2ffb854 | 2026-09-14 05:55:28 +0200 | Codex (CINECA Leonardo) |  | fix: bind natural reviews to image inventory
+5d6dfe2b | 2026-09-14 05:53:18 +0200 | Codex (CINECA Leonardo) |  | research: bind review coverage and image identity
+0448300a | 2026-09-14 05:50:11 +0200 | Codex (CINECA Leonardo) |  | docs: define pinned Slurm worktree workflow
+4b418fa5 | 2026-09-14 05:48:53 +0200 | Codex (CINECA Leonardo) |  | fix: reserve worktree helper stdout for exports
+a294fba6 | 2026-09-14 05:48:34 +0200 | Codex (CINECA Leonardo) |  | fix: make pinned worktree exports shell-safe
+637219bc | 2026-09-14 05:48:07 +0200 | Codex (CINECA Leonardo) |  | fix: persist run archives outside pinned worktrees
+4a7ab83b | 2026-09-14 05:44:43 +0200 | Codex (CINECA Leonardo) |  | feat: support pinned worktrees for Slurm runs
+12f56999 | 2026-09-14 05:42:26 +0200 | Codex (CINECA Leonardo) |  | docs: bind G0 decisions to rule hash
+bc803e56 | 2026-09-14 05:41:40 +0200 | Codex (CINECA Leonardo) |  | feat: hash and emit G0 decision rule
+d3fa6f3c | 2026-09-14 05:40:02 +0200 | Codex (CINECA Leonardo) |  | docs: record matched-control stability implementation
+863bcb28 | 2026-09-14 05:38:59 +0200 | Codex (CINECA Leonardo) |  | fix: enforce matched-control stability for G0
+1d067e82 | 2026-09-14 05:37:55 +0200 | Codex (CINECA Leonardo) |  | research: define matched-control stability gate
+c5390b4e | 2026-09-14 05:35:21 +0200 | Codex (CINECA Leonardo) |  | audit: archive generic tokenizer stress grid
+bb0c8a23 | 2026-09-14 05:33:03 +0200 | Codex (CINECA Leonardo) |  | perf: cache neutral control token lengths
+5a319762 | 2026-09-14 05:28:43 +0200 | Codex (CINECA Leonardo) |  | docs: record natural finalizer provenance contract
+6c114520 | 2026-09-14 05:27:36 +0200 | Codex (CINECA Leonardo) |  | feat: bind natural manifest finalization provenance
+70f31e14 | 2026-09-14 05:25:15 +0200 | Codex (CINECA Leonardo) |  | docs: record Python module shadowing fix
+e67f981d | 2026-09-14 05:24:31 +0200 | Codex (CINECA Leonardo) |  | fix: avoid shadowing Python statistics module
+522844dd | 2026-09-14 05:22:22 +0200 | Codex (CINECA Leonardo) |  | docs: record per-sample control implementation
+730f53a8 | 2026-09-14 05:20:02 +0200 | Codex (CINECA Leonardo) |  | fix: audit length controls by base sample
+a4f967fe | 2026-09-14 05:19:02 +0200 | Codex (CINECA Leonardo) |  | feat: match natural text controls per sample
+f7ecc132 | 2026-09-14 05:09:57 +0200 | Codex (CINECA Leonardo) |  | research: preregister per-sample length controls
+bdb7427d | 2026-09-14 05:07:43 +0200 | Codex (CINECA Leonardo) |  | research: pair G1 text controls by length
+179e5867 | 2026-09-14 05:02:07 +0200 | Codex (CINECA Leonardo) |  | audit: archive G-PC0 control length mismatch
+ec4b4bee | 2026-09-14 05:00:47 +0200 | Codex (CINECA Leonardo) |  | docs: upgrade natural G0 to matched controls
+ec2bbb19 | 2026-09-14 04:57:13 +0200 | Codex (CINECA Leonardo) |  | feat: pair natural G0 with dual length controls
+a7f51794 | 2026-09-14 04:52:22 +0200 | Codex (CINECA Leonardo) |  | research: preregister dual length controls for natural G0
+cb4b0143 | 2026-09-14 04:49:31 +0200 | Codex (CINECA Leonardo) |  | docs: require clean data for G0 Stop
+353b920e | 2026-09-14 04:48:56 +0200 | Codex (CINECA Leonardo) |  | fix: prevent contaminated pilot from returning Stop
+f84465da | 2026-09-14 04:47:35 +0200 | Codex (CINECA Leonardo) |  | docs: require full commit pins for runs
+401a9423 | 2026-09-14 04:46:23 +0200 | Codex (CINECA Leonardo) |  | fix: reject abbreviated experiment commit pins
+a53fe28e | 2026-09-14 04:44:08 +0200 | Codex (CINECA Leonardo) |  | docs: map effect-first gates onto formal stages
+599b1453 | 2026-09-14 04:40:03 +0200 | Codex (CINECA Leonardo) |  | docs: make formal choice evaluation label robust
+36b4fe5f | 2026-09-14 04:35:52 +0200 | Codex (CINECA Leonardo) |  | test: cover label-robust pipeline end to end
+91b07ab2 | 2026-09-14 04:33:38 +0200 | Codex (CINECA Leonardo) |  | audit: archive rotation vote abstentions
+4c98f415 | 2026-09-14 04:32:38 +0200 | Codex (CINECA Leonardo) |  | audit: correct descriptive rotation vote ties
+ecbbc94a | 2026-09-14 04:30:14 +0200 | Codex (CINECA Leonardo) |  | fix: mark tied rotation votes as abstentions
+ab486042 | 2026-09-14 04:27:47 +0200 | Codex (CINECA Leonardo) |  | feat: make natural teacher gap label robust
+65eac527 | 2026-09-14 04:20:09 +0200 | Codex (CINECA Leonardo) |  | research: record label-robust G signal
+14934f7f | 2026-09-14 04:01:14 +0200 | Codex (CINECA Leonardo) |  | research: freeze G-PC0 label rotation diagnostic
+bac66ad3 | 2026-09-14 03:50:54 +0200 | Codex (CINECA Leonardo) |  | research: record G-PC0 ingestion failure
+3ce2058b | 2026-09-14 03:39:07 +0200 | Codex (CINECA Leonardo) |  | fix: align multimodal choice scoring inputs
+52b89d27 | 2026-09-14 03:28:42 +0200 | Codex (CINECA Leonardo) |  | feat: freeze G-PC0 mechanism control
+90e5eefa | 2026-09-13 23:40:36 +0200 | Codex (CINECA Leonardo) |  | test: verify B2a draft resume
+67a3ab49 | 2026-09-13 23:38:14 +0200 | Codex (CINECA Leonardo) |  | test: cover missing B2a image failure
+665aa6b6 | 2026-09-13 23:37:48 +0200 | Codex (CINECA Leonardo) |  | fix: reject blind packet schema aliases
+d110a68e | 2026-09-13 23:35:44 +0200 | Codex (CINECA Leonardo) |  | fix: keep B2a signature initially unset
+1decf419 | 2026-09-13 23:33:35 +0200 | Codex (CINECA Leonardo) |  | docs: complete C4 blind review interface
+5db1caa2 | 2026-09-13 23:32:09 +0200 | Codex (CINECA Leonardo) |  | feat: add loopback B2a blind review app
+baad26cb | 2026-09-13 23:26:12 +0200 | Codex (CINECA Leonardo) |  | docs: transfer C4 implementation ownership
+1c87ca8d | 2026-09-13 23:13:09 +0200 | Codex (CINECA Leonardo) |  | fix: bind B2a finalizer to frozen packet
+5cd133ee | 2026-09-13 23:08:54 +0200 | Codex (CINECA Leonardo) |  | docs: index G positive control design
+6726c545 | 2026-09-13 23:08:32 +0200 | Codex (CINECA Leonardo) |  | docs: preregister privileged text positive control
+98ed3d32 | 2026-09-13 23:03:12 +0200 | Codex (CINECA Leonardo) |  | fix: preserve B2a routing decisions
+e18064be | 2026-09-13 23:01:37 +0200 | Codex (CINECA Leonardo) |  | fix: preserve B2b reveal outputs
+8763735f | 2026-09-13 22:59:48 +0200 | Codex (CINECA Leonardo) |  | fix: preserve B2a finalizer outputs
+4f4920eb | 2026-09-13 22:57:14 +0200 | Codex (CINECA Leonardo) |  | docs: record result gate integration test
+e3f9b384 | 2026-09-13 22:56:55 +0200 | Codex (CINECA Leonardo) |  | test: exercise manifest-bound result CLI
+afdf5d26 | 2026-09-13 22:55:03 +0200 | Codex (CINECA Leonardo) |  | fix: bind results to frozen schedule
+18c9a2c6 | 2026-09-13 22:51:17 +0200 | Codex (CINECA Leonardo) |  | docs: sync data mainline hardening status
+cd2c610c | 2026-09-13 22:47:04 +0200 | Codex (CINECA Leonardo) |  | fix: preserve result subgroup provenance
+f46ce192 | 2026-09-13 22:46:03 +0200 | Codex (CINECA Leonardo) |  | fix: preserve frozen semantic provenance
+92206e35 | 2026-09-13 22:44:19 +0200 | Codex (CINECA Leonardo) |  | fix: bind results to frozen manifests
+4c19ab92 | 2026-09-13 22:42:58 +0200 | Codex (CINECA Leonardo) |  | fix: verify choice tokenizer continuations
+4e18abf9 | 2026-09-13 22:40:53 +0200 | Codex (CINECA Leonardo) |  | fix: pin teacher gap runtime code state
+ffce1e19 | 2026-09-13 22:38:32 +0200 | Codex (CINECA Leonardo) |  | fix: freeze manifest outputs and provenance
+488856a2 | 2026-09-13 22:36:03 +0200 | Codex (CINECA Leonardo) |  | docs: audit B2a deterministic sampling
+927a7292 | 2026-09-13 22:31:28 +0200 | Codex (CINECA Leonardo) |  | docs: archive B2a image decode preflight
+f03d39e2 | 2026-09-13 22:29:22 +0200 | Codex (CINECA Leonardo) |  | docs: align human R PR evidence review
+586c1d4e | 2026-09-13 22:28:06 +0200 | Codex (CINECA Leonardo) |  | fix: enforce human R PR evidence semantics
+6a3cb76f | 2026-09-13 22:26:31 +0200 | Codex (CINECA Leonardo) |  | fix: validate G0 review times and choice tokens
+9571de1e | 2026-09-13 22:24:57 +0200 | Codex (CINECA Leonardo) |  | docs: freeze immutable G0 run behavior
+ebd94f3d | 2026-09-13 22:24:32 +0200 | Codex (CINECA Leonardo) |  | fix: preserve immutable G0 run outputs
+c5c54e60 | 2026-09-13 22:23:43 +0200 | Codex (CINECA Leonardo) |  | docs: record G0 manifest bundle gate
+040d55e5 | 2026-09-13 22:22:54 +0200 | Codex (CINECA Leonardo) |  | fix: enforce G0 partition isolation preflight
+06d2b690 | 2026-09-13 22:19:33 +0200 | Codex (CINECA Leonardo) |  | docs: converge current data-main status
+9a52bb9a | 2026-09-13 22:15:23 +0200 | Codex (CINECA Leonardo) |  | docs: preregister B3 construction canary
+59bdd551 | 2026-09-13 22:13:41 +0200 | Codex (CINECA Leonardo) |  | docs: define locked B2b comparison workflow
+5dc2b025 | 2026-09-13 22:12:41 +0200 | Codex (CINECA Leonardo) |  | feat: gate post-lock B2b machine reveal
+9bc8c0ce | 2026-09-13 22:10:35 +0200 | Codex (CINECA Leonardo) |  | docs: define G0 pilot power boundary
+51ca650e | 2026-09-13 22:08:16 +0200 | Codex (CINECA Leonardo) |  | feat: audit G0 McNemar pilot power
+5e0a4e27 | 2026-09-13 22:04:55 +0200 | Codex (CINECA Leonardo) |  | feat: freeze B2a source routing rules
+5795d5fd | 2026-09-13 21:58:40 +0200 | Codex (CINECA Leonardo) |  | docs: archive strict r7 semantic replay
+a2bdae74 | 2026-09-13 21:55:48 +0200 | Codex (CINECA Leonardo) |  | fix: reject hedged visual entailment claims
+4b064c27 | 2026-09-13 21:50:47 +0200 | Codex (CINECA Leonardo) |  | docs: pin C4 to standard-library UI
+72fff316 | 2026-09-13 21:49:23 +0200 | Codex (CINECA Leonardo) |  | docs: assign Claude B2a blind review UI
+9af2c49c | 2026-09-13 21:47:59 +0200 | Codex (CINECA Leonardo) |  | docs: align dataset manifest with scratch layout
+2897b7b6 | 2026-09-13 21:46:41 +0200 | Codex (CINECA Leonardo) |  | docs: define within-image task-family confirmation design
+5c291b97 | 2026-09-13 21:44:12 +0200 | Codex (CINECA Leonardo) |  | data: define B2a blind review protocol
+83dba6af | 2026-09-13 21:41:04 +0200 | Codex (CINECA Leonardo) |  | docs: record storage compatibility recovery
+cf76b286 | 2026-09-13 21:38:30 +0200 | Codex (CINECA Leonardo) |  | docs: freeze task-bottleneck and affordance calibration decision
+6df60b4b | 2026-09-13 21:37:57 +0200 | Codex (CINECA Leonardo) |  | archive: record r8b storage-relocation failure
+763d964c | 2026-09-13 21:27:34 +0200 | Codex (CINECA Leonardo) |  | data: validate signed B2a blind reviews
+f72d8bda | 2026-09-13 21:25:47 +0200 | Codex (CINECA Leonardo) |  | archive: freeze B2a blind calibration packet
+2d90651c | 2026-09-13 21:24:43 +0200 | Codex (CINECA Leonardo) |  | Merge branch 'codex/b2a-calibration'
+864bca9d | 2026-09-13 21:24:34 +0200 | Codex (CINECA Leonardo) |  | data: add blind image-affordance calibration packet
+e99ce9de | 2026-09-13 21:19:39 +0200 | Codex (CINECA Leonardo) |  | archive: record B1 semantic stop
+ae41787b | 2026-09-13 21:14:32 +0200 | Codex (CINECA Leonardo) |  | archive: record r8b resolved-root submission
+8c5537fb | 2026-09-13 21:13:44 +0200 | Codex (CINECA Leonardo) |  | archive: prepare r8b resolved-root screen
+a4cf77bb | 2026-09-13 21:13:19 +0200 | Codex (CINECA Leonardo) |  | archive: record r8 storage-root rejection
+4b242072 | 2026-09-13 21:08:45 +0200 | Codex (CINECA Leonardo) |  | archive: record B1 affordance r3 submission
+67f5af72 | 2026-09-13 21:08:09 +0200 | Codex (CINECA Leonardo) |  | archive: prepare B1 affordance r3
+be1e4e97 | 2026-09-13 21:07:35 +0200 | Codex (CINECA Leonardo) |  | fix: let invalid affordance candidates fail closed
+772db34e | 2026-09-13 21:06:36 +0200 | Codex (CINECA Leonardo) |  | archive: record B1 canary contract failure
+bafcb116 | 2026-09-13 21:03:13 +0200 | Codex (CINECA Leonardo) |  | archive: record r8 semantic screen submission
+63b9bf4b | 2026-09-13 21:02:37 +0200 | Codex (CINECA Leonardo) |  | archive: prepare r8 semantic screen
+9087eff4 | 2026-09-13 21:01:48 +0200 | Codex (CINECA Leonardo) |  | feat: add complete B2 affordance review queue
+e174c3bc | 2026-09-13 20:59:07 +0200 | Codex (CINECA Leonardo) |  | archive: record B1 affordance rerun submission
+73762bda | 2026-09-13 20:58:27 +0200 | Codex (CINECA Leonardo) |  | archive: prepare B1 affordance rerun
+1942a020 | 2026-09-13 20:57:58 +0200 | Codex (CINECA Leonardo) |  | fix: use migrated Python path for B1
+8d2a9831 | 2026-09-13 20:57:38 +0200 | Codex (CINECA Leonardo) |  | archive: record B1 preflight failure
+bd08167c | 2026-09-13 20:57:13 +0200 | Codex (CINECA Leonardo) |  | fix: reject semantically invalid audit paths
+5bbad81d | 2026-09-13 20:54:35 +0200 | Codex (CINECA Leonardo) |  | archive: record r7c construct gate result
+16477cda | 2026-09-13 20:48:16 +0200 | Codex (CINECA Leonardo) |  | archive: record B1 affordance submission
+e5edf8d9 | 2026-09-13 20:47:35 +0200 | Codex (CINECA Leonardo) |  | archive: prepare B1 image affordance pilot
+b8822b0a | 2026-09-13 20:46:52 +0200 | Codex (CINECA Leonardo) |  | feat: add image-only affordance screen
+92b318e6 | 2026-09-13 20:41:08 +0200 | Codex (CINECA Leonardo) |  | docs: start image-first M3VQA branch
+e24277a8 | 2026-09-13 20:39:39 +0200 | Codex (CINECA Leonardo) |  | archive: freeze question-free M3VQA image pool
+985a84a2 | 2026-09-13 20:39:10 +0200 | Codex (CINECA Leonardo) |  | archive: record corrected W2 r7c submission
+49c7ee8c | 2026-09-13 20:38:19 +0200 | Codex (CINECA Leonardo) |  | archive: prepare W2 r7c representation check
+1739d73a | 2026-09-13 20:37:34 +0200 | Codex (CINECA Leonardo) |  | archive: record W2 r7b canary rejection
+195bc057 | 2026-09-13 20:37:03 +0200 | Codex (CINECA Leonardo) |  | fix: align guides and structured multi-options
+4892a362 | 2026-09-13 20:31:54 +0200 | Codex (CINECA Leonardo) |  | feat: sample image-only affordance pilots
+739fbd13 | 2026-09-13 20:29:16 +0200 | Codex (CINECA Leonardo) |  | feat: define question-free affordance contract
+8e7e4926 | 2026-09-13 20:26:02 +0200 | Codex (CINECA Leonardo) |  | feat: build question-firewalled image pool
+c267122a | 2026-09-13 20:23:25 +0200 | Codex (CINECA Leonardo) |  | archive: record W2 r7b submission
+aa11b60d | 2026-09-13 20:22:47 +0200 | Codex (CINECA Leonardo) |  | archive: prepare pinned W2 r7b construction
+07445026 | 2026-09-13 20:22:15 +0200 | Codex (CINECA Leonardo) |  | archive: record cancelled W2 r7 construct dependency
+b6a690bd | 2026-09-13 20:21:52 +0200 | Codex (CINECA Leonardo) |  | archive: record W2 r7 screen result
+de3ad888 | 2026-09-13 20:16:48 +0200 | Codex (CINECA Leonardo) |  | Merge branch 'main' of github.com:spinner-bot/MOPD-2026
+5df16a6e | 2026-09-14 02:16:03 +0800 | claude code (local) |  | Merge branch 'main' of github.com:spinner-bot/MOPD-2026
+a16c3271 | 2026-09-13 20:15:36 +0200 | Codex (CINECA Leonardo) |  | docs: split hardened W2 r7b construction
+119b9b89 | 2026-09-14 02:15:27 +0800 | claude code (local) |  | 更新sbatch脚本路径：迁移到新存储结构
+99e477c0 | 2026-09-13 20:14:17 +0200 | Codex (CINECA Leonardo) |  | fix: harden multi-answer construction gate
+d32cd001 | 2026-09-13 20:01:34 +0200 | Codex (CINECA Leonardo) |  | Merge branch 'codex/r4-monitor'
+21f54f08 | 2026-09-13 19:59:22 +0200 | Codex (CINECA Leonardo) |  | archive: prepare pinned W2 r7 C1 chain
+d2ceb008 | 2026-09-13 19:58:11 +0200 | Codex (CINECA Leonardo) |  | docs: freeze W2 r7 answer semantics
+030dee4b | 2026-09-13 19:54:29 +0200 | Codex (CINECA Leonardo) |  | archive: rebuild C1 answer contract
+5c0ec1d8 | 2026-09-13 19:52:36 +0200 | Codex (CINECA Leonardo) |  | fix: preserve M3VQA answer cardinality
+1481f137 | 2026-09-13 19:44:40 +0200 | Codex (CINECA Leonardo) |  | archive: record W2 r6 answer-contract failure
+ddb4de35 | 2026-09-13 18:52:39 +0200 | Codex (CINECA Leonardo) |  | Merge branch 'main' of github.com:spinner-bot/MOPD-2026
+eabeadad | 2026-09-14 00:39:34 +0800 | claude code (local) |  | 添加Leonardo存储规范和数据迁移方案
+531d21c4 | 2026-09-14 00:20:46 +0800 | claude code (local) |  | 更新1013：补充r5/r5b/r6迭代状态，r6正在运行
+0087fdce | 2026-09-14 00:16:36 +0800 | claude code (local) |  | 更新版本管理规范：禁用--no-ff参数
+87c2a576 | 2026-09-14 00:16:11 +0800 | claude code (local) |  | Merge branch 'main' of github.com:spinner-bot/MOPD-2026
+1a595053 | 2026-09-13 18:03:47 +0200 | Codex (CINECA Leonardo) |  | archive: prepare pinned W2 r6 C1 chain
+94513ba3 | 2026-09-13 18:03:02 +0200 | Codex (CINECA Leonardo) |  | docs: freeze W2 r6 bounded-screen protocol
+4459d6a4 | 2026-09-13 18:02:38 +0200 | Codex (CINECA Leonardo) |  | Restore blind retry and bound W2 full rejects
+6b81fb2e | 2026-09-13 18:01:16 +0200 | Codex (CINECA Leonardo) |  | archive: record W2 r5b blind fallback failure
+f8bc0b8b | 2026-09-13 17:51:13 +0200 | Codex (CINECA Leonardo) |  (origin/codex/r4-monitor) | docs: update expansion plan for W2 r5
+88a4426d | 2026-09-13 17:49:52 +0200 | Codex (CINECA Leonardo) |  | archive: prepare pinned W2 r5b C1 chain
+c9bbd28a | 2026-09-13 17:49:11 +0200 | Codex (CINECA Leonardo) |  | archive: correct r5 canary Slurm timestamps
+f03c497b | 2026-09-13 17:48:57 +0200 | Codex (CINECA Leonardo) |  | archive: record passing W2 r5 audit canary
+2ab1ec36 | 2026-09-13 17:41:43 +0200 | Codex (CINECA Leonardo) |  | archive: prepare W2 r5 audit canary
+4ee30d43 | 2026-09-13 17:40:55 +0200 | Codex (CINECA Leonardo) |  | docs: freeze W2 r5 audit repair protocol
+5841e2d7 | 2026-09-13 17:40:16 +0200 | Codex (CINECA Leonardo) |  | Lock W2 fallback decisions during schema repair
+6036d79e | 2026-09-13 17:34:54 +0200 | Codex (CINECA Leonardo) |  | docs: record W2 r4 audit canary diagnosis
+b9ebbec9 | 2026-09-13 17:34:11 +0200 | Codex (CINECA Leonardo) |  | Merge teacher-gap expansion plan
+7c5ecc2f | 2026-09-13 17:34:02 +0200 | Codex (CINECA Leonardo) |  | archive: record W2 r4 audit canary failure
+0cea6d29 | 2026-09-13 17:22:31 +0200 | Codex (CINECA Leonardo) |  | docs: plan teacher-gap expansion and human review
+ae9600fa | 2026-09-13 17:14:19 +0200 | Codex (CINECA Leonardo) |  | archive: prepare pinned W2 r4 validation
+254b1bb4 | 2026-09-13 17:12:25 +0200 | Codex (CINECA Leonardo) |  | docs: freeze W2 r4 fallback protocol
+36a569d4 | 2026-09-13 17:11:23 +0200 | Codex (CINECA Leonardo) |  | Add auditable compact fallback for W2 generation
+02773e76 | 2026-09-13 17:03:56 +0200 | Codex (CINECA Leonardo) |  | Merge teacher-gap pipeline hardening
+77e08418 | 2026-09-13 17:03:36 +0200 | Codex (CINECA Leonardo) |  | archive: record pinned W2 r3b failure
+adde7931 | 2026-09-13 16:47:20 +0200 | Codex (CINECA Leonardo) |  (origin/codex/w3-hardening) | Harden W2 candidate stage provenance gates
+45c4c37c | 2026-09-13 16:42:55 +0200 | Codex (CINECA Leonardo) |  | Harden teacher-gap review identity chain
+f5e7d281 | 2026-09-13 16:40:39 +0200 | Codex (CINECA Leonardo) |  | Validate guide targets against reasoning graph
+bca12728 | 2026-09-13 16:38:49 +0200 | Codex (CINECA Leonardo) |  | docs: archive teacher-gap contract hardening
+c9517257 | 2026-09-13 16:37:36 +0200 | Codex (CINECA Leonardo) |  | Enforce frozen teacher-gap result provenance
+aa4d59b8 | 2026-09-13 16:34:46 +0200 | Codex (CINECA Leonardo) |  | Add complete teacher-gap human review queue
+d7d3d354 | 2026-09-13 16:32:13 +0200 | Codex (CINECA Leonardo) |  | Harden teacher-gap review and graph contracts
+e5f02e04 | 2026-09-13 16:25:06 +0200 | Codex (CINECA Leonardo) |  | fix: analyze actual W2 archive schema
+ea4b5f8a | 2026-09-13 16:21:52 +0200 | Codex (CINECA Leonardo) |  | feat: pin frozen pilot to submitted commit
+1d5e8cdf | 2026-09-13 16:14:38 +0200 | Codex (CINECA Leonardo) |  | archive: initialize pinned W2 C1 r3b chain
+d9c34515 | 2026-09-13 16:14:14 +0200 | Codex (CINECA Leonardo) |  | docs: record cancelled unpinned W2 attempt
+ab2f194b | 2026-09-13 16:13:36 +0200 | Codex (CINECA Leonardo) |  | feat: fail closed on construction code drift
+42aa9b79 | 2026-09-13 16:13:30 +0200 | Codex (CINECA Leonardo) |  | feat: fail closed on screening code drift
+591d5dcd | 2026-09-13 16:13:22 +0200 | Codex (CINECA Leonardo) |  | feat: pin candidate runs to submitted commit
+bcda1b84 | 2026-09-13 16:09:08 +0200 | Codex (CINECA Leonardo) |  | archive: record W2 C1 r3 jobs
+9940f155 | 2026-09-13 16:08:07 +0200 | Codex (CINECA Leonardo) |  | archive: initialize W2 C1 r3 validation chain
+1b35d2aa | 2026-09-13 16:07:29 +0200 | Codex (CINECA Leonardo) |  | docs: diagnose W2 structured-output regression
+49352a45 | 2026-09-13 16:06:28 +0200 | Codex (CINECA Leonardo) |  | fix: disable unsafe repetition controls in construction
+c597b65a | 2026-09-13 16:06:22 +0200 | Codex (CINECA Leonardo) |  | fix: disable unsafe repetition controls in screening
+37795774 | 2026-09-13 16:06:16 +0200 | Codex (CINECA Leonardo) |  | fix: preserve strict JSON keys in candidate generation
+20ba5785 | 2026-09-12 08:17:20 +0200 | Codex (CINECA Leonardo) |  | Merge branch 'main' of github.com:spinner-bot/MOPD-2026
+b7712e23 | 2026-09-12 14:17:01 +0800 | claude code (local) |  | 撰写Codex交接文档v2（1028）
+674bb329 | 2026-09-12 14:16:16 +0800 | claude code (local) |  | 添加teacher-gap人工审核指引
+fce130da | 2026-09-12 14:15:34 +0800 | claude code (local) |  | 更新1013：添加W2 teacher-gap pilot状态
+9bf210d6 | 2026-09-12 14:12:06 +0800 | claude code (local) |  | 添加teacher-gap结果分析脚本
+62d910a9 | 2026-09-12 07:47:22 +0200 | Codex (CINECA Leonardo) |  | Merge branch 'main' of github.com:spinner-bot/MOPD-2026
+97c2665a | 2026-09-12 13:46:51 +0800 | claude code (local) |  | 添加no-ff规则
+61277974 | 2026-09-12 13:44:53 +0800 | claude code (local) |  | Merge branch 'main' of github.com:spinner-bot/MOPD-2026
+bf2093d5 | 2026-09-12 13:23:12 +0800 | claude code (local) |  | stop using ustc H200 server
+412fb566 | 2026-09-11 21:20:30 +0200 | Codex (CINECA Leonardo) |  | Record fullpool c1 retry submissions
+57c9a4f6 | 2026-09-11 21:19:48 +0200 | Codex (CINECA Leonardo) |  | Archive fullpool c1 W2 retry
+75e29587 | 2026-09-11 21:18:11 +0200 | Codex (CINECA Leonardo) |  | Record W2 retry construction submissions
+3fd82c37 | 2026-09-11 21:17:34 +0200 | Codex (CINECA Leonardo) |  | Record W2 retry screen submissions
+fa22892c | 2026-09-11 21:16:07 +0200 | Codex (CINECA Leonardo) |  | Archive bounded-output W2 retries
+e8992f44 | 2026-09-11 21:14:52 +0200 | Codex (CINECA Leonardo) |  | Constrain construction generation repetition
+d374cef8 | 2026-09-11 21:14:21 +0200 | Codex (CINECA Leonardo) |  | Parameterize screening generation controls
+bf6231eb | 2026-09-11 21:14:03 +0200 | Codex (CINECA Leonardo) |  | Constrain candidate generation repetition
+2296e7db | 2026-09-11 21:13:32 +0200 | Codex (CINECA Leonardo) |  | Bound blind evidence output
+513b76ae | 2026-09-11 20:48:46 +0200 | Codex (CINECA Leonardo) |  | Merge remote main before pushing 1026
+61316b22 | 2026-09-11 20:46:26 +0200 | Codex (CINECA Leonardo) |  | Add W2 job status report 1026
+20a0825c | 2026-09-12 00:54:03 +0800 | claude code (local) |  | fix(archives): resolve report(server_previous) conflict in 10 rolling-chain archives - template content verified subsumed by report.md + manifest.json (purpose match 10/10), resolution note appended, duplicates removed
+f6e9bc18 | 2026-09-12 00:35:20 +0800 | claude code (local) |  | merge: origin/main (admin 拉取指令)
+3707bdc5 | 2026-09-11 18:33:53 +0200 | Codex (CINECA Leonardo) |  | Merge branch 'main' of github.com:spinner-bot/MOPD-2026
+940d4fca | 2026-09-11 18:29:30 +0200 | Codex (CINECA Leonardo) |  | Document retained checkpoint artifacts
+26cfd65c | 2026-09-11 18:29:03 +0200 | Codex (CINECA Leonardo) |  | Track retained run artifacts and job logs
+ffdf8284 | 2026-09-11 18:28:55 +0200 | Codex (CINECA Leonardo) |  | Archive previous idea2 research
+c19156ef | 2026-09-12 00:27:38 +0800 | claude code (local) |  | docs(1024): Codex handover pack #2 - renumbering map, full timeline of quota-outage period, 12-job rolling chain, decision list, restart checklist
+d76ca46c | 2026-09-11 18:20:37 +0200 | Codex (CINECA Leonardo) |  | Merge remote-tracking branch 'origin/main'
+ebb51c3e | 2026-09-11 18:18:21 +0200 | Codex (CINECA Leonardo) |  | Add teacher gap run reports
+d57fedef | 2026-09-12 00:17:02 +0800 | claude code (local) |  | docs(1020): W2 rolling job chain inventory + status - 12 jobs all PENDING (screen 128/974/9463 in 4 chunks + 6 chained constructs), coverage accounting, gates unchanged
+af7ffe00 | 2026-09-11 22:47:51 +0800 | claude code (local) |  | docs(W2): sync fullpool archive manifests + chunk input SHA256SUMS from Leonardo
+d527d082 | 2026-09-11 22:39:51 +0800 | claude code (local) |  | docs(W2): fullpool construct archives c0-c3 (fix missing dirs in 8a54069)
+8a540690 | 2026-09-11 22:31:33 +0800 | claude code (local) |  | docs(W2): fullpool pre-paid screening archives c0-c3 (screen 57331297-300 -> construct 57331301-304, afterok chains) - admin rolling-submission order, 9463 records in 4 deterministic chunks
+179f0536 | 2026-09-11 22:03:32 +0800 | claude code (local) |  | docs(W2): exp974 rolling chain archives (57330106 screen -> 57330107 construct, afterok) - admin-ordered pre-paid expansion screening
+ac4e8498 | 2026-09-11 21:37:14 +0800 | claude code (local) |  | docs(1019): C2 completed - enriched nested tiers + Codex-aligned packet, human review guide, SSH recovery notes, takeover snapshot
+10d320ea | 2026-09-11 21:37:14 +0800 | claude code (local) |  | docs(C2): run archive 20260911T-c2-m3vqa-review-packet - double-run identical outputs (14 files), command/report backfilled, aligned-1024 packet
+73f02208 | 2026-09-11 18:58:46 +0800 | claude code (local) |  | test(C2): aligned-packet contract tests incl fail-closed unknown id (12/12 pass)
+24c73d52 | 2026-09-11 18:58:46 +0800 | claude code (local) |  | feat(C2): --aligned packet over Codex frozen 1024 expansion (20260911T1910) - bridges GPU screening set with human review templates
+760ab7f1 | 2026-09-11 18:53:18 +0800 | claude code (local) |  | merge: origin/main (C2 push前同步)
+c9459c25 | 2026-09-11 18:52:11 +0800 | claude code (local) |  | test(C2): W2A contract compatibility test (10/10 pass)
+7fb8e411 | 2026-09-11 18:52:10 +0800 | claude code (local) |  | fix(C2): flat top-level W2A compat fields (validate_candidate drop-in for run_teacher_gap_candidate_stage)
+388c300d | 2026-09-11 18:52:10 +0800 | claude code (local) |  | chore(C2): initialize run archive 20260911T-c2-m3vqa-review-packet
+7997faac | 2026-09-11 18:45:37 +0800 | claude code (local) |  | test(C2): 9 contract tests - join miss, duplicate image, determinism/nesting, evidence leak ban, blank human fields, fail-closed shortlist
+aa2d3812 | 2026-09-11 18:45:36 +0800 | claude code (local) |  | feat(C2): deterministic M3VQA enrichment + human review packet generator (1018 §5.3) - nested tiers 128/512/1024, evidence-text firewall, blank human fields
+3e594ed2 | 2026-09-11 12:28:23 +0200 | Codex (CINECA Leonardo) |  | docs: archive deterministic 1024-record screening expansion
+036143fe | 2026-09-11 18:27:09 +0800 | claude code (local) |  | merge: origin/main (C2 开工前同步)
+efa0b81e | 2026-09-11 12:16:06 +0200 | Codex (CINECA Leonardo) |  | merge: origin/main (storage quota report and coordination)
+0e369042 | 2026-09-11 12:15:50 +0200 | Codex (CINECA Leonardo) |  | docs: archive C1 duplicate-cluster audit
+7bfcb207 | 2026-09-11 18:14:59 +0800 | claude code (local) |  | merge: origin/main (Codex 1018执行更新等)
+f2561cf7 | 2026-09-11 12:14:49 +0200 | Codex (CINECA Leonardo) |  | docs: queue dependent teacher-gap construction run
+a19586e3 | 2026-09-11 18:13:31 +0800 | claude code (local) |  | merge: origin/main (Codex 128条筛选run启动 + 1018状态更新)
+4ddd5fae | 2026-09-11 12:12:58 +0200 | Codex (CINECA Leonardo) |  | fix: require human provenance in locked manifests
+ea1139bb | 2026-09-11 18:10:21 +0800 | claude code (local) |  | merge: origin/main (Codex teacher-gap env recovery完成)
+31bb9e80 | 2026-09-11 12:10:14 +0200 | Codex (CINECA Leonardo) |  | docs(1018): record teacher-gap execution status
+7830ccab | 2026-09-11 12:05:57 +0200 | Codex (CINECA Leonardo) |  | docs: initialize 128-record teacher-gap screening run
+07ecba16 | 2026-09-11 18:05:23 +0800 | claude code (local) |  | docs(1023): 存储配额分析报告 - 导师200G上限, 四目录归属双候选判定, 项目足迹对账, 零修改
+b562db5b | 2026-09-11 12:04:50 +0200 | Codex (CINECA Leonardo) |  | docs: complete pinned teacher-gap environment recovery
+392f6613 | 2026-09-11 12:00:38 +0200 | Codex (CINECA Leonardo) |  | docs: archive teacher-gap environment recovery
+f8d17ca3 | 2026-09-11 12:00:38 +0200 | Codex (CINECA Leonardo) |  | fix: make environment import check robust
+055f274c | 2026-09-11 11:55:14 +0200 | Codex (CINECA Leonardo) |  | fix: constrain teacher-gap images to audited root
+377f4d91 | 2026-09-11 11:53:44 +0200 | Codex (CINECA Leonardo) |  | fix: install teacher-gap environment from offline wheelhouse
+28676c6f | 2026-09-11 11:53:12 +0200 | Codex (CINECA Leonardo) |  | feat: freeze human-reviewed teacher-gap manifests
+a571bcbc | 2026-09-11 11:47:17 +0200 | Codex (CINECA Leonardo) |  | feat: add pinned teacher-gap environment job
+bc611817 | 2026-09-11 11:45:13 +0200 | Codex (CINECA Leonardo) |  | docs: archive pinned teacher-gap model restoration
+2124735e | 2026-09-11 11:44:39 +0200 | Codex (CINECA Leonardo) |  | merge: origin/main (report renumbering and C2 coordination)
+93e2e1c2 | 2026-09-11 11:42:54 +0200 | Codex (CINECA Leonardo) |  | feat: implement frozen four-condition teacher-gap runner
+5f56de30 | 2026-09-11 11:42:44 +0200 | Codex (CINECA Leonardo) |  | feat: add fail-closed teacher-gap candidate pipeline
+707a797b | 2026-09-11 17:40:37 +0800 | claude code (local) |  | merge: origin/main (Codex restore pinned teacher-gap model assets)
+74914f09 | 2026-09-11 17:37:16 +0800 | claude code (local) |  | docs(1015): §4.3编号预留表对齐1018§6实际分配 (1018=加速计划,1019=C2,1020-1022=Codex)
+01e0e2ac | 2026-09-11 17:37:16 +0800 | claude code (local) |  | docs(1018): 旧编号引用同步顺延 (1014/1015/1016→1015/1016/1017) - admin授权代改, 规划内容零改动
+16b6b0b8 | 2026-09-11 11:31:05 +0200 | Codex (CINECA Leonardo) |  | feat: restore pinned teacher-gap model assets
+6c40a524 | 2026-09-11 17:28:47 +0800 | claude code (local) |  | merge: origin/main (Codex accelerated teacher-gap plan + C2 assignment)
+6cdadd33 | 2026-09-11 11:26:45 +0200 | Codex (CINECA Leonardo) |  | docs: plan accelerated teacher-gap completion and assign C2
+588d3522 | 2026-09-11 11:24:15 +0200 | Codex (CINECA Leonardo) |  | Merge branch 'main' of github.com:spinner-bot/MOPD-2026
+6ced1a5e | 2026-09-11 17:20:35 +0800 | spinner-bot |  | 0000 md->txt
+d6a47fa7 | 2026-09-11 17:20:08 +0800 | claude code (local) |  | docs: renumber 1016->1017 (teacher-gap探索协议) - 文件名+文内引用同步顺延, 协议内容零改动
+210de564 | 2026-09-11 17:19:02 +0800 | spinner-bot |  | +1014
+fbac3867 | 2026-09-11 17:18:46 +0800 | claude code (local) |  | docs: renumber 1015->1016 (M3VQA字段与候选抽样审计) - 文件名+文内引用同步顺延
+a1c1e2b6 | 2026-09-11 17:17:59 +0800 | claude code (local) |  | docs: renumber 1014->1015 (夜间协同规划) - admin插入新1014, 文件名+文内引用同步顺延
+52452fe8 | 2026-09-11 10:53:24 +0200 | Codex (CINECA Leonardo) |  | Merge branch 'main' of github.com:spinner-bot/MOPD-2026
+2976e8f6 | 2026-09-11 12:16:53 +0800 | spinner-bot |  | 1016+T
+c08a7676 | 2026-09-11 12:13:27 +0800 | spinner-bot |  | 1014+T
+a1027248 | 2026-09-11 02:28:49 +0800 | claude code (local) |  | docs(1015): C1 completed - field inventory, zero-discrimination URL clue finding, 128 shortlist, 16 representatives, schema gaps for W2
+3ff2e781 | 2026-09-11 02:28:48 +0800 | claude code (local) |  | docs(C1): run archive 20260911T-c1-m3vqa-field-audit - commands, results, hashes
+89b8de48 | 2026-09-11 02:21:13 +0800 | claude code (local) |  | fix(C1): deterministic top-up for representative sample to meet 12-20 floor
+abc541a9 | 2026-09-11 02:12:20 +0800 | claude code (local) |  | merge: origin/main (pre-push sync)
+dfeb075a | 2026-09-11 02:12:20 +0800 | claude code (local) |  | docs(1015): payload deletion incident report - C1 blocked, asset inventory, 33GiB minimal rebuild path, decisions for Codex
+d3d24263 | 2026-09-10 20:11:08 +0200 | Codex (CINECA Leonardo) |  | fix: migrate M3VQA materialization to current storage
+991804aa | 2026-09-10 20:03:57 +0200 | Codex (CINECA Leonardo) |  | feat: enforce exploratory teacher-gap contracts
+20b0fcda | 2026-09-10 19:56:58 +0200 | Codex (CINECA Leonardo) |  | docs: freeze closed-world teacher-gap pilot protocol
+dbb56765 | 2026-09-10 19:56:06 +0200 | Codex (CINECA Leonardo) |  | Merge remote-tracking branch 'origin/main'
+381a8f8d | 2026-09-11 01:52:40 +0800 | claude code (local) |  | feat(C1): deterministic M3VQA field/external-knowledge-clue audit and stratified 128 shortlist script (1014 §4.2)
+5aa7308a | 2026-09-11 01:46:22 +0800 | claude code (local) |  | merge: origin/main (Codex overnight work)
+901efd64 | 2026-09-10 19:45:38 +0200 | Codex (CINECA Leonardo) |  | docs: plan overnight data-line collaboration
+e4a0411e | 2026-09-11 01:45:22 +0800 | claude code (local) |  | docs(1013): fix self-references after admin renumbering (1012=midterm, 1013=this); align midterm new filename
+9427c9f8 | 2026-09-10 19:36:21 +0200 | Codex (CINECA Leonardo) |  | merge: origin/main (sync data-line updates)
+df29df26 | 2026-09-11 01:32:02 +0800 | claude code (local) |  | 1012_B -> 1013
+f1374147 | 2026-09-11 01:31:07 +0800 | claude code (local) |  | finish 1012数据主线
+73ab3736 | 2026-09-11 01:29:24 +0800 | spinner-bot |  | rename 1012
+c2ace2dc | 2026-09-11 01:26:35 +0800 | claude code (local) |  | merge: origin/main (Leonardo sync of 1012 and renumbering)
+da516ef5 | 2026-09-11 01:26:26 +0800 | spinner-bot |  | 文档规范
+6d75a16c | 2026-09-10 19:25:09 +0200 | Codex (CINECA Leonardo) |  | merge: origin/main (report renumbering 0001-0011, 1012 consolidated data-mainline report)
+74f5f7ea | 2026-09-11 01:24:28 +0800 | claude code (local) |  | docs(1012): align references to restructured midterm assessment (一-六+附录1-3); record ruling precedence on worker-model thinking
+d31fe4d7 | 2026-09-11 01:19:07 +0800 | claude code (local) |  | merge: origin/main (Codex expanded midterm assessment)
+c7efc512 | 2026-09-11 01:17:17 +0800 | claude code (local) |  | docs(1012): consolidated data-mainline report - T00-T08 definitions, status, timeline, risks, decision ledger, evidence index
+00b28ca2 | 2026-09-10 19:13:24 +0200 | Codex (CINECA Leonardo) |  | docs: integrate midterm review and meeting record
+df3c45f0 | 2026-09-11 01:07:59 +0800 | claude code (local) |  | add 1012数据主线
+45099b4d | 2026-09-11 01:07:40 +0800 | spinner-bot |  | move 0910交接文档
+452b41a9 | 2026-09-11 01:04:08 +0800 | claude code (local) |  | merge: origin/main (data-pipeline midterm assessment, data-strategy discussion)
+9c45a44c | 2026-09-11 00:57:52 +0800 | spinner-bot |  | 10
+dcd12659 | 2026-09-11 00:57:27 +0800 | spinner-bot |  | 0009
+e0176780 | 2026-09-11 00:56:19 +0800 | spinner-bot |  | 0008
+6eeca738 | 2026-09-11 00:55:25 +0800 | spinner-bot |  | 0007
+23191f43 | 2026-09-10 18:52:49 +0200 | Codex (CINECA Leonardo) |  | docs: archive data-strategy discussion
+988e8f94 | 2026-09-11 00:49:28 +0800 | spinner-bot |  | 0006
+1a1de227 | 2026-09-11 00:48:59 +0800 | spinner-bot |  | 0005
+79cbf60c | 2026-09-11 00:47:26 +0800 | spinner-bot |  | 0004
+671753f7 | 2026-09-11 00:46:54 +0800 | spinner-bot |  | 0003
+d1651e4c | 2026-09-11 00:45:54 +0800 | spinner-bot |  | 0002
+71ed2b6e | 2026-09-10 18:44:44 +0200 | Codex (CINECA Leonardo) |  | docs: add data-pipeline midterm assessment
+a1488d99 | 2026-09-11 00:44:42 +0800 | spinner-bot |  | 0001
+97b87cbb | 2026-09-10 18:04:00 +0200 | Codex (CINECA Leonardo) |  | merge: origin/main (9101 meeting records and handover updates)
+9b012798 | 2026-09-10 23:56:30 +0800 | claude code (local) |  | chore: gitignore __pycache__
+9bdcfb88 | 2026-09-10 23:56:30 +0800 | claude code (local) |  | docs: add 9101 meeting records (核心实验——方案报告与数据主线进展, 2026-09-10)
+b277b41f | 2026-09-10 22:00:36 +0800 | claude code (local) |  | docs: correct owner identity in handover doc - spinner-bot is the project owner; generalize non-project job references
+4eea9041 | 2026-09-10 21:50:52 +0800 | claude code (local) |  | docs: record owner decision - no history rewrite for credential file (2FA protects), issue closed
+0f3ac3d5 | 2026-09-10 21:45:45 +0800 | claude code (local) |  | merge: origin/main (Leonardo sync of handover)
+85db7aaa | 2026-09-10 15:44:34 +0200 | Codex (CINECA Leonardo) |  | merge: origin/main (credential untrack + Codex handover document)
+ea461757 | 2026-09-10 21:43:57 +0800 | claude code (local) |  | docs: comprehensive handover document for Codex after context loss (specs, environment, T02 timeline, code map, lessons, decision boundaries)
+11c9459c | 2026-09-10 21:40:04 +0800 | claude code (local) |  | security: untrack CINECA credential file (contains password), add to gitignore; local copy preserved
+007218cc | 2026-09-10 21:28:59 +0800 | claude code (local) |  | merge: origin/main (Leonardo sync merges)
+e0f7305d | 2026-09-10 15:26:21 +0200 | Codex (CINECA Leonardo) |  | merge: origin/main (v2.1 results and progress report update)
+fd7f6322 | 2026-09-10 21:20:26 +0800 | claude code (local) |  | docs: progress report update - v2.1 gate pass, A/B flip validated, full-pipeline wall-clock options for P-layer decision
+4b790da3 | 2026-09-10 21:20:25 +0800 | claude code (local) |  | docs: v2.1 pilot results - gate PASSED, 353/1200 accepted, bbox median IoU 0.894 vs ground truth, 1375/h throughput
+877bbb60 | 2026-09-10 09:31:17 +0200 | Codex (CINECA Leonardo) |  | merge: origin/main (thinking A/B results)
+422f6c70 | 2026-09-10 15:30:44 +0800 | claude code (local) |  | docs: thinking A/B results - 60% flip rate is genuine perception (IoU vs ground truth), 3072 budget truncates 33%
+0559d49d | 2026-09-10 08:27:30 +0200 | Codex (CINECA Leonardo) |  | merge: origin/main (T02 failure diagnosis report)
+223cca9f | 2026-09-10 14:26:10 +0800 | claude code (local) |  | merge: origin/main (Leonardo archives for v2.1 pilot and thinking A/B)
+77427216 | 2026-09-10 14:26:05 +0800 | claude code (local) |  | docs: T02 failure diagnosis report - v1 dual defects, v2 canary evidence, crop-relative P-layer finding, v2.1+A/B submissions
+67496892 | 2026-09-10 08:22:59 +0200 | claude code (CINECA Leonardo) |  | docs: archive v2.1 pilot (57154729-36) and thinking A/B (57154737) submissions
+813dc427 | 2026-09-10 08:20:51 +0200 | Codex (CINECA Leonardo) |  | merge: origin/main (canary gate fix, --thinking flag, A/B sbatch)
+abbce034 | 2026-09-10 14:20:18 +0800 | claude code (local) |  | feat: T02 thinking-mode A/B sbatch (96 canary candidates, 3072 budget)
+b3c7cc39 | 2026-09-10 14:20:18 +0800 | claude code (local) |  | feat: T02 runner --thinking flag for A/B experiments (default off, production unchanged)
+a3bfeaff | 2026-09-10 14:20:17 +0800 | claude code (local) |  | fix: canary gate blocks on config health only; accept_rate informational (v2 canary evidence: 26% is data property, crop-relative questions)
+b189f7e5 | 2026-09-10 08:01:37 +0200 | Codex (CINECA Leonardo) |  | merge: origin/main (T03-T05 thinking/truncation fixes)
+f76d7239 | 2026-09-10 14:01:07 +0800 | claude code (local) |  | merge: origin/main (Leonardo archive b626839 for T02 pilot v2 submission)
+bee8f2d3 | 2026-09-10 13:59:51 +0800 | claude code (local) |  | fix: T05 validator distinguishes truncated_output
+a78bf2b7 | 2026-09-10 13:59:51 +0800 | claude code (local) |  | fix: T04 validator distinguishes truncated_output
+45206d78 | 2026-09-10 13:59:51 +0800 | claude code (local) |  | fix: T03 validator distinguishes truncated_output
+18acc5e2 | 2026-09-10 13:59:50 +0800 | claude code (local) |  | fix: T05 runner - disable thinking, robust JSON extraction, truncation flag, 512 token cap
+9c266455 | 2026-09-10 13:59:50 +0800 | claude code (local) |  | fix: T04 runner - disable thinking, robust JSON extraction, truncation flag, 768 token cap
+eb3b46c6 | 2026-09-10 13:59:50 +0800 | claude code (local) |  | fix: T03 runner - disable thinking, robust JSON extraction, truncation flag, 1024 token cap
+447e16d7 | 2026-09-10 13:59:49 +0800 | claude code (local) |  | feat: shared generation-audit helpers (EOS cap detection) for T0x runners
+b6268399 | 2026-09-10 07:54:09 +0200 | claude code (CINECA Leonardo) |  | docs: archive T02 pilot v2 submission (57151182-84) with v1 failure diagnosis
+87736172 | 2026-09-10 07:49:16 +0200 | Codex (CINECA Leonardo) |  | merge: origin/main (T02 v2 fixes: thinking off, norm1000 geometry, canary chain)
+fa588581 | 2026-09-10 13:27:46 +0800 | claude code (local) |  | feat: parameterize T02 validation output paths via MOPD_T02_TAG
+c757abf5 | 2026-09-10 13:27:46 +0800 | claude code (local) |  | feat: T02 pilot v2 sbatch with in-allocation canary stage
+4219eb7e | 2026-09-10 13:27:46 +0800 | claude code (local) |  | feat: fail-closed CPU canary gate for T02 pilot v2
+f5e7d9f4 | 2026-09-10 13:27:45 +0800 | claude code (local) |  | fix: distinguish truncated_output from invalid_json in T02 validator
+b4f14054 | 2026-09-10 13:27:45 +0800 | claude code (local) |  | fix: apply bbox geometry normalization in T02 reparse
+b2cc8611 | 2026-09-10 13:27:44 +0800 | claude code (local) |  | fix: T02 runner v2 - disable thinking, 1024 token cap, norm1000 prompt, truncation flag, canary limit
+111459ea | 2026-09-10 13:27:44 +0800 | claude code (local) |  | feat: deterministic norm1000->pixel bbox geometry for T02
+45d03fcf | 2026-09-10 11:17:51 +0800 | claude code (local) |  | merge: origin/main (61b7958 T02 terminal JSON recovery)
+61b79581 | 2026-09-10 03:26:55 +0200 | Codex (CINECA Leonardo) |  | fix: preserve and recover terminal JSON from T02 responses
+8e95d77a | 2026-09-10 01:25:56 +0800 | claude code (local) |  | Merge branch 'main' of github.com:spinner-bot/MOPD-2026
+0c905b53 | 2026-09-09 19:15:49 +0200 | Codex (CINECA Leonardo) |  | feat: materialize deterministic T04 controls in pipeline
+a92720b0 | 2026-09-09 19:14:55 +0200 | Codex (CINECA Leonardo) |  | docs: record unattended T02 automation plan
+12da9ad6 | 2026-09-09 19:14:55 +0200 | Codex (CINECA Leonardo) |  | docs: correct project progress against Stage 0 evidence
+a5b0a95d | 2026-09-09 19:13:03 +0200 | Codex (CINECA Leonardo) |  | Merge branch 'main' of github.com:spinner-bot/MOPD-2026
+1c6e413b | 2026-09-10 01:07:54 +0800 | claude code (local) |  | merge: accept idea2 branch (resolve .gitignore with simpler version, keep archived materials)
+23240cf7 | 2026-09-10 00:57:56 +0800 | claude code (local) |  | Merge branch 'main' of github.com:spinner-bot/MOPD-2026
+166e74ad | 2026-09-09 18:54:04 +0200 | Codex (CINECA Leonardo) |  | feat: fail closed on incomplete T02 pilot output
+ebd8aef0 | 2026-09-09 18:48:23 +0200 | Codex (CINECA Leonardo) |  | Merge branch 'main' of github.com:spinner-bot/MOPD-2026
+499f80e5 | 2026-09-09 18:48:20 +0200 | Codex (CINECA Leonardo) |  | feat: validate T02 automatically after pilot completion
+b4fbe690 | 2026-09-10 00:20:03 +0800 | claude code (local) |  | docs: update progress report with T03-T05 runners and today's activity
+911e971d | 2026-09-10 00:19:13 +0800 | claude code (local) |  | Merge branch 'main' of github.com:spinner-bot/MOPD-2026
+b562bcc1 | 2026-09-09 18:17:09 +0200 | Codex (CINECA Leonardo) |  | feat: chain T02 through T05 in one allocation
+1bb51280 | 2026-09-09 18:16:05 +0200 | Codex (CINECA Leonardo) |  | feat: validate and route T04 option proposals
+0ffa0861 | 2026-09-09 18:14:18 +0200 | Codex (CINECA Leonardo) |  | Merge branch 'main' of github.com:spinner-bot/MOPD-2026
+1bc5c980 | 2026-09-09 18:14:16 +0200 | Codex (CINECA Leonardo) |  | feat: add T04 local option review runner
+2cc90c4c | 2026-09-10 00:12:13 +0800 | claude code (local) |  | Merge branch 'main' of github.com:spinner-bot/MOPD-2026
+09818d4b | 2026-09-09 18:11:23 +0200 | Codex (CINECA Leonardo) |  | feat: add T05 independent quality runners
+7448e7e8 | 2026-09-09 18:10:25 +0200 | Codex (CINECA Leonardo) |  | Merge branch 'main' of github.com:spinner-bot/MOPD-2026
+c081b87e | 2026-09-09 18:10:23 +0200 | Codex (CINECA Leonardo) |  | feat: add T03 local generation and validation runners
+e5bf4711 | 2026-09-09 23:57:03 +0800 | claude code (local) |  | Merge branch 'main' of github.com:spinner-bot/MOPD-2026
+a7602e46 | 2026-09-09 23:56:53 +0800 | claude code (local) |  | fix: correct 40G A100 as BAAI-Aquila, already decommissioned
+fc2621de | 2026-09-09 17:56:05 +0200 | Codex (CINECA Leonardo) |  | docs: archive queued T02 four-GPU pilot
+dc653405 | 2026-09-09 23:55:46 +0800 | claude code (local) |  | Merge branch 'main' of github.com:spinner-bot/MOPD-2026
+73484f23 | 2026-09-09 17:53:45 +0200 | Codex (CINECA Leonardo) |  | test: cover T03 through T05 preprocessing contracts
+cab613d4 | 2026-09-09 17:51:52 +0200 | Codex (CINECA Leonardo) |  | docs: retain T01 admission audit with T07 run
+7ff98895 | 2026-09-09 17:51:16 +0200 | Codex (CINECA Leonardo) |  | Merge branch 'main' of github.com:spinner-bot/MOPD-2026
+f6395378 | 2026-09-09 17:51:14 +0200 | Codex (CINECA Leonardo) |  | docs: archive T07 grouped split dry run
+fc21c8ef | 2026-09-09 23:50:06 +0800 | claude code (local) |  | docs: add full-project progress report 2026-09-09
+21011565 | 2026-09-09 23:48:06 +0800 | claude code (local) |  | Merge branch 'main' of github.com:spinner-bot/MOPD-2026
+fab936b8 | 2026-09-09 17:47:21 +0200 | Codex (CINECA Leonardo) |  | Merge branch 'main' of github.com:spinner-bot/MOPD-2026
+1ca4928b | 2026-09-09 17:47:04 +0200 | Codex (CINECA Leonardo) |  | fix: isolate near duplicate clusters in T07 dry run
+4a87e327 | 2026-09-09 23:36:27 +0800 | claude code (local) |  | docs: update README with meeting/feishu and meeting/wechat structure
+6e93f2eb | 2026-09-09 23:35:18 +0800 | claude code (local) |  | rename: meeting/会议记录 -> meeting/feishu
+c5e6c11c | 2026-09-09 23:33:24 +0800 | claude code (local) |  | Merge branch 'main' of github.com:spinner-bot/MOPD-2026
+45083133 | 2026-09-09 23:33:19 +0800 | claude code (local) |  | rename: meeting/weixin -> meeting/wechat
+e989a22e | 2026-09-09 17:33:10 +0200 | Codex (CINECA Leonardo) |  | feat: dry-run leakage-safe grouped splits
+dc0e53a3 | 2026-09-09 17:32:30 +0200 | Codex (CINECA Leonardo) |  | Merge branch 'main' of github.com:spinner-bot/MOPD-2026
+7faebfbc | 2026-09-09 23:31:58 +0800 | claude code (local) |  | meeting: add weixin chat log on server migration (40G A100 -> H200)
+256e3ed2 | 2026-09-09 23:29:32 +0800 | claude code (local) |  | Merge branch 'main' of github.com:spinner-bot/MOPD-2026
+dc9011a8 | 2026-09-09 17:24:08 +0200 | Codex (CINECA Leonardo) |  | feat: load manifest-declared frozen datasets
+587c6b89 | 2026-09-09 17:23:46 +0200 | Codex (CINECA Leonardo) |  | feat: add T06 human review record template
+a825aed9 | 2026-09-09 17:23:31 +0200 | Codex (CINECA Leonardo) |  | feat: define deterministic T05 quality gate
+c23644cf | 2026-09-09 17:23:20 +0200 | Codex (CINECA Leonardo) |  | feat: freeze deterministic T04 text controls
+acf9987a | 2026-09-09 17:21:17 +0200 | Codex (CINECA Leonardo) |  | Merge branch 'main' of github.com:spinner-bot/MOPD-2026
+2e041f2e | 2026-09-09 17:21:15 +0200 | Codex (CINECA Leonardo) |  | feat: validate T03 guide generation contract
+8aa59740 | 2026-09-09 23:14:09 +0800 | claude code (local) |  | reproduction: organize Vision-OPD docs into docs/ subfolder
+2762a90f | 2026-09-09 23:13:16 +0800 | claude code (local) |  | docs: update root README with project structure and status
+34ba3dcc | 2026-09-09 23:12:32 +0800 | claude code (local) |  | Merge branch 'main' of github.com:spinner-bot/MOPD-2026
+27639a63 | 2026-09-09 23:11:50 +0800 | claude code (local) |  | gitignore: add venv/.venv/env patterns
+28231185 | 2026-09-09 17:08:57 +0200 | Codex (CINECA Leonardo) |  | Merge branch 'main' of github.com:spinner-bot/MOPD-2026
+1524c5a5 | 2026-09-09 17:08:55 +0200 | Codex (CINECA Leonardo) |  | docs: require auditable model calls for semantic preprocessing
+ce9531e5 | 2026-09-09 23:08:23 +0800 | claude code (local) |  | papers: move demo-pt2.html into pt.2/
+93fd16bd | 2026-09-09 23:07:57 +0800 | claude code (local) |  | Merge branch 'main' of github.com:spinner-bot/MOPD-2026
+292439bd | 2026-09-09 23:07:33 +0800 | claude code (local) |  | archive: consolidate outputs/mnist-cnn into outputs/mnist
+daef574b | 2026-09-09 23:06:43 +0800 | spinner-bot |  | 1
+c37f40f5 | 2026-09-09 17:05:58 +0200 | Codex (CINECA Leonardo) |  | feat: cluster duplicate candidate images
+d989f734 | 2026-09-09 17:03:49 +0200 | Codex (CINECA Leonardo) |  | Merge branch 'main' of github.com:spinner-bot/MOPD-2026
+d7889150 | 2026-09-09 17:03:46 +0200 | Codex (CINECA Leonardo) |  | docs: schedule deterministic work during GPU queue waits
+0f77918c | 2026-09-09 23:01:52 +0800 | claude code (local) |  | Merge branch 'main' of github.com:spinner-bot/MOPD-2026
+f4f8c0b1 | 2026-09-09 23:00:14 +0800 | claude code (local) |  | meeting: add .gitkeep to empty meeting folders (7041/7091/7161/8131/9021/9022)
+706391fd | 2026-09-09 22:58:32 +0800 | claude code (local) |  | reproduction: move README into Vision-OPD subfolder
+e776fea6 | 2026-09-09 22:55:59 +0800 | claude code (local) |  | reproduction: reorganize docs and demos into subfolder
+ea781fb3 | 2026-09-09 22:54:56 +0800 | claude code (local) |  | archive: move knowledge notes to archive/notes/
+da12721c | 2026-09-09 22:54:06 +0800 | spinner-bot |  | ignore csv_0
+69ac74ad | 2026-09-09 22:48:12 +0800 | claude code (local) |  | archive: add extracted idea1 files
+1d3b416f | 2026-09-09 22:47:44 +0800 | spinner-bot |  | del idea1.7z
+fdf2da6b | 2026-09-09 22:45:34 +0800 | spinner-bot |  | rename demo
+b4240ebe | 2026-09-09 22:44:23 +0800 | spinner-bot |  | archive diagn+.zip 2
+88d3c415 | 2026-09-09 22:44:06 +0800 | spinner-bot |  | archive diagn+.zip
+ed61f141 | 2026-09-09 22:43:18 +0800 | spinner-bot |  | del diagn+.zip
+d88e8203 | 2026-09-09 16:41:33 +0200 | Codex (CINECA Leonardo) |  | feat: validate T02 visual structure proposals
+6a59e828 | 2026-09-09 22:35:40 +0800 | claude code (local) |  | archive: move previous idea2 research
+7ec18a71 | 2026-09-09 22:35:14 +0800 | claude code (local) |  | archive: move HTML demo overviews
+84e54cbd | 2026-09-09 22:35:03 +0800 | claude code (local) |  | archive: move MNIST outputs
+f6332a23 | 2026-09-09 22:34:50 +0800 | claude code (local) |  | archive: move MNIST test scripts
+a2672d2e | 2026-09-09 22:34:50 +0800 | claude code (local) |  | archive: restructure with clear hierarchy (data/mnist, diagnostics)
+97ee1e2d | 2026-09-09 22:34:16 +0800 | claude code (local) |  | archive: move MNIST data/
+9e1936a1 | 2026-09-09 22:34:00 +0800 | claude code (local) |  | archive: move old git-diagnostics zip
+caab96c2 | 2026-09-09 22:30:21 +0800 | claude code (local) |  | create archive/ folder for outdated or semi-outdated files
+eac4e6a2 | 2026-09-09 16:29:57 +0200 | Codex (CINECA Leonardo) |  | fix: launch all T02 GPU shards with srun
+471ba133 | 2026-09-09 16:29:03 +0200 | Codex (CINECA Leonardo) |  | feat: add multi-GPU T02 visual structure runner
+8c82613e | 2026-09-09 16:26:02 +0200 | Codex (CINECA Leonardo) |  | feat: deterministically shard high-reasoning candidates
+520f5432 | 2026-09-09 16:25:31 +0200 | Codex (CINECA Leonardo) |  | data: complete T01 candidate pool normalization
+909f0ad6 | 2026-09-09 16:24:09 +0200 | Codex (CINECA Leonardo) |  | Merge branch 'main' of github.com:spinner-bot/MOPD-2026
+dc0880e1 | 2026-09-09 16:23:37 +0200 | Codex (CINECA Leonardo) |  | Merge branch 'main' of github.com:spinner-bot/MOPD-2026
+c678cc14 | 2026-09-09 22:23:32 +0800 | claude code (local) |  | gitignore: add .idea/ and CINECA Leonardo/ (contains password)
+feaf15af | 2026-09-09 16:23:15 +0200 | Codex (CINECA Leonardo) |  | feat: build provenance-preserving Stage 0 candidate pool
+770e81d5 | 2026-09-09 22:23:05 +0800 | claude code (local) |  | update version spec: distinguish Claude/Codex/spinner-bot authors
+a3602a96 | 2026-09-09 22:22:29 +0800 | claude code (local) |  | Merge branch 'main' of github.com:spinner-bot/MOPD-2026
+7938cdad | 2026-09-09 16:22:06 +0200 | Codex (CINECA Leonardo) |  | data: complete T00 source asset inventory
+f653cafe | 2026-09-09 22:22:06 +0800 | claude code (local) |  | Merge branch 'main' of github.com:spinner-bot/MOPD-2026
+5762d230 | 2026-09-09 16:20:43 +0200 | Codex (CINECA Leonardo) |  | feat: inventory pinned source assets
+af9d084e | 2026-09-09 16:19:35 +0200 | Codex (CINECA Leonardo) |  | feat: materialize M3VQA source images
+ac7ac360 | 2026-09-09 22:13:12 +0800 | claude code (local) |  | Merge branch 'main' of github.com:spinner-bot/MOPD-2026
+de672475 | 2026-09-09 16:12:00 +0200 | Codex (CINECA Leonardo) |  | docs: define shared data preparation execution plan
+721addb2 | 2026-09-09 15:56:11 +0200 | Codex (CINECA Leonardo) |  | docs: record Stage 0 asset preparation
+792fd382 | 2026-09-09 15:55:35 +0200 | Codex (CINECA Leonardo) |  | feat: create M3VQA Stage 0 annotation queue
+69b97e1b | 2026-09-09 15:52:53 +0200 | Codex (CINECA Leonardo) |  | chore: lock Stage 0 runtime dependencies
+3473b929 | 2026-09-09 15:51:32 +0200 | Codex (CINECA Leonardo) |  | feat: block incomplete Stage 0 datasets
+0e0116bc | 2026-09-09 15:45:23 +0200 | Codex (CINECA Leonardo) |  | feat: normalize Vision-OPD visual controls
+cbd4ba7d | 2026-09-09 15:41:51 +0200 | Codex (CINECA Leonardo) |  | feat: add resumable Vision-OPD asset preparation
+ae26af10 | 2026-09-09 15:41:23 +0200 | Codex (CINECA Leonardo) |  | feat: audit candidate Stage 0 source data
+
+===== REFLOG =====
+e2f2007d refs/remotes/origin/HEAD@{2026-09-14 15:17:01 +0800}: update by push
+e2f2007d refs/remotes/origin/main@{2026-09-14 15:17:01 +0800}: update by push
+e2f2007d refs/heads/main@{2026-09-14 15:16:56 +0800}: commit: 修正1032中的引用范围（1029-1033→1027-1031）
+e2f2007d HEAD@{2026-09-14 15:16:56 +0800}: commit: 修正1032中的引用范围（1029-1033→1027-1031）
+1d885205 refs/remotes/origin/HEAD@{2026-09-14 15:15:27 +0800}: update by push
+1d885205 refs/remotes/origin/main@{2026-09-14 15:15:27 +0800}: update by push
+1d885205 refs/heads/main@{2026-09-14 15:15:23 +0800}: commit: 修正1013中的编号引用范围（1029-1022→1027-1030，1026/1021→1024/1027）
+1d885205 HEAD@{2026-09-14 15:15:23 +0800}: commit: 修正1013中的编号引用范围（1029-1022→1027-1030，1026/1021→1024/1027）
+4651950e refs/remotes/origin/HEAD@{2026-09-14 15:14:22 +0800}: update by push
+4651950e refs/remotes/origin/main@{2026-09-14 15:14:22 +0800}: update by push
+4651950e refs/heads/main@{2026-09-14 15:13:53 +0800}: commit: 重编号1023-1033→1021-1031（整体前移2位），更新所有内部引用
+4651950e HEAD@{2026-09-14 15:13:53 +0800}: commit: 重编号1023-1033→1021-1031（整体前移2位），更新所有内部引用
+56ae6683 refs/heads/main@{2026-09-14 15:11:16 +0800}: commit: 1033-1032
+56ae6683 HEAD@{2026-09-14 15:11:16 +0800}: commit: 1033-1032
+d30b67dd refs/remotes/origin/HEAD@{2026-09-14 14:33:46 +0800}: update by push
+d30b67dd refs/remotes/origin/main@{2026-09-14 14:33:46 +0800}: update by push
+d30b67dd refs/heads/main@{2026-09-14 14:33:26 +0800}: pull --no-ff origin main: Merge made by the 'ort' strategy.
+d30b67dd HEAD@{2026-09-14 14:33:26 +0800}: pull --no-ff origin main: Merge made by the 'ort' strategy.
+2ce39d9f refs/heads/main@{2026-09-14 14:33:07 +0800}: commit: 修正版本管理规范：必须使用--no-ff保护完整历史
+2ce39d9f HEAD@{2026-09-14 14:33:07 +0800}: commit: 修正版本管理规范：必须使用--no-ff保护完整历史
+7e447c84 refs/heads/main@{2026-09-14 14:24:51 +0800}: reset: moving to 7e447c84
+7e447c84 HEAD@{2026-09-14 14:24:51 +0800}: reset: moving to 7e447c84
+093e272c refs/heads/main@{2026-09-14 14:23:32 +0800}: commit: 修正版本管理规范：必须使用--no-ff
+093e272c HEAD@{2026-09-14 14:23:32 +0800}: commit: 修正版本管理规范：必须使用--no-ff
+1cf3574c refs/remotes/origin/HEAD@{2026-09-14 14:20:57 +0800}: update by push
+1cf3574c refs/remotes/origin/main@{2026-09-14 14:20:57 +0800}: update by push
+1cf3574c refs/heads/main@{2026-09-14 14:20:52 +0800}: pull origin main: Merge made by the 'ort' strategy.
+1cf3574c HEAD@{2026-09-14 14:20:52 +0800}: pull origin main: Merge made by the 'ort' strategy.
+fc379517 refs/remotes/origin/HEAD@{2026-09-14 14:20:48 +0800}: pull origin main: fast-forward
+fc379517 refs/remotes/origin/main@{2026-09-14 14:20:48 +0800}: pull origin main: fast-forward
+7e447c84 refs/heads/main@{2026-09-14 14:20:03 +0800}: commit: 添加1034：W2验证子集数据规范（重点文档）
+7e447c84 HEAD@{2026-09-14 14:20:03 +0800}: commit: 添加1034：W2验证子集数据规范（重点文档）
+5df16a6e refs/remotes/origin/HEAD@{2026-09-14 02:16:08 +0800}: update by push
+5df16a6e refs/remotes/origin/main@{2026-09-14 02:16:08 +0800}: update by push
+5df16a6e refs/heads/main@{2026-09-14 02:16:03 +0800}: pull origin main: Merge made by the 'ort' strategy.
+5df16a6e HEAD@{2026-09-14 02:16:03 +0800}: pull origin main: Merge made by the 'ort' strategy.
+a16c3271 refs/remotes/origin/HEAD@{2026-09-14 02:16:02 +0800}: pull origin main: fast-forward
+a16c3271 refs/remotes/origin/main@{2026-09-14 02:16:02 +0800}: pull origin main: fast-forward
+119b9b89 refs/heads/main@{2026-09-14 02:15:27 +0800}: commit: 更新sbatch脚本路径：迁移到新存储结构
+119b9b89 HEAD@{2026-09-14 02:15:27 +0800}: commit: 更新sbatch脚本路径：迁移到新存储结构
+eabeadad refs/remotes/origin/HEAD@{2026-09-14 00:39:39 +0800}: update by push
+eabeadad refs/remotes/origin/main@{2026-09-14 00:39:39 +0800}: update by push
+eabeadad refs/heads/main@{2026-09-14 00:39:34 +0800}: commit: 添加Leonardo存储规范和数据迁移方案
+eabeadad HEAD@{2026-09-14 00:39:34 +0800}: commit: 添加Leonardo存储规范和数据迁移方案
+531d21c4 refs/remotes/origin/HEAD@{2026-09-14 00:21:18 +0800}: update by push
+531d21c4 refs/remotes/origin/main@{2026-09-14 00:21:18 +0800}: update by push
+531d21c4 refs/heads/main@{2026-09-14 00:20:46 +0800}: commit: 更新1013：补充r5/r5b/r6迭代状态，r6正在运行
+531d21c4 HEAD@{2026-09-14 00:20:46 +0800}: commit: 更新1013：补充r5/r5b/r6迭代状态，r6正在运行
+0087fdce refs/remotes/origin/HEAD@{2026-09-14 00:17:46 +0800}: update by push
+0087fdce refs/remotes/origin/main@{2026-09-14 00:17:46 +0800}: update by push
+0087fdce refs/heads/main@{2026-09-14 00:16:36 +0800}: commit: 更新版本管理规范：禁用--no-ff参数
+0087fdce HEAD@{2026-09-14 00:16:36 +0800}: commit: 更新版本管理规范：禁用--no-ff参数
+87c2a576 refs/heads/main@{2026-09-14 00:16:11 +0800}: pull origin main: Merge made by the 'ort' strategy.
+87c2a576 HEAD@{2026-09-14 00:16:11 +0800}: pull origin main: Merge made by the 'ort' strategy.
+1a595053 refs/remotes/origin/HEAD@{2026-09-14 00:15:34 +0800}: fetch origin: fast-forward
+f8bc0b8b refs/remotes/origin/codex/r4-monitor@{2026-09-14 00:15:34 +0800}: fetch origin: storing head
+adde7931 refs/remotes/origin/codex/w3-hardening@{2026-09-14 00:15:34 +0800}: fetch origin: storing head
+1a595053 refs/remotes/origin/main@{2026-09-14 00:15:34 +0800}: fetch origin: fast-forward
+b7712e23 refs/remotes/origin/HEAD@{2026-09-12 14:17:08 +0800}: update by push
+b7712e23 refs/remotes/origin/main@{2026-09-12 14:17:08 +0800}: update by push
+b7712e23 refs/heads/main@{2026-09-12 14:17:01 +0800}: commit: 撰写Codex交接文档v2（1028）
+b7712e23 HEAD@{2026-09-12 14:17:01 +0800}: commit: 撰写Codex交接文档v2（1028）
+674bb329 refs/heads/main@{2026-09-12 14:16:16 +0800}: commit: 添加teacher-gap人工审核指引
+674bb329 HEAD@{2026-09-12 14:16:16 +0800}: commit: 添加teacher-gap人工审核指引
+fce130da refs/heads/main@{2026-09-12 14:15:34 +0800}: commit: 更新1013：添加W2 teacher-gap pilot状态
+fce130da HEAD@{2026-09-12 14:15:34 +0800}: commit: 更新1013：添加W2 teacher-gap pilot状态
+9bf210d6 refs/heads/main@{2026-09-12 14:12:06 +0800}: commit: 添加teacher-gap结果分析脚本
+9bf210d6 HEAD@{2026-09-12 14:12:06 +0800}: commit: 添加teacher-gap结果分析脚本
+97c2665a refs/remotes/origin/HEAD@{2026-09-12 13:47:10 +0800}: update by push
+97c2665a refs/remotes/origin/main@{2026-09-12 13:47:10 +0800}: update by push
+97c2665a refs/heads/main@{2026-09-12 13:46:51 +0800}: commit: 添加no-ff规则
+97c2665a HEAD@{2026-09-12 13:46:51 +0800}: commit: 添加no-ff规则
+61277974 refs/heads/main@{2026-09-12 13:44:53 +0800}: pull --no-ff origin main: Merge made by the 'ort' strategy.
+412fb566 refs/remotes/origin/HEAD@{2026-09-12 13:44:53 +0800}: pull --no-ff origin main: fast-forward
+412fb566 refs/remotes/origin/main@{2026-09-12 13:44:53 +0800}: pull --no-ff origin main: fast-forward
+61277974 HEAD@{2026-09-12 13:44:53 +0800}: pull --no-ff origin main: Merge made by the 'ort' strategy.
+bf2093d5 refs/heads/main@{2026-09-12 13:23:12 +0800}: commit: stop using ustc H200 server
+bf2093d5 HEAD@{2026-09-12 13:23:12 +0800}: commit: stop using ustc H200 server
+20a0825c refs/remotes/origin/HEAD@{2026-09-12 00:54:16 +0800}: update by push
+20a0825c refs/remotes/origin/main@{2026-09-12 00:54:16 +0800}: update by push
+20a0825c refs/heads/main@{2026-09-12 00:54:03 +0800}: commit: fix(archives): resolve report(server_previous) conflict in 10 rolling-chain archives - template content verified subsumed by report.md + manifest.json (purpose match 10/10), resolution note appended, duplicates removed
+20a0825c HEAD@{2026-09-12 00:54:03 +0800}: commit: fix(archives): resolve report(server_previous) conflict in 10 rolling-chain archives - template content verified subsumed by report.md + manifest.json (purpose match 10/10), resolution note appended, duplicates removed
+f6e9bc18 refs/heads/main@{2026-09-12 00:35:20 +0800}: merge origin/main: Merge made by the 'ort' strategy.
+f6e9bc18 HEAD@{2026-09-12 00:35:20 +0800}: merge origin/main: Merge made by the 'ort' strategy.
+3707bdc5 refs/remotes/origin/HEAD@{2026-09-12 00:35:19 +0800}: fetch origin: fast-forward
+3707bdc5 refs/remotes/origin/main@{2026-09-12 00:35:19 +0800}: fetch origin: fast-forward
+c19156ef refs/remotes/origin/HEAD@{2026-09-12 00:27:47 +0800}: update by push
+c19156ef refs/remotes/origin/main@{2026-09-12 00:27:47 +0800}: update by push
+c19156ef refs/heads/main@{2026-09-12 00:27:38 +0800}: commit: docs(1024): Codex handover pack #2 - renumbering map, full timeline of quota-outage period, 12-job rolling chain, decision list, restart checklist
+c19156ef HEAD@{2026-09-12 00:27:38 +0800}: commit: docs(1024): Codex handover pack #2 - renumbering map, full timeline of quota-outage period, 12-job rolling chain, decision list, restart checklist
+d57fedef refs/remotes/origin/HEAD@{2026-09-12 00:17:11 +0800}: update by push
+d57fedef refs/remotes/origin/main@{2026-09-12 00:17:11 +0800}: update by push
+d57fedef refs/heads/main@{2026-09-12 00:17:02 +0800}: commit: docs(1020): W2 rolling job chain inventory + status - 12 jobs all PENDING (screen 128/974/9463 in 4 chunks + 6 chained constructs), coverage accounting, gates unchanged
+d57fedef HEAD@{2026-09-12 00:17:02 +0800}: commit: docs(1020): W2 rolling job chain inventory + status - 12 jobs all PENDING (screen 128/974/9463 in 4 chunks + 6 chained constructs), coverage accounting, gates unchanged
+af7ffe00 refs/remotes/origin/HEAD@{2026-09-11 22:47:55 +0800}: update by push
+af7ffe00 refs/remotes/origin/main@{2026-09-11 22:47:55 +0800}: update by push
+af7ffe00 refs/heads/main@{2026-09-11 22:47:51 +0800}: commit: docs(W2): sync fullpool archive manifests + chunk input SHA256SUMS from Leonardo
+af7ffe00 HEAD@{2026-09-11 22:47:51 +0800}: commit: docs(W2): sync fullpool archive manifests + chunk input SHA256SUMS from Leonardo
+d527d082 refs/remotes/origin/HEAD@{2026-09-11 22:41:33 +0800}: update by push
+d527d082 refs/remotes/origin/main@{2026-09-11 22:41:33 +0800}: update by push
+d527d082 refs/heads/main@{2026-09-11 22:39:51 +0800}: commit: docs(W2): fullpool construct archives c0-c3 (fix missing dirs in 8a54069)
+d527d082 HEAD@{2026-09-11 22:39:51 +0800}: commit: docs(W2): fullpool construct archives c0-c3 (fix missing dirs in 8a54069)
+8a540690 refs/heads/main@{2026-09-11 22:31:33 +0800}: commit: docs(W2): fullpool pre-paid screening archives c0-c3 (screen 57331297-300 -> construct 57331301-304, afterok chains) - admin rolling-submission order, 9463 records in 4 deterministic chunks
+8a540690 HEAD@{2026-09-11 22:31:33 +0800}: commit: docs(W2): fullpool pre-paid screening archives c0-c3 (screen 57331297-300 -> construct 57331301-304, afterok chains) - admin rolling-submission order, 9463 records in 4 deterministic chunks
+179f0536 refs/heads/main@{2026-09-11 22:03:32 +0800}: commit: docs(W2): exp974 rolling chain archives (57330106 screen -> 57330107 construct, afterok) - admin-ordered pre-paid expansion screening
+179f0536 HEAD@{2026-09-11 22:03:32 +0800}: commit: docs(W2): exp974 rolling chain archives (57330106 screen -> 57330107 construct, afterok) - admin-ordered pre-paid expansion screening
+ac4e8498 refs/remotes/origin/HEAD@{2026-09-11 21:37:25 +0800}: update by push
+ac4e8498 refs/remotes/origin/main@{2026-09-11 21:37:25 +0800}: update by push
+ac4e8498 refs/heads/main@{2026-09-11 21:37:14 +0800}: commit: docs(1019): C2 completed - enriched nested tiers + Codex-aligned packet, human review guide, SSH recovery notes, takeover snapshot
+10d320ea refs/heads/main@{2026-09-11 21:37:14 +0800}: commit: docs(C2): run archive 20260911T-c2-m3vqa-review-packet - double-run identical outputs (14 files), command/report backfilled, aligned-1024 packet
+ac4e8498 HEAD@{2026-09-11 21:37:14 +0800}: commit: docs(1019): C2 completed - enriched nested tiers + Codex-aligned packet, human review guide, SSH recovery notes, takeover snapshot
+10d320ea HEAD@{2026-09-11 21:37:14 +0800}: commit: docs(C2): run archive 20260911T-c2-m3vqa-review-packet - double-run identical outputs (14 files), command/report backfilled, aligned-1024 packet
+73f02208 refs/remotes/origin/HEAD@{2026-09-11 19:00:27 +0800}: update by push
+73f02208 refs/remotes/origin/main@{2026-09-11 19:00:27 +0800}: update by push
+73f02208 refs/heads/main@{2026-09-11 18:58:46 +0800}: commit: test(C2): aligned-packet contract tests incl fail-closed unknown id (12/12 pass)
+24c73d52 refs/heads/main@{2026-09-11 18:58:46 +0800}: commit: feat(C2): --aligned packet over Codex frozen 1024 expansion (20260911T1910) - bridges GPU screening set with human review templates
+73f02208 HEAD@{2026-09-11 18:58:46 +0800}: commit: test(C2): aligned-packet contract tests incl fail-closed unknown id (12/12 pass)
+24c73d52 HEAD@{2026-09-11 18:58:46 +0800}: commit: feat(C2): --aligned packet over Codex frozen 1024 expansion (20260911T1910) - bridges GPU screening set with human review templates
+760ab7f1 refs/remotes/origin/HEAD@{2026-09-11 18:53:23 +0800}: update by push
+760ab7f1 refs/remotes/origin/main@{2026-09-11 18:53:23 +0800}: update by push
+760ab7f1 refs/heads/main@{2026-09-11 18:53:18 +0800}: merge origin/main: Merge made by the 'ort' strategy.
+3e594ed2 refs/remotes/origin/HEAD@{2026-09-11 18:53:18 +0800}: fetch origin: fast-forward
+3e594ed2 refs/remotes/origin/main@{2026-09-11 18:53:18 +0800}: fetch origin: fast-forward
+760ab7f1 HEAD@{2026-09-11 18:53:18 +0800}: merge origin/main: Merge made by the 'ort' strategy.
+c9459c25 refs/heads/main@{2026-09-11 18:52:11 +0800}: commit: test(C2): W2A contract compatibility test (10/10 pass)
+c9459c25 HEAD@{2026-09-11 18:52:11 +0800}: commit: test(C2): W2A contract compatibility test (10/10 pass)
+7fb8e411 refs/heads/main@{2026-09-11 18:52:10 +0800}: commit: fix(C2): flat top-level W2A compat fields (validate_candidate drop-in for run_teacher_gap_candidate_stage)
+388c300d refs/heads/main@{2026-09-11 18:52:10 +0800}: commit: chore(C2): initialize run archive 20260911T-c2-m3vqa-review-packet
+7fb8e411 HEAD@{2026-09-11 18:52:10 +0800}: commit: fix(C2): flat top-level W2A compat fields (validate_candidate drop-in for run_teacher_gap_candidate_stage)
+388c300d HEAD@{2026-09-11 18:52:10 +0800}: commit: chore(C2): initialize run archive 20260911T-c2-m3vqa-review-packet
+7997faac refs/heads/main@{2026-09-11 18:45:37 +0800}: commit: test(C2): 9 contract tests - join miss, duplicate image, determinism/nesting, evidence leak ban, blank human fields, fail-closed shortlist
+7997faac HEAD@{2026-09-11 18:45:37 +0800}: commit: test(C2): 9 contract tests - join miss, duplicate image, determinism/nesting, evidence leak ban, blank human fields, fail-closed shortlist
+aa2d3812 refs/heads/main@{2026-09-11 18:45:36 +0800}: commit: feat(C2): deterministic M3VQA enrichment + human review packet generator (1018 §5.3) - nested tiers 128/512/1024, evidence-text firewall, blank human fields
+aa2d3812 HEAD@{2026-09-11 18:45:36 +0800}: commit: feat(C2): deterministic M3VQA enrichment + human review packet generator (1018 §5.3) - nested tiers 128/512/1024, evidence-text firewall, blank human fields
+036143fe refs/heads/main@{2026-09-11 18:27:09 +0800}: merge origin/main: Merge made by the 'ort' strategy.
+efa0b81e refs/remotes/origin/HEAD@{2026-09-11 18:27:09 +0800}: fetch origin: fast-forward
+efa0b81e refs/remotes/origin/main@{2026-09-11 18:27:09 +0800}: fetch origin: fast-forward
+036143fe HEAD@{2026-09-11 18:27:09 +0800}: merge origin/main: Merge made by the 'ort' strategy.
+7bfcb207 refs/remotes/origin/HEAD@{2026-09-11 18:15:04 +0800}: update by push
+7bfcb207 refs/remotes/origin/main@{2026-09-11 18:15:04 +0800}: update by push
+7bfcb207 refs/heads/main@{2026-09-11 18:14:59 +0800}: merge origin/main: Merge made by the 'ort' strategy.
+f2561cf7 refs/remotes/origin/HEAD@{2026-09-11 18:14:59 +0800}: fetch origin: fast-forward
+f2561cf7 refs/remotes/origin/main@{2026-09-11 18:14:59 +0800}: fetch origin: fast-forward
+7bfcb207 HEAD@{2026-09-11 18:14:59 +0800}: merge origin/main: Merge made by the 'ort' strategy.
+a19586e3 refs/heads/main@{2026-09-11 18:13:31 +0800}: merge origin/main: Merge made by the 'ort' strategy.
+a19586e3 HEAD@{2026-09-11 18:13:31 +0800}: merge origin/main: Merge made by the 'ort' strategy.
+31bb9e80 refs/remotes/origin/HEAD@{2026-09-11 18:12:33 +0800}: fetch origin: fast-forward
+31bb9e80 refs/remotes/origin/main@{2026-09-11 18:12:33 +0800}: fetch origin: fast-forward
+ea1139bb refs/heads/main@{2026-09-11 18:10:21 +0800}: merge origin/main: Merge made by the 'ort' strategy.
+ea1139bb HEAD@{2026-09-11 18:10:21 +0800}: merge origin/main: Merge made by the 'ort' strategy.
+b562db5b refs/remotes/origin/HEAD@{2026-09-11 18:05:32 +0800}: fetch origin: fast-forward
+b562db5b refs/remotes/origin/main@{2026-09-11 18:05:32 +0800}: fetch origin: fast-forward
+07ecba16 refs/heads/main@{2026-09-11 18:05:23 +0800}: commit: docs(1023): 存储配额分析报告 - 导师200G上限, 四目录归属双候选判定, 项目足迹对账, 零修改
+07ecba16 HEAD@{2026-09-11 18:05:23 +0800}: commit: docs(1023): 存储配额分析报告 - 导师200G上限, 四目录归属双候选判定, 项目足迹对账, 零修改
+707a797b refs/remotes/origin/HEAD@{2026-09-11 17:40:42 +0800}: update by push
+707a797b refs/remotes/origin/main@{2026-09-11 17:40:42 +0800}: update by push
+707a797b refs/heads/main@{2026-09-11 17:40:37 +0800}: merge origin/main: Merge made by the 'ort' strategy.
+707a797b HEAD@{2026-09-11 17:40:37 +0800}: merge origin/main: Merge made by the 'ort' strategy.
+16b6b0b8 refs/remotes/origin/HEAD@{2026-09-11 17:39:26 +0800}: fetch origin: fast-forward
+16b6b0b8 refs/remotes/origin/main@{2026-09-11 17:39:26 +0800}: fetch origin: fast-forward
+74914f09 refs/heads/main@{2026-09-11 17:37:16 +0800}: commit: docs(1015): §4.3编号预留表对齐1018§6实际分配 (1018=加速计划,1019=C2,1020-1022=Codex)
+01e0e2ac refs/heads/main@{2026-09-11 17:37:16 +0800}: commit: docs(1018): 旧编号引用同步顺延 (1014/1015/1016→1015/1016/1017) - admin授权代改, 规划内容零改动
+74914f09 HEAD@{2026-09-11 17:37:16 +0800}: commit: docs(1015): §4.3编号预留表对齐1018§6实际分配 (1018=加速计划,1019=C2,1020-1022=Codex)
+01e0e2ac HEAD@{2026-09-11 17:37:16 +0800}: commit: docs(1018): 旧编号引用同步顺延 (1014/1015/1016→1015/1016/1017) - admin授权代改, 规划内容零改动
+6c40a524 refs/heads/main@{2026-09-11 17:28:47 +0800}: merge origin/main: Merge made by the 'ort' strategy.
+6c40a524 HEAD@{2026-09-11 17:28:47 +0800}: merge origin/main: Merge made by the 'ort' strategy.
+6cdadd33 refs/remotes/origin/HEAD@{2026-09-11 17:27:51 +0800}: fetch origin: fast-forward
+6cdadd33 refs/remotes/origin/main@{2026-09-11 17:27:51 +0800}: fetch origin: fast-forward
+6ced1a5e refs/heads/main@{2026-09-11 17:20:35 +0800}: commit: 0000 md->txt
+6ced1a5e HEAD@{2026-09-11 17:20:35 +0800}: commit: 0000 md->txt
+d6a47fa7 refs/heads/main@{2026-09-11 17:20:08 +0800}: commit: docs: renumber 1016->1017 (teacher-gap探索协议) - 文件名+文内引用同步顺延, 协议内容零改动
+d6a47fa7 HEAD@{2026-09-11 17:20:08 +0800}: commit: docs: renumber 1016->1017 (teacher-gap探索协议) - 文件名+文内引用同步顺延, 协议内容零改动
+210de564 refs/heads/main@{2026-09-11 17:19:02 +0800}: commit: +1014
+210de564 HEAD@{2026-09-11 17:19:02 +0800}: commit: +1014
+fbac3867 refs/heads/main@{2026-09-11 17:18:46 +0800}: commit: docs: renumber 1015->1016 (M3VQA字段与候选抽样审计) - 文件名+文内引用同步顺延
+fbac3867 HEAD@{2026-09-11 17:18:46 +0800}: commit: docs: renumber 1015->1016 (M3VQA字段与候选抽样审计) - 文件名+文内引用同步顺延
+a1c1e2b6 refs/heads/main@{2026-09-11 17:17:59 +0800}: commit: docs: renumber 1014->1015 (夜间协同规划) - admin插入新1014, 文件名+文内引用同步顺延
+a1c1e2b6 HEAD@{2026-09-11 17:17:59 +0800}: commit: docs: renumber 1014->1015 (夜间协同规划) - admin插入新1014, 文件名+文内引用同步顺延
+2976e8f6 refs/remotes/origin/HEAD@{2026-09-11 16:55:59 +0800}: update by push
+2976e8f6 refs/remotes/origin/main@{2026-09-11 16:55:59 +0800}: update by push
+2976e8f6 refs/heads/main@{2026-09-11 12:16:53 +0800}: commit: 1016+T
+2976e8f6 HEAD@{2026-09-11 12:16:53 +0800}: commit: 1016+T
+c08a7676 refs/heads/main@{2026-09-11 12:13:27 +0800}: commit: 1014+T
+c08a7676 HEAD@{2026-09-11 12:13:27 +0800}: commit: 1014+T
+a1027248 refs/heads/main@{2026-09-11 12:12:56 +0800}: reset: moving to a10272483a882cf8dbfb3026cb9122dd1ad9e40b
+a1027248 HEAD@{2026-09-11 12:12:56 +0800}: reset: moving to a10272483a882cf8dbfb3026cb9122dd1ad9e40b
+462b6ebf refs/heads/main@{2026-09-11 12:12:49 +0800}: commit: 1014+T
+462b6ebf HEAD@{2026-09-11 12:12:49 +0800}: commit: 1014+T
+a1027248 refs/remotes/origin/HEAD@{2026-09-11 02:28:54 +0800}: update by push
+a1027248 refs/remotes/origin/main@{2026-09-11 02:28:54 +0800}: update by push
+a1027248 refs/heads/main@{2026-09-11 02:28:49 +0800}: commit: docs(1015): C1 completed - field inventory, zero-discrimination URL clue finding, 128 shortlist, 16 representatives, schema gaps for W2
+a1027248 HEAD@{2026-09-11 02:28:49 +0800}: commit: docs(1015): C1 completed - field inventory, zero-discrimination URL clue finding, 128 shortlist, 16 representatives, schema gaps for W2
+3ff2e781 refs/heads/main@{2026-09-11 02:28:48 +0800}: commit: docs(C1): run archive 20260911T-c1-m3vqa-field-audit - commands, results, hashes
+3ff2e781 HEAD@{2026-09-11 02:28:48 +0800}: commit: docs(C1): run archive 20260911T-c1-m3vqa-field-audit - commands, results, hashes
+89b8de48 refs/remotes/origin/HEAD@{2026-09-11 02:21:17 +0800}: update by push
+89b8de48 refs/remotes/origin/main@{2026-09-11 02:21:17 +0800}: update by push
+89b8de48 refs/heads/main@{2026-09-11 02:21:13 +0800}: commit: fix(C1): deterministic top-up for representative sample to meet 12-20 floor
+89b8de48 HEAD@{2026-09-11 02:21:13 +0800}: commit: fix(C1): deterministic top-up for representative sample to meet 12-20 floor
+abc541a9 refs/remotes/origin/HEAD@{2026-09-11 02:12:25 +0800}: update by push
+abc541a9 refs/remotes/origin/main@{2026-09-11 02:12:25 +0800}: update by push
+abc541a9 refs/heads/main@{2026-09-11 02:12:20 +0800}: merge origin/main: Merge made by the 'ort' strategy.
+dfeb075a refs/heads/main@{2026-09-11 02:12:20 +0800}: commit: docs(1015): payload deletion incident report - C1 blocked, asset inventory, 33GiB minimal rebuild path, decisions for Codex
+d3d24263 refs/remotes/origin/HEAD@{2026-09-11 02:12:20 +0800}: fetch origin -q: fast-forward
+d3d24263 refs/remotes/origin/main@{2026-09-11 02:12:20 +0800}: fetch origin -q: fast-forward
+abc541a9 HEAD@{2026-09-11 02:12:20 +0800}: merge origin/main: Merge made by the 'ort' strategy.
+dfeb075a HEAD@{2026-09-11 02:12:20 +0800}: commit: docs(1015): payload deletion incident report - C1 blocked, asset inventory, 33GiB minimal rebuild path, decisions for Codex
+381a8f8d refs/remotes/origin/HEAD@{2026-09-11 01:52:46 +0800}: update by push
+381a8f8d refs/remotes/origin/main@{2026-09-11 01:52:46 +0800}: update by push
+381a8f8d refs/heads/main@{2026-09-11 01:52:40 +0800}: commit: feat(C1): deterministic M3VQA field/external-knowledge-clue audit and stratified 128 shortlist script (1014 §4.2)
+381a8f8d HEAD@{2026-09-11 01:52:40 +0800}: commit: feat(C1): deterministic M3VQA field/external-knowledge-clue audit and stratified 128 shortlist script (1014 §4.2)
+5aa7308a refs/remotes/origin/HEAD@{2026-09-11 01:46:27 +0800}: update by push
+5aa7308a refs/remotes/origin/main@{2026-09-11 01:46:27 +0800}: update by push
+5aa7308a refs/heads/main@{2026-09-11 01:46:22 +0800}: merge origin/main: Merge made by the 'ort' strategy.
+901efd64 refs/remotes/origin/HEAD@{2026-09-11 01:46:22 +0800}: fetch origin -q: fast-forward
+901efd64 refs/remotes/origin/main@{2026-09-11 01:46:22 +0800}: fetch origin -q: fast-forward
+5aa7308a HEAD@{2026-09-11 01:46:22 +0800}: merge origin/main: Merge made by the 'ort' strategy.
+e4a0411e refs/heads/main@{2026-09-11 01:45:22 +0800}: commit: docs(1013): fix self-references after admin renumbering (1012=midterm, 1013=this); align midterm new filename
+e4a0411e HEAD@{2026-09-11 01:45:22 +0800}: commit: docs(1013): fix self-references after admin renumbering (1012=midterm, 1013=this); align midterm new filename
+df29df26 refs/remotes/origin/HEAD@{2026-09-11 01:32:24 +0800}: update by push
+df29df26 refs/remotes/origin/main@{2026-09-11 01:32:24 +0800}: update by push
+df29df26 refs/heads/main@{2026-09-11 01:32:02 +0800}: commit: 1012_B -> 1013
+df29df26 HEAD@{2026-09-11 01:32:02 +0800}: commit: 1012_B -> 1013
+f1374147 refs/heads/main@{2026-09-11 01:31:07 +0800}: commit: finish 1012数据主线
+f1374147 HEAD@{2026-09-11 01:31:07 +0800}: commit: finish 1012数据主线
+73ab3736 refs/heads/main@{2026-09-11 01:29:24 +0800}: commit: rename 1012
+73ab3736 HEAD@{2026-09-11 01:29:24 +0800}: commit: rename 1012
+c2ace2dc refs/remotes/origin/HEAD@{2026-09-11 01:26:39 +0800}: update by push
+c2ace2dc refs/remotes/origin/main@{2026-09-11 01:26:39 +0800}: update by push
+c2ace2dc refs/heads/main@{2026-09-11 01:26:35 +0800}: merge origin/main: Merge made by the 'ort' strategy.
+6d75a16c refs/remotes/origin/HEAD@{2026-09-11 01:26:35 +0800}: fetch origin -q: fast-forward
+6d75a16c refs/remotes/origin/main@{2026-09-11 01:26:35 +0800}: fetch origin -q: fast-forward
+c2ace2dc HEAD@{2026-09-11 01:26:35 +0800}: merge origin/main: Merge made by the 'ort' strategy.
+da516ef5 refs/heads/main@{2026-09-11 01:26:26 +0800}: commit: 文档规范
+da516ef5 HEAD@{2026-09-11 01:26:26 +0800}: commit: 文档规范
+74f5f7ea refs/remotes/origin/HEAD@{2026-09-11 01:24:33 +0800}: update by push
+74f5f7ea refs/remotes/origin/main@{2026-09-11 01:24:33 +0800}: update by push
+74f5f7ea refs/heads/main@{2026-09-11 01:24:28 +0800}: commit: docs(1012): align references to restructured midterm assessment (一-六+附录1-3); record ruling precedence on worker-model thinking
+74f5f7ea HEAD@{2026-09-11 01:24:28 +0800}: commit: docs(1012): align references to restructured midterm assessment (一-六+附录1-3); record ruling precedence on worker-model thinking
+d31fe4d7 refs/remotes/origin/HEAD@{2026-09-11 01:19:12 +0800}: update by push
+d31fe4d7 refs/remotes/origin/main@{2026-09-11 01:19:12 +0800}: update by push
+d31fe4d7 refs/heads/main@{2026-09-11 01:19:07 +0800}: merge origin/main: Merge made by the 'ort' strategy.
+d31fe4d7 HEAD@{2026-09-11 01:19:07 +0800}: merge origin/main: Merge made by the 'ort' strategy.
+00b28ca2 refs/remotes/origin/HEAD@{2026-09-11 01:18:12 +0800}: fetch origin -q: fast-forward
+00b28ca2 refs/remotes/origin/main@{2026-09-11 01:18:12 +0800}: fetch origin -q: fast-forward
+c7efc512 refs/heads/main@{2026-09-11 01:17:17 +0800}: commit: docs(1012): consolidated data-mainline report - T00-T08 definitions, status, timeline, risks, decision ledger, evidence index
+c7efc512 HEAD@{2026-09-11 01:17:17 +0800}: commit: docs(1012): consolidated data-mainline report - T00-T08 definitions, status, timeline, risks, decision ledger, evidence index
+df3c45f0 refs/heads/main@{2026-09-11 01:07:59 +0800}: commit: add 1012数据主线
+df3c45f0 HEAD@{2026-09-11 01:07:59 +0800}: commit: add 1012数据主线
+45099b4d refs/heads/main@{2026-09-11 01:07:40 +0800}: commit: move 0910交接文档
+45099b4d HEAD@{2026-09-11 01:07:40 +0800}: commit: move 0910交接文档
+452b41a9 refs/heads/main@{2026-09-11 01:04:08 +0800}: merge origin/main: Merge made by the 'ort' strategy.
+452b41a9 HEAD@{2026-09-11 01:04:08 +0800}: merge origin/main: Merge made by the 'ort' strategy.
+23191f43 refs/remotes/origin/HEAD@{2026-09-11 01:03:35 +0800}: fetch origin -q: fast-forward
+23191f43 refs/remotes/origin/main@{2026-09-11 01:03:35 +0800}: fetch origin -q: fast-forward
+9c45a44c refs/heads/main@{2026-09-11 00:57:52 +0800}: commit: 10
+9c45a44c HEAD@{2026-09-11 00:57:52 +0800}: commit: 10
+dcd12659 refs/heads/main@{2026-09-11 00:57:27 +0800}: commit: 0009
+dcd12659 HEAD@{2026-09-11 00:57:27 +0800}: commit: 0009
+e0176780 refs/heads/main@{2026-09-11 00:56:19 +0800}: commit: 0008
+e0176780 HEAD@{2026-09-11 00:56:19 +0800}: commit: 0008
+6eeca738 refs/heads/main@{2026-09-11 00:55:25 +0800}: commit: 0007
+6eeca738 HEAD@{2026-09-11 00:55:25 +0800}: commit: 0007
+988e8f94 refs/heads/main@{2026-09-11 00:49:28 +0800}: commit: 0006
+988e8f94 HEAD@{2026-09-11 00:49:28 +0800}: commit: 0006
+1a1de227 refs/heads/main@{2026-09-11 00:48:59 +0800}: commit: 0005
+1a1de227 HEAD@{2026-09-11 00:48:59 +0800}: commit: 0005
+79cbf60c refs/heads/main@{2026-09-11 00:47:26 +0800}: commit: 0004
+79cbf60c HEAD@{2026-09-11 00:47:26 +0800}: commit: 0004
+671753f7 refs/heads/main@{2026-09-11 00:46:54 +0800}: commit: 0003
+671753f7 HEAD@{2026-09-11 00:46:54 +0800}: commit: 0003
+d1651e4c refs/heads/main@{2026-09-11 00:45:54 +0800}: commit: 0002
+d1651e4c HEAD@{2026-09-11 00:45:54 +0800}: commit: 0002
+a1488d99 refs/heads/main@{2026-09-11 00:44:42 +0800}: commit: 0001
+a1488d99 HEAD@{2026-09-11 00:44:42 +0800}: commit: 0001
+9b012798 refs/remotes/origin/HEAD@{2026-09-10 23:56:36 +0800}: update by push
+9b012798 refs/remotes/origin/main@{2026-09-10 23:56:36 +0800}: update by push
+9b012798 refs/heads/main@{2026-09-10 23:56:30 +0800}: commit: chore: gitignore __pycache__
+9bdcfb88 refs/heads/main@{2026-09-10 23:56:30 +0800}: commit: docs: add 9101 meeting records (核心实验——方案报告与数据主线进展, 2026-09-10)
+9b012798 HEAD@{2026-09-10 23:56:30 +0800}: commit: chore: gitignore __pycache__
+9bdcfb88 HEAD@{2026-09-10 23:56:30 +0800}: commit: docs: add 9101 meeting records (核心实验——方案报告与数据主线进展, 2026-09-10)
+b277b41f refs/remotes/origin/HEAD@{2026-09-10 22:00:40 +0800}: update by push
+b277b41f refs/remotes/origin/main@{2026-09-10 22:00:40 +0800}: update by push
+b277b41f refs/heads/main@{2026-09-10 22:00:36 +0800}: commit: docs: correct owner identity in handover doc - spinner-bot is the project owner; generalize non-project job references
+b277b41f HEAD@{2026-09-10 22:00:36 +0800}: commit: docs: correct owner identity in handover doc - spinner-bot is the project owner; generalize non-project job references
+4eea9041 refs/remotes/origin/HEAD@{2026-09-10 21:50:57 +0800}: update by push
+4eea9041 refs/remotes/origin/main@{2026-09-10 21:50:57 +0800}: update by push
+4eea9041 refs/heads/main@{2026-09-10 21:50:52 +0800}: commit: docs: record owner decision - no history rewrite for credential file (2FA protects), issue closed
+4eea9041 HEAD@{2026-09-10 21:50:52 +0800}: commit: docs: record owner decision - no history rewrite for credential file (2FA protects), issue closed
+0f3ac3d5 refs/remotes/origin/HEAD@{2026-09-10 21:45:50 +0800}: update by push
+0f3ac3d5 refs/remotes/origin/main@{2026-09-10 21:45:50 +0800}: update by push
+0f3ac3d5 refs/heads/main@{2026-09-10 21:45:45 +0800}: merge origin/main: Merge made by the 'ort' strategy.
+85db7aaa refs/remotes/origin/HEAD@{2026-09-10 21:45:45 +0800}: fetch origin -q: fast-forward
+85db7aaa refs/remotes/origin/main@{2026-09-10 21:45:45 +0800}: fetch origin -q: fast-forward
+0f3ac3d5 HEAD@{2026-09-10 21:45:45 +0800}: merge origin/main: Merge made by the 'ort' strategy.
+ea461757 refs/remotes/origin/HEAD@{2026-09-10 21:44:02 +0800}: update by push
+ea461757 refs/remotes/origin/main@{2026-09-10 21:44:02 +0800}: update by push
+ea461757 refs/heads/main@{2026-09-10 21:43:57 +0800}: commit: docs: comprehensive handover document for Codex after context loss (specs, environment, T02 timeline, code map, lessons, decision boundaries)
+ea461757 HEAD@{2026-09-10 21:43:57 +0800}: commit: docs: comprehensive handover document for Codex after context loss (specs, environment, T02 timeline, code map, lessons, decision boundaries)
+11c9459c refs/remotes/origin/HEAD@{2026-09-10 21:40:08 +0800}: update by push
+11c9459c refs/remotes/origin/main@{2026-09-10 21:40:08 +0800}: update by push
+11c9459c refs/heads/main@{2026-09-10 21:40:04 +0800}: commit: security: untrack CINECA credential file (contains password), add to gitignore; local copy preserved
+11c9459c HEAD@{2026-09-10 21:40:04 +0800}: commit: security: untrack CINECA credential file (contains password), add to gitignore; local copy preserved
+007218cc refs/remotes/origin/HEAD@{2026-09-10 21:29:04 +0800}: update by push
+007218cc refs/remotes/origin/main@{2026-09-10 21:29:04 +0800}: update by push
+007218cc refs/heads/main@{2026-09-10 21:28:59 +0800}: merge origin/main: Merge made by the 'ort' strategy.
+e0f7305d refs/remotes/origin/HEAD@{2026-09-10 21:28:59 +0800}: fetch origin -q: fast-forward
+e0f7305d refs/remotes/origin/main@{2026-09-10 21:28:59 +0800}: fetch origin -q: fast-forward
+007218cc HEAD@{2026-09-10 21:28:59 +0800}: merge origin/main: Merge made by the 'ort' strategy.
+fd7f6322 refs/remotes/origin/HEAD@{2026-09-10 21:20:31 +0800}: update by push
+fd7f6322 refs/remotes/origin/main@{2026-09-10 21:20:31 +0800}: update by push
+fd7f6322 refs/heads/main@{2026-09-10 21:20:26 +0800}: commit: docs: progress report update - v2.1 gate pass, A/B flip validated, full-pipeline wall-clock options for P-layer decision
+fd7f6322 HEAD@{2026-09-10 21:20:26 +0800}: commit: docs: progress report update - v2.1 gate pass, A/B flip validated, full-pipeline wall-clock options for P-layer decision
+4b790da3 refs/heads/main@{2026-09-10 21:20:25 +0800}: commit: docs: v2.1 pilot results - gate PASSED, 353/1200 accepted, bbox median IoU 0.894 vs ground truth, 1375/h throughput
+4b790da3 HEAD@{2026-09-10 21:20:25 +0800}: commit: docs: v2.1 pilot results - gate PASSED, 353/1200 accepted, bbox median IoU 0.894 vs ground truth, 1375/h throughput
+422f6c70 refs/remotes/origin/HEAD@{2026-09-10 15:30:49 +0800}: update by push
+422f6c70 refs/remotes/origin/main@{2026-09-10 15:30:49 +0800}: update by push
+422f6c70 refs/heads/main@{2026-09-10 15:30:44 +0800}: commit: docs: thinking A/B results - 60% flip rate is genuine perception (IoU vs ground truth), 3072 budget truncates 33%
+422f6c70 HEAD@{2026-09-10 15:30:44 +0800}: commit: docs: thinking A/B results - 60% flip rate is genuine perception (IoU vs ground truth), 3072 budget truncates 33%
+223cca9f refs/remotes/origin/HEAD@{2026-09-10 14:26:15 +0800}: update by push
+223cca9f refs/remotes/origin/main@{2026-09-10 14:26:15 +0800}: update by push
+223cca9f refs/heads/main@{2026-09-10 14:26:10 +0800}: merge origin/main: Merge made by the 'ort' strategy.
+67496892 refs/remotes/origin/HEAD@{2026-09-10 14:26:10 +0800}: fetch origin: fast-forward
+67496892 refs/remotes/origin/main@{2026-09-10 14:26:10 +0800}: fetch origin: fast-forward
+223cca9f HEAD@{2026-09-10 14:26:10 +0800}: merge origin/main: Merge made by the 'ort' strategy.
+77427216 refs/heads/main@{2026-09-10 14:26:05 +0800}: commit: docs: T02 failure diagnosis report - v1 dual defects, v2 canary evidence, crop-relative P-layer finding, v2.1+A/B submissions
+77427216 HEAD@{2026-09-10 14:26:05 +0800}: commit: docs: T02 failure diagnosis report - v1 dual defects, v2 canary evidence, crop-relative P-layer finding, v2.1+A/B submissions
+abbce034 refs/remotes/origin/HEAD@{2026-09-10 14:20:23 +0800}: update by push
+abbce034 refs/remotes/origin/main@{2026-09-10 14:20:23 +0800}: update by push
+abbce034 refs/heads/main@{2026-09-10 14:20:18 +0800}: commit: feat: T02 thinking-mode A/B sbatch (96 canary candidates, 3072 budget)
+b3c7cc39 refs/heads/main@{2026-09-10 14:20:18 +0800}: commit: feat: T02 runner --thinking flag for A/B experiments (default off, production unchanged)
+abbce034 HEAD@{2026-09-10 14:20:18 +0800}: commit: feat: T02 thinking-mode A/B sbatch (96 canary candidates, 3072 budget)
+b3c7cc39 HEAD@{2026-09-10 14:20:18 +0800}: commit: feat: T02 runner --thinking flag for A/B experiments (default off, production unchanged)
+a3bfeaff refs/heads/main@{2026-09-10 14:20:17 +0800}: commit: fix: canary gate blocks on config health only; accept_rate informational (v2 canary evidence: 26% is data property, crop-relative questions)
+a3bfeaff HEAD@{2026-09-10 14:20:17 +0800}: commit: fix: canary gate blocks on config health only; accept_rate informational (v2 canary evidence: 26% is data property, crop-relative questions)
+f76d7239 refs/remotes/origin/HEAD@{2026-09-10 14:01:12 +0800}: update by push
+f76d7239 refs/remotes/origin/main@{2026-09-10 14:01:12 +0800}: update by push
+f76d7239 refs/heads/main@{2026-09-10 14:01:07 +0800}: merge origin/main: Merge made by the 'ort' strategy.
+b6268399 refs/remotes/origin/HEAD@{2026-09-10 14:01:07 +0800}: fetch origin: fast-forward
+b6268399 refs/remotes/origin/main@{2026-09-10 14:01:07 +0800}: fetch origin: fast-forward
+f76d7239 HEAD@{2026-09-10 14:01:07 +0800}: merge origin/main: Merge made by the 'ort' strategy.
+bee8f2d3 refs/heads/main@{2026-09-10 13:59:51 +0800}: commit: fix: T05 validator distinguishes truncated_output
+a78bf2b7 refs/heads/main@{2026-09-10 13:59:51 +0800}: commit: fix: T04 validator distinguishes truncated_output
+45206d78 refs/heads/main@{2026-09-10 13:59:51 +0800}: commit: fix: T03 validator distinguishes truncated_output
+bee8f2d3 HEAD@{2026-09-10 13:59:51 +0800}: commit: fix: T05 validator distinguishes truncated_output
+a78bf2b7 HEAD@{2026-09-10 13:59:51 +0800}: commit: fix: T04 validator distinguishes truncated_output
+45206d78 HEAD@{2026-09-10 13:59:51 +0800}: commit: fix: T03 validator distinguishes truncated_output
+18acc5e2 refs/heads/main@{2026-09-10 13:59:50 +0800}: commit: fix: T05 runner - disable thinking, robust JSON extraction, truncation flag, 512 token cap
+9c266455 refs/heads/main@{2026-09-10 13:59:50 +0800}: commit: fix: T04 runner - disable thinking, robust JSON extraction, truncation flag, 768 token cap
+eb3b46c6 refs/heads/main@{2026-09-10 13:59:50 +0800}: commit: fix: T03 runner - disable thinking, robust JSON extraction, truncation flag, 1024 token cap
+18acc5e2 HEAD@{2026-09-10 13:59:50 +0800}: commit: fix: T05 runner - disable thinking, robust JSON extraction, truncation flag, 512 token cap
+9c266455 HEAD@{2026-09-10 13:59:50 +0800}: commit: fix: T04 runner - disable thinking, robust JSON extraction, truncation flag, 768 token cap
+eb3b46c6 HEAD@{2026-09-10 13:59:50 +0800}: commit: fix: T03 runner - disable thinking, robust JSON extraction, truncation flag, 1024 token cap
+447e16d7 refs/heads/main@{2026-09-10 13:59:49 +0800}: commit: feat: shared generation-audit helpers (EOS cap detection) for T0x runners
+447e16d7 HEAD@{2026-09-10 13:59:49 +0800}: commit: feat: shared generation-audit helpers (EOS cap detection) for T0x runners
+fa588581 refs/remotes/origin/HEAD@{2026-09-10 13:38:17 +0800}: update by push
+fa588581 refs/remotes/origin/main@{2026-09-10 13:38:17 +0800}: update by push
+fa588581 refs/heads/main@{2026-09-10 13:27:46 +0800}: commit: feat: parameterize T02 validation output paths via MOPD_T02_TAG
+c757abf5 refs/heads/main@{2026-09-10 13:27:46 +0800}: commit: feat: T02 pilot v2 sbatch with in-allocation canary stage
+4219eb7e refs/heads/main@{2026-09-10 13:27:46 +0800}: commit: feat: fail-closed CPU canary gate for T02 pilot v2
+fa588581 HEAD@{2026-09-10 13:27:46 +0800}: commit: feat: parameterize T02 validation output paths via MOPD_T02_TAG
+c757abf5 HEAD@{2026-09-10 13:27:46 +0800}: commit: feat: T02 pilot v2 sbatch with in-allocation canary stage
+4219eb7e HEAD@{2026-09-10 13:27:46 +0800}: commit: feat: fail-closed CPU canary gate for T02 pilot v2
+f5e7d9f4 refs/heads/main@{2026-09-10 13:27:45 +0800}: commit: fix: distinguish truncated_output from invalid_json in T02 validator
+b4f14054 refs/heads/main@{2026-09-10 13:27:45 +0800}: commit: fix: apply bbox geometry normalization in T02 reparse
+f5e7d9f4 HEAD@{2026-09-10 13:27:45 +0800}: commit: fix: distinguish truncated_output from invalid_json in T02 validator
+b4f14054 HEAD@{2026-09-10 13:27:45 +0800}: commit: fix: apply bbox geometry normalization in T02 reparse
+b2cc8611 refs/heads/main@{2026-09-10 13:27:44 +0800}: commit: fix: T02 runner v2 - disable thinking, 1024 token cap, norm1000 prompt, truncation flag, canary limit
+111459ea refs/heads/main@{2026-09-10 13:27:44 +0800}: commit: feat: deterministic norm1000->pixel bbox geometry for T02
+b2cc8611 HEAD@{2026-09-10 13:27:44 +0800}: commit: fix: T02 runner v2 - disable thinking, 1024 token cap, norm1000 prompt, truncation flag, canary limit
+111459ea HEAD@{2026-09-10 13:27:44 +0800}: commit: feat: deterministic norm1000->pixel bbox geometry for T02
+45d03fcf refs/heads/main@{2026-09-10 11:17:51 +0800}: merge origin/main: Merge made by the 'ort' strategy.
+45d03fcf HEAD@{2026-09-10 11:17:51 +0800}: merge origin/main: Merge made by the 'ort' strategy.
+61b79581 refs/remotes/origin/HEAD@{2026-09-10 11:16:26 +0800}: fetch origin: fast-forward
+61b79581 refs/remotes/origin/main@{2026-09-10 11:16:26 +0800}: fetch origin: fast-forward
+8e95d77a refs/heads/main@{2026-09-10 01:25:56 +0800}: pull --no-ff origin main: Merge made by the 'ort' strategy.
+8e95d77a HEAD@{2026-09-10 01:25:56 +0800}: pull --no-ff origin main: Merge made by the 'ort' strategy.
+0c905b53 refs/remotes/origin/HEAD@{2026-09-10 01:25:30 +0800}: fetch origin: fast-forward
+0c905b53 refs/remotes/origin/main@{2026-09-10 01:25:30 +0800}: fetch origin: fast-forward
+1c6e413b refs/remotes/origin/HEAD@{2026-09-10 01:08:06 +0800}: update by push
+1c6e413b refs/remotes/origin/main@{2026-09-10 01:08:06 +0800}: update by push
+1c6e413b refs/heads/main@{2026-09-10 01:07:54 +0800}: commit (merge): merge: accept idea2 branch (resolve .gitignore with simpler version, keep archived materials)
+1c6e413b HEAD@{2026-09-10 01:07:54 +0800}: commit (merge): merge: accept idea2 branch (resolve .gitignore with simpler version, keep archived materials)
+6cde4441 refs/remotes/origin/idea2@{2026-09-10 01:01:22 +0800}: update by push
+23240cf7 refs/heads/main@{2026-09-10 00:57:56 +0800}: pull --no-ff origin main: Merge made by the 'ort' strategy.
+23240cf7 HEAD@{2026-09-10 00:57:56 +0800}: pull --no-ff origin main: Merge made by the 'ort' strategy.
+166e74ad refs/remotes/origin/HEAD@{2026-09-10 00:57:55 +0800}: pull --no-ff origin main: fast-forward
+166e74ad refs/remotes/origin/main@{2026-09-10 00:57:55 +0800}: pull --no-ff origin main: fast-forward
+b4fbe690 refs/remotes/origin/HEAD@{2026-09-10 00:20:07 +0800}: update by push
+b4fbe690 refs/remotes/origin/main@{2026-09-10 00:20:07 +0800}: update by push
+b4fbe690 refs/heads/main@{2026-09-10 00:20:03 +0800}: commit: docs: update progress report with T03-T05 runners and today's activity
+b4fbe690 HEAD@{2026-09-10 00:20:03 +0800}: commit: docs: update progress report with T03-T05 runners and today's activity
+911e971d refs/heads/main@{2026-09-10 00:19:13 +0800}: pull --no-ff origin main: Merge made by the 'ort' strategy.
+b562bcc1 refs/remotes/origin/HEAD@{2026-09-10 00:19:13 +0800}: pull --no-ff origin main: fast-forward
+b562bcc1 refs/remotes/origin/main@{2026-09-10 00:19:13 +0800}: pull --no-ff origin main: fast-forward
+911e971d HEAD@{2026-09-10 00:19:13 +0800}: pull --no-ff origin main: Merge made by the 'ort' strategy.
+2cc90c4c refs/remotes/origin/HEAD@{2026-09-10 00:12:18 +0800}: update by push
+2cc90c4c refs/remotes/origin/main@{2026-09-10 00:12:18 +0800}: update by push
+2cc90c4c refs/heads/main@{2026-09-10 00:12:13 +0800}: pull --no-ff origin main: Merge made by the 'ort' strategy.
+09818d4b refs/remotes/origin/HEAD@{2026-09-10 00:12:13 +0800}: pull --no-ff origin main: fast-forward
+09818d4b refs/remotes/origin/main@{2026-09-10 00:12:13 +0800}: pull --no-ff origin main: fast-forward
+2cc90c4c HEAD@{2026-09-10 00:12:13 +0800}: pull --no-ff origin main: Merge made by the 'ort' strategy.
+e5bf4711 refs/remotes/origin/HEAD@{2026-09-09 23:57:13 +0800}: update by push
+e5bf4711 refs/remotes/origin/main@{2026-09-09 23:57:13 +0800}: update by push
+e5bf4711 refs/heads/main@{2026-09-09 23:57:03 +0800}: pull --no-ff origin main: Merge made by the 'ort' strategy.
+e5bf4711 HEAD@{2026-09-09 23:57:03 +0800}: pull --no-ff origin main: Merge made by the 'ort' strategy.
+fc2621de refs/remotes/origin/HEAD@{2026-09-09 23:57:00 +0800}: pull --no-ff origin main: fast-forward
+fc2621de refs/remotes/origin/main@{2026-09-09 23:57:00 +0800}: pull --no-ff origin main: fast-forward
+a7602e46 refs/heads/main@{2026-09-09 23:56:53 +0800}: commit: fix: correct 40G A100 as BAAI-Aquila, already decommissioned
+a7602e46 HEAD@{2026-09-09 23:56:53 +0800}: commit: fix: correct 40G A100 as BAAI-Aquila, already decommissioned
+dc653405 refs/heads/main@{2026-09-09 23:55:46 +0800}: pull --no-ff origin main: Merge made by the 'ort' strategy.
+73484f23 refs/remotes/origin/HEAD@{2026-09-09 23:55:46 +0800}: pull --no-ff origin main: fast-forward
+73484f23 refs/remotes/origin/main@{2026-09-09 23:55:46 +0800}: pull --no-ff origin main: fast-forward
+dc653405 HEAD@{2026-09-09 23:55:46 +0800}: pull --no-ff origin main: Merge made by the 'ort' strategy.
+fc21c8ef refs/remotes/origin/HEAD@{2026-09-09 23:50:16 +0800}: update by push
+fc21c8ef refs/remotes/origin/main@{2026-09-09 23:50:16 +0800}: update by push
+fc21c8ef refs/heads/main@{2026-09-09 23:50:06 +0800}: commit: docs: add full-project progress report 2026-09-09
+fc21c8ef HEAD@{2026-09-09 23:50:06 +0800}: commit: docs: add full-project progress report 2026-09-09
+21011565 refs/heads/main@{2026-09-09 23:48:06 +0800}: pull --no-ff origin main: Merge made by the 'ort' strategy.
+fab936b8 refs/remotes/origin/HEAD@{2026-09-09 23:48:06 +0800}: pull --no-ff origin main: fast-forward
+fab936b8 refs/remotes/origin/main@{2026-09-09 23:48:06 +0800}: pull --no-ff origin main: fast-forward
+21011565 HEAD@{2026-09-09 23:48:06 +0800}: pull --no-ff origin main: Merge made by the 'ort' strategy.
+4a87e327 refs/remotes/origin/HEAD@{2026-09-09 23:36:37 +0800}: update by push
+4a87e327 refs/remotes/origin/main@{2026-09-09 23:36:37 +0800}: update by push
+4a87e327 refs/heads/main@{2026-09-09 23:36:27 +0800}: commit: docs: update README with meeting/feishu and meeting/wechat structure
+4a87e327 HEAD@{2026-09-09 23:36:27 +0800}: commit: docs: update README with meeting/feishu and meeting/wechat structure
+6e93f2eb refs/remotes/origin/HEAD@{2026-09-09 23:35:29 +0800}: update by push
+6e93f2eb refs/remotes/origin/main@{2026-09-09 23:35:29 +0800}: update by push
+6e93f2eb refs/heads/main@{2026-09-09 23:35:18 +0800}: commit: rename: meeting/会议记录 -> meeting/feishu
+6e93f2eb HEAD@{2026-09-09 23:35:18 +0800}: commit: rename: meeting/会议记录 -> meeting/feishu
+c5e6c11c refs/remotes/origin/HEAD@{2026-09-09 23:33:34 +0800}: update by push
+c5e6c11c refs/remotes/origin/main@{2026-09-09 23:33:34 +0800}: update by push
+c5e6c11c refs/heads/main@{2026-09-09 23:33:24 +0800}: pull --no-ff origin main: Merge made by the 'ort' strategy.
+e989a22e refs/remotes/origin/HEAD@{2026-09-09 23:33:24 +0800}: pull --no-ff origin main: fast-forward
+e989a22e refs/remotes/origin/main@{2026-09-09 23:33:24 +0800}: pull --no-ff origin main: fast-forward
+c5e6c11c HEAD@{2026-09-09 23:33:24 +0800}: pull --no-ff origin main: Merge made by the 'ort' strategy.
+45083133 refs/heads/main@{2026-09-09 23:33:19 +0800}: commit: rename: meeting/weixin -> meeting/wechat
+45083133 HEAD@{2026-09-09 23:33:19 +0800}: commit: rename: meeting/weixin -> meeting/wechat
+7faebfbc refs/remotes/origin/HEAD@{2026-09-09 23:32:07 +0800}: update by push
+7faebfbc refs/remotes/origin/main@{2026-09-09 23:32:07 +0800}: update by push
+7faebfbc refs/heads/main@{2026-09-09 23:31:58 +0800}: commit: meeting: add weixin chat log on server migration (40G A100 -> H200)
+7faebfbc HEAD@{2026-09-09 23:31:58 +0800}: commit: meeting: add weixin chat log on server migration (40G A100 -> H200)
+256e3ed2 refs/heads/main@{2026-09-09 23:29:32 +0800}: pull --no-ff origin main: Merge made by the 'ort' strategy.
+dc9011a8 refs/remotes/origin/HEAD@{2026-09-09 23:29:32 +0800}: pull --no-ff origin main: fast-forward
+dc9011a8 refs/remotes/origin/main@{2026-09-09 23:29:32 +0800}: pull --no-ff origin main: fast-forward
+256e3ed2 HEAD@{2026-09-09 23:29:32 +0800}: pull --no-ff origin main: Merge made by the 'ort' strategy.
+8aa59740 refs/remotes/origin/HEAD@{2026-09-09 23:14:14 +0800}: update by push
+8aa59740 refs/remotes/origin/main@{2026-09-09 23:14:14 +0800}: update by push
+8aa59740 refs/heads/main@{2026-09-09 23:14:09 +0800}: commit: reproduction: organize Vision-OPD docs into docs/ subfolder
+8aa59740 HEAD@{2026-09-09 23:14:09 +0800}: commit: reproduction: organize Vision-OPD docs into docs/ subfolder
+2762a90f refs/remotes/origin/HEAD@{2026-09-09 23:13:25 +0800}: update by push
+2762a90f refs/remotes/origin/main@{2026-09-09 23:13:25 +0800}: update by push
+2762a90f refs/heads/main@{2026-09-09 23:13:16 +0800}: commit: docs: update root README with project structure and status
+2762a90f HEAD@{2026-09-09 23:13:16 +0800}: commit: docs: update root README with project structure and status
+34ba3dcc refs/remotes/origin/HEAD@{2026-09-09 23:12:37 +0800}: update by push
+34ba3dcc refs/remotes/origin/main@{2026-09-09 23:12:37 +0800}: update by push
+34ba3dcc refs/heads/main@{2026-09-09 23:12:32 +0800}: pull --no-ff origin main: Merge made by the 'ort' strategy.
+34ba3dcc HEAD@{2026-09-09 23:12:32 +0800}: pull --no-ff origin main: Merge made by the 'ort' strategy.
+28231185 refs/remotes/origin/HEAD@{2026-09-09 23:12:31 +0800}: pull --no-ff origin main: fast-forward
+28231185 refs/remotes/origin/main@{2026-09-09 23:12:31 +0800}: pull --no-ff origin main: fast-forward
+27639a63 refs/heads/main@{2026-09-09 23:11:50 +0800}: commit: gitignore: add venv/.venv/env patterns
+27639a63 HEAD@{2026-09-09 23:11:50 +0800}: commit: gitignore: add venv/.venv/env patterns
+ce9531e5 refs/remotes/origin/HEAD@{2026-09-09 23:08:27 +0800}: update by push
+ce9531e5 refs/remotes/origin/main@{2026-09-09 23:08:27 +0800}: update by push
+ce9531e5 refs/heads/main@{2026-09-09 23:08:23 +0800}: commit: papers: move demo-pt2.html into pt.2/
+ce9531e5 HEAD@{2026-09-09 23:08:23 +0800}: commit: papers: move demo-pt2.html into pt.2/
+93fd16bd refs/remotes/origin/HEAD@{2026-09-09 23:08:02 +0800}: update by push
+93fd16bd refs/remotes/origin/main@{2026-09-09 23:08:02 +0800}: update by push
+93fd16bd refs/heads/main@{2026-09-09 23:07:57 +0800}: pull --no-ff origin main: Merge made by the 'ort' strategy.
+c37f40f5 refs/remotes/origin/HEAD@{2026-09-09 23:07:57 +0800}: pull --no-ff origin main: fast-forward
+c37f40f5 refs/remotes/origin/main@{2026-09-09 23:07:57 +0800}: pull --no-ff origin main: fast-forward
+93fd16bd HEAD@{2026-09-09 23:07:57 +0800}: pull --no-ff origin main: Merge made by the 'ort' strategy.
+292439bd refs/heads/main@{2026-09-09 23:07:33 +0800}: commit: archive: consolidate outputs/mnist-cnn into outputs/mnist
+292439bd HEAD@{2026-09-09 23:07:33 +0800}: commit: archive: consolidate outputs/mnist-cnn into outputs/mnist
+daef574b refs/heads/main@{2026-09-09 23:06:43 +0800}: commit: 1
+daef574b HEAD@{2026-09-09 23:06:43 +0800}: commit: 1
+0f77918c refs/remotes/origin/HEAD@{2026-09-09 23:02:05 +0800}: update by push
+0f77918c refs/remotes/origin/main@{2026-09-09 23:02:05 +0800}: update by push
+0f77918c refs/heads/main@{2026-09-09 23:01:52 +0800}: pull --no-ff origin main: Merge made by the 'ort' strategy.
+d88e8203 refs/remotes/origin/HEAD@{2026-09-09 23:01:52 +0800}: pull --no-ff origin main: fast-forward
+d88e8203 refs/remotes/origin/main@{2026-09-09 23:01:52 +0800}: pull --no-ff origin main: fast-forward
+0f77918c HEAD@{2026-09-09 23:01:52 +0800}: pull --no-ff origin main: Merge made by the 'ort' strategy.
+f4f8c0b1 refs/heads/main@{2026-09-09 23:00:14 +0800}: commit: meeting: add .gitkeep to empty meeting folders (7041/7091/7161/8131/9021/9022)
+f4f8c0b1 HEAD@{2026-09-09 23:00:14 +0800}: commit: meeting: add .gitkeep to empty meeting folders (7041/7091/7161/8131/9021/9022)
+706391fd refs/heads/main@{2026-09-09 22:58:32 +0800}: commit: reproduction: move README into Vision-OPD subfolder
+706391fd HEAD@{2026-09-09 22:58:32 +0800}: commit: reproduction: move README into Vision-OPD subfolder
+e776fea6 refs/heads/main@{2026-09-09 22:55:59 +0800}: commit: reproduction: reorganize docs and demos into subfolder
+e776fea6 HEAD@{2026-09-09 22:55:59 +0800}: commit: reproduction: reorganize docs and demos into subfolder
+ea781fb3 refs/heads/main@{2026-09-09 22:54:56 +0800}: commit: archive: move knowledge notes to archive/notes/
+ea781fb3 HEAD@{2026-09-09 22:54:56 +0800}: commit: archive: move knowledge notes to archive/notes/
+da12721c refs/heads/main@{2026-09-09 22:54:06 +0800}: commit: ignore csv_0
+da12721c HEAD@{2026-09-09 22:54:06 +0800}: commit: ignore csv_0
+69ac74ad refs/heads/main@{2026-09-09 22:48:12 +0800}: commit: archive: add extracted idea1 files
+69ac74ad HEAD@{2026-09-09 22:48:12 +0800}: commit: archive: add extracted idea1 files
+1d3b416f refs/heads/main@{2026-09-09 22:47:44 +0800}: commit: del idea1.7z
+1d3b416f HEAD@{2026-09-09 22:47:44 +0800}: commit: del idea1.7z
+fdf2da6b refs/heads/main@{2026-09-09 22:45:34 +0800}: commit: rename demo
+fdf2da6b HEAD@{2026-09-09 22:45:34 +0800}: commit: rename demo
+b4240ebe refs/heads/main@{2026-09-09 22:44:23 +0800}: commit: archive diagn+.zip 2
+b4240ebe HEAD@{2026-09-09 22:44:23 +0800}: commit: archive diagn+.zip 2
+88d3c415 refs/heads/main@{2026-09-09 22:44:06 +0800}: commit: archive diagn+.zip
