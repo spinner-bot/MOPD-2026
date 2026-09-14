@@ -19,6 +19,8 @@ B2a 判断的是：**只看这张完整图片，人是否能提出一个自然�
 - 任一模型在 S/T 条件下的结果；
 - 其他审核者对同图的判断。
 
+界面也不得显示 `source_dataset`、`source_image_id`、`image_candidate_id` 或图片路径。审核者只用随机化的 `calibration_record_id` 导航；服务端保留的来源身份仅供哈希校验和第一阶段锁定后的联结，不能进入浏览器 API。
+
 机器可以提供图片浏览界面和字段校验，但不得生成、改写或预填任何 `human_*` 字段。
 
 ## 2. 权威材料与文件规则
@@ -46,6 +48,8 @@ research/main/outputs/runs/20260914T0328-image-affordance-b2a-blind-calibration/
 ```
 
 服务只接受 `127.0.0.1`，打开 `http://127.0.0.1:8765/`。若浏览器不在 Leonardo 同一主机，通过 SSH local port forwarding 访问该 loopback 端口，不能把 host 改成 `0.0.0.0`。`--draft` 与 `--export-prefix` 必须指向审核者自己的新路径；draft 第一次保存后可继续原子更新，final 三个文件只创建一次。
+
+界面载入 draft 时要求每条 JSON 的键集合与冻结原包完全一致；额外 `null` 键和缺键均拒绝。finalizer 对绕过界面的 reviewed 文件执行同一严格 schema 门，图片响应则对实际发送字节重验冻结 SHA-256。
 
 ## 3. 判定顺序
 
@@ -226,3 +230,4 @@ B2b 的 `--output` 与 `--summary` 同样必须是互不相同且尚不存在的
 | 2026-09-14 05:08 | Codex (CINECA Leonardo) | 修订：B2a 路由分析摘要改为新路径排他写入，防止三档来源裁决被原地替换。 |
 | 2026-09-14 05:17 | Codex (CINECA Leonardo) | 修订：finalizer CLI 自身固定原始 32 包 hash/条数，并在 summary 保存 original/reviewed 两份输入 hash。 |
 | 2026-09-14 05:30 | Codex (CINECA Leonardo) | 修订：加入 C4 标准库 loopback 界面启动命令、SSH 本地转发边界，以及 draft 可续写/final 排他创建规则。 |
+| 2026-09-14 12:21 | Codex (CINECA Leonardo) | 修订：依据 1069/1070 隐藏可反查原题的来源身份，要求 draft/finalizer 严格 schema，并把图片校验绑定到实际响应字节。 |
