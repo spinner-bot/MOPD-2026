@@ -24,6 +24,7 @@ MODEL="${MOPD_MODEL_4B:-/leonardo_scratch/large/userexternal/rqian000/models/Qwe
 IMAGE_ROOT="${MOPD_IMAGE_ROOT:?set the explicit common root containing every frozen image}"
 REVISION="851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a"
 EXPECTED_COMMIT="${MOPD_EXPECTED_CODE_COMMIT:?set MOPD_EXPECTED_CODE_COMMIT to the submitted git HEAD}"
+[[ "${EXPECTED_COMMIT}" =~ ^[0-9a-f]{40}$ ]] || { echo "MOPD_EXPECTED_CODE_COMMIT must be the full 40-character lowercase git commit" >&2; exit 2; }
 RUNNER="${ROOT}/code/evaluation/run_exploratory_teacher_gap.py"
 PROCESS="${ROOT}/code/evaluation/process_exploratory_teacher_gap.py"
 CODE_PATHS=(

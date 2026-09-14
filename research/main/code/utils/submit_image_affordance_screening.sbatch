@@ -20,6 +20,7 @@ MODEL="${MOPD_MODEL_9B:-/leonardo_scratch/large/userexternal/rqian000/models/Qwe
 IMAGE_ROOT="${MOPD_IMAGE_ROOT:-/leonardo_scratch/large/userexternal/rqian000/data/m3vqa/materialized/images}"
 REVISION="c202236235762e1c871ad0ccb60c8ee5ba337b9a"
 EXPECTED_COMMIT="${MOPD_EXPECTED_CODE_COMMIT:?set fixed git commit}"
+[[ "${EXPECTED_COMMIT}" =~ ^[0-9a-f]{40}$ ]] || { echo "MOPD_EXPECTED_CODE_COMMIT must be the full 40-character lowercase git commit" >&2; exit 2; }
 MAX_NEW_TOKENS="${MOPD_MAX_NEW_TOKENS:-1024}"
 FALLBACK_MAX_NEW_TOKENS="${MOPD_FALLBACK_MAX_NEW_TOKENS:-768}"
 EXPECTED="$(wc -l < "${INPUT}")"
