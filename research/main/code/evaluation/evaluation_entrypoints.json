@@ -1,0 +1,63 @@
+{
+  "schema_version": "mopd-evaluation-entrypoints-v1",
+  "declared_at_utc_plus_8": "2026-09-14 13:44",
+  "declared_by": "Codex (CINECA Leonardo)",
+  "policy_refs": ["1017", "1052", "1080", "1084", "1089", "1091"],
+  "entries": {
+    "g_pc0_label_rotation": {
+      "status": "active_diagnostic",
+      "cli": "process_exploratory_teacher_gap.py decide-label-rotation",
+      "can_authorize_natural_g0": false,
+      "can_authorize_training": false,
+      "result_scope": "programmatic_interface_diagnostic_only"
+    },
+    "natural_g0_label_rotation": {
+      "status": "active_authoritative",
+      "cli": "process_exploratory_teacher_gap.py decide-natural-label-rotation",
+      "callable": "exploratory_teacher_gap.decide_teacher_gap_label_rotation",
+      "required_profile": "natural_label_rotation_v2_dual_generic",
+      "can_authorize_natural_g0": true,
+      "can_authorize_training": false,
+      "result_scope": "natural_g0_route_decision_after_all_gates"
+    },
+    "legacy_natural_fixed_label": {
+      "status": "retired_historical_replay_only",
+      "cli": null,
+      "callable": "exploratory_teacher_gap.decide_teacher_gap",
+      "can_authorize_natural_g0": false,
+      "can_authorize_training": false,
+      "result_scope": "historical_fixed_commit_replay"
+    },
+    "legacy_metrics_stage0_go": {
+      "status": "retired_fail_closed",
+      "cli": null,
+      "callable": "metrics.check_stage0_go_criteria",
+      "can_authorize_natural_g0": false,
+      "can_authorize_training": false,
+      "result_scope": "none"
+    },
+    "generic_factorial_regression": {
+      "status": "descriptive_smoke_only",
+      "cli": null,
+      "callable": "statistical_tests.factorial_regression",
+      "can_authorize_natural_g0": false,
+      "can_authorize_training": false,
+      "can_authorize_g1_claim": false,
+      "result_scope": "implementation_smoke_and_descriptive_sensitivity"
+    },
+    "g1_confirmatory": {
+      "status": "not_implemented_not_authorized",
+      "cli": null,
+      "can_authorize_g1_claim": false,
+      "can_authorize_training": false,
+      "result_scope": "none"
+    },
+    "stage1_transfer": {
+      "status": "not_implemented_not_authorized",
+      "cli": null,
+      "can_authorize_training": false,
+      "can_authorize_student_transfer_claim": false,
+      "result_scope": "none"
+    }
+  }
+}
