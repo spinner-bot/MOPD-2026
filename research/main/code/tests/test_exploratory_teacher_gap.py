@@ -1,6 +1,7 @@
 """Contract tests for the frozen 1017 exploratory teacher-gap protocol."""
 
 import sys
+import copy
 import hashlib
 import json
 import tempfile
@@ -14,6 +15,7 @@ sys.path.insert(0, str(ROOT / "code" / "evaluation"))
 
 from exploratory_teacher_gap import (
     CONDITIONS,
+    NATURAL_ROTATION_CONDITIONS,
     aggregate_natural_rotation_results,
     decide_teacher_gap,
     decide_teacher_gap_label_rotation,
@@ -57,6 +59,8 @@ def manifest_sample(index: int) -> dict:
         "option_D": f"delta-{index}",
         "final_answer": label,
         "generic_context": "Inspect the relevant visible elements, compare the choices, and verify the conclusion.",
+        "generic_context_t_q": "Inspect the relevant visible elements, compare the choices, and verify the conclusion.",
+        "generic_context_t_qa": "Inspect each visible element carefully, compare every relation in order, check each intermediate step, and verify the final conclusion.",
         "knowledge_dependency_label": "image_only",
         "task_family": "R",
         "full_image_reference_valid": True,
@@ -158,7 +162,7 @@ class ExploratoryTeacherGapTests(unittest.TestCase):
             manifest = root / "rotation.jsonl"
             manifest.write_text("".join(json.dumps(row, sort_keys=True) + "\n" for row in expanded), encoding="utf-8")
             manifest_hash = hashlib.sha256(manifest.read_bytes()).hexdigest()
-            schedule = frozen_schedule(expanded, manifest_hash)
+            schedule = frozen_schedule(expanded, manifest_hash, NATURAL_ROTATION_CONDITIONS)
             choice_tokens = {choice: [index + 1] for index, choice in enumerate("ABCD")}
             label_bias = {"A": 20.0, "B": 10.0, "C": 0.0, "D": -10.0}
             raw_rows = []
@@ -242,7 +246,10 @@ class ExploratoryTeacherGapTests(unittest.TestCase):
             decision = json.loads(decision_path.read_text())
             self.assertEqual(decision["decision"], "GO_T_QA")
             self.assertEqual(decision["n_samples"], 8)
-            self.assertEqual(decision["n_condition_records"], 128)
+            self.assertEqual(decision["n_condition_records"], 160)
+            self.assertEqual(decision["matched_generic_controls"], {
+                "T_Q": "T_generic_Q", "T_QA": "T_generic_QA"
+            })
 
     def test_natural_rotation_preflight_cli_binds_base_assets_and_tokenizer(self):
         class Tokenizer:
@@ -305,7 +312,7 @@ class ExploratoryTeacherGapTests(unittest.TestCase):
             mapping = row["displayed_label_to_semantic_option"]
             correct = row["correct_semantic_option_id"]
             wrong = "ABCD"[("ABCD".index(correct) + 1) % 4]
-            for condition in CONDITIONS:
+            for condition in NATURAL_ROTATION_CONDITIONS:
                 target = correct if condition == "T_QA" else wrong
                 scores = {
                     displayed: label_bias[displayed] + (40.0 if semantic == target else 0.0)
@@ -323,7 +330,7 @@ class ExploratoryTeacherGapTests(unittest.TestCase):
                 })
         observations, errors = aggregate_natural_rotation_results(records, expected_samples=8)
         self.assertEqual(errors, [])
-        self.assertEqual(len(observations), 32)
+        self.assertEqual(len(observations), 40)
         self.assertEqual(sum(row["correct"] for row in observations if row["condition"] == "S"), 0)
         self.assertEqual(sum(row["correct"] for row in observations if row["condition"] == "T_QA"), 8)
         self.assertTrue(all("mapped_generation_vote_tie" in row for row in observations))
@@ -333,8 +340,26 @@ class ExploratoryTeacherGapTests(unittest.TestCase):
         self.assertEqual(decision["decision"], "GO_T_QA")
         self.assertEqual(decision["n_samples"], 8)
         self.assertEqual(decision["n_rotation_views"], 32)
-        self.assertEqual(decision["n_condition_records"], 128)
+        self.assertEqual(decision["n_condition_records"], 160)
         self.assertFalse(decision["generation_vote_used_for_decision"])
+
+        matched_control_records = copy.deepcopy(records)
+        for row in matched_control_records:
+            if row["condition"] != "T_generic_QA":
+                continue
+            correct = row["correct_semantic_option_id"]
+            row["choice_log_likelihoods"] = {
+                displayed: (40.0 if semantic == correct else 0.0)
+                for displayed, semantic in row["displayed_label_to_semantic_option"].items()
+            }
+        controlled = decide_teacher_gap_label_rotation(
+            matched_control_records, leakage_free=True, expected_samples=8, n_bootstrap=100
+        )
+        self.assertEqual(controlled["decision"], "REVISE")
+        self.assertEqual(
+            controlled["comparisons"]["T_QA"]["matched_generic_condition"],
+            "T_generic_QA",
+        )
 
     def test_validate_cli_binds_complete_raw_to_manifest(self):
         samples = [manifest_sample(index) for index in range(8)]
@@ -592,6 +617,24 @@ class ExploratoryTeacherGapTests(unittest.TestCase):
             sample["generic_context"] = "one two three four five six seven eight nine ten"
             sample["guides"] = [{"question": "one two three four five six seven eight?", "answer": "unused"}]
         result = validate_generic_length(samples, lambda text: len(text.split()), tolerance=0.20)
+        self.assertTrue(result["passes"])
+
+    def test_dual_generic_length_matches_each_structured_condition(self):
+        samples = [manifest_sample(0), manifest_sample(1)]
+        for sample in samples:
+            sample["generic_context_t_q"] = "one two three four five six seven eight nine ten"
+            sample["generic_context_t_qa"] = "one two three four five six seven eight nine ten eleven twelve thirteen fourteen fifteen sixteen seventeen eighteen"
+            sample["guides"] = [{
+                "question": "one two three four five six seven eight nine",
+                "answer": "ten eleven twelve thirteen fourteen",
+            }]
+        result = validate_generic_length(
+            samples, lambda text: len(text.split()), tolerance=0.35, dual_control=True
+        )
+        self.assertTrue(result["dual_control"])
+        self.assertEqual(set(result["comparisons"]), {
+            "T_Q_vs_T_generic_Q", "T_QA_vs_T_generic_QA"
+        })
         self.assertTrue(result["passes"])
 
     def test_exact_mcnemar_is_directional(self):

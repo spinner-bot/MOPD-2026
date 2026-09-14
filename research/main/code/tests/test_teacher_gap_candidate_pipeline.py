@@ -617,8 +617,10 @@ class TeacherGapCandidatePipelineTests(unittest.TestCase):
                 {"question": "nine ten eleven twelve thirteen fourteen", "answer": "unused"},
             ]
         }
-        context = generic_context_for([sample], FakeTokenizer())
-        self.assertGreater(len(context.split()), 5)
+        question_context = generic_context_for([sample], FakeTokenizer(), "T_Q")
+        qa_context = generic_context_for([sample], FakeTokenizer(), "T_QA")
+        self.assertGreater(len(question_context.split()), 5)
+        self.assertGreater(len(qa_context.split()), len(question_context.split()))
 
 
 if __name__ == "__main__":

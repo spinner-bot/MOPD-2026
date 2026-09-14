@@ -55,7 +55,7 @@ def build_bundle(base_manifest: Path, output_dir: Path) -> dict:
         "manifest_profile": NATURAL_ROTATION_PROFILE,
         "base_records": len(base_samples),
         "rotation_records": len(rows),
-        "condition_records_when_run": len(rows) * 4,
+        "condition_records_when_run": len(rows) * 5,
         "statistical_units": len(base_samples),
         "base_manifest_sha256": base_hash,
         "manifest_sha256": sha256_file(manifest),

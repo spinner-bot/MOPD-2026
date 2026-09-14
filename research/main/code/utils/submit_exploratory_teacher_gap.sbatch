@@ -94,7 +94,7 @@ run_manifest() {
   '
 }
 
-echo "[W3] 8 base samples x 4 rotations x 4 conditions"
+echo "[W3] 8 base samples x 4 rotations x 5 conditions"
 mkdir -p "${RUN}/raw/canary"
 run_manifest "${CANARY_ROTATION_MANIFEST}" "${CANARY_MANIFEST}" 32 "${RUN}/raw/canary"
 assert_code_state
@@ -105,7 +105,7 @@ assert_code_state
   --parsed-output "${RUN}/parsed/canary.jsonl" \
   --summary "${RUN}/summaries/canary-gate.json"
 
-echo "[W4] frozen locked pilot: 96 base samples x 4 rotations x 4 conditions"
+echo "[W4] frozen locked pilot: 96 base samples x 4 rotations x 5 conditions"
 assert_code_state
 mkdir -p "${RUN}/raw/locked"
 run_manifest "${LOCKED_ROTATION_MANIFEST}" "${LOCKED_MANIFEST}" 384 "${RUN}/raw/locked"

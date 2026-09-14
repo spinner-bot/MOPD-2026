@@ -11,6 +11,8 @@ from pathlib import Path
 
 from exploratory_teacher_gap import (
     CHOICES,
+    NATURAL_ROTATION_PROFILE,
+    conditions_for_profile,
     decide_teacher_gap,
     decide_teacher_gap_label_rotation,
     validate_manifest_bundle,
@@ -229,6 +231,7 @@ def main() -> None:
             length_check = validate_generic_length(
                 samples,
                 lambda text: len(tokenizer.encode(text, add_special_tokens=False)),
+                dual_control=is_natural_rotation,
             )
             if not length_check["passes"]:
                 errors.append(f"Generic-T length contract failed: {length_check}")
@@ -242,7 +245,7 @@ def main() -> None:
         summary = {
             "status": "passed" if not errors else "failed",
             "manifest_profile": (
-                "natural_label_rotation_v1"
+                NATURAL_ROTATION_PROFILE
                 if is_natural_rotation
                 else ("g_pc0_label_rotation_diagnostic_v1" if is_pc_rotation else "g_pc0_v1")
             ),
@@ -270,7 +273,10 @@ def main() -> None:
         manifest_hash = file_sha256(args.manifest)
         base_samples = load_jsonl([str(args.base_manifest)]) if args.base_manifest else None
         base_hash = file_sha256(args.base_manifest) if args.base_manifest else None
-        errors = validate_result_records(rows, expected_samples=args.expected_samples)
+        conditions = conditions_for_profile(args.manifest_profile)
+        errors = validate_result_records(
+            rows, expected_samples=args.expected_samples, conditions=conditions
+        )
         errors.extend(validate_manifest_profile(
             samples,
             expected_n=args.expected_samples,
@@ -283,10 +289,12 @@ def main() -> None:
                 errors.append("g_pc0 validation requires --image-root")
             else:
                 errors.extend(validate_g_pc0_assets(samples, args.image_root))
-        errors.extend(validate_results_against_manifest(rows, samples, manifest_hash))
+        errors.extend(validate_results_against_manifest(
+            rows, samples, manifest_hash, conditions=conditions
+        ))
         summary = {
             "expected_samples": args.expected_samples,
-            "expected_records": args.expected_samples * 4,
+            "expected_records": args.expected_samples * len(conditions),
             "observed_records": len(rows),
             "unique_sample_condition": len({(row.get("sample_id"), row.get("condition")) for row in rows}),
             "manifest_sha256": manifest_hash,
@@ -320,7 +328,12 @@ def main() -> None:
         base_samples = load_jsonl([str(args.base_manifest)])
         manifest_hash = file_sha256(args.manifest)
         base_hash = file_sha256(args.base_manifest)
-        errors = validate_result_records(rows, expected_samples=args.expected_samples * 4)
+        natural_conditions = conditions_for_profile("natural_rotation")
+        errors = validate_result_records(
+            rows,
+            expected_samples=args.expected_samples * 4,
+            conditions=natural_conditions,
+        )
         errors.extend(validate_manifest_profile(
             samples,
             expected_n=args.expected_samples * 4,
@@ -328,7 +341,9 @@ def main() -> None:
             base_samples=base_samples,
             base_manifest_hash=base_hash,
         ))
-        errors.extend(validate_results_against_manifest(rows, samples, manifest_hash))
+        errors.extend(validate_results_against_manifest(
+            rows, samples, manifest_hash, conditions=natural_conditions
+        ))
         decision = decide_teacher_gap_label_rotation(
             rows,
             leakage_free=args.leakage_free,

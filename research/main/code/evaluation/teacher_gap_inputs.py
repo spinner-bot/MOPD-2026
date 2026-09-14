@@ -11,6 +11,7 @@ from dataclasses import dataclass
 
 
 TEACHER_GAP_CONDITIONS = ("S", "T_Q", "T_QA", "T_generic")
+NATURAL_ROTATION_CONDITIONS = ("S", "T_Q", "T_QA", "T_generic_Q", "T_generic_QA")
 
 COMMON_SHELL = """You must answer the multiple-choice question using the image and the information below.
 
@@ -63,12 +64,16 @@ def _guides(sample: dict) -> list[dict[str, str]]:
 def privileged_context(sample: dict, condition: str) -> str:
     """Return the sole condition-dependent text block."""
 
-    if condition not in TEACHER_GAP_CONDITIONS:
+    if condition not in set(TEACHER_GAP_CONDITIONS) | set(NATURAL_ROTATION_CONDITIONS):
         raise ValueError(f"unsupported condition: {condition}")
     if condition == "S":
         return ""
     if condition == "T_generic":
         return _require_text(sample, "generic_context")
+    if condition == "T_generic_Q":
+        return _require_text(sample, "generic_context_t_q")
+    if condition == "T_generic_QA":
+        return _require_text(sample, "generic_context_t_qa")
     guides = _guides(sample)
     lines = []
     for index, guide in enumerate(guides, start=1):
@@ -105,8 +110,9 @@ def validate_generic_length(
     samples: list[dict],
     token_count,
     tolerance: float = 0.10,
+    dual_control: bool = False,
 ) -> dict:
-    """Check the 1017 corpus-level Generic-T/T-Q median token contract.
+    """Check corpus-level generic/structured median token contracts.
 
     ``token_count`` is injected so the frozen experiment tokenizer, rather than
     an approximate whitespace count, defines length.
@@ -114,24 +120,41 @@ def validate_generic_length(
 
     if not samples:
         raise ValueError("samples must not be empty")
-    tq_lengths = sorted(token_count(privileged_context(row, "T_Q")) for row in samples)
-    generic_lengths = sorted(token_count(privileged_context(row, "T_generic")) for row in samples)
-
     def median(values: list[int]) -> float:
         middle = len(values) // 2
         if len(values) % 2:
             return float(values[middle])
         return (values[middle - 1] + values[middle]) / 2
 
-    tq_median = median(tq_lengths)
-    generic_median = median(generic_lengths)
-    if tq_median <= 0:
-        raise ValueError("T-Q median token length must be positive")
-    relative_difference = abs(generic_median - tq_median) / tq_median
-    return {
-        "t_q_median_tokens": tq_median,
-        "generic_median_tokens": generic_median,
-        "relative_difference": relative_difference,
+    pairs = (
+        (("T_Q", "T_generic_Q"), ("T_QA", "T_generic_QA"))
+        if dual_control
+        else (("T_Q", "T_generic"),)
+    )
+    comparisons = {}
+    for treatment, control in pairs:
+        treatment_median = median(sorted(token_count(privileged_context(row, treatment)) for row in samples))
+        control_median = median(sorted(token_count(privileged_context(row, control)) for row in samples))
+        if treatment_median <= 0:
+            raise ValueError(f"{treatment} median token length must be positive")
+        relative_difference = abs(control_median - treatment_median) / treatment_median
+        comparisons[f"{treatment}_vs_{control}"] = {
+            "treatment_median_tokens": treatment_median,
+            "control_median_tokens": control_median,
+            "relative_difference": relative_difference,
+            "passes": relative_difference <= tolerance,
+        }
+    result = {
+        "dual_control": dual_control,
         "tolerance": tolerance,
-        "passes": relative_difference <= tolerance,
+        "comparisons": comparisons,
+        "passes": all(value["passes"] for value in comparisons.values()),
     }
+    if not dual_control:
+        only = next(iter(comparisons.values()))
+        result.update({
+            "t_q_median_tokens": only["treatment_median_tokens"],
+            "generic_median_tokens": only["control_median_tokens"],
+            "relative_difference": only["relative_difference"],
+        })
+    return result

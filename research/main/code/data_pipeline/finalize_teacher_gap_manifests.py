@@ -196,8 +196,13 @@ def validate_human_review(review: dict) -> list[str]:
     return errors
 
 
-def generic_context_for(samples: list[dict], tokenizer) -> str:
-    target_lengths = sorted(len(tokenizer.encode(privileged_context(row, "T_Q"), add_special_tokens=False)) for row in samples)
+def generic_context_for(samples: list[dict], tokenizer, target_condition: str = "T_Q") -> str:
+    if target_condition not in {"T_Q", "T_QA"}:
+        raise ValueError("generic target condition must be T_Q or T_QA")
+    target_lengths = sorted(
+        len(tokenizer.encode(privileged_context(row, target_condition), add_special_tokens=False))
+        for row in samples
+    )
     middle = len(target_lengths) // 2
     target = target_lengths[middle] if len(target_lengths) % 2 else (target_lengths[middle - 1] + target_lengths[middle]) / 2
     words = GENERIC_WORDS * 12
@@ -321,6 +326,8 @@ def main() -> None:
                 "canonical_answer_text": candidate["canonical_answer_text"],
                 "guides": proposal["guides"],
                 "generic_context": "PENDING_TOKEN_MATCH",
+                "generic_context_t_q": "PENDING_TOKEN_MATCH",
+                "generic_context_t_qa": "PENDING_TOKEN_MATCH",
                 "knowledge_dependency_label": "image_only",
                 "task_family": review["human_task_family"],
                 "full_image_reference_valid": True,
@@ -335,11 +342,16 @@ def main() -> None:
                 "reasoning_depth": review["human_reasoning_depth"],
                 "minimal_reasoning_graph": review["human_reasoning_graph"],
             })
-        generic = generic_context_for(rows, tokenizer)
+        generic_q = generic_context_for(rows, tokenizer, "T_Q")
+        generic_qa = generic_context_for(rows, tokenizer, "T_QA")
         for row in rows:
-            row["generic_context"] = generic
+            row["generic_context"] = generic_q
+            row["generic_context_t_q"] = generic_q
+            row["generic_context_t_qa"] = generic_qa
         length_result = validate_generic_length(
-            rows, lambda text: len(tokenizer.encode(text, add_special_tokens=False))
+            rows,
+            lambda text: len(tokenizer.encode(text, add_special_tokens=False)),
+            dual_control=True,
         )
         if not length_result["passes"]:
             raise SystemExit(f"unable to satisfy Generic-T length contract for {name}: {length_result}")

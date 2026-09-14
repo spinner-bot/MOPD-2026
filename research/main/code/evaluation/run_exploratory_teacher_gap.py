@@ -8,7 +8,7 @@ import json
 import subprocess
 from pathlib import Path
 
-from exploratory_teacher_gap import CHOICES, frozen_schedule, validate_manifest_profile
+from exploratory_teacher_gap import CHOICES, conditions_for_profile, frozen_schedule, validate_manifest_profile
 from teacher_gap_inputs import render_teacher_gap_input, validate_generic_length
 
 
@@ -186,8 +186,11 @@ def main() -> None:
         args.model, torch_dtype="auto", local_files_only=True
     ).to("cuda").eval()
     sequences = choice_token_sequences(processor.tokenizer)
+    dual_control = args.manifest_profile == "natural_rotation"
     length_check = validate_generic_length(
-        samples, lambda text: len(processor.tokenizer.encode(text, add_special_tokens=False))
+        samples,
+        lambda text: len(processor.tokenizer.encode(text, add_special_tokens=False)),
+        dual_control=dual_control,
     )
     if not length_check["passes"]:
         raise SystemExit(f"Generic-T length contract failed: {length_check}")
@@ -202,7 +205,7 @@ def main() -> None:
     if pad_token_id is None:
         pad_token_id = min(eos_ids)
 
-    schedule = frozen_schedule(samples, manifest_hash)
+    schedule = frozen_schedule(samples, manifest_hash, conditions_for_profile(args.manifest_profile))
     args.output.parent.mkdir(parents=True, exist_ok=True)
     processed = 0
     with args.output.open("x", encoding="utf-8") as sink, torch.inference_mode():

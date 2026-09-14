@@ -22,11 +22,12 @@ sys.path.insert(0, str(DATA_PIPELINE_ROOT))
 
 from reasoning_graph_contract import validate_guide_graph_alignment, validate_reasoning_graph
 from g_pc0 import validate_g_pc0_manifest, validate_g_pc0_rotation_manifest
+from teacher_gap_inputs import NATURAL_ROTATION_CONDITIONS
 
 
 CONDITIONS = ("S", "T_Q", "T_QA", "T_generic")
 CHOICES = ("A", "B", "C", "D")
-NATURAL_ROTATION_PROFILE = "natural_label_rotation_v1"
+NATURAL_ROTATION_PROFILE = "natural_label_rotation_v2_dual_generic"
 NATURAL_ROTATION_ROLE = "natural_teacher_gap_label_robust_measurement"
 NATURAL_ROTATION_SPEC = {
     "version": NATURAL_ROTATION_PROFILE,
@@ -34,6 +35,8 @@ NATURAL_ROTATION_SPEC = {
     "displayed_to_semantic_rule": "semantic_index=(displayed_index+rotation) mod 4",
     "score_aggregation": "mean raw label-sequence log-likelihood by semantic option",
     "continuous_metric": "log_softmax over four semantic mean scores",
+    "conditions": list(NATURAL_ROTATION_CONDITIONS),
+    "matched_generic_controls": {"T_Q": "T_generic_Q", "T_QA": "T_generic_QA"},
     "tie_break": list(CHOICES),
 }
 NATURAL_ROTATION_SPEC_HASH = hashlib.sha256(
@@ -71,10 +74,18 @@ def validate_manifest_profile(
     return [f"unsupported manifest profile: {manifest_profile}"]
 
 
-def frozen_schedule(samples: list[dict], manifest_hash: str) -> list[tuple[dict, str]]:
+def conditions_for_profile(manifest_profile: str) -> tuple[str, ...]:
+    """Keep completed four-condition profiles separate from natural v0.4."""
+
+    return NATURAL_ROTATION_CONDITIONS if manifest_profile == "natural_rotation" else CONDITIONS
+
+
+def frozen_schedule(
+    samples: list[dict], manifest_hash: str, conditions: tuple[str, ...] = CONDITIONS
+) -> list[tuple[dict, str]]:
     """Return the deterministic sample-condition order shared by runner and gate."""
 
-    pairs = [(sample, condition) for sample in samples for condition in CONDITIONS]
+    pairs = [(sample, condition) for sample in samples for condition in conditions]
     return sorted(
         pairs,
         key=lambda pair: hashlib.sha256(
@@ -126,6 +137,8 @@ def validate_locked_manifest(samples: list[dict], expected_n: int = 96) -> list[
         "option_D",
         "canonical_answer_text",
         "generic_context",
+        "generic_context_t_q",
+        "generic_context_t_qa",
         "human_reviewer",
         "human_reviewed_at",
     )
@@ -395,7 +408,10 @@ def validate_manifest_bundle(partitions: dict[str, list[dict]]) -> list[str]:
 
 
 def validate_results_against_manifest(
-    records: list[dict], samples: list[dict], manifest_hash: str
+    records: list[dict],
+    samples: list[dict],
+    manifest_hash: str,
+    conditions: tuple[str, ...] = CONDITIONS,
 ) -> list[str]:
     """Bind raw records to the exact frozen sample metadata they claim to use."""
 
@@ -411,7 +427,7 @@ def validate_results_against_manifest(
 
     expected_schedule = {
         (str(sample["sample_id"]), condition): index
-        for index, (sample, condition) in enumerate(frozen_schedule(samples, manifest_hash))
+        for index, (sample, condition) in enumerate(frozen_schedule(samples, manifest_hash, conditions))
     }
 
     for index, row in enumerate(records):
@@ -472,11 +488,12 @@ def validate_result_records(
     records: list[dict],
     expected_samples: int = 96,
     min_parse_rate: float = 0.99,
+    conditions: tuple[str, ...] = CONDITIONS,
 ) -> list[str]:
     """Apply the protocol's completeness and provenance gate."""
 
     errors: list[str] = []
-    expected_total = expected_samples * len(CONDITIONS)
+    expected_total = expected_samples * len(conditions)
     if len(records) != expected_total:
         errors.append(f"expected {expected_total} result records, found {len(records)}")
     keys = [(row.get("sample_id"), row.get("condition")) for row in records]
@@ -508,7 +525,7 @@ def validate_result_records(
     schedule_indices = []
     for index, row in enumerate(records):
         key = f"{row.get('sample_id', '<missing>')}/{row.get('condition', '<missing>')}"
-        if row.get("condition") not in CONDITIONS:
+        if row.get("condition") not in conditions:
             errors.append(f"{key}: unsupported condition")
         schedule_index = row.get("schedule_index")
         rank = row.get("rank")
@@ -629,8 +646,8 @@ def validate_result_records(
         "options_hash",
     )
     for sample_id, rows in by_sample.items():
-        if {row.get("condition") for row in rows} != set(CONDITIONS):
-            errors.append(f"{sample_id}: all four conditions are required")
+        if {row.get("condition") for row in rows} != set(conditions):
+            errors.append(f"{sample_id}: exact profile condition set is required")
         for field in invariant_fields:
             values = {str(row.get(field, "")).strip() for row in rows}
             if "" in values or len(values) != 1:
@@ -659,7 +676,7 @@ def validate_result_records(
         prompt_hashes = [str(row.get("prompt_hash", "")).strip() for row in rows]
         if any(not value for value in prompt_hashes):
             errors.append(f"{sample_id}: prompt_hash is required")
-        elif len(set(prompt_hashes)) != len(CONDITIONS):
+        elif len(set(prompt_hashes)) != len(conditions):
             errors.append(f"{sample_id}: each condition must have a distinct prompt_hash")
     return errors
 
@@ -742,14 +759,16 @@ def paired_cluster_bootstrap(
     }
 
 
-def _condition_vectors(records: list[dict]) -> tuple[list[str], dict[str, dict[str, dict]]]:
-    by_condition: dict[str, dict[str, dict]] = {condition: {} for condition in CONDITIONS}
+def _condition_vectors(
+    records: list[dict], conditions: tuple[str, ...] = CONDITIONS
+) -> tuple[list[str], dict[str, dict[str, dict]]]:
+    by_condition: dict[str, dict[str, dict]] = {condition: {} for condition in conditions}
     for row in records:
         condition = row.get("condition")
         if condition in by_condition:
             by_condition[condition][str(row.get("sample_id"))] = row
     ids = sorted(by_condition["S"])
-    if not ids or any(sorted(by_condition[condition]) != ids for condition in CONDITIONS):
+    if not ids or any(sorted(by_condition[condition]) != ids for condition in conditions):
         raise ValueError("all conditions must contain the same non-empty sample ids")
     return ids, by_condition
 
@@ -761,19 +780,22 @@ def _decide_teacher_gap_validated(
     expected_samples: int = 96,
     n_bootstrap: int = 10_000,
     seed: int = 20260911,
+    generic_controls: dict[str, str] | None = None,
 ) -> dict:
     """Apply 1017 statistics after the caller has validated the observation space."""
 
-    ids, rows = _condition_vectors(records)
+    generic_controls = generic_controls or {"T_Q": "T_generic", "T_QA": "T_generic"}
+    required_conditions = tuple(dict.fromkeys(("S", "T_Q", "T_QA", *generic_controls.values())))
+    ids, rows = _condition_vectors(records, required_conditions)
     source_clusters = [str(rows["S"][sample_id]["source_cluster_id"]) for sample_id in ids]
     baseline_correct = [bool(rows["S"][sample_id]["correct"]) for sample_id in ids]
     baseline_logp = [float(rows["S"][sample_id]["correct_log_prob"]) for sample_id in ids]
-    generic_correct = [bool(rows["T_generic"][sample_id]["correct"]) for sample_id in ids]
-    generic_logp = [float(rows["T_generic"][sample_id]["correct_log_prob"]) for sample_id in ids]
-
     comparisons = {}
     raw_p = {}
     for condition in ("T_Q", "T_QA"):
+        generic_condition = generic_controls[condition]
+        generic_correct = [bool(rows[generic_condition][sample_id]["correct"]) for sample_id in ids]
+        generic_logp = [float(rows[generic_condition][sample_id]["correct_log_prob"]) for sample_id in ids]
         treatment_correct = [bool(rows[condition][sample_id]["correct"]) for sample_id in ids]
         treatment_logp = [float(rows[condition][sample_id]["correct_log_prob"]) for sample_id in ids]
         mcnemar = exact_mcnemar_one_sided(baseline_correct, treatment_correct)
@@ -791,6 +813,7 @@ def _decide_teacher_gap_validated(
             "mcnemar_vs_S": mcnemar,
             "accuracy_delta_vs_generic": sum(treatment_correct) / len(ids) - sum(generic_correct) / len(ids),
             "correct_log_prob_delta_vs_generic": sum(treatment_logp[i] - generic_logp[i] for i in range(len(ids))) / len(ids),
+            "matched_generic_condition": generic_condition,
         }
     adjusted = holm_adjust(raw_p)
     for condition in comparisons:
@@ -833,6 +856,7 @@ def _decide_teacher_gap_validated(
         "decision": decision,
         "leakage_free": leakage_free,
         "n_samples": len(ids),
+        "matched_generic_controls": generic_controls,
         "comparisons": comparisons,
     }
 
@@ -870,7 +894,7 @@ def aggregate_natural_rotation_results(
         base_id = str(row.get("base_sample_id", ""))
         condition = str(row.get("condition", ""))
         rotation = row.get("label_rotation")
-        if not base_id or condition not in CONDITIONS or rotation not in range(4):
+        if not base_id or condition not in NATURAL_ROTATION_CONDITIONS or rotation not in range(4):
             errors.append("every rotation result requires base_sample_id, condition and rotation 0..3")
             continue
         if rotation in grouped[base_id][condition]:
@@ -881,10 +905,10 @@ def aggregate_natural_rotation_results(
     observations = []
     for base_id in sorted(grouped):
         conditions = grouped[base_id]
-        if set(conditions) != set(CONDITIONS):
-            errors.append(f"{base_id}: all four conditions are required")
+        if set(conditions) != set(NATURAL_ROTATION_CONDITIONS):
+            errors.append(f"{base_id}: all five natural conditions are required")
             continue
-        for condition in CONDITIONS:
+        for condition in NATURAL_ROTATION_CONDITIONS:
             rotations = conditions[condition]
             if set(rotations) != set(range(4)):
                 errors.append(f"{base_id}/{condition}: rotations 0..3 are required")
@@ -971,6 +995,7 @@ def decide_teacher_gap_label_rotation(
         expected_samples=expected_samples,
         n_bootstrap=n_bootstrap,
         seed=seed,
+        generic_controls={"T_Q": "T_generic_Q", "T_QA": "T_generic_QA"},
     )
     result.update({
         "measurement_profile": NATURAL_ROTATION_PROFILE,
@@ -982,7 +1007,7 @@ def decide_teacher_gap_label_rotation(
         },
         "statistical_unit": "base_sample",
         "n_rotation_views": expected_samples * 4,
-        "n_condition_records": expected_samples * 4 * len(CONDITIONS),
+        "n_condition_records": expected_samples * 4 * len(NATURAL_ROTATION_CONDITIONS),
         "continuous_metric": "semantic_correct_log_prob",
         "generation_vote_used_for_decision": False,
         "semantic_observations": observations,
