@@ -27,7 +27,7 @@ DESTINATION="${DESTINATION_PARENT}/$(basename -- "${DESTINATION_INPUT}")"
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
 REPO_ROOT="$(git -C "${SCRIPT_DIR}" rev-parse --show-toplevel)"
 git -C "${REPO_ROOT}" cat-file -e "${COMMIT}^{commit}"
-git -C "${REPO_ROOT}" worktree add --detach "${DESTINATION}" "${COMMIT}"
+git -C "${REPO_ROOT}" worktree add --detach "${DESTINATION}" "${COMMIT}" >&2
 
 ACTUAL="$(git -C "${DESTINATION}" rev-parse HEAD)"
 [[ "${ACTUAL}" == "${COMMIT}" ]] || {
