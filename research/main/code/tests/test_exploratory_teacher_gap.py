@@ -701,6 +701,16 @@ class ExploratoryTeacherGapTests(unittest.TestCase):
         )
         self.assertEqual(decision["decision"], "REVISE")
 
+    def test_leakage_prevents_false_stop_on_null_effect(self):
+        records = result_records(
+            tq_gains=0, tqa_gains=0, generic_gains=0, logp_tq=0.0, logp_tqa=0.0
+        )
+        clean = decide_teacher_gap(records, leakage_free=True, n_bootstrap=500)
+        contaminated = decide_teacher_gap(records, leakage_free=False, n_bootstrap=500)
+        self.assertEqual(clean["decision"], "STOP_CURRENT_RECIPE")
+        self.assertEqual(contaminated["decision"], "REVISE")
+        self.assertFalse(contaminated["leakage_free"])
+
     def test_frozen_schedule_is_deterministic_and_complete(self):
         samples = [manifest_sample(0), manifest_sample(1)]
         first = [(row["sample_id"], condition) for row, condition in frozen_schedule(samples, "hash")]

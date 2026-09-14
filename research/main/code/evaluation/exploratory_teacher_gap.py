@@ -826,7 +826,9 @@ def _decide_teacher_gap_validated(
             )
             and oracle["mcnemar_vs_S"]["gains"] <= oracle["mcnemar_vs_S"]["regressions"]
         )
-        decision = "STOP_CURRENT_RECIPE" if stop else "REVISE"
+        # A contaminated locked set cannot support either a positive Go or a
+        # negative Stop claim, even when its observed effect is near zero.
+        decision = "STOP_CURRENT_RECIPE" if stop and leakage_free else "REVISE"
     return {
         "decision": decision,
         "leakage_free": leakage_free,
