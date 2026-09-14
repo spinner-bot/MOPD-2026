@@ -32,7 +32,13 @@ from exploratory_teacher_gap import (
 )
 from exploratory_teacher_gap import TEACHER_GAP_DECISION_RULE_HASH
 from teacher_gap_inputs import COMMON_SHELL, render_teacher_gap_input, validate_generic_length
-from process_exploratory_teacher_gap import enrich_raw_record, main as process_teacher_gap
+from process_exploratory_teacher_gap import (
+    MODEL_ASSET_CHECKSUMS_SHA256,
+    MODEL_ASSET_REVISIONS_SHA256,
+    enrich_raw_record,
+    main as process_teacher_gap,
+    validate_model_asset_gate,
+)
 from run_exploratory_teacher_gap import (
     allowed_token_function,
     choice_token_sequences,
@@ -179,6 +185,29 @@ def result_records(tq_gains: int, tqa_gains: int, generic_gains: int = 1, logp_t
     return rows
 
 
+def write_model_asset_gate(path: Path, revision: str = "model-1") -> None:
+    digest = "a" * 64
+    path.write_text(json.dumps({
+        "status": "passed",
+        "repo": "Qwen/Qwen3.5-4B",
+        "revision": revision,
+        "revisions_inventory_sha256": MODEL_ASSET_REVISIONS_SHA256,
+        "checksums_inventory_sha256": MODEL_ASSET_CHECKSUMS_SHA256,
+        "expected_files": 1,
+        "observed_files": 1,
+        "missing_files": [],
+        "unexpected_files": [],
+        "files": {
+            "config.json": {
+                "matches": True,
+                "expected_sha256": digest,
+                "actual_sha256": digest,
+            }
+        },
+        "validation_errors": [],
+    }), encoding="utf-8")
+
+
 class ExploratoryTeacherGapTests(unittest.TestCase):
     def test_natural_rotation_validate_and_decide_cli_end_to_end(self):
         samples = [manifest_sample(index) for index in range(8)]
@@ -254,10 +283,13 @@ class ExploratoryTeacherGapTests(unittest.TestCase):
             raw.write_text("".join(json.dumps(row, sort_keys=True) + "\n" for row in raw_rows), encoding="utf-8")
             parsed = root / "parsed.jsonl"
             gate = root / "gate.json"
+            asset_gate = root / "model-asset-gate.json"
+            write_model_asset_gate(asset_gate)
             argv = [
                 "process_exploratory_teacher_gap.py", "validate", "--inputs", str(raw),
                 "--manifest", str(manifest), "--base-manifest", str(base),
                 "--manifest-profile", "natural_rotation", "--expected-samples", "32",
+                "--model-asset-gate", str(asset_gate),
                 "--parsed-output", str(parsed), "--summary", str(gate),
             ]
             with patch("sys.argv", argv), patch("builtins.print"):
@@ -268,6 +300,7 @@ class ExploratoryTeacherGapTests(unittest.TestCase):
                 "process_exploratory_teacher_gap.py", "decide-natural-label-rotation",
                 "--input", str(parsed), "--manifest", str(manifest),
                 "--base-manifest", str(base), "--expected-samples", "8",
+                "--model-asset-gate", str(asset_gate),
                 "--leakage-free", "--output", str(decision_path),
             ]
             with patch("sys.argv", argv), patch("builtins.print"):
@@ -279,6 +312,10 @@ class ExploratoryTeacherGapTests(unittest.TestCase):
             self.assertEqual(decision["matched_generic_controls"], {
                 "T_Q": "T_generic_Q", "T_QA": "T_generic_QA"
             })
+            self.assertEqual(
+                decision["model_asset_gate_sha256"],
+                hashlib.sha256(asset_gate.read_bytes()).hexdigest(),
+            )
 
     def test_natural_rotation_preflight_cli_binds_base_assets_and_tokenizer(self):
         class Tokenizer:
@@ -454,12 +491,15 @@ class ExploratoryTeacherGapTests(unittest.TestCase):
             )
             parsed = root / "parsed.jsonl"
             summary = root / "summary.json"
+            asset_gate = root / "model-asset-gate.json"
+            write_model_asset_gate(asset_gate)
             argv = [
                 "process_exploratory_teacher_gap.py",
                 "validate",
                 "--inputs", str(raw),
                 "--manifest", str(manifest),
                 "--expected-samples", "8",
+                "--model-asset-gate", str(asset_gate),
                 "--parsed-output", str(parsed),
                 "--summary", str(summary),
             ]
@@ -468,7 +508,36 @@ class ExploratoryTeacherGapTests(unittest.TestCase):
             gate = json.loads(summary.read_text(encoding="utf-8"))
             self.assertEqual(gate["status"], "passed")
             self.assertEqual(gate["manifest_sha256"], manifest_hash)
+            self.assertEqual(
+                gate["model_asset_gate_sha256"],
+                hashlib.sha256(asset_gate.read_bytes()).hexdigest(),
+            )
             self.assertEqual(len(parsed.read_text(encoding="utf-8").splitlines()), 32)
+
+    def test_model_asset_gate_must_match_result_revision_and_inventory(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            gate = root / "model-asset-gate.json"
+            write_model_asset_gate(gate, revision="wrong-model")
+            records = result_records(1, 1)
+            errors, gate_hash = validate_model_asset_gate(gate, records)
+            self.assertEqual(gate_hash, hashlib.sha256(gate.read_bytes()).hexdigest())
+            self.assertIn("model asset gate revision differs from result records", errors)
+
+            payload = json.loads(gate.read_text())
+            payload["revision"] = "model-1"
+            payload["checksums_inventory_sha256"] = "b" * 64
+            gate.write_text(json.dumps(payload), encoding="utf-8")
+            errors, _ = validate_model_asset_gate(gate, records)
+            self.assertIn("model asset gate uses the wrong checksum inventory", errors)
+
+            payload["files"] = None
+            gate.write_text(json.dumps(payload), encoding="utf-8")
+            errors, _ = validate_model_asset_gate(gate, records)
+            self.assertIn("model asset gate file inventory is incomplete", errors)
+            missing_errors, missing_hash = validate_model_asset_gate(root / "missing.json", records)
+            self.assertEqual(missing_hash, "")
+            self.assertTrue(missing_errors[0].startswith("invalid model asset gate"))
 
     def test_runner_refuses_a_commit_changed_after_submission(self):
         with tempfile.TemporaryDirectory() as directory:

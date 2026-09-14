@@ -31,6 +31,10 @@ from g_pc0 import (
 from teacher_gap_inputs import COMMON_SHELL, validate_generic_length
 
 
+MODEL_ASSET_REVISIONS_SHA256 = "ca5044669a0fa91c0f1aec1b90d03abd285ead153d38c02300fe49cb9f2c7b00"
+MODEL_ASSET_CHECKSUMS_SHA256 = "18e81c36cb698633bc266a6f40f934b84ea2678dfd890f8b5aba72845b90b4ef"
+
+
 def load_jsonl(patterns: list[str]) -> list[dict]:
     paths = []
     for pattern in patterns:
@@ -58,6 +62,49 @@ def write_json_new(path: Path, value: dict) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("x", encoding="utf-8") as sink:
         sink.write(json.dumps(value, ensure_ascii=False, indent=2, sort_keys=True) + "\n")
+
+
+def validate_model_asset_gate(path: Path, records: list[dict]) -> tuple[list[str], str]:
+    """Bind result validation to the passed gate for the actual local model bytes."""
+
+    try:
+        gate_sha256 = file_sha256(path)
+        gate = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as error:
+        return [f"invalid model asset gate: {type(error).__name__}: {error}"], ""
+    errors = []
+    revisions = {str(row.get("model_revision", "")).strip() for row in records}
+    if len(revisions) != 1 or "" in revisions:
+        errors.append("result records require one non-empty model revision")
+    elif gate.get("revision") != next(iter(revisions)):
+        errors.append("model asset gate revision differs from result records")
+    if gate.get("status") != "passed" or gate.get("validation_errors") != []:
+        errors.append("model asset gate did not pass cleanly")
+    if gate.get("revisions_inventory_sha256") != MODEL_ASSET_REVISIONS_SHA256:
+        errors.append("model asset gate uses the wrong revisions inventory")
+    if gate.get("checksums_inventory_sha256") != MODEL_ASSET_CHECKSUMS_SHA256:
+        errors.append("model asset gate uses the wrong checksum inventory")
+    expected_files = gate.get("expected_files")
+    files = gate.get("files")
+    if (
+        not isinstance(expected_files, int)
+        or isinstance(expected_files, bool)
+        or expected_files <= 0
+        or gate.get("observed_files") != expected_files
+        or not isinstance(files, dict)
+        or len(files) != expected_files
+        or gate.get("missing_files") != []
+        or gate.get("unexpected_files") != []
+    ):
+        errors.append("model asset gate file inventory is incomplete")
+    if not isinstance(files, dict) or any(
+        not isinstance(item, dict)
+        or item.get("matches") is not True
+        or item.get("actual_sha256") != item.get("expected_sha256")
+        for item in files.values()
+    ):
+        errors.append("model asset gate contains an unverified file")
+    return sorted(set(errors)), gate_sha256
 
 
 def parse_constrained_answer(raw: dict) -> tuple[str | None, str | None]:
@@ -116,6 +163,7 @@ def main() -> None:
     )
     validate_parser.add_argument("--base-manifest", type=Path)
     validate_parser.add_argument("--image-root", type=Path)
+    validate_parser.add_argument("--model-asset-gate", type=Path, required=True)
     validate_parser.add_argument("--parsed-output", type=Path, required=True)
     validate_parser.add_argument("--summary", type=Path, required=True)
     decide_parser = subparsers.add_parser("decide")
@@ -129,6 +177,7 @@ def main() -> None:
     rotation_natural_decide_parser.add_argument("--base-manifest", type=Path, required=True)
     rotation_natural_decide_parser.add_argument("--expected-samples", type=int, required=True)
     rotation_natural_decide_parser.add_argument("--leakage-free", action="store_true", required=True)
+    rotation_natural_decide_parser.add_argument("--model-asset-gate", type=Path, required=True)
     rotation_natural_decide_parser.add_argument("--output", type=Path, required=True)
     natural_rotation_manifest_parser = subparsers.add_parser("validate-natural-label-rotation-manifest")
     natural_rotation_manifest_parser.add_argument("--manifest", type=Path, required=True)
@@ -292,12 +341,15 @@ def main() -> None:
         errors.extend(validate_results_against_manifest(
             rows, samples, manifest_hash, conditions=conditions
         ))
+        asset_errors, asset_gate_sha256 = validate_model_asset_gate(args.model_asset_gate, rows)
+        errors.extend(asset_errors)
         summary = {
             "expected_samples": args.expected_samples,
             "expected_records": args.expected_samples * len(conditions),
             "observed_records": len(rows),
             "unique_sample_condition": len({(row.get("sample_id"), row.get("condition")) for row in rows}),
             "manifest_sha256": manifest_hash,
+            "model_asset_gate_sha256": asset_gate_sha256,
             "validation_errors": errors,
             "status": "passed" if not errors else "failed",
             "note": "No condition-level performance is emitted before the completeness gate passes.",
@@ -344,6 +396,8 @@ def main() -> None:
         errors.extend(validate_results_against_manifest(
             rows, samples, manifest_hash, conditions=natural_conditions
         ))
+        asset_errors, asset_gate_sha256 = validate_model_asset_gate(args.model_asset_gate, rows)
+        errors.extend(asset_errors)
         decision = decide_teacher_gap_label_rotation(
             rows,
             leakage_free=args.leakage_free,
@@ -352,6 +406,7 @@ def main() -> None:
         )
         decision["manifest_sha256"] = manifest_hash
         decision["base_manifest_sha256"] = base_hash
+        decision["model_asset_gate_sha256"] = asset_gate_sha256
         write_json_new(args.output, decision)
         print(json.dumps(decision, ensure_ascii=False, sort_keys=True))
         if decision["decision"] == "INVALID":

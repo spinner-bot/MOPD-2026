@@ -101,6 +101,7 @@ assert_code_state
   --inputs "${RUN}/raw/rank-*.jsonl" \
   --manifest "${MANIFEST}" --manifest-profile g_pc0 --image-root . \
   --expected-samples 16 \
+  --model-asset-gate "${RUN}/summaries/model-asset-gate.json" \
   --parsed-output "${RUN}/parsed/results.jsonl" \
   --summary "${RUN}/summaries/result-gate.json"
 

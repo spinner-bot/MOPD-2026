@@ -121,6 +121,7 @@ assert_code_state
   --inputs "${RUN}/raw/canary/rank-*.jsonl" \
   --manifest "${CANARY_ROTATION_MANIFEST}" --base-manifest "${CANARY_MANIFEST}" \
   --manifest-profile natural_rotation --expected-samples 32 \
+  --model-asset-gate "${RUN}/summaries/model-asset-gate.json" \
   --parsed-output "${RUN}/parsed/canary.jsonl" \
   --summary "${RUN}/summaries/canary-gate.json"
 
@@ -133,6 +134,7 @@ assert_code_state
   --inputs "${RUN}/raw/locked/rank-*.jsonl" \
   --manifest "${LOCKED_ROTATION_MANIFEST}" --base-manifest "${LOCKED_MANIFEST}" \
   --manifest-profile natural_rotation --expected-samples 384 \
+  --model-asset-gate "${RUN}/summaries/model-asset-gate.json" \
   --parsed-output "${RUN}/parsed/locked.jsonl" \
   --summary "${RUN}/summaries/locked-gate.json"
 
@@ -142,6 +144,7 @@ assert_code_state
   --input "${RUN}/parsed/locked.jsonl" \
   --manifest "${LOCKED_ROTATION_MANIFEST}" --base-manifest "${LOCKED_MANIFEST}" \
   --expected-samples 96 --leakage-free \
+  --model-asset-gate "${RUN}/summaries/model-asset-gate.json" \
   --output "${RUN}/summaries/decision.json"
 
 echo "[W4] teacher-gap pilot complete"

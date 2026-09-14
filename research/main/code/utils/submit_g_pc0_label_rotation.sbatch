@@ -99,6 +99,7 @@ assert_code_state
   --inputs "${RUN}/raw/rank-*.jsonl" --manifest "${MANIFEST}" \
   --base-manifest "${BASE_MANIFEST}" --manifest-profile g_pc0_rotation \
   --image-root . --expected-samples 64 \
+  --model-asset-gate "${RUN}/summaries/model-asset-gate.json" \
   --parsed-output "${RUN}/parsed/results.jsonl" --summary "${RUN}/summaries/result-gate.json"
 
 assert_code_state
