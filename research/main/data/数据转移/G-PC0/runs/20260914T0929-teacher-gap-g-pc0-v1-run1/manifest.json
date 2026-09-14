@@ -1,0 +1,28 @@
+{
+  "created_at": "2026-09-14T09:29:00+08:00",
+  "created_by": "Codex (CINECA Leonardo)",
+  "expected_code_commit": "52b89d27cdce58c2c00fe555ec9e35885dd5c2dc",
+  "expected_conditions": [
+    "S",
+    "T_Q",
+    "T_QA",
+    "T_generic"
+  ],
+  "expected_records": 64,
+  "expected_samples": 16,
+  "gpu_allocation": "one node, four A100 GPUs, maximum 30 minutes",
+  "input_manifest": "research/main/outputs/runs/20260914T0916-teacher-gap-g-pc0-v1/outputs/manifest.jsonl",
+  "input_manifest_sha256": "10b09d122a5781df564a63cac8449d368a2d785c3fb06ba15c3887db2433bb1c",
+  "job_id": 57636033,
+  "last_modified_at": "2026-09-14T09:36:00+08:00",
+  "model_revision": "851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a",
+  "performance_results_read": false,
+  "raw_records": 64,
+  "root_cause": "mm_token_type_ids was not extended for appended answer tokens during choice scoring",
+  "run_id": "20260914T0929-teacher-gap-g-pc0-v1-run1",
+  "slurm_elapsed": "00:04:38",
+  "stage": "G-PC0 v1 one-time four-condition inference",
+  "status": "failed_configuration_gate",
+  "successful_inference_records": 0,
+  "trigger": "Execute the single result-blind run authorized by 1043 after commit 52b89d2 froze all assets and decision rules"
+}

@@ -1,0 +1,4 @@
+57636033|FAILED|00:04:38|1:0|billing=4,cpu=4,gres/gpu=4,mem=61600M,node=1
+57636033.batch|FAILED|00:04:38|1:0|cpu=4,gres/gpu=4,mem=61600M,node=1
+57636033.extern|COMPLETED|00:04:38|0:0|billing=4,cpu=4,gres/gpu=4,mem=61600M,node=1
+57636033.0|COMPLETED|00:04:07|0:0|cpu=4,gres/gpu=4,mem=61600M,node=1
