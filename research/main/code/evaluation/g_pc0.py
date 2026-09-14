@@ -547,9 +547,11 @@ def decide_g_pc0_label_rotation(
                 for semantic, values in semantic_scores.items()
             }
             prediction = max(CHOICES, key=lambda choice: (means[choice], -CHOICES.index(choice)))
-            vote_prediction = max(
-                CHOICES, key=lambda choice: (mapped_generation_votes[choice], -CHOICES.index(choice))
-            )
+            max_votes = max(mapped_generation_votes.values(), default=0)
+            vote_winners = [
+                choice for choice in CHOICES if mapped_generation_votes[choice] == max_votes
+            ]
+            vote_prediction = vote_winners[0] if len(vote_winners) == 1 else None
             aggregated.append({
                 "base_sample_id": base_id,
                 "condition": condition,
@@ -561,6 +563,7 @@ def decide_g_pc0_label_rotation(
                 "mapped_generation_votes": {choice: mapped_generation_votes[choice] for choice in CHOICES},
                 "mapped_generation_vote_prediction": vote_prediction,
                 "mapped_generation_vote_correct": vote_prediction == correct_semantic,
+                "mapped_generation_vote_tie": len(vote_winners) != 1,
             })
     if errors or any(
         not math.isfinite(value)

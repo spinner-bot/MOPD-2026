@@ -330,6 +330,13 @@ class GPC0Tests(unittest.TestCase):
         self.assertEqual(len(diagnostic["paired_s_to_tqa_flips"]), 4)
         self.assertTrue(all(row["direction"] == "gain" for row in diagnostic["paired_s_to_tqa_flips"]))
         self.assertFalse(diagnostic["decision_changed"])
+        tied_records = copy.deepcopy(records)
+        for row in tied_records:
+            row["choice_log_likelihoods"] = dict(label_bias)
+            row["parsed_answer"] = "A"
+        tied = decide_g_pc0_label_rotation(tied_records)
+        self.assertTrue(all(row["mapped_generation_vote_tie"] for row in tied["aggregated_records"]))
+        self.assertTrue(all(row["mapped_generation_vote_prediction"] is None for row in tied["aggregated_records"]))
 
 
 if __name__ == "__main__":
