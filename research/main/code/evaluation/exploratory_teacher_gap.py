@@ -871,8 +871,16 @@ def _decide_teacher_gap_validated(
         treatment_correct = [bool(rows[condition][sample_id]["correct"]) for sample_id in ids]
         treatment_logp = [float(rows[condition][sample_id]["correct_log_prob"]) for sample_id in ids]
         mcnemar = exact_mcnemar_one_sided(baseline_correct, treatment_correct)
+        generic_mcnemar = exact_mcnemar_one_sided(generic_correct, treatment_correct)
         bootstrap = paired_cluster_bootstrap(
             baseline_logp,
+            treatment_logp,
+            source_clusters,
+            n_bootstrap=n_bootstrap,
+            seed=seed,
+        )
+        generic_bootstrap = paired_cluster_bootstrap(
+            generic_logp,
             treatment_logp,
             source_clusters,
             n_bootstrap=n_bootstrap,
@@ -884,26 +892,39 @@ def _decide_teacher_gap_validated(
             "correct_log_prob_vs_S": bootstrap,
             "mcnemar_vs_S": mcnemar,
             "accuracy_delta_vs_generic": sum(treatment_correct) / len(ids) - sum(generic_correct) / len(ids),
-            "correct_log_prob_delta_vs_generic": sum(treatment_logp[i] - generic_logp[i] for i in range(len(ids))) / len(ids),
+            "mcnemar_vs_generic": generic_mcnemar,
+            "correct_log_prob_delta_vs_generic": generic_bootstrap["mean_diff"],
+            "correct_log_prob_vs_generic": generic_bootstrap,
             "matched_generic_condition": generic_condition,
         }
     adjusted = holm_adjust(raw_p)
     for condition in comparisons:
         comparisons[condition]["mcnemar_vs_S"]["holm_p_value"] = adjusted[condition]
+        result = comparisons[condition]
+        accuracy_branch = (
+            result["accuracy_delta_vs_generic"] >= 0.04
+            and result["mcnemar_vs_generic"]["gains"]
+            > result["mcnemar_vs_generic"]["regressions"]
+        )
+        logp_branch = (
+            result["correct_log_prob_vs_generic"]["mean_diff"] >= 0.10
+            and result["correct_log_prob_vs_generic"]["ci_lower"] > 0
+        )
+        result["structured_advantage"] = {
+            "accuracy_branch": accuracy_branch,
+            "correct_log_prob_branch": logp_branch,
+            "passes": accuracy_branch or logp_branch,
+        }
 
     def strong_go(condition: str) -> bool:
         result = comparisons[condition]
-        structured_advantage = (
-            result["accuracy_delta_vs_generic"] >= 0.04
-            or result["correct_log_prob_delta_vs_generic"] >= 0.10
-        )
         return (
             leakage_free
             and result["accuracy_delta_vs_S"] >= 0.08
             and result["mcnemar_vs_S"]["holm_p_value"] < 0.05
             and result["correct_log_prob_vs_S"]["mean_diff"] >= 0.15
             and result["correct_log_prob_vs_S"]["ci_lower"] > 0
-            and structured_advantage
+            and result["structured_advantage"]["passes"]
             and result["mcnemar_vs_S"]["gains"] > result["mcnemar_vs_S"]["regressions"]
         )
 

@@ -807,6 +807,27 @@ class ExploratoryTeacherGapTests(unittest.TestCase):
         )
         self.assertEqual(decision["decision"], "GO_T_QA")
 
+    def test_generic_logp_outlier_cannot_satisfy_stability_gate(self):
+        records = result_records(
+            tq_gains=0,
+            tqa_gains=16,
+            generic_gains=16,
+            logp_tq=0.0,
+            logp_tqa=0.30,
+        )
+        generic_rows = [row for row in records if row["condition"] == "T_generic"]
+        for row in generic_rows:
+            row["correct_log_prob"] = -0.70
+            row["choice_log_likelihoods"][row["correct_choice"]] = -0.70
+        generic_rows[0]["correct_log_prob"] = -12.70
+        generic_rows[0]["choice_log_likelihoods"][generic_rows[0]["correct_choice"]] = -12.70
+        decision = decide_teacher_gap(records, leakage_free=True, n_bootstrap=2_000)
+        control = decision["comparisons"]["T_QA"]
+        self.assertGreaterEqual(control["correct_log_prob_delta_vs_generic"], 0.10)
+        self.assertLessEqual(control["correct_log_prob_vs_generic"]["ci_lower"], 0)
+        self.assertFalse(control["structured_advantage"]["passes"])
+        self.assertEqual(decision["decision"], "REVISE")
+
     def test_stop_current_recipe_when_oracle_is_null(self):
         decision = decide_teacher_gap(
             result_records(tq_gains=0, tqa_gains=0, generic_gains=0, logp_tq=0.0, logp_tqa=0.0),
