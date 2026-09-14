@@ -35,7 +35,7 @@ ACTUAL="$(git -C "${DESTINATION}" rev-parse HEAD)"
   exit 2
 }
 
-echo "pinned worktree ready: ${DESTINATION}"
+echo "pinned worktree ready: ${DESTINATION}" >&2
 printf 'export MOPD_CHECKOUT_ROOT=%q\n' "${DESTINATION}"
 printf 'export MOPD_EXPECTED_CODE_COMMIT=%q\n' "${COMMIT}"
 printf 'export MOPD_RUNS_ROOT=%q\n' "${REPO_ROOT}/research/main/outputs/runs"
