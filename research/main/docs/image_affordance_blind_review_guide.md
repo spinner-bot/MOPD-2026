@@ -51,6 +51,8 @@ research/main/outputs/runs/20260914T0328-image-affordance-b2a-blind-calibration/
 
 界面载入 draft 时要求每条 JSON 的键集合与冻结原包完全一致；额外 `null` 键和缺键均拒绝。finalizer 对绕过界面的 reviewed 文件执行同一严格 schema 门，图片响应则对实际发送字节重验冻结 SHA-256。
 
+保存采用“候选内存快照先完整落盘，成功后再提交进程内状态”的事务顺序；写盘失败不得留下只存在于内存的人工修改。最终导出前还会重算内存 rows 的 canonical JSONL hash，并要求与 persisted draft 完全相同。
+
 ## 3. 判定顺序
 
 ### 3.1 图片可用性
@@ -232,3 +234,4 @@ B2b 的 `--output` 与 `--summary` 同样必须是互不相同且尚不存在的
 | 2026-09-14 05:30 | Codex (CINECA Leonardo) | 修订：加入 C4 标准库 loopback 界面启动命令、SSH 本地转发边界，以及 draft 可续写/final 排他创建规则。 |
 | 2026-09-14 12:21 | Codex (CINECA Leonardo) | 修订：依据 1069/1070 隐藏可反查原题的来源身份，要求 draft/finalizer 严格 schema，并把图片校验绑定到实际响应字节。 |
 | 2026-09-14 12:28 | Codex (CINECA Leonardo) | 修订：真实 calibration ID 含数据源前缀；依据 `beaad97` 把索引、保存和图片 URL 全部改为无来源序号令牌。 |
+| 2026-09-14 12:38 | Codex (CINECA Leonardo) | 修订：依据 1073/1074/`342f9b8` 增加写失败内存回滚和导出前内存—draft hash 同一视图门。 |
