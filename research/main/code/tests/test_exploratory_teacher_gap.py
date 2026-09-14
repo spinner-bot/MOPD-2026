@@ -61,6 +61,27 @@ def manifest_sample(index: int) -> dict:
         "generic_context": "Inspect the relevant visible elements, compare the choices, and verify the conclusion.",
         "generic_context_t_q": "Inspect the relevant visible elements, compare the choices, and verify the conclusion.",
         "generic_context_t_qa": "Inspect each visible element carefully, compare every relation in order, check each intermediate step, and verify the final conclusion.",
+        "generic_length_control": {
+            "algorithm": "neutral-prefix-nearest-per-sample-v1",
+            "neutral_word_bank_sha256": "a" * 64,
+            "tokenizer_source": "/frozen/tokenizer",
+            "tokenizer_artifact_sha256": {"tokenizer.json": "b" * 64},
+            "tolerance": 0.10,
+            "T_Q_vs_T_generic_Q": {
+                "sample_id": f"sample-{index:03d}",
+                "treatment_tokens": 10,
+                "control_tokens": 10,
+                "relative_difference": 0.0,
+                "passes": True,
+            },
+            "T_QA_vs_T_generic_QA": {
+                "sample_id": f"sample-{index:03d}",
+                "treatment_tokens": 20,
+                "control_tokens": 20,
+                "relative_difference": 0.0,
+                "passes": True,
+            },
+        },
         "knowledge_dependency_label": "image_only",
         "task_family": "R",
         "full_image_reference_valid": True,
@@ -591,6 +612,15 @@ class ExploratoryTeacherGapTests(unittest.TestCase):
         self.assertTrue(any("requires timezone" in error for error in errors))
         self.assertTrue(any("unknown_endpoint" in error for error in errors))
 
+    def test_locked_manifest_requires_consistent_per_sample_length_provenance(self):
+        samples = [manifest_sample(index) for index in range(96)]
+        samples[0].pop("generic_length_control")
+        samples[1]["generic_length_control"]["T_Q_vs_T_generic_Q"]["relative_difference"] = 0.5
+        errors = validate_locked_manifest(samples)
+        self.assertTrue(any("generic_length_control must be an object" in error for error in errors))
+        self.assertTrue(any("inconsistent generic length difference" in error for error in errors))
+        self.assertTrue(any("per-sample generic length contract failed" in error for error in errors))
+
     def test_locked_manifest_preserves_answer_and_r_pr_evidence_semantics(self):
         samples = [manifest_sample(index) for index in range(96)]
         samples[0]["canonical_answer_text"] = "not the correct option"
@@ -636,6 +666,28 @@ class ExploratoryTeacherGapTests(unittest.TestCase):
             "T_Q_vs_T_generic_Q", "T_QA_vs_T_generic_QA"
         })
         self.assertTrue(result["passes"])
+
+    def test_dual_generic_rejects_sample_outlier_despite_matching_medians(self):
+        samples = [manifest_sample(index) for index in range(3)]
+        treatment_lengths = (10, 20, 30)
+        control_lengths = (1, 20, 30)
+        for sample, treatment_length, control_length in zip(samples, treatment_lengths, control_lengths):
+            sample["guides"] = [{
+                "question": " ".join(["q"] * treatment_length),
+                "answer": "unused",
+            }]
+            sample["generic_context_t_q"] = " ".join(["g"] * control_length)
+            sample["generic_context_t_qa"] = " ".join(["g"] * (treatment_length + 6))
+        result = validate_generic_length(
+            samples, lambda text: len(text.split()), tolerance=0.10, dual_control=True
+        )
+        comparison = result["comparisons"]["T_Q_vs_T_generic_Q"]
+        self.assertEqual(comparison["treatment_median_tokens"], 22.0)
+        self.assertEqual(comparison["control_median_tokens"], 20.0)
+        self.assertLess(comparison["relative_difference"], 0.10)
+        self.assertFalse(comparison["passes"])
+        self.assertEqual(comparison["failed_sample_ids"], ["sample-000"])
+        self.assertFalse(result["passes"])
 
     def test_exact_mcnemar_is_directional(self):
         baseline = [False] * 16

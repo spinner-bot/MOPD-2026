@@ -2,7 +2,7 @@
 
 This deterministic step never fills human fields.  It joins completed reviews
 to valid construction proposals, removes duplicate-image clusters, balances
-answer labels, creates a tokenizer-matched generic control, and fails closed if
+answer labels, creates per-sample tokenizer-matched generic controls, and fails closed if
 the full three-way partition cannot be produced.
 """
 
@@ -197,8 +197,12 @@ def validate_human_review(review: dict) -> list[str]:
 
 
 def generic_context_for(samples: list[dict], tokenizer, target_condition: str = "T_Q") -> str:
+    """Build neutral text for one sample's frozen structured-context length."""
+
     if target_condition not in {"T_Q", "T_QA"}:
         raise ValueError("generic target condition must be T_Q or T_QA")
+    if len(samples) != 1:
+        raise ValueError("per-sample generic construction requires exactly one sample")
     target_lengths = sorted(
         len(tokenizer.encode(privileged_context(row, target_condition), add_special_tokens=False))
         for row in samples
@@ -299,6 +303,14 @@ def main() -> None:
         raise SystemExit(json.dumps(summary, ensure_ascii=False, sort_keys=True))
 
     tokenizer = AutoTokenizer.from_pretrained(args.tokenizer, local_files_only=True)
+    tokenizer_artifact_hashes = {
+        name: sha256_file(args.tokenizer / name)
+        for name in ("tokenizer.json", "tokenizer_config.json", "config.json")
+        if (args.tokenizer / name).is_file()
+    }
+    if not tokenizer_artifact_hashes:
+        raise SystemExit("tokenizer path has no hashable tokenizer/config artifacts")
+    tokenizer_source = str(args.tokenizer.resolve())
     partitions = {}
     offset = 0
     for name, size in PARTITION_SIZES.items():
@@ -342,9 +354,9 @@ def main() -> None:
                 "reasoning_depth": review["human_reasoning_depth"],
                 "minimal_reasoning_graph": review["human_reasoning_graph"],
             })
-        generic_q = generic_context_for(rows, tokenizer, "T_Q")
-        generic_qa = generic_context_for(rows, tokenizer, "T_QA")
         for row in rows:
+            generic_q = generic_context_for([row], tokenizer, "T_Q")
+            generic_qa = generic_context_for([row], tokenizer, "T_QA")
             row["generic_context"] = generic_q
             row["generic_context_t_q"] = generic_q
             row["generic_context_t_qa"] = generic_qa
@@ -354,7 +366,22 @@ def main() -> None:
             dual_control=True,
         )
         if not length_result["passes"]:
-            raise SystemExit(f"unable to satisfy Generic-T length contract for {name}: {length_result}")
+            raise SystemExit(f"unable to satisfy per-sample generic length contract for {name}: {length_result}")
+        comparison_q = length_result["comparisons"]["T_Q_vs_T_generic_Q"]
+        comparison_qa = length_result["comparisons"]["T_QA_vs_T_generic_QA"]
+        checks_q = {check["sample_id"]: check for check in comparison_q["sample_checks"]}
+        checks_qa = {check["sample_id"]: check for check in comparison_qa["sample_checks"]}
+        for row in rows:
+            sample_id = row["sample_id"]
+            row["generic_length_control"] = {
+                "algorithm": "neutral-prefix-nearest-per-sample-v1",
+                "neutral_word_bank_sha256": stable_hash(" ".join(GENERIC_WORDS)),
+                "tokenizer_source": tokenizer_source,
+                "tokenizer_artifact_sha256": tokenizer_artifact_hashes,
+                "tolerance": length_result["tolerance"],
+                "T_Q_vs_T_generic_Q": checks_q[sample_id],
+                "T_QA_vs_T_generic_QA": checks_qa[sample_id],
+            }
         errors = validate_locked_manifest(rows, expected_n=size)
         if errors:
             raise SystemExit(f"{name} manifest invalid: {'; '.join(errors)}")

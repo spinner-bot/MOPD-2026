@@ -1,4 +1,4 @@
-"""Render the four frozen conditions in the 1017 teacher-gap protocol.
+"""Render frozen conditions in the 1017 teacher-gap protocol.
 
 The final task shell is byte-identical across conditions.  Only the contents of
 the ``<PRIVILEGED_CONTEXT>`` block may change.
@@ -112,10 +112,12 @@ def validate_generic_length(
     tolerance: float = 0.10,
     dual_control: bool = False,
 ) -> dict:
-    """Check corpus-level generic/structured median token contracts.
+    """Check generic/structured token-length contracts.
 
     ``token_count`` is injected so the frozen experiment tokenizer, rather than
-    an approximate whitespace count, defines length.
+    an approximate whitespace count, defines length.  Historical four-condition
+    profiles retain their corpus-median contract.  The natural dual-control
+    profile requires every paired sample to pass independently.
     """
 
     if not samples:
@@ -133,16 +135,49 @@ def validate_generic_length(
     )
     comparisons = {}
     for treatment, control in pairs:
-        treatment_median = median(sorted(token_count(privileged_context(row, treatment)) for row in samples))
-        control_median = median(sorted(token_count(privileged_context(row, control)) for row in samples))
+        sample_checks = []
+        treatment_lengths = []
+        control_lengths = []
+        for index, row in enumerate(samples):
+            treatment_tokens = token_count(privileged_context(row, treatment))
+            control_tokens = token_count(privileged_context(row, control))
+            if treatment_tokens <= 0:
+                raise ValueError(f"{treatment} token length must be positive at row {index}")
+            relative_difference = abs(control_tokens - treatment_tokens) / treatment_tokens
+            sample_checks.append({
+                "sample_id": str(row.get("base_sample_id") or row.get("sample_id") or f"row-{index}"),
+                "treatment_tokens": treatment_tokens,
+                "control_tokens": control_tokens,
+                "relative_difference": relative_difference,
+                "passes": relative_difference <= tolerance,
+            })
+            treatment_lengths.append(treatment_tokens)
+            control_lengths.append(control_tokens)
+        treatment_median = median(sorted(treatment_lengths))
+        control_median = median(sorted(control_lengths))
         if treatment_median <= 0:
             raise ValueError(f"{treatment} median token length must be positive")
-        relative_difference = abs(control_median - treatment_median) / treatment_median
+        median_relative_difference = abs(control_median - treatment_median) / treatment_median
+        if dual_control:
+            relative_differences = sorted(check["relative_difference"] for check in sample_checks)
+            failed_sample_ids = list(dict.fromkeys(
+                check["sample_id"] for check in sample_checks if not check["passes"]
+            ))
+            passes = not failed_sample_ids
+        else:
+            relative_differences = [median_relative_difference]
+            failed_sample_ids = []
+            passes = median_relative_difference <= tolerance
         comparisons[f"{treatment}_vs_{control}"] = {
             "treatment_median_tokens": treatment_median,
             "control_median_tokens": control_median,
-            "relative_difference": relative_difference,
-            "passes": relative_difference <= tolerance,
+            "relative_difference": median_relative_difference,
+            "per_sample_required": dual_control,
+            "sample_checks": sample_checks if dual_control else [],
+            "sample_relative_difference_median": median(relative_differences),
+            "sample_relative_difference_max": max(relative_differences),
+            "failed_sample_ids": failed_sample_ids,
+            "passes": passes,
         }
     result = {
         "dual_control": dual_control,

@@ -622,6 +622,29 @@ class TeacherGapCandidatePipelineTests(unittest.TestCase):
         self.assertGreater(len(question_context.split()), 5)
         self.assertGreater(len(qa_context.split()), len(question_context.split()))
 
+    def test_generic_context_depends_on_length_not_guide_semantics(self):
+        class FakeTokenizer:
+            @staticmethod
+            def encode(text, add_special_tokens=False):
+                return text.split()
+
+        first = {"guides": [{"question": "one two three four five six", "answer": "seven eight"}]}
+        second = {"guides": [{"question": "red blue green white black gold", "answer": "north south"}]}
+        self.assertEqual(
+            generic_context_for([first], FakeTokenizer(), "T_QA"),
+            generic_context_for([second], FakeTokenizer(), "T_QA"),
+        )
+
+    def test_generic_context_rejects_partition_level_construction(self):
+        class FakeTokenizer:
+            @staticmethod
+            def encode(text, add_special_tokens=False):
+                return text.split()
+
+        sample = {"guides": [{"question": "one two three four five six", "answer": "seven"}]}
+        with self.assertRaisesRegex(ValueError, "exactly one sample"):
+            generic_context_for([sample, sample], FakeTokenizer(), "T_Q")
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -147,6 +147,54 @@ def validate_locked_manifest(samples: list[dict], expected_n: int = 96) -> list[
         missing = [key for key in required_text if not str(row.get(key, "")).strip()]
         if missing:
             errors.append(f"{row_id}: missing fields {','.join(missing)}")
+        length_control = row.get("generic_length_control")
+        if not isinstance(length_control, dict):
+            errors.append(f"{row_id}: generic_length_control must be an object")
+        else:
+            if length_control.get("algorithm") != "neutral-prefix-nearest-per-sample-v1":
+                errors.append(f"{row_id}: invalid generic length algorithm")
+            word_bank_hash = str(length_control.get("neutral_word_bank_sha256", ""))
+            if len(word_bank_hash) != 64 or any(char not in "0123456789abcdef" for char in word_bank_hash):
+                errors.append(f"{row_id}: invalid neutral word bank sha256")
+            tokenizer_source = str(length_control.get("tokenizer_source", "")).strip()
+            tokenizer_hashes = length_control.get("tokenizer_artifact_sha256")
+            if not tokenizer_source:
+                errors.append(f"{row_id}: missing generic tokenizer source")
+            if not isinstance(tokenizer_hashes, dict) or not tokenizer_hashes:
+                errors.append(f"{row_id}: missing generic tokenizer artifact hashes")
+            elif any(
+                len(str(value)) != 64 or any(char not in "0123456789abcdef" for char in str(value))
+                for value in tokenizer_hashes.values()
+            ):
+                errors.append(f"{row_id}: invalid generic tokenizer artifact sha256")
+            tolerance = length_control.get("tolerance")
+            if not isinstance(tolerance, (int, float)) or isinstance(tolerance, bool) or tolerance != 0.10:
+                errors.append(f"{row_id}: generic length tolerance must equal 0.10")
+            for pair_name in ("T_Q_vs_T_generic_Q", "T_QA_vs_T_generic_QA"):
+                check = length_control.get(pair_name)
+                if not isinstance(check, dict):
+                    errors.append(f"{row_id}: missing generic length check {pair_name}")
+                    continue
+                if check.get("sample_id") != row_id:
+                    errors.append(f"{row_id}: generic length check sample_id mismatch for {pair_name}")
+                treatment_tokens = check.get("treatment_tokens")
+                control_tokens = check.get("control_tokens")
+                relative_difference = check.get("relative_difference")
+                valid_numbers = (
+                    isinstance(treatment_tokens, int) and not isinstance(treatment_tokens, bool)
+                    and isinstance(control_tokens, int) and not isinstance(control_tokens, bool)
+                    and treatment_tokens > 0 and control_tokens > 0
+                    and isinstance(relative_difference, (int, float))
+                    and not isinstance(relative_difference, bool)
+                )
+                if not valid_numbers:
+                    errors.append(f"{row_id}: invalid generic length values for {pair_name}")
+                    continue
+                expected_difference = abs(control_tokens - treatment_tokens) / treatment_tokens
+                if abs(relative_difference - expected_difference) > 1e-12:
+                    errors.append(f"{row_id}: inconsistent generic length difference for {pair_name}")
+                if relative_difference > 0.10 or check.get("passes") is not True:
+                    errors.append(f"{row_id}: per-sample generic length contract failed for {pair_name}")
         if row.get("knowledge_dependency_label") != "image_only":
             errors.append(f"{row_id}: knowledge_dependency_label must be image_only")
         if row.get("task_family") not in {"R", "PR"}:
