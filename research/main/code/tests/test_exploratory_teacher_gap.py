@@ -28,6 +28,7 @@ from process_exploratory_teacher_gap import enrich_raw_record, main as process_t
 from run_exploratory_teacher_gap import (
     allowed_token_function,
     choice_token_sequences,
+    conditional_choice_scores,
     main as run_teacher_gap,
     runtime_code_hashes,
     validate_choice_continuations,
@@ -304,6 +305,33 @@ class ExploratoryTeacherGapTests(unittest.TestCase):
             validate_choice_continuations(
                 RetokenizingTokenizer(), "prefix", {choice: [index] for index, choice in enumerate("ABCD")}
             )
+
+    def test_choice_scoring_extends_multimodal_token_types(self):
+        import torch
+
+        class Model:
+            def __call__(self, **kwargs):
+                self.assert_shapes(kwargs)
+                return type("Output", (), {"logits": torch.zeros(1, 3, 128)})()
+
+            @staticmethod
+            def assert_shapes(kwargs):
+                assert tuple(kwargs["input_ids"].shape) == (1, 3)
+                assert tuple(kwargs["attention_mask"].shape) == (1, 3)
+                assert tuple(kwargs["mm_token_type_ids"].shape) == (1, 3)
+                assert kwargs["mm_token_type_ids"][0, -1].item() == 0
+
+        inputs = {
+            "input_ids": torch.tensor([[10, 11]]),
+            "attention_mask": torch.tensor([[1, 1]]),
+            "mm_token_type_ids": torch.tensor([[1, 0]]),
+            "pixel_values": torch.zeros(5, 7),
+        }
+        scores = conditional_choice_scores(
+            Model(), inputs, {choice: [32 + index] for index, choice in enumerate("ABCD")}, torch
+        )
+        self.assertEqual(set(scores), set("ABCD"))
+        self.assertEqual(tuple(inputs["mm_token_type_ids"].shape), (1, 2))
 
     def test_locked_manifest_fails_closed_on_overlap_and_balance(self):
         samples = [manifest_sample(index) for index in range(96)]

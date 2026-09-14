@@ -112,6 +112,17 @@ def conditional_choice_scores(model, inputs, sequences: dict[str, list[int]], to
         model_inputs = {
             key: value for key, value in inputs.items() if key not in {"input_ids", "attention_mask"}
         }
+        # Qwen3.5 processors return one modality tag per prompt token.  Choice
+        # tokens are ordinary text and therefore need matching zero tags.  If
+        # this stays at the prefix length, M-RoPE indexes it with the extended
+        # attention mask and fails by exactly the answer-sequence length.
+        mm_types = model_inputs.get("mm_token_type_ids")
+        if mm_types is not None:
+            if mm_types.ndim != 2 or tuple(mm_types.shape) != tuple(prefix_ids.shape):
+                raise ValueError("mm_token_type_ids must align exactly with prefix input_ids")
+            model_inputs["mm_token_type_ids"] = torch.cat(
+                [mm_types, torch.zeros_like(target)], dim=1
+            )
         model_inputs.update({"input_ids": combined_ids, "attention_mask": combined_mask})
         logits = model(**model_inputs, use_cache=False).logits
         log_probs = torch.log_softmax(logits[0, prefix_length - 1 : prefix_length - 1 + len(sequence)], dim=-1)
