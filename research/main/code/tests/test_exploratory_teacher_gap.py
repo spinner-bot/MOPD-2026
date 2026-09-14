@@ -147,6 +147,103 @@ def result_records(tq_gains: int, tqa_gains: int, generic_gains: int = 1, logp_t
 
 
 class ExploratoryTeacherGapTests(unittest.TestCase):
+    def test_natural_rotation_validate_and_decide_cli_end_to_end(self):
+        samples = [manifest_sample(index) for index in range(8)]
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            base = root / "base.jsonl"
+            base.write_text("".join(json.dumps(row, sort_keys=True) + "\n" for row in samples), encoding="utf-8")
+            base_hash = hashlib.sha256(base.read_bytes()).hexdigest()
+            expanded = expand_natural_rotation_manifest(samples, base_hash)
+            manifest = root / "rotation.jsonl"
+            manifest.write_text("".join(json.dumps(row, sort_keys=True) + "\n" for row in expanded), encoding="utf-8")
+            manifest_hash = hashlib.sha256(manifest.read_bytes()).hexdigest()
+            schedule = frozen_schedule(expanded, manifest_hash)
+            choice_tokens = {choice: [index + 1] for index, choice in enumerate("ABCD")}
+            label_bias = {"A": 20.0, "B": 10.0, "C": 0.0, "D": -10.0}
+            raw_rows = []
+            for schedule_index, (sample, condition) in enumerate(schedule):
+                mapping = sample["displayed_label_to_semantic_option"]
+                correct_semantic = sample["correct_semantic_option_id"]
+                target = correct_semantic if condition == "T_QA" else "ABCD"[("ABCD".index(correct_semantic) + 1) % 4]
+                scores = {
+                    displayed: label_bias[displayed] + (40.0 if semantic == target else 0.0)
+                    for displayed, semantic in mapping.items()
+                }
+                parsed = max("ABCD", key=lambda choice: scores[choice])
+                row = {
+                    "sample_id": sample["sample_id"],
+                    "source_dataset": sample["source_dataset"],
+                    "source_record_id": sample["source_record_id"],
+                    "source_image_id": sample["source_image_id"],
+                    "source_cluster_id": sample["source_cluster_id"],
+                    "task_family": sample["task_family"],
+                    "reasoning_depth": sample["reasoning_depth"],
+                    "condition": condition,
+                    "schedule_index": schedule_index,
+                    "rank": schedule_index % 4,
+                    "world_size": 4,
+                    "manifest_hash": manifest_hash,
+                    "model_revision": "model-1",
+                    "processor_revision": "model-1",
+                    "code_commit": "commit-1",
+                    "runtime_code_hashes": {"runner": "hash"},
+                    "prompt_hash": f"prompt-{sample['sample_id']}-{condition}",
+                    "shell_hash": "shell-1",
+                    "question_hash": hashlib.sha256(sample["final_question"].encode()).hexdigest(),
+                    "options_hash": hashlib.sha256(json.dumps(
+                        [sample[f"option_{choice}"] for choice in "ABCD"],
+                        ensure_ascii=False, separators=(",", ":"),
+                    ).encode()).hexdigest(),
+                    "correct_choice": sample["final_answer"],
+                    "choice_token_ids": choice_tokens,
+                    "chat_template": {"enable_thinking": False, "add_generation_prompt": True},
+                    "generation_config": {"do_sample": False, "constrained_to": list("ABCD")},
+                    "image_checksum": sample["image_checksum"],
+                    "choice_log_likelihoods": scores,
+                    "choice_continuation_verified": True,
+                    "generated_token_ids": choice_tokens[parsed] + [99],
+                    "generated_tokens": 2,
+                    "eos_reached": True,
+                    "truncated": False,
+                    "raw_generation": parsed,
+                    "model_dtype": "torch.bfloat16",
+                    "error": None,
+                }
+                for field in (
+                    "experiment_role", "base_sample_id", "base_manifest_sha256", "label_rotation",
+                    "rotation_spec_hash", "semantic_options", "correct_semantic_option_id",
+                    "displayed_label_to_semantic_option",
+                ):
+                    row[field] = sample[field]
+                raw_rows.append(row)
+            raw = root / "raw.jsonl"
+            raw.write_text("".join(json.dumps(row, sort_keys=True) + "\n" for row in raw_rows), encoding="utf-8")
+            parsed = root / "parsed.jsonl"
+            gate = root / "gate.json"
+            argv = [
+                "process_exploratory_teacher_gap.py", "validate", "--inputs", str(raw),
+                "--manifest", str(manifest), "--base-manifest", str(base),
+                "--manifest-profile", "natural_rotation", "--expected-samples", "32",
+                "--parsed-output", str(parsed), "--summary", str(gate),
+            ]
+            with patch("sys.argv", argv), patch("builtins.print"):
+                process_teacher_gap()
+            self.assertEqual(json.loads(gate.read_text())["status"], "passed")
+            decision_path = root / "decision.json"
+            argv = [
+                "process_exploratory_teacher_gap.py", "decide-natural-label-rotation",
+                "--input", str(parsed), "--manifest", str(manifest),
+                "--base-manifest", str(base), "--expected-samples", "8",
+                "--leakage-free", "--output", str(decision_path),
+            ]
+            with patch("sys.argv", argv), patch("builtins.print"):
+                process_teacher_gap()
+            decision = json.loads(decision_path.read_text())
+            self.assertEqual(decision["decision"], "GO_T_QA")
+            self.assertEqual(decision["n_samples"], 8)
+            self.assertEqual(decision["n_condition_records"], 128)
+
     def test_natural_rotation_preflight_cli_binds_base_assets_and_tokenizer(self):
         class Tokenizer:
             @staticmethod
