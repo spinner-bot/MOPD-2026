@@ -21,6 +21,7 @@ DATA_PIPELINE_ROOT = Path(__file__).resolve().parents[1] / "data_pipeline"
 sys.path.insert(0, str(DATA_PIPELINE_ROOT))
 
 from reasoning_graph_contract import validate_guide_graph_alignment, validate_reasoning_graph
+from effect_selection_firewall import validate_effect_selection_firewall
 from g_pc0 import validate_g_pc0_manifest, validate_g_pc0_rotation_manifest
 from teacher_gap_inputs import NATURAL_ROTATION_CONDITIONS
 
@@ -179,6 +180,10 @@ def validate_locked_manifest(samples: list[dict], expected_n: int = 96) -> list[
     )
     for index, row in enumerate(samples):
         row_id = sample_ids[index] or f"row-{index}"
+        errors.extend(
+            f"{row_id}: selection_firewall {error}"
+            for error in validate_effect_selection_firewall(row)
+        )
         missing = [key for key in required_text if not str(row.get(key, "")).strip()]
         if missing:
             errors.append(f"{row_id}: missing fields {','.join(missing)}")

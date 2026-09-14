@@ -53,6 +53,8 @@ def manifest_sample(index: int) -> dict:
     label = "ABCD"[index % 4]
     sample = {
         "sample_id": f"sample-{index:03d}",
+        "dataset_role": "G0-locked-method-selection",
+        "selection_uses_model_effect": False,
         "source_image_id": f"image-{index:03d}",
         "source_cluster_id": f"cluster-{index:03d}",
         "source_dataset": "M3VQA",
@@ -666,6 +668,17 @@ class ExploratoryTeacherGapTests(unittest.TestCase):
         self.assertTrue(any(
             "source_cluster_id values must be unique" in error
             for error in validate_locked_manifest(samples)
+        ))
+
+    def test_locked_manifest_rejects_effect_selected_membership(self):
+        samples = [manifest_sample(index) for index in range(96)]
+        samples[0]["teacher_gap_S_T"] = 0.25
+        samples[1].pop("selection_uses_model_effect")
+        errors = validate_locked_manifest(samples)
+        self.assertTrue(any("contains_effect_fields:teacher_gap_S_T" in error for error in errors))
+        self.assertTrue(any(
+            "confirmatory_role_requires_selection_uses_model_effect_false" in error
+            for error in errors
         ))
 
     def test_manifest_bundle_requires_isolated_8_32_96_partitions(self):

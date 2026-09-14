@@ -42,6 +42,9 @@ FINALIZER_CODE_PATHS = {
         "build_teacher_gap_human_review_queue.py"
     ),
     "reasoning_graph_contract.py": Path(__file__).resolve().with_name("reasoning_graph_contract.py"),
+    "effect_selection_firewall.py": Path(__file__).resolve().with_name(
+        "effect_selection_firewall.py"
+    ),
     "exploratory_teacher_gap.py": CODE_ROOT / "evaluation" / "exploratory_teacher_gap.py",
     "teacher_gap_inputs.py": CODE_ROOT / "evaluation" / "teacher_gap_inputs.py",
     "g_pc0.py": CODE_ROOT / "evaluation" / "g_pc0.py",
@@ -470,6 +473,8 @@ def main() -> None:
             image_path = Path(candidate["image_original"])
             rows.append({
                 "sample_id": "tg-" + construction["candidate_id"],
+                "dataset_role": "G0-locked-method-selection",
+                "selection_uses_model_effect": False,
                 "source_image_id": candidate["source_image_id"],
                 "source_cluster_id": item["cluster_id"],
                 "source_dataset": source_dataset_for_candidate(candidate),
