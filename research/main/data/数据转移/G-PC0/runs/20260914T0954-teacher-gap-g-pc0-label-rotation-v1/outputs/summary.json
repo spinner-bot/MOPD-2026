@@ -1,0 +1,14 @@
+{
+  "base_manifest_sha256": "10b09d122a5781df564a63cac8449d368a2d785c3fb06ba15c3887db2433bb1c",
+  "base_records": 16,
+  "diagnostic_only": true,
+  "eligible_for_natural_g0": false,
+  "eligible_for_training": false,
+  "gpu_used": false,
+  "manifest_profile": "g_pc0_label_rotation_diagnostic_v1",
+  "manifest_sha256": "f485cc5f2d973d38d896a31afb1a22208251ea662da10f35c18969454ed031fc",
+  "performance_results_read": false,
+  "records": 64,
+  "rotation_spec_sha256": "e7ef8d333a168336ec4acbb811750a551ee057587f29583ccea68f8704a78751",
+  "validation_errors": []
+}

@@ -1,0 +1,1 @@
+MOPD_G_PC0_LR_RUN_ID=20260914T1003-teacher-gap-g-pc0-label-rotation-v1-run2 MOPD_EXPECTED_CODE_COMMIT=14934f7fa635c2e27e00908583a38304d7c1a0f4 sbatch research/main/code/utils/submit_g_pc0_label_rotation.sbatch
