@@ -19,7 +19,17 @@ sys.path.insert(0, str(ROOT / "code" / "data_pipeline"))
 sys.path.insert(0, str(ROOT / "code" / "evaluation"))
 
 from exploratory_teacher_gap import frozen_schedule, validate_manifest_profile
-from g_pc0 import decide_g_pc0, diagnose_g_pc0, validate_g_pc0_assets, validate_g_pc0_manifest
+from build_g_pc0_label_rotation import build_bundle as build_rotation_bundle
+from g_pc0 import (
+    BASE_MANIFEST_SHA256,
+    decide_g_pc0,
+    decide_g_pc0_label_rotation,
+    diagnose_g_pc0,
+    label_rotation_mapping,
+    validate_g_pc0_assets,
+    validate_g_pc0_manifest,
+    validate_g_pc0_rotation_manifest,
+)
 from generate_g_pc0 import generate_bundle
 from process_exploratory_teacher_gap import main as process_teacher_gap
 
@@ -116,6 +126,10 @@ def complete_result_rows(samples: list[dict], manifest_hash: str) -> list[dict]:
 
 
 class GPC0Tests(unittest.TestCase):
+    @staticmethod
+    def frozen_base_manifest() -> Path:
+        return ROOT / "outputs" / "runs" / "20260914T0916-teacher-gap-g-pc0-v1" / "outputs" / "manifest.jsonl"
+
     def test_generator_builds_balanced_isolated_valid_bundle(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
@@ -252,6 +266,65 @@ class GPC0Tests(unittest.TestCase):
             diagnostic = diagnose_g_pc0(load_jsonl(parsed), decision["decision"])
             self.assertTrue(all(not values for values in diagnostic["generation_vs_score_argmax_mismatches"].values()))
             self.assertFalse(diagnostic["decision_changed"])
+
+    def test_label_rotation_bundle_is_exact_and_mutations_fail(self):
+        base_manifest = self.frozen_base_manifest()
+        self.assertEqual(hashlib.sha256(base_manifest.read_bytes()).hexdigest(), BASE_MANIFEST_SHA256)
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / "rotation"
+            summary = build_rotation_bundle(base_manifest, output)
+            base = load_jsonl(base_manifest)
+            rows = load_jsonl(output / "manifest.jsonl")
+            self.assertEqual(summary["records"], 64)
+            self.assertEqual(validate_g_pc0_rotation_manifest(rows, base, BASE_MANIFEST_SHA256), [])
+            self.assertEqual(Counter(row["final_answer"] for row in rows), Counter({choice: 16 for choice in "ABCD"}))
+            for row in rows:
+                self.assertEqual(row["displayed_label_to_semantic_option"], label_rotation_mapping(row["label_rotation"]))
+                self.assertFalse(row["eligible_for_natural_g0"])
+                self.assertFalse(row["eligible_for_training"])
+            mutated = copy.deepcopy(rows)
+            mutated[0]["option_A"] = "mutated"
+            self.assertTrue(validate_g_pc0_rotation_manifest(mutated, base, BASE_MANIFEST_SHA256))
+            reordered = rows[::-1]
+            self.assertTrue(any("order" in error for error in validate_g_pc0_rotation_manifest(reordered, base, BASE_MANIFEST_SHA256)))
+            self.assertTrue(validate_g_pc0_rotation_manifest(rows, base, "0" * 64))
+
+    def test_rotation_aggregation_cancels_static_label_prior_and_applies_rule(self):
+        records = []
+        label_bias = {"A": 20.0, "B": 10.0, "C": 0.0, "D": -10.0}
+        conditions = ("S", "T_Q", "T_QA", "T_generic")
+        for index in range(16):
+            correct_semantic = "ABCD"[index % 4]
+            wrong_semantic = "ABCD"[(index % 4 + 1) % 4]
+            for condition in conditions:
+                target = correct_semantic if (
+                    index < 6 or (condition == "T_QA" and index < 10)
+                ) else wrong_semantic
+                for rotation in range(4):
+                    mapping = label_rotation_mapping(rotation)
+                    scores = {
+                        displayed: label_bias[displayed] + (40.0 if semantic == target else 0.0)
+                        for displayed, semantic in mapping.items()
+                    }
+                    records.append({
+                        "base_sample_id": f"gpc0-{index + 1:02d}",
+                        "condition": condition,
+                        "label_rotation": rotation,
+                        "displayed_label_to_semantic_option": mapping,
+                        "choice_log_likelihoods": scores,
+                        "parsed_answer": max("ABCD", key=lambda choice: scores[choice]),
+                        "correct_semantic_option_id": correct_semantic,
+                        "positive_control_family": ("directed_path", "sequential_transform", "grid_trace", "set_relation")[index // 4],
+                    })
+        decision = decide_g_pc0_label_rotation(records)
+        self.assertEqual(decision["decision"], "LABEL_INTERFACE_MASKED_G_SIGNAL")
+        self.assertEqual(decision["condition_correct_after_semantic_aggregation"]["S"], 6)
+        self.assertEqual(decision["condition_correct_after_semantic_aggregation"]["T_QA"], 10)
+        self.assertEqual(decision["tqa_vs_s"], {"gains": 4, "regressions": 0, "net_flips": 4})
+        self.assertEqual(decision["gpc0_v1_frozen_decision"], "INGESTION_OR_RECIPE_FAILURE")
+        self.assertFalse(decision["gpc0_v1_decision_changed"])
+        self.assertFalse(decision["natural_image_claim_authorized"])
+        self.assertFalse(decision["training_data_authorized"])
 
 
 if __name__ == "__main__":

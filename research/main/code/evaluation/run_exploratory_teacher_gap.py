@@ -143,7 +143,8 @@ def main() -> None:
     parser.add_argument("--rank", type=int, default=0)
     parser.add_argument("--world-size", type=int, default=1)
     parser.add_argument("--expected-samples", type=int, default=96)
-    parser.add_argument("--manifest-profile", choices=("natural", "g_pc0"), default="natural")
+    parser.add_argument("--manifest-profile", choices=("natural", "g_pc0", "g_pc0_rotation"), default="natural")
+    parser.add_argument("--base-manifest", type=Path)
     parser.add_argument("--limit", type=int, default=0, help="per-rank scheduled-pair limit")
     args = parser.parse_args()
 
@@ -157,8 +158,14 @@ def main() -> None:
     if args.output.exists():
         raise SystemExit(f"refusing to overwrite existing raw output: {args.output}")
     samples = load_jsonl(args.manifest)
+    base_samples = load_jsonl(args.base_manifest) if args.base_manifest else None
+    base_manifest_hash = sha256_file(args.base_manifest) if args.base_manifest else None
     manifest_errors = validate_manifest_profile(
-        samples, expected_n=args.expected_samples, manifest_profile=args.manifest_profile
+        samples,
+        expected_n=args.expected_samples,
+        manifest_profile=args.manifest_profile,
+        base_samples=base_samples,
+        base_manifest_hash=base_manifest_hash,
     )
     if manifest_errors:
         raise SystemExit("locked manifest invalid: " + "; ".join(manifest_errors))
@@ -232,8 +239,19 @@ def main() -> None:
                 "chat_template": {"enable_thinking": False, "add_generation_prompt": True},
                 "generation_config": {"do_sample": False, "constrained_to": list(CHOICES)},
             }
-            for field in ("experiment_role", "positive_control_family", "generator_id"):
-                if str(sample.get(field, "")).strip():
+            for field in (
+                "experiment_role",
+                "positive_control_family",
+                "generator_id",
+                "base_sample_id",
+                "base_manifest_sha256",
+                "label_rotation",
+                "rotation_spec_hash",
+                "semantic_options",
+                "correct_semantic_option_id",
+                "displayed_label_to_semantic_option",
+            ):
+                if field in sample:
                     record[field] = sample[field]
             try:
                 image_path = Path(rendered.image_path).resolve(strict=True)

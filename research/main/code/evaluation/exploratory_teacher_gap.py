@@ -20,7 +20,7 @@ DATA_PIPELINE_ROOT = Path(__file__).resolve().parents[1] / "data_pipeline"
 sys.path.insert(0, str(DATA_PIPELINE_ROOT))
 
 from reasoning_graph_contract import validate_guide_graph_alignment, validate_reasoning_graph
-from g_pc0 import validate_g_pc0_manifest
+from g_pc0 import validate_g_pc0_manifest, validate_g_pc0_rotation_manifest
 
 
 CONDITIONS = ("S", "T_Q", "T_QA", "T_generic")
@@ -28,7 +28,11 @@ CHOICES = ("A", "B", "C", "D")
 
 
 def validate_manifest_profile(
-    samples: list[dict], expected_n: int = 96, manifest_profile: str = "natural"
+    samples: list[dict],
+    expected_n: int = 96,
+    manifest_profile: str = "natural",
+    base_samples: list[dict] | None = None,
+    base_manifest_hash: str | None = None,
 ) -> list[str]:
     """Dispatch the shared runner to an explicitly declared manifest contract."""
 
@@ -36,6 +40,13 @@ def validate_manifest_profile(
         return validate_locked_manifest(samples, expected_n=expected_n)
     if manifest_profile == "g_pc0":
         return validate_g_pc0_manifest(samples, expected_n=expected_n)
+    if manifest_profile == "g_pc0_rotation":
+        return validate_g_pc0_rotation_manifest(
+            samples,
+            base_samples=base_samples,
+            base_manifest_hash=base_manifest_hash,
+            expected_n=expected_n,
+        )
     return [f"unsupported manifest profile: {manifest_profile}"]
 
 
@@ -288,11 +299,25 @@ def validate_results_against_manifest(
                 ).encode("utf-8")
             ).hexdigest(),
         }
-        for field in ("experiment_role", "positive_control_family", "generator_id"):
+        for field in (
+            "experiment_role",
+            "positive_control_family",
+            "generator_id",
+            "base_sample_id",
+            "base_manifest_sha256",
+            "rotation_spec_hash",
+            "correct_semantic_option_id",
+        ):
             if str(sample.get(field, "")).strip():
                 expected_values[field] = str(sample[field])
+        for field in ("label_rotation",):
+            if field in sample:
+                expected_values[field] = sample[field]
         for field, value in expected_values.items():
-            if str(row.get(field, "")) != value:
+            if row.get(field) != value and str(row.get(field, "")) != value:
+                errors.append(f"record-{index}/{sample_id}: {field} differs from frozen manifest")
+        for field in ("semantic_options", "displayed_label_to_semantic_option"):
+            if field in sample and row.get(field) != sample[field]:
                 errors.append(f"record-{index}/{sample_id}: {field} differs from frozen manifest")
     return errors
 
@@ -464,9 +489,26 @@ def validate_result_records(
             values = {str(row.get(field, "")).strip() for row in rows}
             if "" in values or len(values) != 1:
                 errors.append(f"{sample_id}: {field} must be present and invariant")
-        for field in ("experiment_role", "positive_control_family", "generator_id"):
+        for field in (
+            "experiment_role",
+            "positive_control_family",
+            "generator_id",
+            "base_sample_id",
+            "base_manifest_sha256",
+            "rotation_spec_hash",
+            "correct_semantic_option_id",
+            "label_rotation",
+        ):
             values = {str(row.get(field, "")).strip() for row in rows}
             if any(values) and ("" in values or len(values) != 1):
+                errors.append(f"{sample_id}: {field} must be present and invariant when used")
+        for field in ("semantic_options", "displayed_label_to_semantic_option"):
+            values = {
+                json.dumps(row.get(field), ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+                for row in rows
+                if field in row
+            }
+            if values and (len(values) != 1 or any(field not in row for row in rows)):
                 errors.append(f"{sample_id}: {field} must be present and invariant when used")
         prompt_hashes = [str(row.get("prompt_hash", "")).strip() for row in rows]
         if any(not value for value in prompt_hashes):

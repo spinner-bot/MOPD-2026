@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 import sys
 from collections import Counter, defaultdict
 from pathlib import Path
@@ -25,6 +26,9 @@ FAMILIES = ("directed_path", "sequential_transform", "grid_trace", "set_relation
 PROFILE = "g_pc0_v1"
 SOURCE_DATASET = "MOPD-G-PC0-v1"
 GENERATOR_ID = "mopd-g-pc0-v1"
+ROTATION_PROFILE = "g_pc0_label_rotation_diagnostic_v1"
+ROTATION_ROLE = "posthoc_label_rotation_diagnostic"
+BASE_MANIFEST_SHA256 = "10b09d122a5781df564a63cac8449d368a2d785c3fb06ba15c3887db2433bb1c"
 
 
 def _text(row: dict, key: str) -> str:
@@ -212,6 +216,130 @@ def validate_g_pc0_assets(samples: list[dict], image_root: Path) -> list[str]:
     return sorted(set(errors))
 
 
+def label_rotation_mapping(rotation: int) -> dict[str, str]:
+    """Map displayed labels to frozen semantic option IDs for one cyclic rotation."""
+
+    if rotation not in range(4):
+        raise ValueError("label rotation must be in 0..3")
+    return {
+        displayed: CHOICES[(index + rotation) % len(CHOICES)]
+        for index, displayed in enumerate(CHOICES)
+    }
+
+
+def validate_g_pc0_rotation_manifest(
+    samples: list[dict],
+    base_samples: list[dict] | None,
+    base_manifest_hash: str | None,
+    expected_n: int = 64,
+) -> list[str]:
+    """Bind the 4x label-rotation diagnostic to the exact frozen G-PC0 rows."""
+
+    errors: list[str] = []
+    if expected_n != 64 or len(samples) != expected_n:
+        errors.append(f"G-PC0 label rotation requires exactly 64 rows, found {len(samples)}")
+    if base_manifest_hash != BASE_MANIFEST_SHA256:
+        errors.append("label rotation requires the frozen G-PC0 v1 base manifest hash")
+    if base_samples is None:
+        return sorted(set(errors + ["label rotation requires explicit base manifest rows"]))
+    base_errors = validate_g_pc0_manifest(base_samples, expected_n=16)
+    errors.extend(f"base manifest: {error}" for error in base_errors)
+    base_by_id = {_text(row, "sample_id"): row for row in base_samples}
+    groups: dict[str, list[dict]] = defaultdict(list)
+    for row in samples:
+        groups[_text(row, "base_sample_id")].append(row)
+    if set(groups) != set(base_by_id):
+        errors.append("expanded base_sample_id set differs from frozen base manifest")
+    if len({_text(row, "sample_id") for row in samples}) != len(samples):
+        errors.append("expanded sample_id values must be unique")
+    labels = Counter(row.get("final_answer") for row in samples)
+    if labels != Counter({choice: 16 for choice in CHOICES}):
+        errors.append("expanded answer labels must be balanced at 16 per choice")
+    rotation_hashes = {_text(row, "rotation_spec_hash") for row in samples}
+    if len(rotation_hashes) != 1 or any(
+        len(value) != 64 or any(character not in "0123456789abcdef" for character in value)
+        for value in rotation_hashes
+    ):
+        errors.append("rotation_spec_hash must be one shared lowercase SHA-256")
+
+    immutable_fields = (
+        "source_dataset",
+        "source_image_id",
+        "source_cluster_id",
+        "image_original",
+        "image_checksum",
+        "final_question",
+        "canonical_answer_text",
+        "generic_context",
+        "knowledge_dependency_label",
+        "task_family",
+        "full_image_reference_valid",
+        "unique_answer",
+        "human_verified",
+        "human_reviewer",
+        "human_reviewed_at",
+        "procedural_gold_verified",
+        "answer_leakage",
+        "external_fact_injected",
+        "required_evidence",
+        "difficult_visual_evidence",
+        "reasoning_depth",
+        "minimal_reasoning_graph",
+        "guides",
+        "solution_trace",
+        "positive_control_family",
+        "generator_id",
+        "generator_seed",
+        "generation_spec_hash",
+        "eligible_for_natural_g0",
+        "eligible_for_training",
+    )
+    for base_index, base in enumerate(base_samples):
+        base_id = _text(base, "sample_id")
+        rows = groups.get(base_id, [])
+        if len(rows) != 4 or {row.get("label_rotation") for row in rows} != set(range(4)):
+            errors.append(f"{base_id}: requires exactly rotations 0..3")
+            continue
+        for row in sorted(rows, key=lambda value: value["label_rotation"]):
+            rotation = row["label_rotation"]
+            row_id = f"{base_id}-lr{rotation}"
+            if row.get("sample_id") != row_id or row.get("source_record_id") != row_id:
+                errors.append(f"{row_id}: diagnostic sample/source record ID mismatch")
+            if row.get("manifest_profile") != ROTATION_PROFILE:
+                errors.append(f"{row_id}: manifest_profile must be {ROTATION_PROFILE}")
+            if row.get("experiment_role") != ROTATION_ROLE:
+                errors.append(f"{row_id}: experiment_role must be {ROTATION_ROLE}")
+            if row.get("base_manifest_sha256") != BASE_MANIFEST_SHA256:
+                errors.append(f"{row_id}: base manifest hash mismatch")
+            for field in immutable_fields:
+                if row.get(field) != base.get(field):
+                    errors.append(f"{row_id}: immutable field differs from base: {field}")
+            semantic_options = {choice: base[f"option_{choice}"] for choice in CHOICES}
+            if row.get("semantic_options") != semantic_options:
+                errors.append(f"{row_id}: semantic_options differ from base")
+            if row.get("correct_semantic_option_id") != base.get("final_answer"):
+                errors.append(f"{row_id}: correct semantic option differs from base")
+            mapping = label_rotation_mapping(rotation)
+            if row.get("displayed_label_to_semantic_option") != mapping:
+                errors.append(f"{row_id}: displayed-label mapping is not the frozen cyclic rotation")
+            for displayed, semantic in mapping.items():
+                if row.get(f"option_{displayed}") != base.get(f"option_{semantic}"):
+                    errors.append(f"{row_id}: displayed option {displayed} has wrong semantic content")
+            correct_labels = [
+                displayed
+                for displayed, semantic in mapping.items()
+                if semantic == base.get("final_answer")
+            ]
+            if len(correct_labels) != 1 or row.get("final_answer") != correct_labels[0]:
+                errors.append(f"{row_id}: rotated correct label mismatch")
+            if row.get(f"option_{row.get('final_answer')}") != base.get("canonical_answer_text"):
+                errors.append(f"{row_id}: rotated correct text differs from canonical answer")
+    expected_order = [f"gpc0-{index + 1:02d}-lr{rotation}" for index in range(16) for rotation in range(4)]
+    if [_text(row, "sample_id") for row in samples] != expected_order:
+        errors.append("expanded rows must follow frozen base-major then rotation-major order")
+    return sorted(set(errors))
+
+
 def decide_g_pc0(records: list[dict], validation_errors: list[str] | None = None) -> dict[str, Any]:
     """Apply the result-blind 1035 G-PC0 decision tree to validated records."""
 
@@ -354,6 +482,125 @@ def diagnose_g_pc0(records: list[dict], decision: str) -> dict[str, Any]:
         "generation_vs_score_argmax_mismatches": argmax_mismatches,
         "output_label_collapse_threshold": 0.75,
         "output_label_collapse": collapse,
+        "natural_image_claim_authorized": False,
+        "training_data_authorized": False,
+    }
+
+
+def decide_g_pc0_label_rotation(
+    records: list[dict], validation_errors: list[str] | None = None
+) -> dict[str, Any]:
+    """Aggregate four cyclic labels back to semantic options and apply 1046."""
+
+    if validation_errors:
+        return {"decision": "INVALID", "validation_errors": sorted(set(validation_errors))}
+    grouped: dict[str, dict[str, dict[int, dict]]] = defaultdict(lambda: defaultdict(dict))
+    errors: list[str] = []
+    for row in records:
+        base_id = str(row.get("base_sample_id", ""))
+        condition = str(row.get("condition", ""))
+        rotation = row.get("label_rotation")
+        if not base_id or condition not in {"S", "T_Q", "T_QA", "T_generic"} or rotation not in range(4):
+            errors.append("every row requires valid base_sample_id, condition and label_rotation")
+            continue
+        if rotation in grouped[base_id][condition]:
+            errors.append(f"{base_id}/{condition}/lr{rotation}: duplicate")
+        grouped[base_id][condition][rotation] = row
+    if len(grouped) != 16:
+        errors.append(f"requires 16 base samples, found {len(grouped)}")
+    for base_id, conditions in grouped.items():
+        if set(conditions) != {"S", "T_Q", "T_QA", "T_generic"}:
+            errors.append(f"{base_id}: requires four conditions")
+        for condition, rotations in conditions.items():
+            if set(rotations) != set(range(4)):
+                errors.append(f"{base_id}/{condition}: requires rotations 0..3")
+    if errors:
+        return {"decision": "INVALID", "validation_errors": sorted(set(errors))}
+
+    aggregated: list[dict[str, Any]] = []
+    for base_id in sorted(grouped):
+        for condition in ("S", "T_Q", "T_QA", "T_generic"):
+            rows = grouped[base_id][condition]
+            semantic_scores = {choice: [] for choice in CHOICES}
+            mapped_generation_votes = Counter()
+            correct_semantic = None
+            family = None
+            for rotation in range(4):
+                row = rows[rotation]
+                mapping = row.get("displayed_label_to_semantic_option")
+                scores = row.get("choice_log_likelihoods")
+                if not isinstance(mapping, dict) or set(mapping) != set(CHOICES):
+                    errors.append(f"{base_id}/{condition}/lr{rotation}: invalid label mapping")
+                    continue
+                if not isinstance(scores, dict) or set(scores) != set(CHOICES):
+                    errors.append(f"{base_id}/{condition}/lr{rotation}: invalid choice scores")
+                    continue
+                for displayed in CHOICES:
+                    semantic_scores[mapping[displayed]].append(float(scores[displayed]))
+                parsed = row.get("parsed_answer")
+                if parsed in CHOICES:
+                    mapped_generation_votes[mapping[parsed]] += 1
+                correct_semantic = row.get("correct_semantic_option_id")
+                family = row.get("positive_control_family")
+            means = {
+                semantic: sum(values) / len(values) if len(values) == 4 else float("nan")
+                for semantic, values in semantic_scores.items()
+            }
+            prediction = max(CHOICES, key=lambda choice: (means[choice], -CHOICES.index(choice)))
+            vote_prediction = max(
+                CHOICES, key=lambda choice: (mapped_generation_votes[choice], -CHOICES.index(choice))
+            )
+            aggregated.append({
+                "base_sample_id": base_id,
+                "condition": condition,
+                "positive_control_family": family,
+                "correct_semantic_option_id": correct_semantic,
+                "semantic_mean_log_likelihoods": means,
+                "semantic_prediction": prediction,
+                "correct": prediction == correct_semantic,
+                "mapped_generation_votes": {choice: mapped_generation_votes[choice] for choice in CHOICES},
+                "mapped_generation_vote_prediction": vote_prediction,
+                "mapped_generation_vote_correct": vote_prediction == correct_semantic,
+            })
+    if errors or any(
+        not math.isfinite(value)
+        for row in aggregated
+        for value in row["semantic_mean_log_likelihoods"].values()
+    ):
+        if not errors:
+            errors.append("every semantic score requires four finite rotation values")
+        return {"decision": "INVALID", "validation_errors": sorted(set(errors))}
+
+    table = {(row["base_sample_id"], row["condition"]): row for row in aggregated}
+    base_ids = sorted(grouped)
+    baseline = [table[(base_id, "S")]["correct"] for base_id in base_ids]
+    tqa = [table[(base_id, "T_QA")]["correct"] for base_id in base_ids]
+    gains = sum(not before and after for before, after in zip(baseline, tqa))
+    regressions = sum(before and not after for before, after in zip(baseline, tqa))
+    baseline_correct = sum(baseline)
+    if baseline_correct >= 14:
+        decision = "ROTATION_CEILING_INCONCLUSIVE"
+    elif gains >= 4 and gains - regressions >= 3:
+        decision = "LABEL_INTERFACE_MASKED_G_SIGNAL"
+    else:
+        decision = "GUIDE_OR_MODEL_INGESTION_FAILURE_AFTER_ROTATION"
+    condition_correct = {
+        condition: sum(table[(base_id, condition)]["correct"] for base_id in base_ids)
+        for condition in ("S", "T_Q", "T_QA", "T_generic")
+    }
+    return {
+        "decision": decision,
+        "diagnostic_only": True,
+        "gpc0_v1_frozen_decision": "INGESTION_OR_RECIPE_FAILURE",
+        "gpc0_v1_decision_changed": False,
+        "n_base_samples": 16,
+        "n_rotation_samples": 64,
+        "condition_correct_after_semantic_aggregation": condition_correct,
+        "tqa_vs_s": {"gains": gains, "regressions": regressions, "net_flips": gains - regressions},
+        "aggregation": "mean raw single-token label log-likelihood by semantic option across four rotations",
+        "tie_break": list(CHOICES),
+        "aggregated_records": aggregated,
+        "inferential_statistics_used": False,
         "natural_image_claim_authorized": False,
         "training_data_authorized": False,
     }
