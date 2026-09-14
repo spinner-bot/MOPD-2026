@@ -21,7 +21,8 @@ else
   CHECKOUT_ROOT="$(git -C "${ROOT}" rev-parse --show-toplevel)"
 fi
 INPUT="${MOPD_INPUT:?set MOPD_INPUT to construction-inputs JSONL}"
-RUN="${ROOT}/outputs/runs/${MOPD_RUN_ID:?set MOPD_RUN_ID}"
+RUNS_ROOT="${MOPD_RUNS_ROOT:-${ROOT}/outputs/runs}"
+RUN="${RUNS_ROOT}/${MOPD_RUN_ID:?set MOPD_RUN_ID}"
 PY="${MOPD_PYTHON:-/leonardo_scratch/fast/AIFAC_F02_774/rqian000/envs/mopd-stage0-py311/bin/python}"
 MODEL="${MOPD_MODEL_9B:-/leonardo_scratch/large/userexternal/rqian000/models/Qwen3.5-9B-base}"
 IMAGE_ROOT="${MOPD_IMAGE_ROOT:-/leonardo_scratch/large/userexternal/rqian000/data/m3vqa/materialized/images}"

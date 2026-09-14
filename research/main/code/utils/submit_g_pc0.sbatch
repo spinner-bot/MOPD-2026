@@ -22,7 +22,8 @@ else
 fi
 MANIFEST="${ROOT}/outputs/runs/20260914T0916-teacher-gap-g-pc0-v1/outputs/manifest.jsonl"
 MANIFEST_SHA256="10b09d122a5781df564a63cac8449d368a2d785c3fb06ba15c3887db2433bb1c"
-RUN="${ROOT}/outputs/runs/${MOPD_G_PC0_RUN_ID:?set a new MOPD_G_PC0_RUN_ID}"
+RUNS_ROOT="${MOPD_RUNS_ROOT:-${ROOT}/outputs/runs}"
+RUN="${RUNS_ROOT}/${MOPD_G_PC0_RUN_ID:?set a new MOPD_G_PC0_RUN_ID}"
 PY="${MOPD_PYTHON:-/leonardo_scratch/fast/AIFAC_F02_774/rqian000/envs/mopd-stage0-py311/bin/python}"
 MODEL="${MOPD_MODEL_4B:-/leonardo_scratch/large/userexternal/rqian000/ICLR-2027-czy/models/Qwen3.5-4B-base}"
 MODEL_REVISION="851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a"
