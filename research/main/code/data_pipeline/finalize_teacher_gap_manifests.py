@@ -229,7 +229,22 @@ def validate_human_review(review: dict) -> list[str]:
     return errors
 
 
-def generic_context_for(samples: list[dict], tokenizer, target_condition: str = "T_Q") -> str:
+def generic_candidate_pool(tokenizer) -> tuple[tuple[str, int], ...]:
+    """Tokenize the fixed neutral prefixes once for a finalization run."""
+
+    words = GENERIC_WORDS * 12
+    return tuple(
+        (text, len(tokenizer.encode(text, add_special_tokens=False)))
+        for text in (" ".join(words[:count]) for count in range(5, len(words) + 1))
+    )
+
+
+def generic_context_for(
+    samples: list[dict],
+    tokenizer,
+    target_condition: str = "T_Q",
+    candidate_pool: tuple[tuple[str, int], ...] | None = None,
+) -> str:
     """Build neutral text for one sample's frozen structured-context length."""
 
     if target_condition not in {"T_Q", "T_QA"}:
@@ -242,9 +257,10 @@ def generic_context_for(samples: list[dict], tokenizer, target_condition: str = 
     )
     middle = len(target_lengths) // 2
     target = target_lengths[middle] if len(target_lengths) % 2 else (target_lengths[middle - 1] + target_lengths[middle]) / 2
-    words = GENERIC_WORDS * 12
-    candidates = [" ".join(words[:count]) for count in range(5, len(words) + 1)]
-    return min(candidates, key=lambda text: abs(len(tokenizer.encode(text, add_special_tokens=False)) - target))
+    candidates = candidate_pool if candidate_pool is not None else generic_candidate_pool(tokenizer)
+    if not candidates:
+        raise ValueError("generic candidate pool must not be empty")
+    return min(candidates, key=lambda item: abs(item[1] - target))[0]
 
 
 def arrange_options(proposal: dict, correct_label: str, candidate_id: str) -> dict[str, str]:
@@ -364,6 +380,7 @@ def main() -> None:
     if not tokenizer_artifact_hashes:
         raise SystemExit("tokenizer path has no hashable tokenizer/config artifacts")
     tokenizer_source = str(args.tokenizer.resolve())
+    generic_candidates = generic_candidate_pool(tokenizer)
     finalization_provenance = {
         "code_commit": args.code_commit,
         "runtime_code_sha256": code_hashes,
@@ -415,8 +432,8 @@ def main() -> None:
                 "minimal_reasoning_graph": review["human_reasoning_graph"],
             })
         for row in rows:
-            generic_q = generic_context_for([row], tokenizer, "T_Q")
-            generic_qa = generic_context_for([row], tokenizer, "T_QA")
+            generic_q = generic_context_for([row], tokenizer, "T_Q", generic_candidates)
+            generic_qa = generic_context_for([row], tokenizer, "T_QA", generic_candidates)
             row["generic_context"] = generic_q
             row["generic_context_t_q"] = generic_q
             row["generic_context_t_qa"] = generic_qa

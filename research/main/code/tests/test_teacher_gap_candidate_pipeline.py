@@ -17,6 +17,7 @@ from finalize_teacher_gap_manifests import (
     arrange_options,
     assert_code_state,
     duplicate_cluster_map,
+    generic_candidate_pool,
     generic_context_for,
     require_new_output_dir,
     source_dataset_for_candidate,
@@ -638,6 +639,19 @@ class TeacherGapCandidatePipelineTests(unittest.TestCase):
         self.assertEqual(
             generic_context_for([first], FakeTokenizer(), "T_QA"),
             generic_context_for([second], FakeTokenizer(), "T_QA"),
+        )
+
+    def test_precomputed_generic_pool_preserves_selection(self):
+        class FakeTokenizer:
+            @staticmethod
+            def encode(text, add_special_tokens=False):
+                return text.split()
+
+        sample = {"guides": [{"question": "one two three four five six", "answer": "seven eight"}]}
+        pool = generic_candidate_pool(FakeTokenizer())
+        self.assertEqual(
+            generic_context_for([sample], FakeTokenizer(), "T_QA"),
+            generic_context_for([sample], FakeTokenizer(), "T_QA", pool),
         )
 
     def test_generic_context_rejects_partition_level_construction(self):
