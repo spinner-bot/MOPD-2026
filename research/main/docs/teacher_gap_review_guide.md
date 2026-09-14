@@ -6,11 +6,11 @@
 
 **创建原因**：W2 teacher-gap pilot 完成后需进行人工审核，提前准备指引文档
 
-**修改时间**：2026-09-14 04:40（UTC+8）
+**修改时间**：2026-09-14 11:27（UTC+8）
 
 **修改作者**：Codex (CINECA Leonardo)
 
-**修改原因**：同步人工 evidence/DAG 集合一致性与 R/PR 困难视觉节点门禁，防止只改标签生成 PR
+**修改原因**：同步 1060 的自然清单冻结器完整提交、tokenizer revision 与输入哈希合同
 
 ---
 
@@ -118,6 +118,7 @@ JSON 布尔值必须写成不带引号的 `true`/`false`。`"yes"`、`"no"`、`1
 5. 任何机器输出或未经人工查看的记录均不得署名为人工审核。
 6. `--output-dir` 必须是尚不存在的新 run ID；终检拒绝复用空目录或覆盖任何既有输出。每条 construction candidate 还必须显式携带真实 `source_dataset`，冻结程序按记录原样传递，不从 ID 推断，也不统一改写为 M3VQA。
 7. frozen manifest 保留 `canonical_answer_text` 与 `difficult_visual_evidence`；bundle gate 会重新核对正确选项文本、required evidence 与 DAG、R/PR 困难节点规则，以及 guide 的 `supports_next`。人工终检通过后的语义 provenance 不得在导出时丢弃。
+8. 冻结器必须传入 `--code-commit "$(git rev-parse HEAD)"` 与 40 位 `--tokenizer-revision`；summary 和每条 base manifest 将绑定输入文件、运行源码及 tokenizer artifact 的 SHA-256。短提交、HEAD 不一致或运行源码有 tracked 修改均拒绝。
 
 ## 8. 关联文档
 
@@ -138,3 +139,4 @@ JSON 布尔值必须写成不带引号的 `true`/`false`。`"yes"`、`"no"`、`1
 | 2026-09-14 04:40 | Codex (CINECA Leonardo) | 修订：同步 `586c1d4` 的 evidence/DAG 集合一致性和 R/PR 困难视觉节点字段；补齐历史修订表。 |
 | 2026-09-14 04:38 | Codex (CINECA Leonardo) | 修订：终检输出改为新 run ID 排他写入，并要求 construction candidate 显式携带真实图源，避免混合来源被静默写成 M3VQA。 |
 | 2026-09-14 04:46 | Codex (CINECA Leonardo) | 修订：冻结清单保留 canonical answer 与困难视觉证据，使 bundle gate 可独立重验答案、证据/DAG、R/PR 和 guide 对齐。 |
+| 2026-09-14 11:27 | Codex (CINECA Leonardo) | 修订：依据 1060/`6c11452` 增加冻结器完整 commit、tokenizer revision、输入与源码 SHA-256 合同。 |
