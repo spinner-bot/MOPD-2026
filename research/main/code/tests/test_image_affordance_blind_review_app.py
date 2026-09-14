@@ -7,7 +7,10 @@ import hashlib
 import json
 import sys
 import tempfile
+import threading
 import unittest
+import urllib.request
+from http.server import ThreadingHTTPServer
 from pathlib import Path
 
 from PIL import Image
@@ -21,6 +24,7 @@ from build_image_affordance_blind_calibration import build_blind_packet
 from image_affordance_blind_review_app import (
     HTML_PAGE,
     ReviewStore,
+    handler_for,
     parse_args,
     validate_edit_updates,
     validate_loopback_host,
@@ -78,8 +82,7 @@ class ImageAffordanceBlindReviewAppTests(unittest.TestCase):
             self.assertEqual(state["row"]["human_image_usable"], "")
             self.assertEqual(state["row"]["human_evidence_descriptions"], "")
             self.assertEqual(state["row"]["human_verified"], "")
-            record_id = state["row"]["calibration_record_id"]
-            saved = store.save(record_id, {
+            saved = store.save_index(0, {
                 "human_image_usable": False,
                 "human_external_knowledge_needed": False,
                 "human_evidence_descriptions": ["first visible fact", "second visible fact"],
@@ -270,17 +273,75 @@ class ImageAffordanceBlindReviewAppTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             store = store_for(Path(directory))
             state = store.record(0)
+            self.assertNotIn("calibration_record_id", state["row"])
             self.assertNotIn("source_dataset", state["row"])
             self.assertNotIn("source_image_id", state["row"])
             self.assertNotIn("image_candidate_id", state["row"])
-            payload, content_type = store.image_payload(
-                state["row"]["calibration_record_id"]
-            )
+            self.assertEqual(state["row"]["review_item_id"], "review-item-0000")
+            self.assertEqual(state["image_url"], "/image/0")
+            self.assertEqual(store.review_index(), [
+                {"index": 0, "review_item_id": "review-item-0000"},
+                {"index": 1, "review_item_id": "review-item-0001"},
+            ])
+            payload, content_type = store.image_payload_at(0)
             self.assertEqual(hashlib.sha256(payload).hexdigest(), store.rows[0]["image_sha256"])
             self.assertEqual(content_type, "image/jpeg")
-            store._images[state["row"]["calibration_record_id"]].write_bytes(b"changed")
+            record_id = store.rows[0]["calibration_record_id"]
+            store._images[record_id].write_bytes(b"changed")
             with self.assertRaisesRegex(ValueError, "changed after startup"):
-                store.image_payload(state["row"]["calibration_record_id"])
+                store.image_payload_at(0)
+
+    def test_http_index_record_save_and_image_use_only_opaque_indices(self):
+        with tempfile.TemporaryDirectory() as directory:
+            store = store_for(Path(directory))
+            secret_values = {
+                store.rows[0]["calibration_record_id"],
+                store.rows[0]["source_dataset"],
+                store.rows[0]["source_image_id"],
+                store.rows[0]["image_candidate_id"],
+            }
+            server = ThreadingHTTPServer(("127.0.0.1", 0), handler_for(store))
+            thread = threading.Thread(target=server.serve_forever, daemon=True)
+            thread.start()
+            base = f"http://127.0.0.1:{server.server_port}"
+            try:
+                index_bytes = urllib.request.urlopen(base + "/api/index").read()
+                record_bytes = urllib.request.urlopen(base + "/api/record?index=0").read()
+                index = json.loads(index_bytes)
+                record = json.loads(record_bytes)
+                self.assertEqual(index["items"][0], {
+                    "index": 0,
+                    "review_item_id": "review-item-0000",
+                })
+                self.assertEqual(record["row"]["review_item_id"], "review-item-0000")
+                self.assertEqual(record["image_url"], "/image/0")
+                exposed = index_bytes + record_bytes
+                for value in secret_values:
+                    self.assertNotIn(value.encode(), exposed)
+
+                request = urllib.request.Request(
+                    base + "/api/save",
+                    data=json.dumps({
+                        "index": 0,
+                        "updates": {"human_image_usable": False},
+                    }).encode(),
+                    headers={"Content-Type": "application/json"},
+                    method="POST",
+                )
+                saved = json.loads(urllib.request.urlopen(request).read())
+                self.assertIs(saved["row"]["human_image_usable"], False)
+                image_bytes = urllib.request.urlopen(base + saved["image_url"]).read()
+                self.assertEqual(hashlib.sha256(image_bytes).hexdigest(), store.rows[0]["image_sha256"])
+                self.assertEqual(
+                    json.loads(store.draft_path.read_text().splitlines()[0])[
+                        "calibration_record_id"
+                    ],
+                    store.rows[0]["calibration_record_id"],
+                )
+            finally:
+                server.shutdown()
+                server.server_close()
+                thread.join(timeout=2)
 
     def test_only_literal_ipv4_loopback_is_allowed(self):
         validate_loopback_host("127.0.0.1")
@@ -299,6 +360,7 @@ class ImageAffordanceBlindReviewAppTests(unittest.TestCase):
         self.assertNotIn("source_question", HTML_PAGE)
         self.assertNotIn("source_dataset", HTML_PAGE)
         self.assertNotIn("source_image_id", HTML_PAGE)
+        self.assertNotIn("calibration_record_id", HTML_PAGE)
 
 
 if __name__ == "__main__":

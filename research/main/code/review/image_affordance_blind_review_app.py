@@ -270,7 +270,7 @@ class ReviewStore:
         row = self.rows[index]
         record_id = row["calibration_record_id"]
         visible = {
-            "calibration_record_id": record_id,
+            "review_item_id": self.review_item_id(index),
             "review_status": row["review_status"],
             "human_verified": row["human_verified"],
             **{field: row[field] for field in HUMAN_FIELDS},
@@ -279,24 +279,44 @@ class ReviewStore:
             "index": index,
             "total": len(self.rows),
             "row": visible,
-            "image_url": "/image/" + urllib.parse.quote(record_id, safe=""),
+            "image_url": f"/image/{index}",
             "image": self._image_meta[record_id],
             "validation_errors": validate_completed_review(
                 self._original_by_id[record_id], row
             ),
         }
 
+    def review_item_id(self, index: int) -> str:
+        if not 0 <= index < len(self.rows):
+            raise ValueError("record index outside packet")
+        return f"review-item-{index:04d}"
+
+    def review_index(self) -> list[dict[str, Any]]:
+        return [
+            {"index": index, "review_item_id": self.review_item_id(index)}
+            for index in range(len(self.rows))
+        ]
+
     def save(self, record_id: str, updates: Any) -> dict:
         with self._lock:
             if record_id not in self._index_by_id:
                 raise ValueError("unknown calibration_record_id")
-            changes = validate_edit_updates(updates)
             index = self._index_by_id[record_id]
-            candidate = dict(self.rows[index])
-            candidate.update(changes)
-            self.rows[index] = candidate
-            self._atomic_save_draft()
-            return self.record(index)
+            return self._save_at_index(index, updates)
+
+    def save_index(self, index: int, updates: Any) -> dict:
+        with self._lock:
+            if not 0 <= index < len(self.rows):
+                raise ValueError("record index outside packet")
+            return self._save_at_index(index, updates)
+
+    def _save_at_index(self, index: int, updates: Any) -> dict:
+        changes = validate_edit_updates(updates)
+        candidate = dict(self.rows[index])
+        candidate.update(changes)
+        self.rows[index] = candidate
+        self._atomic_save_draft()
+        return self.record(index)
 
     def _atomic_save_draft(self) -> None:
         if self.draft_path == self.input_path:
@@ -360,6 +380,11 @@ class ReviewStore:
         content_type = "image/png" if suffix == ".png" else "image/jpeg"
         return payload, content_type
 
+    def image_payload_at(self, index: int) -> tuple[bytes, str]:
+        if not 0 <= index < len(self.rows):
+            raise ValueError("record index outside packet")
+        return self.image_payload(self.rows[index]["calibration_record_id"])
+
 
 HTML_PAGE = r"""<!doctype html>
 <html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -385,15 +410,15 @@ body{font-family:system-ui,sans-serif;margin:0;background:#f4f4f0;color:#20221f}
 const arrayFields=[['human_evidence_descriptions','直接视觉证据'],['human_reasoning_steps','推理步骤'],['human_counterfactual_required_evidence','反事实必要证据'],['human_difficult_visual_evidence','困难视觉证据']];let current=0,total=0;
 function el(id){return document.getElementById(id)}function tri(v){return v===''?'':String(v)}function lines(v){return Array.isArray(v)?v.join('\n'):''}
 for(const [id,label] of arrayFields){el('arrays').insertAdjacentHTML('beforeend',`<label>${label}<span class="row"><select class="array-state" id="${id}_state"><option value="">未设置</option><option value="array">JSON array</option></select><textarea id="${id}"></textarea></span></label>`)}
-async function load(i){const r=await fetch('/api/record?index='+i),d=await r.json();if(!r.ok){throw Error(d.error)}current=d.index;total=d.total;el('jump').selectedIndex=current;const x=d.row;el('progress').textContent=`${current+1}/${total}`;el('identity').textContent=x.calibration_record_id;el('image').src=d.image_url+'?v='+Date.now();el('imageInfo').textContent=`原生 ${d.image.width}×${d.image.height} · ${d.image.format} · ${d.image.mode}`;for(const id of ['human_image_usable','human_external_knowledge_needed','human_verified'])el(id).value=tri(x[id]);for(const id of ['human_affordance_decision','human_target_question','human_affordance_family','human_reviewer','human_reviewed_at','human_notes','review_status'])el(id).value=x[id];const a=x.human_canonical_answer;if(Array.isArray(a)){el('answer_type').value='array';el('human_canonical_answer').value=lines(a)}else if(a!==''){el('answer_type').value='string';el('human_canonical_answer').value=a}else{el('answer_type').value='';el('human_canonical_answer').value=''}for(const [id] of arrayFields){el(id+'_state').value=Array.isArray(x[id])?'array':'';el(id).value=lines(x[id])}showErrors(d.validation_errors);updateScale()}
+async function load(i){const r=await fetch('/api/record?index='+i),d=await r.json();if(!r.ok){throw Error(d.error)}current=d.index;total=d.total;el('jump').selectedIndex=current;const x=d.row;el('progress').textContent=`${current+1}/${total}`;el('identity').textContent=x.review_item_id;el('image').src=d.image_url+'?v='+Date.now();el('imageInfo').textContent=`原生 ${d.image.width}×${d.image.height} · ${d.image.format} · ${d.image.mode}`;for(const id of ['human_image_usable','human_external_knowledge_needed','human_verified'])el(id).value=tri(x[id]);for(const id of ['human_affordance_decision','human_target_question','human_affordance_family','human_reviewer','human_reviewed_at','human_notes','review_status'])el(id).value=x[id];const a=x.human_canonical_answer;if(Array.isArray(a)){el('answer_type').value='array';el('human_canonical_answer').value=lines(a)}else if(a!==''){el('answer_type').value='string';el('human_canonical_answer').value=a}else{el('answer_type').value='';el('human_canonical_answer').value=''}for(const [id] of arrayFields){el(id+'_state').value=Array.isArray(x[id])?'array':'';el(id).value=lines(x[id])}showErrors(d.validation_errors);updateScale()}
 function parseTri(id){const v=el(id).value;return v===''?'':v==='true'}function parseLines(id){if(el(id+'_state').value==='')return '';return el(id).value.split('\n').map(x=>x.trim()).filter(Boolean)}
 function updates(){const t=el('answer_type').value,raw=el('human_canonical_answer').value;const ans=t===''?'':t==='string'?raw:raw.split('\n').map(x=>x.trim()).filter(Boolean);const u={human_image_usable:parseTri('human_image_usable'),human_affordance_decision:el('human_affordance_decision').value,human_target_question:el('human_target_question').value,human_canonical_answer:ans,human_affordance_family:el('human_affordance_family').value,human_external_knowledge_needed:parseTri('human_external_knowledge_needed'),human_reviewer:el('human_reviewer').value,human_reviewed_at:el('human_reviewed_at').value,human_notes:el('human_notes').value,review_status:el('review_status').value,human_verified:parseTri('human_verified')};for(const [id] of arrayFields)u[id]=parseLines(id);return u}
 async function post(path,body){const r=await fetch(path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}),d=await r.json();if(!r.ok)throw Error(d.error||JSON.stringify(d));return d}
-async function save(){try{const d=await post('/api/save',{calibration_record_id:el('jump').value,updates:updates()});el('message').textContent='草稿已原子保存';el('message').className='ok';showErrors(d.validation_errors)}catch(e){el('message').textContent=e.message;el('message').className='errors'}}
+async function save(){try{const d=await post('/api/save',{index:current,updates:updates()});el('message').textContent='草稿已原子保存';el('message').className='ok';showErrors(d.validation_errors)}catch(e){el('message').textContent=e.message;el('message').className='errors'}}
 function showErrors(xs){el('errors').textContent=xs.length?'当前 finalizer 错误：\n'+xs.join('\n'):'当前记录通过 finalizer'}function updateScale(){const im=el('image');if(!im.naturalWidth)return;el('scale').textContent=`当前显示约 ${Math.round(im.clientWidth/im.naturalWidth*100)}%`}
 el('prev').onclick=()=>load(Math.max(0,current-1));el('next').onclick=()=>load(Math.min(total-1,current+1));el('jump').onchange=()=>load(el('jump').selectedIndex);el('save').onclick=save;el('fit').onclick=()=>{el('image').className='fit';updateScale()};el('native').onclick=()=>{el('image').className='native';updateScale()};el('image').onload=updateScale;window.onresize=updateScale;
 el('finalize').onclick=async()=>{try{await save();const d=await post('/api/finalize',{});if(!d.exported){el('message').textContent=`未完成：${d.summary.valid_signed_reviews}/${d.summary.original_records} valid`;el('message').className='errors'}else{el('message').textContent='第一阶段完成：'+JSON.stringify(d.paths);el('message').className='ok'}}catch(e){el('message').textContent=e.message;el('message').className='errors'}};
-(async()=>{const r=await fetch('/api/index'),d=await r.json();for(const id of d.ids){const o=document.createElement('option');o.value=id;o.textContent=id;el('jump').appendChild(o)}await load(0)})().catch(e=>{el('message').textContent=e.message;el('message').className='errors'});
+(async()=>{const r=await fetch('/api/index'),d=await r.json();for(const item of d.items){const o=document.createElement('option');o.value=item.index;o.textContent=item.review_item_id;el('jump').appendChild(o)}await load(0)})().catch(e=>{el('message').textContent=e.message;el('message').className='errors'});
 </script></body></html>"""
 
 
@@ -426,13 +451,13 @@ def handler_for(store: ReviewStore):
                     self._headers(200, "text/html; charset=utf-8", len(payload))
                     self.wfile.write(payload)
                 elif parsed.path == "/api/index":
-                    self._json({"ids": [row["calibration_record_id"] for row in store.rows]})
+                    self._json({"items": store.review_index()})
                 elif parsed.path == "/api/record":
                     query = urllib.parse.parse_qs(parsed.query)
                     self._json(store.record(int(query.get("index", ["0"])[0])))
                 elif parsed.path.startswith("/image/"):
-                    record_id = urllib.parse.unquote(parsed.path[len("/image/") :])
-                    payload, content_type = store.image_payload(record_id)
+                    index_text = urllib.parse.unquote(parsed.path[len("/image/") :])
+                    payload, content_type = store.image_payload_at(int(index_text))
                     self._headers(200, content_type, len(payload))
                     self.wfile.write(payload)
                 else:
@@ -449,7 +474,7 @@ def handler_for(store: ReviewStore):
                     raise ValueError("request body outside 0..1MiB")
                 body = json.loads(self.rfile.read(length) or b"{}")
                 if self.path == "/api/save":
-                    self._json(store.save(str(body.get("calibration_record_id", "")), body.get("updates")))
+                    self._json(store.save_index(int(body.get("index", -1)), body.get("updates")))
                 elif self.path == "/api/finalize":
                     self._json(store.finalize_export())
                 else:
