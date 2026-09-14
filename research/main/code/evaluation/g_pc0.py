@@ -266,6 +266,99 @@ def decide_g_pc0(records: list[dict], validation_errors: list[str] | None = None
     }
 
 
+def diagnose_g_pc0(records: list[dict], decision: str) -> dict[str, Any]:
+    """Describe a gated G-PC0 run without replacing its frozen decision rule."""
+
+    by_sample: dict[str, dict[str, dict]] = defaultdict(dict)
+    for row in records:
+        by_sample[str(row["sample_id"])][str(row["condition"])] = row
+    conditions = ("S", "T_Q", "T_QA", "T_generic")
+    ordered = sorted(by_sample)
+    metrics: dict[str, dict[str, Any]] = {}
+    argmax_mismatches: dict[str, list[str]] = {}
+    for condition in conditions:
+        condition_rows = [by_sample[sample_id][condition] for sample_id in ordered]
+        prediction_counts = Counter(str(row["parsed_answer"]) for row in condition_rows)
+        gold_counts = Counter(str(row["correct_choice"]) for row in condition_rows)
+        correct_by_gold = {
+            choice: sum(
+                bool(row["correct"]) for row in condition_rows if row["correct_choice"] == choice
+            )
+            for choice in CHOICES
+        }
+        mismatches = []
+        for row in condition_rows:
+            scores = row["choice_log_likelihoods"]
+            score_argmax = max(CHOICES, key=lambda choice: (scores[choice], -CHOICES.index(choice)))
+            if score_argmax != row["parsed_answer"]:
+                mismatches.append(str(row["sample_id"]))
+        argmax_mismatches[condition] = mismatches
+        metrics[condition] = {
+            "correct": sum(bool(row["correct"]) for row in condition_rows),
+            "prediction_label_counts": dict(sorted(prediction_counts.items())),
+            "gold_label_counts": dict(sorted(gold_counts.items())),
+            "correct_by_gold_label": correct_by_gold,
+            "max_prediction_label_share": max(prediction_counts.values()) / len(condition_rows),
+            "mean_correct_full_vocab_log_prob": sum(float(row["correct_log_prob"]) for row in condition_rows)
+            / len(condition_rows),
+            "mean_correct_four_choice_probability": sum(
+                float(row["choice_probabilities"][row["correct_choice"]]) for row in condition_rows
+            )
+            / len(condition_rows),
+            "mean_margin": sum(float(row["margin"]) for row in condition_rows) / len(condition_rows),
+            "mean_entropy": sum(float(row["entropy"]) for row in condition_rows) / len(condition_rows),
+            "mean_choice_probability": {
+                choice: sum(float(row["choice_probabilities"][choice]) for row in condition_rows)
+                / len(condition_rows)
+                for choice in CHOICES
+            },
+            "input_tokens": {
+                "min": min(int(row["input_tokens"]) for row in condition_rows),
+                "mean": sum(int(row["input_tokens"]) for row in condition_rows) / len(condition_rows),
+                "max": max(int(row["input_tokens"]) for row in condition_rows),
+            },
+        }
+
+    paired: dict[str, dict[str, Any]] = {}
+    for condition in ("T_Q", "T_QA", "T_generic"):
+        gains = [sample_id for sample_id in ordered if not by_sample[sample_id]["S"]["correct"] and by_sample[sample_id][condition]["correct"]]
+        regressions = [sample_id for sample_id in ordered if by_sample[sample_id]["S"]["correct"] and not by_sample[sample_id][condition]["correct"]]
+        paired[condition] = {
+            "gains": gains,
+            "regressions": regressions,
+            "net_flips": len(gains) - len(regressions),
+            "mean_correct_full_vocab_log_prob_delta": sum(
+                float(by_sample[sample_id][condition]["correct_log_prob"])
+                - float(by_sample[sample_id]["S"]["correct_log_prob"])
+                for sample_id in ordered
+            )
+            / len(ordered),
+            "mean_correct_four_choice_probability_delta": sum(
+                float(by_sample[sample_id][condition]["choice_probabilities"][by_sample[sample_id][condition]["correct_choice"]])
+                - float(by_sample[sample_id]["S"]["choice_probabilities"][by_sample[sample_id]["S"]["correct_choice"]])
+                for sample_id in ordered
+            )
+            / len(ordered),
+        }
+    collapse = {
+        condition: metrics[condition]["max_prediction_label_share"] >= 0.75
+        for condition in conditions
+    }
+    return {
+        "analysis_status": "posthoc_descriptive",
+        "frozen_decision": decision,
+        "decision_changed": False,
+        "n_samples": len(ordered),
+        "condition_metrics": metrics,
+        "paired_vs_S": paired,
+        "generation_vs_score_argmax_mismatches": argmax_mismatches,
+        "output_label_collapse_threshold": 0.75,
+        "output_label_collapse": collapse,
+        "natural_image_claim_authorized": False,
+        "training_data_authorized": False,
+    }
+
+
 def write_json_exclusive(path: Path, value: dict) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("x", encoding="utf-8") as sink:

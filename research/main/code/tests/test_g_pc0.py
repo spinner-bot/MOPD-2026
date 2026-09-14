@@ -5,6 +5,7 @@ from __future__ import annotations
 import copy
 import hashlib
 import json
+import math
 import sys
 import tempfile
 import unittest
@@ -18,7 +19,7 @@ sys.path.insert(0, str(ROOT / "code" / "data_pipeline"))
 sys.path.insert(0, str(ROOT / "code" / "evaluation"))
 
 from exploratory_teacher_gap import frozen_schedule, validate_manifest_profile
-from g_pc0 import decide_g_pc0, validate_g_pc0_assets, validate_g_pc0_manifest
+from g_pc0 import decide_g_pc0, diagnose_g_pc0, validate_g_pc0_assets, validate_g_pc0_manifest
 from generate_g_pc0 import generate_bundle
 from process_exploratory_teacher_gap import main as process_teacher_gap
 
@@ -58,7 +59,12 @@ def complete_result_rows(samples: list[dict], manifest_hash: str) -> list[dict]:
         correct = sample_index < 6 or (condition == "T_QA" and sample_index < 10)
         correct_choice = sample["final_answer"]
         parsed = correct_choice if correct else "ABCD"[("ABCD".index(correct_choice) + 1) % 4]
-        scores = {choice: (-0.5 if choice == correct_choice else -1.5) for choice in "ABCD"}
+        scores = {choice: -2.0 for choice in "ABCD"}
+        scores[correct_choice] = -0.5 if correct else -1.5
+        scores[parsed] = -0.5
+        weights = {choice: math.exp(score) for choice, score in scores.items()}
+        total = sum(weights.values())
+        probabilities = {choice: value / total for choice, value in weights.items()}
         rows.append({
             "sample_id": sample["sample_id"],
             "source_dataset": sample["source_dataset"],
@@ -79,7 +85,10 @@ def complete_result_rows(samples: list[dict], manifest_hash: str) -> list[dict]:
             "correct_log_prob": scores[correct_choice],
             "parsed_answer": parsed,
             "choice_log_likelihoods": scores,
-            "choice_probabilities": {choice: 0.25 for choice in "ABCD"},
+            "choice_probabilities": probabilities,
+            "margin": scores[correct_choice] - max(scores[choice] for choice in "ABCD" if choice != correct_choice),
+            "entropy": -sum(value * math.log(value) for value in probabilities.values()),
+            "input_tokens": 100,
             "truncated": False,
             "eos_reached": True,
             "error": None,
@@ -240,6 +249,9 @@ class GPC0Tests(unittest.TestCase):
             self.assertEqual(decision["decision"], "MECHANISM_PASS")
             self.assertEqual(decision["manifest_sha256"], manifest_hash)
             self.assertFalse(decision["natural_image_claim_authorized"])
+            diagnostic = diagnose_g_pc0(load_jsonl(parsed), decision["decision"])
+            self.assertTrue(all(not values for values in diagnostic["generation_vs_score_argmax_mismatches"].values()))
+            self.assertFalse(diagnostic["decision_changed"])
 
 
 if __name__ == "__main__":

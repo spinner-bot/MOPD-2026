@@ -17,7 +17,7 @@ from exploratory_teacher_gap import (
     validate_result_records,
     validate_results_against_manifest,
 )
-from g_pc0 import decide_g_pc0, validate_g_pc0_assets, write_json_exclusive
+from g_pc0 import decide_g_pc0, diagnose_g_pc0, validate_g_pc0_assets, write_json_exclusive
 from teacher_gap_inputs import COMMON_SHELL, validate_generic_length
 
 
@@ -113,6 +113,12 @@ def main() -> None:
     pc_decide_parser.add_argument("--manifest", type=Path, required=True)
     pc_decide_parser.add_argument("--image-root", type=Path, required=True)
     pc_decide_parser.add_argument("--output", type=Path, required=True)
+    pc_diagnose_parser = subparsers.add_parser("diagnose-positive-control")
+    pc_diagnose_parser.add_argument("--input", type=Path, required=True)
+    pc_diagnose_parser.add_argument("--manifest", type=Path, required=True)
+    pc_diagnose_parser.add_argument("--image-root", type=Path, required=True)
+    pc_diagnose_parser.add_argument("--decision", type=Path, required=True)
+    pc_diagnose_parser.add_argument("--output", type=Path, required=True)
     pc_manifest_parser = subparsers.add_parser("validate-positive-control-manifest")
     pc_manifest_parser.add_argument("--manifest", type=Path, required=True)
     pc_manifest_parser.add_argument("--image-root", type=Path, required=True)
@@ -234,7 +240,7 @@ def main() -> None:
         print(json.dumps(decision, ensure_ascii=False, sort_keys=True))
         if decision["decision"] == "INVALID":
             raise SystemExit("teacher-gap decision refused invalid records")
-    else:
+    elif args.command == "decide-positive-control":
         if args.output.exists():
             raise SystemExit(f"refusing to overwrite decision output: {args.output}")
         rows = load_jsonl([str(args.input)])
@@ -250,6 +256,25 @@ def main() -> None:
         print(json.dumps(decision, ensure_ascii=False, sort_keys=True))
         if decision["decision"] == "INVALID":
             raise SystemExit("G-PC0 decision refused invalid records")
+    else:
+        if args.output.exists():
+            raise SystemExit(f"refusing to overwrite diagnostic output: {args.output}")
+        rows = load_jsonl([str(args.input)])
+        samples = load_jsonl([str(args.manifest)])
+        manifest_hash = file_sha256(args.manifest)
+        errors = validate_result_records(rows, expected_samples=16)
+        errors.extend(validate_manifest_profile(samples, expected_n=16, manifest_profile="g_pc0"))
+        errors.extend(validate_g_pc0_assets(samples, args.image_root))
+        errors.extend(validate_results_against_manifest(rows, samples, manifest_hash))
+        decision = json.loads(args.decision.read_text(encoding="utf-8"))
+        if decision.get("manifest_sha256") != manifest_hash:
+            errors.append("decision manifest hash differs from frozen manifest")
+        if errors:
+            raise SystemExit("G-PC0 diagnosis refused invalid inputs: " + "; ".join(sorted(set(errors))))
+        diagnostic = diagnose_g_pc0(rows, str(decision.get("decision", "")))
+        diagnostic["manifest_sha256"] = manifest_hash
+        write_json_exclusive(args.output, diagnostic)
+        print(json.dumps(diagnostic, ensure_ascii=False, sort_keys=True))
 
 
 if __name__ == "__main__":
