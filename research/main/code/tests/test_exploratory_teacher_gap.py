@@ -211,6 +211,13 @@ def write_model_asset_gate(path: Path, revision: str = "model-1") -> None:
 
 
 class ExploratoryTeacherGapTests(unittest.TestCase):
+    def test_legacy_fixed_label_decide_cli_is_not_exposed(self):
+        argv = ["process_exploratory_teacher_gap.py", "decide"]
+        with patch("sys.argv", argv), patch("sys.stderr"):
+            with self.assertRaises(SystemExit) as caught:
+                process_teacher_gap()
+        self.assertEqual(caught.exception.code, 2)
+
     def test_natural_rotation_validate_and_decide_cli_end_to_end(self):
         samples = [manifest_sample(index) for index in range(8)]
         with tempfile.TemporaryDirectory() as directory:

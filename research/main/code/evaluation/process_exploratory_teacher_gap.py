@@ -13,7 +13,6 @@ from exploratory_teacher_gap import (
     CHOICES,
     NATURAL_ROTATION_PROFILE,
     conditions_for_profile,
-    decide_teacher_gap,
     decide_teacher_gap_label_rotation,
     validate_manifest_bundle,
     validate_manifest_profile,
@@ -166,11 +165,6 @@ def main() -> None:
     validate_parser.add_argument("--model-asset-gate", type=Path, required=True)
     validate_parser.add_argument("--parsed-output", type=Path, required=True)
     validate_parser.add_argument("--summary", type=Path, required=True)
-    decide_parser = subparsers.add_parser("decide")
-    decide_parser.add_argument("--input", type=Path, required=True)
-    decide_parser.add_argument("--expected-samples", type=int, default=96)
-    decide_parser.add_argument("--leakage-free", action="store_true", required=True)
-    decide_parser.add_argument("--output", type=Path, required=True)
     rotation_natural_decide_parser = subparsers.add_parser("decide-natural-label-rotation")
     rotation_natural_decide_parser.add_argument("--input", type=Path, required=True)
     rotation_natural_decide_parser.add_argument("--manifest", type=Path, required=True)
@@ -359,19 +353,6 @@ def main() -> None:
             raise SystemExit("teacher-gap result gate FAILED: " + "; ".join(errors))
         write_jsonl(args.parsed_output, rows)
         print(json.dumps(summary, ensure_ascii=False, sort_keys=True))
-    elif args.command == "decide":
-        if args.output.exists():
-            raise SystemExit(f"refusing to overwrite decision output: {args.output}")
-        rows = load_jsonl([str(args.input)])
-        decision = decide_teacher_gap(
-            rows,
-            leakage_free=args.leakage_free,
-            expected_samples=args.expected_samples,
-        )
-        write_json_new(args.output, decision)
-        print(json.dumps(decision, ensure_ascii=False, sort_keys=True))
-        if decision["decision"] == "INVALID":
-            raise SystemExit("teacher-gap decision refused invalid records")
     elif args.command == "decide-natural-label-rotation":
         if args.output.exists():
             raise SystemExit(f"refusing to overwrite decision output: {args.output}")
