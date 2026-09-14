@@ -27,6 +27,10 @@ RUN="${RUNS_ROOT}/${MOPD_G_PC0_RUN_ID:?set a new MOPD_G_PC0_RUN_ID}"
 PY="${MOPD_PYTHON:-/leonardo_scratch/fast/AIFAC_F02_774/rqian000/envs/mopd-stage0-py311/bin/python}"
 MODEL="${MOPD_MODEL_4B:-/leonardo_scratch/large/userexternal/rqian000/ICLR-2027-czy/models/Qwen3.5-4B-base}"
 MODEL_REVISION="851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a"
+MODEL_REPO="Qwen/Qwen3.5-4B"
+ASSET_REVISIONS="${ROOT}/outputs/runs/20260911T1740-teacher-gap-assets/outputs/revisions.tsv"
+ASSET_CHECKSUMS="${ROOT}/outputs/runs/20260911T1740-teacher-gap-assets/outputs/model-files.sha256"
+MODEL_ASSET_GATE="${ROOT}/code/utils/verify_model_asset.py"
 EXPECTED_COMMIT="${MOPD_EXPECTED_CODE_COMMIT:?set MOPD_EXPECTED_CODE_COMMIT to the submitted git HEAD}"
 [[ "${EXPECTED_COMMIT}" =~ ^[0-9a-f]{40}$ ]] || { echo "MOPD_EXPECTED_CODE_COMMIT must be the full 40-character lowercase git commit" >&2; exit 2; }
 RUNNER="${ROOT}/code/evaluation/run_exploratory_teacher_gap.py"
@@ -39,6 +43,9 @@ CODE_PATHS=(
   code/evaluation/g_pc0.py
   code/data_pipeline/reasoning_graph_contract.py
   code/data_pipeline/generate_g_pc0.py
+  code/utils/verify_model_asset.py
+  outputs/runs/20260911T1740-teacher-gap-assets/outputs/revisions.tsv
+  outputs/runs/20260911T1740-teacher-gap-assets/outputs/model-files.sha256
   code/utils/submit_g_pc0.sbatch
 )
 
@@ -66,6 +73,10 @@ assert_code_state() {
 assert_code_state
 mkdir -p "${RUN}"/{raw,parsed,summaries,logs}
 export CHECKOUT_ROOT ROOT RUN PY MODEL MODEL_REVISION EXPECTED_COMMIT RUNNER MANIFEST
+
+"${PY}" "${MODEL_ASSET_GATE}" --model-dir "${MODEL}" --repo "${MODEL_REPO}" \
+  --revision "${MODEL_REVISION}" --revisions-tsv "${ASSET_REVISIONS}" \
+  --checksums "${ASSET_CHECKSUMS}" --output "${RUN}/summaries/model-asset-gate.json"
 
 echo "[G-PC0] CPU preflight: profile, assets, tokenizer and Generic-T length"
 "${PY}" "${PROCESS}" validate-positive-control-manifest \

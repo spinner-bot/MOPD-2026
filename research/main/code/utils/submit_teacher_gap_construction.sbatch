@@ -27,6 +27,10 @@ PY="${MOPD_PYTHON:-/leonardo_scratch/fast/AIFAC_F02_774/rqian000/envs/mopd-stage
 MODEL="${MOPD_MODEL_9B:-/leonardo_scratch/large/userexternal/rqian000/models/Qwen3.5-9B-base}"
 IMAGE_ROOT="${MOPD_IMAGE_ROOT:-/leonardo_scratch/large/userexternal/rqian000/data/m3vqa/materialized/images}"
 REVISION="c202236235762e1c871ad0ccb60c8ee5ba337b9a"
+MODEL_REPO="Qwen/Qwen3.5-9B"
+ASSET_REVISIONS="${ROOT}/outputs/runs/20260911T1740-teacher-gap-assets/outputs/revisions.tsv"
+ASSET_CHECKSUMS="${ROOT}/outputs/runs/20260911T1740-teacher-gap-assets/outputs/model-files.sha256"
+MODEL_ASSET_GATE="${ROOT}/code/utils/verify_model_asset.py"
 EXPECTED_COMMIT="${MOPD_EXPECTED_CODE_COMMIT:?set MOPD_EXPECTED_CODE_COMMIT to the submitted git HEAD}"
 [[ "${EXPECTED_COMMIT}" =~ ^[0-9a-f]{40}$ ]] || { echo "MOPD_EXPECTED_CODE_COMMIT must be the full 40-character lowercase git commit" >&2; exit 2; }
 MAX_NEW_TOKENS="${MOPD_MAX_NEW_TOKENS:-768}"
@@ -50,6 +54,10 @@ ACTUAL_COMMIT="$(git -C "${ROOT}" rev-parse HEAD)"
 }
 mkdir -p "${RUN}"/{canary,raw,parsed,rejects,summaries,logs}
 export CHECKOUT_ROOT ROOT INPUT RUN PY MODEL IMAGE_ROOT REVISION EXPECTED_COMMIT MAX_NEW_TOKENS FALLBACK_MAX_NEW_TOKENS THINKING RUNNER
+
+"${PY}" "${MODEL_ASSET_GATE}" --model-dir "${MODEL}" --repo "${MODEL_REPO}" \
+  --revision "${REVISION}" --revisions-tsv "${ASSET_REVISIONS}" \
+  --checksums "${ASSET_CHECKSUMS}" --output "${RUN}/summaries/model-asset-gate.json"
 
 run_construct() {
   local destination="$1" limit="$2"
