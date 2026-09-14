@@ -29,6 +29,7 @@ from build_image_affordance_blind_calibration import (  # noqa: E402
     FORBIDDEN_KEYS,
     HUMAN_FIELDS,
     load_jsonl,
+    stable_packet_sha256,
     validate_completed_review,
 )
 from finalize_image_affordance_blind_review import (  # noqa: E402
@@ -314,11 +315,13 @@ class ReviewStore:
         changes = validate_edit_updates(updates)
         candidate = dict(self.rows[index])
         candidate.update(changes)
-        self.rows[index] = candidate
-        self._atomic_save_draft()
+        candidate_rows = list(self.rows)
+        candidate_rows[index] = candidate
+        self._atomic_save_draft(candidate_rows)
+        self.rows = candidate_rows
         return self.record(index)
 
-    def _atomic_save_draft(self) -> None:
+    def _atomic_save_draft(self, rows: list[dict]) -> None:
         if self.draft_path == self.input_path:
             raise ValueError("draft path must not overwrite frozen input")
         self.draft_path.parent.mkdir(parents=True, exist_ok=True)
@@ -333,7 +336,7 @@ class ReviewStore:
         temporary = Path(handle.name)
         try:
             with handle:
-                for row in self.rows:
+                for row in rows:
                     handle.write(json.dumps(row, ensure_ascii=False, sort_keys=True) + "\n")
                 handle.flush()
                 os.fsync(handle.fileno())
@@ -357,8 +360,13 @@ class ReviewStore:
                 "summary": Path(str(self.export_prefix) + ".summary.json"),
             }
             require_new_outputs(list(paths.values()))
+            if not self.draft_path.is_file():
+                raise ValueError("completed review has no persisted draft")
+            reviewed_sha256 = file_sha256(self.draft_path)
+            if stable_packet_sha256(self.rows) != reviewed_sha256:
+                raise ValueError("in-memory review differs from persisted draft")
             summary["original_packet_sha256"] = self.input_sha256
-            summary["reviewed_packet_sha256"] = file_sha256(self.draft_path)
+            summary["reviewed_packet_sha256"] = reviewed_sha256
             write_jsonl_exclusive(paths["accepted"], accepted)
             write_jsonl_exclusive(paths["rejected"], rejected)
             write_json_exclusive(paths["summary"], summary)

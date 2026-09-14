@@ -106,6 +106,22 @@ class ImageAffordanceBlindReviewAppTests(unittest.TestCase):
                 ["first visible fact", "second visible fact"],
             )
 
+    def test_failed_draft_write_does_not_commit_in_memory_changes(self):
+        with tempfile.TemporaryDirectory() as directory:
+            store = store_for(Path(directory))
+            store.save_index(0, {"human_image_usable": False})
+            rows_before = copy.deepcopy(store.rows)
+            draft_before = store.draft_path.read_bytes()
+
+            def fail_write(rows):
+                raise OSError("injected write failure")
+
+            store._atomic_save_draft = fail_write
+            with self.assertRaisesRegex(OSError, "injected write failure"):
+                store.save_index(0, {"human_image_usable": True})
+            self.assertEqual(store.rows, rows_before)
+            self.assertEqual(store.draft_path.read_bytes(), draft_before)
+
     def test_unset_false_and_empty_array_are_distinct(self):
         self.assertEqual(validate_edit_updates({"human_image_usable": ""})["human_image_usable"], "")
         self.assertIs(validate_edit_updates({"human_image_usable": False})["human_image_usable"], False)
@@ -267,6 +283,39 @@ class ImageAffordanceBlindReviewAppTests(unittest.TestCase):
             store = store_for(root)
             result = store.finalize_export()
             self.assertFalse(result["exported"])
+            self.assertFalse(Path(str(store.export_prefix) + ".summary.json").exists())
+
+    def test_complete_in_memory_rows_must_match_persisted_draft_before_export(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            packet, image_root, rows = make_packet(root, 2)
+            reviewed = copy.deepcopy(rows)
+            for row in reviewed:
+                row.update({
+                    "human_verified": True,
+                    "review_status": "human_blind_affordance_review_complete",
+                    "human_image_usable": True,
+                    "human_affordance_decision": "reject",
+                    "human_external_knowledge_needed": False,
+                    "human_reviewer": "reviewer-01",
+                    "human_reviewed_at": "2026-09-14T13:00:00+08:00",
+                    "human_notes": "No valid closed-world R/PR target found.",
+                })
+            draft = root / "review.jsonl"
+            write_jsonl(draft, reviewed)
+            store = ReviewStore(
+                input_path=packet,
+                image_root=image_root,
+                draft_path=draft,
+                export_prefix=root / "final-review-v1",
+                expected_input_sha256=hashlib.sha256(packet.read_bytes()).hexdigest(),
+                expected_records=2,
+            )
+            store.rows[0]["human_notes"] = "changed only in process memory"
+            with self.assertRaisesRegex(ValueError, "differs from persisted draft"):
+                store.finalize_export()
+            self.assertFalse(Path(str(store.export_prefix) + ".accepted.jsonl").exists())
+            self.assertFalse(Path(str(store.export_prefix) + ".rejected.jsonl").exists())
             self.assertFalse(Path(str(store.export_prefix) + ".summary.json").exists())
 
     def test_record_hides_source_identity_and_image_payload_is_hash_bound(self):
