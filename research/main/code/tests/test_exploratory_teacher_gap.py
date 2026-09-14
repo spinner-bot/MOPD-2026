@@ -14,11 +14,16 @@ sys.path.insert(0, str(ROOT / "code" / "evaluation"))
 
 from exploratory_teacher_gap import (
     CONDITIONS,
+    aggregate_natural_rotation_results,
     decide_teacher_gap,
+    decide_teacher_gap_label_rotation,
+    expand_natural_rotation_manifest,
     exact_mcnemar_one_sided,
     frozen_schedule,
     validate_manifest_bundle,
+    validate_manifest_profile,
     validate_locked_manifest,
+    validate_natural_rotation_manifest,
     validate_partition_isolation,
     validate_result_records,
     validate_results_against_manifest,
@@ -142,6 +147,98 @@ def result_records(tq_gains: int, tqa_gains: int, generic_gains: int = 1, logp_t
 
 
 class ExploratoryTeacherGapTests(unittest.TestCase):
+    def test_natural_rotation_preflight_cli_binds_base_assets_and_tokenizer(self):
+        class Tokenizer:
+            @staticmethod
+            def encode(text, add_special_tokens=False):
+                return [ord(text)] if text in "ABCD" and len(text) == 1 else list(range(20))
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            image_dir = root / "images"
+            image_dir.mkdir()
+            samples = [manifest_sample(index) for index in range(8)]
+            for index, sample in enumerate(samples):
+                content = f"image-{index}".encode()
+                (image_dir / f"{index:03d}.jpg").write_bytes(content)
+                sample["image_checksum"] = hashlib.sha256(content).hexdigest()
+            base = root / "base.jsonl"
+            base.write_text("".join(json.dumps(row, sort_keys=True) + "\n" for row in samples), encoding="utf-8")
+            base_hash = hashlib.sha256(base.read_bytes()).hexdigest()
+            expanded = expand_natural_rotation_manifest(samples, base_hash)
+            manifest = root / "rotation.jsonl"
+            manifest.write_text("".join(json.dumps(row, sort_keys=True) + "\n" for row in expanded), encoding="utf-8")
+            tokenizer_root = root / "tokenizer"
+            tokenizer_root.mkdir()
+            summary = root / "preflight.json"
+            argv = [
+                "process_exploratory_teacher_gap.py", "validate-natural-label-rotation-manifest",
+                "--manifest", str(manifest), "--base-manifest", str(base),
+                "--expected-samples", "8", "--image-root", str(root),
+                "--tokenizer", str(tokenizer_root), "--summary", str(summary),
+            ]
+            with patch("sys.argv", argv), patch(
+                "transformers.AutoTokenizer.from_pretrained", return_value=Tokenizer()
+            ), patch("builtins.print"):
+                process_teacher_gap()
+            result = json.loads(summary.read_text(encoding="utf-8"))
+            self.assertEqual(result["status"], "passed")
+            self.assertEqual(result["manifest_records"], 32)
+            self.assertFalse(result["performance_results_read"])
+            self.assertFalse(result["gpu_used"])
+
+    def test_natural_rotation_manifest_and_semantic_aggregation(self):
+        samples = [manifest_sample(index) for index in range(8)]
+        payload = "".join(json.dumps(row, sort_keys=True) + "\n" for row in samples).encode()
+        base_hash = hashlib.sha256(payload).hexdigest()
+        expanded = expand_natural_rotation_manifest(samples, base_hash)
+        self.assertEqual(validate_natural_rotation_manifest(expanded, samples, base_hash, 32), [])
+        self.assertEqual(validate_manifest_profile(
+            expanded, 32, "natural_rotation", samples, base_hash
+        ), [])
+        self.assertEqual(len(expanded), 32)
+        self.assertEqual({row["source_record_id"] for row in expanded}, {row["source_record_id"] for row in samples})
+        mutated = json.loads(json.dumps(expanded))
+        mutated[0]["displayed_label_to_semantic_option"]["A"] = "D"
+        self.assertTrue(validate_natural_rotation_manifest(mutated, samples, base_hash, 32))
+
+        label_bias = {"A": 20.0, "B": 10.0, "C": 0.0, "D": -10.0}
+        records = []
+        for row in expanded:
+            mapping = row["displayed_label_to_semantic_option"]
+            correct = row["correct_semantic_option_id"]
+            wrong = "ABCD"[("ABCD".index(correct) + 1) % 4]
+            for condition in CONDITIONS:
+                target = correct if condition == "T_QA" else wrong
+                scores = {
+                    displayed: label_bias[displayed] + (40.0 if semantic == target else 0.0)
+                    for displayed, semantic in mapping.items()
+                }
+                records.append({
+                    "base_sample_id": row["base_sample_id"],
+                    "condition": condition,
+                    "label_rotation": row["label_rotation"],
+                    "displayed_label_to_semantic_option": mapping,
+                    "choice_log_likelihoods": scores,
+                    "parsed_answer": max("ABCD", key=lambda choice: scores[choice]),
+                    "correct_semantic_option_id": correct,
+                    "source_cluster_id": row["source_cluster_id"],
+                })
+        observations, errors = aggregate_natural_rotation_results(records, expected_samples=8)
+        self.assertEqual(errors, [])
+        self.assertEqual(len(observations), 32)
+        self.assertEqual(sum(row["correct"] for row in observations if row["condition"] == "S"), 0)
+        self.assertEqual(sum(row["correct"] for row in observations if row["condition"] == "T_QA"), 8)
+        self.assertTrue(all("mapped_generation_vote_tie" in row for row in observations))
+        decision = decide_teacher_gap_label_rotation(
+            records, leakage_free=True, expected_samples=8, n_bootstrap=100
+        )
+        self.assertEqual(decision["decision"], "GO_T_QA")
+        self.assertEqual(decision["n_samples"], 8)
+        self.assertEqual(decision["n_rotation_views"], 32)
+        self.assertEqual(decision["n_condition_records"], 128)
+        self.assertFalse(decision["generation_vote_used_for_decision"])
+
     def test_validate_cli_binds_complete_raw_to_manifest(self):
         samples = [manifest_sample(index) for index in range(8)]
         with tempfile.TemporaryDirectory() as directory:

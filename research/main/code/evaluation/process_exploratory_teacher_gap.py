@@ -12,6 +12,7 @@ from pathlib import Path
 from exploratory_teacher_gap import (
     CHOICES,
     decide_teacher_gap,
+    decide_teacher_gap_label_rotation,
     validate_manifest_bundle,
     validate_manifest_profile,
     validate_result_records,
@@ -107,7 +108,9 @@ def main() -> None:
     validate_parser.add_argument("--manifest", type=Path, required=True)
     validate_parser.add_argument("--expected-samples", type=int, required=True)
     validate_parser.add_argument(
-        "--manifest-profile", choices=("natural", "g_pc0", "g_pc0_rotation"), default="natural"
+        "--manifest-profile",
+        choices=("natural", "natural_rotation", "g_pc0", "g_pc0_rotation"),
+        default="natural",
     )
     validate_parser.add_argument("--base-manifest", type=Path)
     validate_parser.add_argument("--image-root", type=Path)
@@ -118,6 +121,20 @@ def main() -> None:
     decide_parser.add_argument("--expected-samples", type=int, default=96)
     decide_parser.add_argument("--leakage-free", action="store_true", required=True)
     decide_parser.add_argument("--output", type=Path, required=True)
+    rotation_natural_decide_parser = subparsers.add_parser("decide-natural-label-rotation")
+    rotation_natural_decide_parser.add_argument("--input", type=Path, required=True)
+    rotation_natural_decide_parser.add_argument("--manifest", type=Path, required=True)
+    rotation_natural_decide_parser.add_argument("--base-manifest", type=Path, required=True)
+    rotation_natural_decide_parser.add_argument("--expected-samples", type=int, required=True)
+    rotation_natural_decide_parser.add_argument("--leakage-free", action="store_true", required=True)
+    rotation_natural_decide_parser.add_argument("--output", type=Path, required=True)
+    natural_rotation_manifest_parser = subparsers.add_parser("validate-natural-label-rotation-manifest")
+    natural_rotation_manifest_parser.add_argument("--manifest", type=Path, required=True)
+    natural_rotation_manifest_parser.add_argument("--base-manifest", type=Path, required=True)
+    natural_rotation_manifest_parser.add_argument("--expected-samples", type=int, required=True)
+    natural_rotation_manifest_parser.add_argument("--image-root", type=Path, required=True)
+    natural_rotation_manifest_parser.add_argument("--tokenizer", type=Path, required=True)
+    natural_rotation_manifest_parser.add_argument("--summary", type=Path, required=True)
     pc_decide_parser = subparsers.add_parser("decide-positive-control")
     pc_decide_parser.add_argument("--input", type=Path, required=True)
     pc_decide_parser.add_argument("--manifest", type=Path, required=True)
@@ -177,17 +194,26 @@ def main() -> None:
         print(json.dumps(summary, ensure_ascii=False, sort_keys=True))
         if errors:
             raise SystemExit("teacher-gap manifest bundle FAILED: " + "; ".join(errors))
-    elif args.command in {"validate-positive-control-manifest", "validate-label-rotation-manifest"}:
+    elif args.command in {
+        "validate-positive-control-manifest",
+        "validate-label-rotation-manifest",
+        "validate-natural-label-rotation-manifest",
+    }:
         if args.summary.exists():
             raise SystemExit(f"refusing to overwrite manifest summary: {args.summary}")
         samples = load_jsonl([str(args.manifest)])
-        is_rotation = args.command == "validate-label-rotation-manifest"
+        is_pc_rotation = args.command == "validate-label-rotation-manifest"
+        is_natural_rotation = args.command == "validate-natural-label-rotation-manifest"
+        is_rotation = is_pc_rotation or is_natural_rotation
         base_samples = load_jsonl([str(args.base_manifest)]) if is_rotation else None
         base_hash = file_sha256(args.base_manifest) if is_rotation else None
+        expected_n = args.expected_samples * 4 if is_natural_rotation else (64 if is_pc_rotation else 16)
         errors = validate_manifest_profile(
             samples,
-            expected_n=64 if is_rotation else 16,
-            manifest_profile="g_pc0_rotation" if is_rotation else "g_pc0",
+            expected_n=expected_n,
+            manifest_profile=(
+                "natural_rotation" if is_natural_rotation else ("g_pc0_rotation" if is_pc_rotation else "g_pc0")
+            ),
             base_samples=base_samples,
             base_manifest_hash=base_hash,
         )
@@ -215,7 +241,11 @@ def main() -> None:
             errors.append(f"tokenizer preflight failed: {type(error).__name__}: {error}")
         summary = {
             "status": "passed" if not errors else "failed",
-            "manifest_profile": "g_pc0_label_rotation_diagnostic_v1" if is_rotation else "g_pc0_v1",
+            "manifest_profile": (
+                "natural_label_rotation_v1"
+                if is_natural_rotation
+                else ("g_pc0_label_rotation_diagnostic_v1" if is_pc_rotation else "g_pc0_v1")
+            ),
             "manifest_records": len(samples),
             "manifest_sha256": file_sha256(args.manifest),
             "image_root": str(args.image_root.resolve()),
@@ -231,7 +261,7 @@ def main() -> None:
         write_json_new(args.summary, summary)
         print(json.dumps(summary, ensure_ascii=False, sort_keys=True))
         if errors:
-            raise SystemExit("G-PC0 manifest preflight FAILED: " + "; ".join(sorted(set(errors))))
+            raise SystemExit("label-rotation manifest preflight FAILED: " + "; ".join(sorted(set(errors))))
     elif args.command == "validate":
         if args.parsed_output.exists() or args.summary.exists():
             raise SystemExit("refusing to overwrite parsed output or validation summary")
@@ -282,6 +312,35 @@ def main() -> None:
         print(json.dumps(decision, ensure_ascii=False, sort_keys=True))
         if decision["decision"] == "INVALID":
             raise SystemExit("teacher-gap decision refused invalid records")
+    elif args.command == "decide-natural-label-rotation":
+        if args.output.exists():
+            raise SystemExit(f"refusing to overwrite decision output: {args.output}")
+        rows = load_jsonl([str(args.input)])
+        samples = load_jsonl([str(args.manifest)])
+        base_samples = load_jsonl([str(args.base_manifest)])
+        manifest_hash = file_sha256(args.manifest)
+        base_hash = file_sha256(args.base_manifest)
+        errors = validate_result_records(rows, expected_samples=args.expected_samples * 4)
+        errors.extend(validate_manifest_profile(
+            samples,
+            expected_n=args.expected_samples * 4,
+            manifest_profile="natural_rotation",
+            base_samples=base_samples,
+            base_manifest_hash=base_hash,
+        ))
+        errors.extend(validate_results_against_manifest(rows, samples, manifest_hash))
+        decision = decide_teacher_gap_label_rotation(
+            rows,
+            leakage_free=args.leakage_free,
+            expected_samples=args.expected_samples,
+            validation_errors=errors,
+        )
+        decision["manifest_sha256"] = manifest_hash
+        decision["base_manifest_sha256"] = base_hash
+        write_json_new(args.output, decision)
+        print(json.dumps(decision, ensure_ascii=False, sort_keys=True))
+        if decision["decision"] == "INVALID":
+            raise SystemExit("natural label-rotation decision refused invalid records")
     elif args.command == "decide-positive-control":
         if args.output.exists():
             raise SystemExit(f"refusing to overwrite decision output: {args.output}")

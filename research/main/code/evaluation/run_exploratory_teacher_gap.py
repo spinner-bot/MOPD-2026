@@ -143,7 +143,11 @@ def main() -> None:
     parser.add_argument("--rank", type=int, default=0)
     parser.add_argument("--world-size", type=int, default=1)
     parser.add_argument("--expected-samples", type=int, default=96)
-    parser.add_argument("--manifest-profile", choices=("natural", "g_pc0", "g_pc0_rotation"), default="natural")
+    parser.add_argument(
+        "--manifest-profile",
+        choices=("natural", "natural_rotation", "g_pc0", "g_pc0_rotation"),
+        default="natural",
+    )
     parser.add_argument("--base-manifest", type=Path)
     parser.add_argument("--limit", type=int, default=0, help="per-rank scheduled-pair limit")
     args = parser.parse_args()

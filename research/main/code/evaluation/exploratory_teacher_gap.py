@@ -11,6 +11,7 @@ import json
 import math
 import random
 import sys
+from copy import deepcopy
 from collections import Counter, defaultdict
 from datetime import datetime
 from pathlib import Path
@@ -25,6 +26,19 @@ from g_pc0 import validate_g_pc0_manifest, validate_g_pc0_rotation_manifest
 
 CONDITIONS = ("S", "T_Q", "T_QA", "T_generic")
 CHOICES = ("A", "B", "C", "D")
+NATURAL_ROTATION_PROFILE = "natural_label_rotation_v1"
+NATURAL_ROTATION_ROLE = "natural_teacher_gap_label_robust_measurement"
+NATURAL_ROTATION_SPEC = {
+    "version": NATURAL_ROTATION_PROFILE,
+    "rotation_order": [0, 1, 2, 3],
+    "displayed_to_semantic_rule": "semantic_index=(displayed_index+rotation) mod 4",
+    "score_aggregation": "mean raw label-sequence log-likelihood by semantic option",
+    "continuous_metric": "log_softmax over four semantic mean scores",
+    "tie_break": list(CHOICES),
+}
+NATURAL_ROTATION_SPEC_HASH = hashlib.sha256(
+    json.dumps(NATURAL_ROTATION_SPEC, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode()
+).hexdigest()
 
 
 def validate_manifest_profile(
@@ -42,6 +56,13 @@ def validate_manifest_profile(
         return validate_g_pc0_manifest(samples, expected_n=expected_n)
     if manifest_profile == "g_pc0_rotation":
         return validate_g_pc0_rotation_manifest(
+            samples,
+            base_samples=base_samples,
+            base_manifest_hash=base_manifest_hash,
+            expected_n=expected_n,
+        )
+    if manifest_profile == "natural_rotation":
+        return validate_natural_rotation_manifest(
             samples,
             base_samples=base_samples,
             base_manifest_hash=base_manifest_hash,
@@ -204,6 +225,131 @@ def validate_locked_manifest(samples: list[dict], expected_n: int = 96) -> list[
         ).strip():
             errors.append(f"{row_id}: correct option must equal canonical_answer_text")
     return errors
+
+
+def natural_label_rotation_mapping(rotation: int) -> dict[str, str]:
+    if rotation not in range(4):
+        raise ValueError("label rotation must be in 0..3")
+    return {
+        displayed: CHOICES[(index + rotation) % len(CHOICES)]
+        for index, displayed in enumerate(CHOICES)
+    }
+
+
+def expand_natural_rotation_manifest(
+    base_samples: list[dict], base_manifest_hash: str
+) -> list[dict]:
+    """Create all four non-selective displayed-label views for natural samples."""
+
+    base_errors = validate_locked_manifest(base_samples, expected_n=len(base_samples))
+    if base_errors:
+        raise ValueError("base natural manifest invalid: " + "; ".join(base_errors))
+    if len(base_manifest_hash) != 64 or any(c not in "0123456789abcdef" for c in base_manifest_hash):
+        raise ValueError("base manifest hash must be lowercase SHA-256")
+    rows = []
+    for base in base_samples:
+        semantic_options = {choice: base[f"option_{choice}"] for choice in CHOICES}
+        for rotation in range(4):
+            mapping = natural_label_rotation_mapping(rotation)
+            row = deepcopy(base)
+            row.update({
+                "sample_id": f"{base['sample_id']}-lr{rotation}",
+                "manifest_profile": NATURAL_ROTATION_PROFILE,
+                "experiment_role": NATURAL_ROTATION_ROLE,
+                "base_sample_id": base["sample_id"],
+                "base_manifest_sha256": base_manifest_hash,
+                "label_rotation": rotation,
+                "rotation_spec_hash": NATURAL_ROTATION_SPEC_HASH,
+                "semantic_options": semantic_options,
+                "correct_semantic_option_id": base["final_answer"],
+                "displayed_label_to_semantic_option": mapping,
+            })
+            for displayed, semantic in mapping.items():
+                row[f"option_{displayed}"] = semantic_options[semantic]
+            row["final_answer"] = next(
+                displayed for displayed, semantic in mapping.items() if semantic == base["final_answer"]
+            )
+            rows.append(row)
+    return rows
+
+
+def validate_natural_rotation_manifest(
+    samples: list[dict],
+    base_samples: list[dict] | None,
+    base_manifest_hash: str | None,
+    expected_n: int,
+) -> list[str]:
+    """Bind natural rotation views to an exact human-reviewed base manifest."""
+
+    errors = []
+    if expected_n % 4 or len(samples) != expected_n:
+        errors.append(f"natural label rotation requires exactly {expected_n} rows, found {len(samples)}")
+    if base_samples is None or base_manifest_hash is None:
+        return sorted(set(errors + ["natural label rotation requires explicit base manifest and hash"]))
+    if expected_n != 4 * len(base_samples):
+        errors.append("expanded size must equal four times the base manifest size")
+    errors.extend(
+        f"base manifest: {error}"
+        for error in validate_locked_manifest(base_samples, expected_n=len(base_samples))
+    )
+    if len(base_manifest_hash) != 64 or any(c not in "0123456789abcdef" for c in base_manifest_hash):
+        errors.append("base manifest hash must be lowercase SHA-256")
+    base_by_id = {str(row.get("sample_id", "")): row for row in base_samples}
+    groups: dict[str, list[dict]] = defaultdict(list)
+    for row in samples:
+        groups[str(row.get("base_sample_id", ""))].append(row)
+    if set(groups) != set(base_by_id):
+        errors.append("expanded base_sample_id set differs from base manifest")
+    controlled = {
+        "sample_id", "manifest_profile", "experiment_role", "base_sample_id",
+        "base_manifest_sha256", "label_rotation", "rotation_spec_hash",
+        "semantic_options", "correct_semantic_option_id", "displayed_label_to_semantic_option",
+        "option_A", "option_B", "option_C", "option_D", "final_answer",
+    }
+    for base in base_samples:
+        base_id = str(base.get("sample_id", ""))
+        rows = groups.get(base_id, [])
+        if len(rows) != 4 or {row.get("label_rotation") for row in rows} != set(range(4)):
+            errors.append(f"{base_id}: requires exactly rotations 0..3")
+            continue
+        semantic_options = {choice: base[f"option_{choice}"] for choice in CHOICES}
+        for row in rows:
+            rotation = row["label_rotation"]
+            row_id = f"{base_id}-lr{rotation}"
+            if row.get("sample_id") != row_id:
+                errors.append(f"{row_id}: expanded sample ID mismatch")
+            if row.get("manifest_profile") != NATURAL_ROTATION_PROFILE or row.get("experiment_role") != NATURAL_ROTATION_ROLE:
+                errors.append(f"{row_id}: natural rotation profile/role mismatch")
+            if row.get("base_manifest_sha256") != base_manifest_hash:
+                errors.append(f"{row_id}: base manifest hash mismatch")
+            if row.get("rotation_spec_hash") != NATURAL_ROTATION_SPEC_HASH:
+                errors.append(f"{row_id}: rotation spec hash mismatch")
+            for field in set(base) - controlled:
+                if row.get(field) != base.get(field):
+                    errors.append(f"{row_id}: base field differs: {field}")
+            if set(row) - set(base) - controlled:
+                errors.append(f"{row_id}: unexpected expanded fields")
+            if row.get("semantic_options") != semantic_options:
+                errors.append(f"{row_id}: semantic options mismatch")
+            if row.get("correct_semantic_option_id") != base.get("final_answer"):
+                errors.append(f"{row_id}: correct semantic option mismatch")
+            mapping = natural_label_rotation_mapping(rotation)
+            if row.get("displayed_label_to_semantic_option") != mapping:
+                errors.append(f"{row_id}: cyclic mapping mismatch")
+            for displayed, semantic in mapping.items():
+                if row.get(f"option_{displayed}") != semantic_options[semantic]:
+                    errors.append(f"{row_id}: displayed option {displayed} mismatch")
+            correct_label = next(
+                displayed for displayed, semantic in mapping.items() if semantic == base.get("final_answer")
+            )
+            if row.get("final_answer") != correct_label:
+                errors.append(f"{row_id}: displayed correct label mismatch")
+    expected_order = [
+        f"{base['sample_id']}-lr{rotation}" for base in base_samples for rotation in range(4)
+    ]
+    if [str(row.get("sample_id", "")) for row in samples] != expected_order:
+        errors.append("natural rotations must follow base-major then rotation-major order")
+    return sorted(set(errors))
 
 
 def validate_partition_isolation(partitions: dict[str, list[dict]]) -> list[str]:
@@ -608,7 +754,7 @@ def _condition_vectors(records: list[dict]) -> tuple[list[str], dict[str, dict[s
     return ids, by_condition
 
 
-def decide_teacher_gap(
+def _decide_teacher_gap_validated(
     records: list[dict],
     *,
     leakage_free: bool,
@@ -616,11 +762,8 @@ def decide_teacher_gap(
     n_bootstrap: int = 10_000,
     seed: int = 20260911,
 ) -> dict:
-    """Apply the pre-registered 1017 Go/Revise/Stop decision tree."""
+    """Apply 1017 statistics after the caller has validated the observation space."""
 
-    validation_errors = validate_result_records(records, expected_samples=expected_samples)
-    if validation_errors:
-        return {"decision": "INVALID", "validation_errors": validation_errors}
     ids, rows = _condition_vectors(records)
     source_clusters = [str(rows["S"][sample_id]["source_cluster_id"]) for sample_id in ids]
     baseline_correct = [bool(rows["S"][sample_id]["correct"]) for sample_id in ids]
@@ -690,3 +833,156 @@ def decide_teacher_gap(
         "n_samples": len(ids),
         "comparisons": comparisons,
     }
+
+
+def decide_teacher_gap(
+    records: list[dict],
+    *,
+    leakage_free: bool,
+    expected_samples: int = 96,
+    n_bootstrap: int = 10_000,
+    seed: int = 20260911,
+) -> dict:
+    """Apply the original fixed-label 1017 decision for preserved legacy runs."""
+
+    validation_errors = validate_result_records(records, expected_samples=expected_samples)
+    if validation_errors:
+        return {"decision": "INVALID", "validation_errors": validation_errors}
+    return _decide_teacher_gap_validated(
+        records,
+        leakage_free=leakage_free,
+        expected_samples=expected_samples,
+        n_bootstrap=n_bootstrap,
+        seed=seed,
+    )
+
+
+def aggregate_natural_rotation_results(
+    records: list[dict], expected_samples: int = 96
+) -> tuple[list[dict], list[str]]:
+    """Reduce four displayed-label views to one semantic observation per condition."""
+
+    errors: list[str] = []
+    grouped: dict[str, dict[str, dict[int, dict]]] = defaultdict(lambda: defaultdict(dict))
+    for row in records:
+        base_id = str(row.get("base_sample_id", ""))
+        condition = str(row.get("condition", ""))
+        rotation = row.get("label_rotation")
+        if not base_id or condition not in CONDITIONS or rotation not in range(4):
+            errors.append("every rotation result requires base_sample_id, condition and rotation 0..3")
+            continue
+        if rotation in grouped[base_id][condition]:
+            errors.append(f"{base_id}/{condition}/lr{rotation}: duplicate")
+        grouped[base_id][condition][rotation] = row
+    if len(grouped) != expected_samples:
+        errors.append(f"expected {expected_samples} base samples, found {len(grouped)}")
+    observations = []
+    for base_id in sorted(grouped):
+        conditions = grouped[base_id]
+        if set(conditions) != set(CONDITIONS):
+            errors.append(f"{base_id}: all four conditions are required")
+            continue
+        for condition in CONDITIONS:
+            rotations = conditions[condition]
+            if set(rotations) != set(range(4)):
+                errors.append(f"{base_id}/{condition}: rotations 0..3 are required")
+                continue
+            semantic_values = {choice: [] for choice in CHOICES}
+            mapped_votes = Counter()
+            correct_values = set()
+            cluster_values = set()
+            for rotation in range(4):
+                row = rotations[rotation]
+                mapping = row.get("displayed_label_to_semantic_option")
+                scores = row.get("choice_log_likelihoods")
+                if mapping != natural_label_rotation_mapping(rotation):
+                    errors.append(f"{base_id}/{condition}/lr{rotation}: mapping mismatch")
+                    continue
+                if not isinstance(scores, dict) or set(scores) != set(CHOICES) or not all(
+                    isinstance(value, (int, float)) and math.isfinite(value) for value in scores.values()
+                ):
+                    errors.append(f"{base_id}/{condition}/lr{rotation}: invalid choice scores")
+                    continue
+                for displayed, semantic in mapping.items():
+                    semantic_values[semantic].append(float(scores[displayed]))
+                if row.get("parsed_answer") in CHOICES:
+                    mapped_votes[mapping[row["parsed_answer"]]] += 1
+                correct_values.add(str(row.get("correct_semantic_option_id", "")))
+                cluster_values.add(str(row.get("source_cluster_id", "")))
+            if len(correct_values) != 1 or next(iter(correct_values), "") not in CHOICES:
+                errors.append(f"{base_id}/{condition}: correct semantic option must be invariant")
+                continue
+            if len(cluster_values) != 1 or not next(iter(cluster_values), ""):
+                errors.append(f"{base_id}/{condition}: source cluster must be invariant")
+                continue
+            if any(len(values) != 4 for values in semantic_values.values()):
+                errors.append(f"{base_id}/{condition}: every semantic option needs four scores")
+                continue
+            means = {choice: sum(semantic_values[choice]) / 4 for choice in CHOICES}
+            maximum = max(means.values())
+            weights = {choice: math.exp(means[choice] - maximum) for choice in CHOICES}
+            total = sum(weights.values())
+            probabilities = {choice: weights[choice] / total for choice in CHOICES}
+            log_probabilities = {choice: math.log(probabilities[choice]) for choice in CHOICES}
+            prediction = max(CHOICES, key=lambda choice: (means[choice], -CHOICES.index(choice)))
+            correct = next(iter(correct_values))
+            max_votes = max(mapped_votes.values(), default=0)
+            vote_winners = [choice for choice in CHOICES if mapped_votes[choice] == max_votes]
+            observations.append({
+                "sample_id": base_id,
+                "condition": condition,
+                "source_cluster_id": next(iter(cluster_values)),
+                "correct": prediction == correct,
+                "correct_choice": correct,
+                "parsed_answer": prediction,
+                "correct_log_prob": log_probabilities[correct],
+                "semantic_correct_log_prob": log_probabilities[correct],
+                "semantic_margin": means[correct] - max(means[choice] for choice in CHOICES if choice != correct),
+                "semantic_prediction": prediction,
+                "semantic_mean_log_likelihoods": means,
+                "semantic_probabilities": probabilities,
+                "mapped_generation_votes": {choice: mapped_votes[choice] for choice in CHOICES},
+                "mapped_generation_vote_prediction": vote_winners[0] if len(vote_winners) == 1 else None,
+                "mapped_generation_vote_tie": len(vote_winners) != 1,
+            })
+    return observations, sorted(set(errors))
+
+
+def decide_teacher_gap_label_rotation(
+    records: list[dict],
+    *,
+    leakage_free: bool,
+    expected_samples: int = 96,
+    validation_errors: list[str] | None = None,
+    n_bootstrap: int = 10_000,
+    seed: int = 20260911,
+) -> dict:
+    """Apply 1017 v0.3 to base-sample semantic observations from four rotations."""
+
+    observations, aggregation_errors = aggregate_natural_rotation_results(records, expected_samples)
+    errors = sorted(set((validation_errors or []) + aggregation_errors))
+    if errors:
+        return {"decision": "INVALID", "validation_errors": errors}
+    result = _decide_teacher_gap_validated(
+        observations,
+        leakage_free=leakage_free,
+        expected_samples=expected_samples,
+        n_bootstrap=n_bootstrap,
+        seed=seed,
+    )
+    result.update({
+        "measurement_profile": NATURAL_ROTATION_PROFILE,
+        "field_semantics": {
+            "accuracy_delta_vs_S": "semantic_accuracy_delta_vs_S",
+            "accuracy_delta_vs_generic": "semantic_accuracy_delta_vs_generic",
+            "correct_log_prob_vs_S": "semantic_correct_log_prob_vs_S",
+            "correct_log_prob_delta_vs_generic": "semantic_correct_log_prob_delta_vs_generic",
+        },
+        "statistical_unit": "base_sample",
+        "n_rotation_views": expected_samples * 4,
+        "n_condition_records": expected_samples * 4 * len(CONDITIONS),
+        "continuous_metric": "semantic_correct_log_prob",
+        "generation_vote_used_for_decision": False,
+        "semantic_observations": observations,
+    })
+    return result
