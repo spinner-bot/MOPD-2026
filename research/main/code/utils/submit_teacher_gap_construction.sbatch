@@ -12,7 +12,14 @@
 #SBATCH --error=%x-%j.err
 set -euo pipefail
 
-ROOT="${MOPD_ROOT:?set MOPD_ROOT to research/main}"
+if [[ -n "${MOPD_CHECKOUT_ROOT:-}" ]]; then
+  CHECKOUT_ROOT="$(cd -- "${MOPD_CHECKOUT_ROOT}" && pwd -P)"
+  cd "${CHECKOUT_ROOT}"
+  ROOT="${CHECKOUT_ROOT}/research/main"
+else
+  ROOT="${MOPD_ROOT:?set MOPD_ROOT to research/main}"
+  CHECKOUT_ROOT="$(git -C "${ROOT}" rev-parse --show-toplevel)"
+fi
 INPUT="${MOPD_INPUT:?set MOPD_INPUT to construction-inputs JSONL}"
 RUN="${ROOT}/outputs/runs/${MOPD_RUN_ID:?set MOPD_RUN_ID}"
 PY="${MOPD_PYTHON:-/leonardo_scratch/fast/AIFAC_F02_774/rqian000/envs/mopd-stage0-py311/bin/python}"
@@ -41,7 +48,7 @@ ACTUAL_COMMIT="$(git -C "${ROOT}" rev-parse HEAD)"
   exit 2
 }
 mkdir -p "${RUN}"/{canary,raw,parsed,rejects,summaries,logs}
-export ROOT INPUT RUN PY MODEL IMAGE_ROOT REVISION EXPECTED_COMMIT MAX_NEW_TOKENS FALLBACK_MAX_NEW_TOKENS THINKING RUNNER
+export CHECKOUT_ROOT ROOT INPUT RUN PY MODEL IMAGE_ROOT REVISION EXPECTED_COMMIT MAX_NEW_TOKENS FALLBACK_MAX_NEW_TOKENS THINKING RUNNER
 
 run_construct() {
   local destination="$1" limit="$2"

@@ -12,7 +12,14 @@
 #SBATCH --error=%x-%j.err
 set -euo pipefail
 
-ROOT="${MOPD_ROOT:-research/main}"
+if [[ -n "${MOPD_CHECKOUT_ROOT:-}" ]]; then
+  CHECKOUT_ROOT="$(cd -- "${MOPD_CHECKOUT_ROOT}" && pwd -P)"
+  cd "${CHECKOUT_ROOT}"
+  ROOT="${CHECKOUT_ROOT}/research/main"
+else
+  ROOT="${MOPD_ROOT:-research/main}"
+  CHECKOUT_ROOT="$(git -C "${ROOT}" rev-parse --show-toplevel)"
+fi
 BASE_MANIFEST="${ROOT}/outputs/runs/20260914T0916-teacher-gap-g-pc0-v1/outputs/manifest.jsonl"
 BASE_SHA256="10b09d122a5781df564a63cac8449d368a2d785c3fb06ba15c3887db2433bb1c"
 MANIFEST="${ROOT}/outputs/runs/20260914T0954-teacher-gap-g-pc0-label-rotation-v1/outputs/manifest.jsonl"
@@ -57,7 +64,7 @@ assert_code_state() {
 [[ -f "${RUN}/manifest.json" ]] || { echo "initialize a new run archive first: ${RUN}" >&2; exit 2; }
 assert_code_state
 mkdir -p "${RUN}"/{raw,parsed,summaries,logs}
-export ROOT RUN PY MODEL MODEL_REVISION EXPECTED_COMMIT RUNNER MANIFEST BASE_MANIFEST
+export CHECKOUT_ROOT ROOT RUN PY MODEL MODEL_REVISION EXPECTED_COMMIT RUNNER MANIFEST BASE_MANIFEST
 
 "${PY}" "${PROCESS}" validate-label-rotation-manifest \
   --manifest "${MANIFEST}" --base-manifest "${BASE_MANIFEST}" \

@@ -12,7 +12,14 @@
 #SBATCH --error=%x-%j.err
 set -euo pipefail
 
-ROOT="${MOPD_ROOT:?set MOPD_ROOT to research/main}"
+if [[ -n "${MOPD_CHECKOUT_ROOT:-}" ]]; then
+  CHECKOUT_ROOT="$(cd -- "${MOPD_CHECKOUT_ROOT}" && pwd -P)"
+  cd "${CHECKOUT_ROOT}"
+  ROOT="${CHECKOUT_ROOT}/research/main"
+else
+  ROOT="${MOPD_ROOT:?set MOPD_ROOT to research/main}"
+  CHECKOUT_ROOT="$(git -C "${ROOT}" rev-parse --show-toplevel)"
+fi
 CANARY_MANIFEST="${MOPD_CANARY_MANIFEST:?set 8-sample canary manifest}"
 DEV_MANIFEST="${MOPD_DEV_MANIFEST:?set 32-sample construction/dev manifest}"
 LOCKED_MANIFEST="${MOPD_LOCKED_MANIFEST:?set 96-sample locked manifest}"
@@ -61,7 +68,7 @@ assert_code_state() {
 [[ -f "${RUN}/manifest.json" ]] || { echo "initialize run archive first: ${RUN}" >&2; exit 2; }
 assert_code_state
 mkdir -p "${RUN}"/{raw,parsed,summaries,logs}
-export ROOT RUN PY MODEL IMAGE_ROOT REVISION EXPECTED_COMMIT RUNNER
+export CHECKOUT_ROOT ROOT RUN PY MODEL IMAGE_ROOT REVISION EXPECTED_COMMIT RUNNER
 
 echo "[W3 preflight] validate frozen 8/32/96 bundle and partition isolation"
 "${PY}" "${PROCESS}" validate-manifests \
