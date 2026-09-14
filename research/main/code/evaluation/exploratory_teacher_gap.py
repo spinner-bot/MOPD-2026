@@ -160,6 +160,11 @@ def validate_locked_manifest(samples: list[dict], expected_n: int = 96) -> list[
             tokenizer_hashes = length_control.get("tokenizer_artifact_sha256")
             if not tokenizer_source:
                 errors.append(f"{row_id}: missing generic tokenizer source")
+            tokenizer_revision = str(length_control.get("tokenizer_revision", ""))
+            if len(tokenizer_revision) != 40 or any(
+                char not in "0123456789abcdef" for char in tokenizer_revision
+            ):
+                errors.append(f"{row_id}: invalid generic tokenizer revision")
             if not isinstance(tokenizer_hashes, dict) or not tokenizer_hashes:
                 errors.append(f"{row_id}: missing generic tokenizer artifact hashes")
             elif any(
@@ -195,6 +200,25 @@ def validate_locked_manifest(samples: list[dict], expected_n: int = 96) -> list[
                     errors.append(f"{row_id}: inconsistent generic length difference for {pair_name}")
                 if relative_difference > 0.10 or check.get("passes") is not True:
                     errors.append(f"{row_id}: per-sample generic length contract failed for {pair_name}")
+        finalization = row.get("finalization_provenance")
+        if not isinstance(finalization, dict):
+            errors.append(f"{row_id}: finalization_provenance must be an object")
+        else:
+            code_commit = str(finalization.get("code_commit", ""))
+            if len(code_commit) != 40 or any(char not in "0123456789abcdef" for char in code_commit):
+                errors.append(f"{row_id}: invalid finalizer code commit")
+            for field in ("runtime_code_sha256", "input_sha256"):
+                hashes = finalization.get(field)
+                if not isinstance(hashes, dict) or not hashes:
+                    errors.append(f"{row_id}: missing finalizer {field}")
+                elif any(
+                    len(str(value)) != 64
+                    or any(char not in "0123456789abcdef" for char in str(value))
+                    for value in hashes.values()
+                ):
+                    errors.append(f"{row_id}: invalid finalizer {field}")
+            if not isinstance(finalization.get("seed"), int) or isinstance(finalization.get("seed"), bool):
+                errors.append(f"{row_id}: invalid finalizer seed")
         if row.get("knowledge_dependency_label") != "image_only":
             errors.append(f"{row_id}: knowledge_dependency_label must be image_only")
         if row.get("task_family") not in {"R", "PR"}:

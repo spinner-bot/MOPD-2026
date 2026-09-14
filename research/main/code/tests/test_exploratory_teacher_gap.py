@@ -65,6 +65,7 @@ def manifest_sample(index: int) -> dict:
             "algorithm": "neutral-prefix-nearest-per-sample-v1",
             "neutral_word_bank_sha256": "a" * 64,
             "tokenizer_source": "/frozen/tokenizer",
+            "tokenizer_revision": "c" * 40,
             "tokenizer_artifact_sha256": {"tokenizer.json": "b" * 64},
             "tolerance": 0.10,
             "T_Q_vs_T_generic_Q": {
@@ -81,6 +82,12 @@ def manifest_sample(index: int) -> dict:
                 "relative_difference": 0.0,
                 "passes": True,
             },
+        },
+        "finalization_provenance": {
+            "code_commit": "d" * 40,
+            "runtime_code_sha256": {"finalizer.py": "e" * 64},
+            "input_sha256": {"human_review": "f" * 64},
+            "seed": 20260911,
         },
         "knowledge_dependency_label": "image_only",
         "task_family": "R",
@@ -616,10 +623,14 @@ class ExploratoryTeacherGapTests(unittest.TestCase):
         samples = [manifest_sample(index) for index in range(96)]
         samples[0].pop("generic_length_control")
         samples[1]["generic_length_control"]["T_Q_vs_T_generic_Q"]["relative_difference"] = 0.5
+        samples[2].pop("finalization_provenance")
+        samples[3]["finalization_provenance"]["code_commit"] = "short"
         errors = validate_locked_manifest(samples)
         self.assertTrue(any("generic_length_control must be an object" in error for error in errors))
         self.assertTrue(any("inconsistent generic length difference" in error for error in errors))
         self.assertTrue(any("per-sample generic length contract failed" in error for error in errors))
+        self.assertTrue(any("finalization_provenance must be an object" in error for error in errors))
+        self.assertTrue(any("invalid finalizer code commit" in error for error in errors))
 
     def test_locked_manifest_preserves_answer_and_r_pr_evidence_semantics(self):
         samples = [manifest_sample(index) for index in range(96)]

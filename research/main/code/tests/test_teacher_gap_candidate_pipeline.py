@@ -15,6 +15,7 @@ from process_teacher_gap_candidate_stage import parse_records, select_constructi
 from run_teacher_gap_candidate_stage import main as run_candidate_stage
 from finalize_teacher_gap_manifests import (
     arrange_options,
+    assert_code_state,
     duplicate_cluster_map,
     generic_context_for,
     require_new_output_dir,
@@ -114,6 +115,10 @@ def parsed_row(stage: str, proposal: dict) -> dict:
 
 
 class TeacherGapCandidatePipelineTests(unittest.TestCase):
+    def test_finalizer_rejects_abbreviated_code_commit_before_git_calls(self):
+        with self.assertRaisesRegex(ValueError, "full 40-character"):
+            assert_code_state("abc1234")
+
     def test_runner_refuses_a_commit_changed_after_submission(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

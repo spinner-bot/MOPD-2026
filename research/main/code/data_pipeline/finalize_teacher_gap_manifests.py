@@ -11,6 +11,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import subprocess
 import sys
 from collections import Counter
 from datetime import datetime
@@ -18,6 +19,7 @@ from pathlib import Path
 
 
 CODE_ROOT = Path(__file__).resolve().parents[1]
+REPO_ROOT = Path(__file__).resolve().parents[4]
 sys.path.insert(0, str(CODE_ROOT / "evaluation"))
 
 from exploratory_teacher_gap import validate_locked_manifest, validate_partition_isolation
@@ -34,6 +36,16 @@ GENERIC_WORDS = (
     "order and avoid relying on outside facts. Recheck plausible alternatives against what is directly "
     "shown and choose only the conclusion supported by the complete visual evidence."
 ).split()
+FINALIZER_CODE_PATHS = {
+    "finalize_teacher_gap_manifests.py": Path(__file__).resolve(),
+    "build_teacher_gap_human_review_queue.py": Path(__file__).resolve().with_name(
+        "build_teacher_gap_human_review_queue.py"
+    ),
+    "reasoning_graph_contract.py": Path(__file__).resolve().with_name("reasoning_graph_contract.py"),
+    "exploratory_teacher_gap.py": CODE_ROOT / "evaluation" / "exploratory_teacher_gap.py",
+    "teacher_gap_inputs.py": CODE_ROOT / "evaluation" / "teacher_gap_inputs.py",
+    "g_pc0.py": CODE_ROOT / "evaluation" / "g_pc0.py",
+}
 
 
 def stable_hash(value: str) -> str:
@@ -46,6 +58,27 @@ def sha256_file(path: Path) -> str:
         for block in iter(lambda: source.read(1024 * 1024), b""):
             digest.update(block)
     return digest.hexdigest()
+
+
+def runtime_code_hashes() -> dict[str, str]:
+    return {name: sha256_file(path) for name, path in sorted(FINALIZER_CODE_PATHS.items())}
+
+
+def assert_code_state(expected_commit: str) -> None:
+    if len(expected_commit) != 40 or any(char not in "0123456789abcdef" for char in expected_commit):
+        raise ValueError("code commit must be the full 40-character lowercase git hash")
+    actual_commit = subprocess.check_output(
+        ["git", "-C", str(REPO_ROOT), "rev-parse", "HEAD"], text=True
+    ).strip()
+    if actual_commit != expected_commit:
+        raise ValueError(f"code commit mismatch: expected={expected_commit} actual={actual_commit}")
+    relative_paths = [str(path.relative_to(REPO_ROOT)) for path in FINALIZER_CODE_PATHS.values()]
+    result = subprocess.run(
+        ["git", "-C", str(REPO_ROOT), "diff", "--quiet", "HEAD", "--", *relative_paths],
+        check=False,
+    )
+    if result.returncode != 0:
+        raise ValueError("tracked finalizer runtime code differs from the pinned commit")
 
 
 def load_jsonl(path: Path) -> list[dict]:
@@ -234,14 +267,29 @@ def main() -> None:
     parser.add_argument("--human-review", type=Path, required=True)
     parser.add_argument("--duplicate-clusters", type=Path, required=True)
     parser.add_argument("--tokenizer", type=Path, required=True)
+    parser.add_argument("--tokenizer-revision", required=True)
+    parser.add_argument("--code-commit", required=True)
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--seed", type=int, default=20260911)
     args = parser.parse_args()
 
     try:
         require_new_output_dir(args.output_dir)
+        assert_code_state(args.code_commit)
     except ValueError as error:
         raise SystemExit(str(error)) from error
+
+    if len(args.tokenizer_revision) != 40 or any(
+        char not in "0123456789abcdef" for char in args.tokenizer_revision
+    ):
+        raise SystemExit("tokenizer revision must be the full 40-character lowercase hash")
+
+    input_hashes = {
+        "constructed": sha256_file(args.constructed),
+        "human_review": sha256_file(args.human_review),
+        "duplicate_clusters": sha256_file(args.duplicate_clusters),
+    }
+    code_hashes = runtime_code_hashes()
 
     from transformers import AutoTokenizer
 
@@ -293,6 +341,11 @@ def main() -> None:
         args.output_dir.mkdir(parents=True, exist_ok=False)
         write_jsonl(args.output_dir / "finalization-rejects.jsonl", rejected)
         summary = {
+            "code_commit": args.code_commit,
+            "runtime_code_sha256": code_hashes,
+            "input_sha256": input_hashes,
+            "tokenizer_source": str(args.tokenizer.resolve()),
+            "tokenizer_revision": args.tokenizer_revision,
             "human_reviews": len(reviews),
             "eligible_before_cluster_dedup": len(eligible),
             "eligible_unique_clusters": len(ordered),
@@ -311,6 +364,12 @@ def main() -> None:
     if not tokenizer_artifact_hashes:
         raise SystemExit("tokenizer path has no hashable tokenizer/config artifacts")
     tokenizer_source = str(args.tokenizer.resolve())
+    finalization_provenance = {
+        "code_commit": args.code_commit,
+        "runtime_code_sha256": code_hashes,
+        "input_sha256": input_hashes,
+        "seed": args.seed,
+    }
     partitions = {}
     offset = 0
     for name, size in PARTITION_SIZES.items():
@@ -340,6 +399,7 @@ def main() -> None:
                 "generic_context": "PENDING_TOKEN_MATCH",
                 "generic_context_t_q": "PENDING_TOKEN_MATCH",
                 "generic_context_t_qa": "PENDING_TOKEN_MATCH",
+                "finalization_provenance": finalization_provenance,
                 "knowledge_dependency_label": "image_only",
                 "task_family": review["human_task_family"],
                 "full_image_reference_valid": True,
@@ -377,6 +437,7 @@ def main() -> None:
                 "algorithm": "neutral-prefix-nearest-per-sample-v1",
                 "neutral_word_bank_sha256": stable_hash(" ".join(GENERIC_WORDS)),
                 "tokenizer_source": tokenizer_source,
+                "tokenizer_revision": args.tokenizer_revision,
                 "tokenizer_artifact_sha256": tokenizer_artifact_hashes,
                 "tolerance": length_result["tolerance"],
                 "T_Q_vs_T_generic_Q": checks_q[sample_id],
@@ -398,6 +459,14 @@ def main() -> None:
         hashes[path.name] = sha256_file(path)
     write_jsonl(args.output_dir / "finalization-rejects.jsonl", rejected)
     summary = {
+        "code_commit": args.code_commit,
+        "runtime_code_sha256": code_hashes,
+        "input_sha256": input_hashes,
+        "tokenizer_source": tokenizer_source,
+        "tokenizer_revision": args.tokenizer_revision,
+        "tokenizer_artifact_sha256": tokenizer_artifact_hashes,
+        "generic_control_algorithm": "neutral-prefix-nearest-per-sample-v1",
+        "generic_neutral_word_bank_sha256": stable_hash(" ".join(GENERIC_WORDS)),
         "seed": args.seed,
         "human_reviews": len(reviews),
         "eligible_before_cluster_dedup": len(eligible),
