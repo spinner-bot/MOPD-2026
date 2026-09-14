@@ -160,6 +160,20 @@ class ImageAffordanceBlindCalibrationTests(unittest.TestCase):
         self.assertIn("immutable_field_changed:image_path", errors)
         self.assertIn("review_firewall_violation", errors)
 
+    def test_review_schema_rejects_extra_null_and_missing_keys(self):
+        original, reviewed = self.completed_candidate()
+        reviewed["source_question"] = None
+        self.assertIn(
+            "review_schema_unexpected:source_question",
+            validate_completed_review(original, reviewed),
+        )
+        reviewed = self.completed_candidate()[1]
+        del reviewed["source_dataset"]
+        self.assertIn(
+            "review_schema_missing:source_dataset",
+            validate_completed_review(original, reviewed),
+        )
+
     def test_finalizer_requires_the_complete_original_set(self):
         originals = build_blind_packet([source("a"), source("b")], 2)[0]
         with self.assertRaisesRegex(ValueError, "incomplete"):

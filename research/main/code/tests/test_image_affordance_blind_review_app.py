@@ -151,6 +151,28 @@ class ImageAffordanceBlindReviewAppTests(unittest.TestCase):
                     expected_records=2,
                 )
 
+    def test_draft_rejects_extra_null_and_missing_schema_keys(self):
+        def expect_schema_failure(mutator) -> None:
+            with tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                packet, image_root, rows = make_packet(root)
+                digest = hashlib.sha256(packet.read_bytes()).hexdigest()
+                mutator(rows[0])
+                draft = root / "draft.jsonl"
+                write_jsonl(draft, rows)
+                with self.assertRaisesRegex(ValueError, "draft schema differs"):
+                    ReviewStore(
+                        input_path=packet,
+                        image_root=image_root,
+                        draft_path=draft,
+                        export_prefix=root / "export",
+                        expected_input_sha256=digest,
+                        expected_records=2,
+                    )
+
+        expect_schema_failure(lambda row: row.update({"source_question": None}))
+        expect_schema_failure(lambda row: row.pop("source_dataset"))
+
     def test_startup_rejects_firewall_path_and_hash_failures(self):
         def expect_failure(mutator, message: str) -> None:
             with tempfile.TemporaryDirectory() as directory:
@@ -244,6 +266,22 @@ class ImageAffordanceBlindReviewAppTests(unittest.TestCase):
             self.assertFalse(result["exported"])
             self.assertFalse(Path(str(store.export_prefix) + ".summary.json").exists())
 
+    def test_record_hides_source_identity_and_image_payload_is_hash_bound(self):
+        with tempfile.TemporaryDirectory() as directory:
+            store = store_for(Path(directory))
+            state = store.record(0)
+            self.assertNotIn("source_dataset", state["row"])
+            self.assertNotIn("source_image_id", state["row"])
+            self.assertNotIn("image_candidate_id", state["row"])
+            payload, content_type = store.image_payload(
+                state["row"]["calibration_record_id"]
+            )
+            self.assertEqual(hashlib.sha256(payload).hexdigest(), store.rows[0]["image_sha256"])
+            self.assertEqual(content_type, "image/jpeg")
+            store._images[state["row"]["calibration_record_id"]].write_bytes(b"changed")
+            with self.assertRaisesRegex(ValueError, "changed after startup"):
+                store.image_payload(state["row"]["calibration_record_id"])
+
     def test_only_literal_ipv4_loopback_is_allowed(self):
         validate_loopback_host("127.0.0.1")
         for host in ("0.0.0.0", "localhost", "::1", "192.168.1.1"):
@@ -259,6 +297,8 @@ class ImageAffordanceBlindReviewAppTests(unittest.TestCase):
         self.assertIn("未选择", HTML_PAGE)
         self.assertNotIn("machine_proposal", HTML_PAGE)
         self.assertNotIn("source_question", HTML_PAGE)
+        self.assertNotIn("source_dataset", HTML_PAGE)
+        self.assertNotIn("source_image_id", HTML_PAGE)
 
 
 if __name__ == "__main__":

@@ -79,6 +79,10 @@ def validate_completed_review(original: dict, reviewed: dict) -> list[str]:
     """Validate a human-signed blind judgment without filling any field."""
 
     errors = []
+    unexpected_keys = sorted(set(reviewed) - set(original))
+    missing_keys = sorted(set(original) - set(reviewed))
+    errors.extend(f"review_schema_unexpected:{key}" for key in unexpected_keys)
+    errors.extend(f"review_schema_missing:{key}" for key in missing_keys)
     immutable_keys = (set(original) | set(reviewed)) - EDITABLE_REVIEW_FIELDS
     for key in sorted(immutable_keys):
         if original.get(key) != reviewed.get(key):
