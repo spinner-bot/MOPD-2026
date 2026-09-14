@@ -689,6 +689,22 @@ class ExploratoryTeacherGapTests(unittest.TestCase):
         self.assertEqual(comparison["failed_sample_ids"], ["sample-000"])
         self.assertFalse(result["passes"])
 
+    def test_dual_generic_collapses_identical_rotation_views_to_base_sample(self):
+        sample = manifest_sample(0)
+        sample["base_sample_id"] = sample["sample_id"]
+        rotations = []
+        for rotation in range(4):
+            row = copy.deepcopy(sample)
+            row["sample_id"] = f"{sample['sample_id']}--lr{rotation}"
+            rotations.append(row)
+        result = validate_generic_length(
+            rotations, lambda text: len(text.split()), tolerance=1.0, dual_control=True
+        )
+        for comparison in result["comparisons"].values():
+            self.assertEqual(len(comparison["sample_checks"]), 1)
+            self.assertEqual(comparison["sample_checks"][0]["sample_id"], "sample-000")
+            self.assertTrue(comparison["sample_checks"][0]["duplicate_consistent"])
+
     def test_exact_mcnemar_is_directional(self):
         baseline = [False] * 16
         treatment = [True] * 16

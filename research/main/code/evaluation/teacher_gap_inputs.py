@@ -138,19 +138,33 @@ def validate_generic_length(
         sample_checks = []
         treatment_lengths = []
         control_lengths = []
+        checks_by_sample_id = {}
         for index, row in enumerate(samples):
             treatment_tokens = token_count(privileged_context(row, treatment))
             control_tokens = token_count(privileged_context(row, control))
             if treatment_tokens <= 0:
                 raise ValueError(f"{treatment} token length must be positive at row {index}")
             relative_difference = abs(control_tokens - treatment_tokens) / treatment_tokens
-            sample_checks.append({
-                "sample_id": str(row.get("base_sample_id") or row.get("sample_id") or f"row-{index}"),
+            sample_id = str(row.get("base_sample_id") or row.get("sample_id") or f"row-{index}")
+            previous = checks_by_sample_id.get(sample_id)
+            if previous is not None:
+                if (
+                    previous["treatment_tokens"] != treatment_tokens
+                    or previous["control_tokens"] != control_tokens
+                ):
+                    previous["duplicate_consistent"] = False
+                    previous["passes"] = False
+                continue
+            check = {
+                "sample_id": sample_id,
                 "treatment_tokens": treatment_tokens,
                 "control_tokens": control_tokens,
                 "relative_difference": relative_difference,
+                "duplicate_consistent": True,
                 "passes": relative_difference <= tolerance,
-            })
+            }
+            checks_by_sample_id[sample_id] = check
+            sample_checks.append(check)
             treatment_lengths.append(treatment_tokens)
             control_lengths.append(control_tokens)
         treatment_median = median(sorted(treatment_lengths))
