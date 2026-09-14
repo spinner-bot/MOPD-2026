@@ -113,7 +113,7 @@ def source_dataset_for_candidate(candidate: dict) -> str:
     return value
 
 
-def duplicate_cluster_map(path: Path) -> dict[str, str]:
+def duplicate_cluster_metadata(path: Path) -> tuple[dict[str, str], dict[str, str]]:
     data = json.loads(path.read_text(encoding="utf-8"))
     images = data.get("images")
     clusters = data.get("duplicate_clusters")
@@ -139,14 +139,63 @@ def duplicate_cluster_map(path: Path) -> dict[str, str]:
         for member in members[1:]:
             union(members[0], member)
     grouped = {}
+    expected_sha256 = {}
     for index, image in enumerate(images):
         image_path = str(image.get("image_original", ""))
         digest = str(image.get("sha256", ""))
-        if not image_path or not digest:
+        if (
+            not image_path
+            or len(digest) != 64
+            or any(char not in "0123456789abcdef" for char in digest)
+        ):
             raise ValueError("cluster-map image lacks path or sha256")
+        if image_path in expected_sha256:
+            raise ValueError("duplicate image path in cluster map")
+        expected_sha256[image_path] = digest
         grouped.setdefault(find(index), []).append(digest)
     cluster_ids = {root: "sha256-cluster-" + min(values)[:20] for root, values in grouped.items()}
-    return {str(image["image_original"]): cluster_ids[find(index)] for index, image in enumerate(images)}
+    cluster_by_path = {
+        str(image["image_original"]): cluster_ids[find(index)]
+        for index, image in enumerate(images)
+    }
+    return cluster_by_path, expected_sha256
+
+
+def duplicate_cluster_map(path: Path) -> dict[str, str]:
+    """Compatibility view used by earlier callers and tests."""
+
+    return duplicate_cluster_metadata(path)[0]
+
+
+def review_coverage(constructed_rows: list[dict], reviews: list[dict]) -> dict:
+    """Require completed reviews to cover the exact queue-eligible ID set."""
+
+    queue_ids = {
+        str(row.get("candidate_id", "")).strip()
+        for row in constructed_rows
+        if not validate_constructed_row(row)
+    }
+    review_ids = {str(row.get("candidate_id", "")).strip() for row in reviews}
+    missing = sorted(queue_ids - review_ids)
+    unexpected = sorted(review_ids - queue_ids)
+    return {
+        "queue_eligible": len(queue_ids),
+        "reviewed": len(review_ids),
+        "missing_candidate_ids": missing,
+        "unexpected_candidate_ids": unexpected,
+        "passes": not missing and not unexpected,
+    }
+
+
+def verify_image_checksum(path: Path, expected_sha256: str) -> tuple[str | None, list[str]]:
+    """Bind the reviewed image bytes to the duplicate-cluster inventory."""
+
+    if not path.is_file():
+        return None, ["image_file_missing"]
+    actual = sha256_file(path)
+    if actual != expected_sha256:
+        return actual, ["image_checksum_mismatch_with_cluster_map"]
+    return actual, []
 
 
 def validate_human_review(review: dict) -> list[str]:
@@ -315,9 +364,16 @@ def main() -> None:
         raise SystemExit("constructed candidate_id values must be non-empty and unique")
     constructed = dict(zip(constructed_ids, constructed_rows))
     reviews = load_jsonl(args.human_review)
-    if len({row.get("candidate_id") for row in reviews}) != len(reviews):
+    review_ids = [str(row.get("candidate_id", "")).strip() for row in reviews]
+    if any(not value for value in review_ids) or len(set(review_ids)) != len(reviews):
         raise SystemExit("human review candidate_id values must be unique")
-    cluster_by_path = duplicate_cluster_map(args.duplicate_clusters)
+    coverage = review_coverage(constructed_rows, reviews)
+    if not coverage["passes"]:
+        raise SystemExit(
+            "human review must exactly cover queue-eligible construction candidates: "
+            + json.dumps(coverage, ensure_ascii=False, sort_keys=True)
+        )
+    cluster_by_path, expected_sha256_by_path = duplicate_cluster_metadata(args.duplicate_clusters)
     eligible, rejected = [], []
     for review in reviews:
         candidate_id = review.get("candidate_id")
@@ -342,10 +398,21 @@ def main() -> None:
             image_path = str(candidate.get("image_original", ""))
             if image_path not in cluster_by_path:
                 reasons.append("image_missing_from_cluster_map")
+                image_checksum = None
+            else:
+                image_checksum, image_errors = verify_image_checksum(
+                    Path(image_path), expected_sha256_by_path[image_path]
+                )
+                reasons.extend(image_errors)
         if reasons:
             rejected.append({"candidate_id": candidate_id, "rejection_reasons": sorted(set(reasons))})
             continue
-        eligible.append({"review": review, "construction": construction, "cluster_id": cluster_by_path[image_path]})
+        eligible.append({
+            "review": review,
+            "construction": construction,
+            "cluster_id": cluster_by_path[image_path],
+            "image_checksum": image_checksum,
+        })
 
     # Keep one question per known exact/near-duplicate cluster for this pilot.
     unique_clusters = {}
@@ -363,6 +430,7 @@ def main() -> None:
             "tokenizer_source": str(args.tokenizer.resolve()),
             "tokenizer_revision": args.tokenizer_revision,
             "human_reviews": len(reviews),
+            "review_coverage": coverage,
             "eligible_before_cluster_dedup": len(eligible),
             "eligible_unique_clusters": len(ordered),
             "required": required,
@@ -407,7 +475,7 @@ def main() -> None:
                 "source_dataset": source_dataset_for_candidate(candidate),
                 "source_record_id": construction["candidate_id"],
                 "image_original": str(image_path),
-                "image_checksum": sha256_file(image_path),
+                "image_checksum": item["image_checksum"],
                 "final_question": candidate["final_question_source"],
                 **{f"option_{choice}": options[choice] for choice in CHOICES},
                 "final_answer": correct_label,
@@ -486,6 +554,7 @@ def main() -> None:
         "generic_neutral_word_bank_sha256": stable_hash(" ".join(GENERIC_WORDS)),
         "seed": args.seed,
         "human_reviews": len(reviews),
+        "review_coverage": coverage,
         "eligible_before_cluster_dedup": len(eligible),
         "eligible_unique_clusters": len(ordered),
         "partition_sizes": PARTITION_SIZES,

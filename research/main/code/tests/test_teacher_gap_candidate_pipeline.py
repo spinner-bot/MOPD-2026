@@ -1,6 +1,7 @@
 """CPU contract tests for the 1016 candidate screening/construction stages."""
 
 import json
+import hashlib
 import sys
 import tempfile
 import unittest
@@ -17,11 +18,14 @@ from finalize_teacher_gap_manifests import (
     arrange_options,
     assert_code_state,
     duplicate_cluster_map,
+    duplicate_cluster_metadata,
     generic_candidate_pool,
     generic_context_for,
     require_new_output_dir,
+    review_coverage,
     source_dataset_for_candidate,
     validate_human_review,
+    verify_image_checksum,
 )
 from teacher_gap_candidate_contract import (
     audit_fallback_target,
@@ -516,6 +520,54 @@ class TeacherGapCandidatePipelineTests(unittest.TestCase):
             path.write_text(json.dumps(payload), encoding="utf-8")
             mapping = duplicate_cluster_map(path)
         self.assertEqual(len(set(mapping.values())), 1)
+
+    def test_review_coverage_requires_every_queue_eligible_candidate(self):
+        row = parsed_row("construct", construction())
+        row["blind_proposal"] = blind()
+        row["audit_proposal"] = audit()
+        complete = review_coverage([row], [{"candidate_id": "m3vqa-1"}])
+        self.assertTrue(complete["passes"])
+
+        missing = review_coverage([row], [])
+        self.assertEqual(missing["missing_candidate_ids"], ["m3vqa-1"])
+        self.assertFalse(missing["passes"])
+
+        unexpected = review_coverage([row], [{"candidate_id": "unknown"}])
+        self.assertEqual(unexpected["unexpected_candidate_ids"], ["unknown"])
+        self.assertFalse(unexpected["passes"])
+
+        invalid = dict(row)
+        invalid["proposal"] = {**construction(), "decision": "reject"}
+        invalid_review = review_coverage([invalid], [{"candidate_id": "m3vqa-1"}])
+        self.assertEqual(invalid_review["queue_eligible"], 0)
+        self.assertEqual(invalid_review["unexpected_candidate_ids"], ["m3vqa-1"])
+
+    def test_cluster_inventory_binds_current_image_bytes(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            image = root / "image.jpg"
+            image.write_bytes(b"frozen-image")
+            digest = hashlib.sha256(image.read_bytes()).hexdigest()
+            cluster_path = root / "clusters.json"
+            cluster_path.write_text(json.dumps({
+                "images": [{"image_original": str(image), "sha256": digest}],
+                "duplicate_clusters": [],
+            }), encoding="utf-8")
+
+            mapping, hashes = duplicate_cluster_metadata(cluster_path)
+            self.assertIn(str(image), mapping)
+            self.assertEqual(hashes[str(image)], digest)
+            actual, errors = verify_image_checksum(image, hashes[str(image)])
+            self.assertEqual(actual, digest)
+            self.assertEqual(errors, [])
+
+            image.write_bytes(b"changed-image")
+            _, errors = verify_image_checksum(image, hashes[str(image)])
+            self.assertEqual(errors, ["image_checksum_mismatch_with_cluster_map"])
+            image.unlink()
+            actual, errors = verify_image_checksum(image, hashes[str(image)])
+            self.assertIsNone(actual)
+            self.assertEqual(errors, ["image_file_missing"])
 
     def test_finalizer_requires_a_new_output_directory(self):
         with tempfile.TemporaryDirectory() as directory:
