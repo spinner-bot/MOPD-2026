@@ -13,10 +13,12 @@ from exploratory_teacher_gap import (
     CHOICES,
     decide_teacher_gap,
     validate_manifest_bundle,
-    validate_locked_manifest,
+    validate_manifest_profile,
     validate_result_records,
     validate_results_against_manifest,
 )
+from g_pc0 import decide_g_pc0, validate_g_pc0_assets, write_json_exclusive
+from teacher_gap_inputs import COMMON_SHELL, validate_generic_length
 
 
 def load_jsonl(patterns: list[str]) -> list[dict]:
@@ -97,6 +99,8 @@ def main() -> None:
     validate_parser.add_argument("--inputs", nargs="+", required=True)
     validate_parser.add_argument("--manifest", type=Path, required=True)
     validate_parser.add_argument("--expected-samples", type=int, required=True)
+    validate_parser.add_argument("--manifest-profile", choices=("natural", "g_pc0"), default="natural")
+    validate_parser.add_argument("--image-root", type=Path)
     validate_parser.add_argument("--parsed-output", type=Path, required=True)
     validate_parser.add_argument("--summary", type=Path, required=True)
     decide_parser = subparsers.add_parser("decide")
@@ -104,6 +108,16 @@ def main() -> None:
     decide_parser.add_argument("--expected-samples", type=int, default=96)
     decide_parser.add_argument("--leakage-free", action="store_true", required=True)
     decide_parser.add_argument("--output", type=Path, required=True)
+    pc_decide_parser = subparsers.add_parser("decide-positive-control")
+    pc_decide_parser.add_argument("--input", type=Path, required=True)
+    pc_decide_parser.add_argument("--manifest", type=Path, required=True)
+    pc_decide_parser.add_argument("--image-root", type=Path, required=True)
+    pc_decide_parser.add_argument("--output", type=Path, required=True)
+    pc_manifest_parser = subparsers.add_parser("validate-positive-control-manifest")
+    pc_manifest_parser.add_argument("--manifest", type=Path, required=True)
+    pc_manifest_parser.add_argument("--image-root", type=Path, required=True)
+    pc_manifest_parser.add_argument("--tokenizer", type=Path, required=True)
+    pc_manifest_parser.add_argument("--summary", type=Path, required=True)
     bundle_parser = subparsers.add_parser("validate-manifests")
     bundle_parser.add_argument("--canary", type=Path, required=True)
     bundle_parser.add_argument("--dev", type=Path, required=True)
@@ -128,6 +142,52 @@ def main() -> None:
         print(json.dumps(summary, ensure_ascii=False, sort_keys=True))
         if errors:
             raise SystemExit("teacher-gap manifest bundle FAILED: " + "; ".join(errors))
+    elif args.command == "validate-positive-control-manifest":
+        if args.summary.exists():
+            raise SystemExit(f"refusing to overwrite manifest summary: {args.summary}")
+        samples = load_jsonl([str(args.manifest)])
+        errors = validate_manifest_profile(samples, expected_n=16, manifest_profile="g_pc0")
+        errors.extend(validate_g_pc0_assets(samples, args.image_root))
+        length_check = None
+        tokenizer_hashes = {}
+        choice_token_ids = None
+        try:
+            from transformers import AutoTokenizer
+            from run_exploratory_teacher_gap import choice_token_sequences
+
+            tokenizer = AutoTokenizer.from_pretrained(args.tokenizer, local_files_only=True)
+            length_check = validate_generic_length(
+                samples,
+                lambda text: len(tokenizer.encode(text, add_special_tokens=False)),
+            )
+            if not length_check["passes"]:
+                errors.append(f"Generic-T length contract failed: {length_check}")
+            choice_token_ids = choice_token_sequences(tokenizer)
+            for name in ("tokenizer.json", "tokenizer_config.json", "config.json"):
+                path = args.tokenizer / name
+                if path.is_file():
+                    tokenizer_hashes[name] = file_sha256(path)
+        except Exception as error:
+            errors.append(f"tokenizer preflight failed: {type(error).__name__}: {error}")
+        summary = {
+            "status": "passed" if not errors else "failed",
+            "manifest_profile": "g_pc0_v1",
+            "manifest_records": len(samples),
+            "manifest_sha256": file_sha256(args.manifest),
+            "image_root": str(args.image_root.resolve()),
+            "tokenizer_path": str(args.tokenizer.resolve()),
+            "tokenizer_artifact_sha256": tokenizer_hashes,
+            "choice_token_ids": choice_token_ids,
+            "shell_sha256": hashlib.sha256(COMMON_SHELL.encode("utf-8")).hexdigest(),
+            "generic_length_check": length_check,
+            "validation_errors": sorted(set(errors)),
+            "performance_results_read": False,
+            "gpu_used": False,
+        }
+        write_json_new(args.summary, summary)
+        print(json.dumps(summary, ensure_ascii=False, sort_keys=True))
+        if errors:
+            raise SystemExit("G-PC0 manifest preflight FAILED: " + "; ".join(sorted(set(errors))))
     elif args.command == "validate":
         if args.parsed_output.exists() or args.summary.exists():
             raise SystemExit("refusing to overwrite parsed output or validation summary")
@@ -135,7 +195,16 @@ def main() -> None:
         samples = load_jsonl([str(args.manifest)])
         manifest_hash = file_sha256(args.manifest)
         errors = validate_result_records(rows, expected_samples=args.expected_samples)
-        errors.extend(validate_locked_manifest(samples, expected_n=args.expected_samples))
+        errors.extend(validate_manifest_profile(
+            samples,
+            expected_n=args.expected_samples,
+            manifest_profile=args.manifest_profile,
+        ))
+        if args.manifest_profile == "g_pc0":
+            if args.image_root is None:
+                errors.append("g_pc0 validation requires --image-root")
+            else:
+                errors.extend(validate_g_pc0_assets(samples, args.image_root))
         errors.extend(validate_results_against_manifest(rows, samples, manifest_hash))
         summary = {
             "expected_samples": args.expected_samples,
@@ -152,7 +221,7 @@ def main() -> None:
             raise SystemExit("teacher-gap result gate FAILED: " + "; ".join(errors))
         write_jsonl(args.parsed_output, rows)
         print(json.dumps(summary, ensure_ascii=False, sort_keys=True))
-    else:
+    elif args.command == "decide":
         if args.output.exists():
             raise SystemExit(f"refusing to overwrite decision output: {args.output}")
         rows = load_jsonl([str(args.input)])
@@ -165,6 +234,22 @@ def main() -> None:
         print(json.dumps(decision, ensure_ascii=False, sort_keys=True))
         if decision["decision"] == "INVALID":
             raise SystemExit("teacher-gap decision refused invalid records")
+    else:
+        if args.output.exists():
+            raise SystemExit(f"refusing to overwrite decision output: {args.output}")
+        rows = load_jsonl([str(args.input)])
+        samples = load_jsonl([str(args.manifest)])
+        manifest_hash = file_sha256(args.manifest)
+        errors = validate_result_records(rows, expected_samples=16)
+        errors.extend(validate_manifest_profile(samples, expected_n=16, manifest_profile="g_pc0"))
+        errors.extend(validate_g_pc0_assets(samples, args.image_root))
+        errors.extend(validate_results_against_manifest(rows, samples, manifest_hash))
+        decision = decide_g_pc0(rows, errors)
+        decision["manifest_sha256"] = manifest_hash
+        write_json_exclusive(args.output, decision)
+        print(json.dumps(decision, ensure_ascii=False, sort_keys=True))
+        if decision["decision"] == "INVALID":
+            raise SystemExit("G-PC0 decision refused invalid records")
 
 
 if __name__ == "__main__":

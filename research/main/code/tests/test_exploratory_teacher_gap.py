@@ -274,6 +274,7 @@ class ExploratoryTeacherGapTests(unittest.TestCase):
             set(hashes),
             {
                 "exploratory_teacher_gap.py",
+                "g_pc0.py",
                 "reasoning_graph_contract.py",
                 "run_exploratory_teacher_gap.py",
                 "teacher_gap_inputs.py",

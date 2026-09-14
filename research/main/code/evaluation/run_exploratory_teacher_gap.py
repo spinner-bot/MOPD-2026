@@ -8,7 +8,7 @@ import json
 import subprocess
 from pathlib import Path
 
-from exploratory_teacher_gap import CHOICES, frozen_schedule, validate_locked_manifest
+from exploratory_teacher_gap import CHOICES, frozen_schedule, validate_manifest_profile
 from teacher_gap_inputs import render_teacher_gap_input, validate_generic_length
 
 
@@ -19,6 +19,7 @@ RUNTIME_CODE_PATHS = {
     "reasoning_graph_contract.py": Path(__file__).resolve().parents[1]
     / "data_pipeline"
     / "reasoning_graph_contract.py",
+    "g_pc0.py": Path(__file__).resolve().with_name("g_pc0.py"),
 }
 
 
@@ -131,6 +132,7 @@ def main() -> None:
     parser.add_argument("--rank", type=int, default=0)
     parser.add_argument("--world-size", type=int, default=1)
     parser.add_argument("--expected-samples", type=int, default=96)
+    parser.add_argument("--manifest-profile", choices=("natural", "g_pc0"), default="natural")
     parser.add_argument("--limit", type=int, default=0, help="per-rank scheduled-pair limit")
     args = parser.parse_args()
 
@@ -144,7 +146,9 @@ def main() -> None:
     if args.output.exists():
         raise SystemExit(f"refusing to overwrite existing raw output: {args.output}")
     samples = load_jsonl(args.manifest)
-    manifest_errors = validate_locked_manifest(samples, expected_n=args.expected_samples)
+    manifest_errors = validate_manifest_profile(
+        samples, expected_n=args.expected_samples, manifest_profile=args.manifest_profile
+    )
     if manifest_errors:
         raise SystemExit("locked manifest invalid: " + "; ".join(manifest_errors))
     manifest_hash = sha256_file(args.manifest)
@@ -217,6 +221,9 @@ def main() -> None:
                 "chat_template": {"enable_thinking": False, "add_generation_prompt": True},
                 "generation_config": {"do_sample": False, "constrained_to": list(CHOICES)},
             }
+            for field in ("experiment_role", "positive_control_family", "generator_id"):
+                if str(sample.get(field, "")).strip():
+                    record[field] = sample[field]
             try:
                 image_path = Path(rendered.image_path).resolve(strict=True)
                 if not image_path.is_relative_to(image_root):

@@ -20,10 +20,23 @@ DATA_PIPELINE_ROOT = Path(__file__).resolve().parents[1] / "data_pipeline"
 sys.path.insert(0, str(DATA_PIPELINE_ROOT))
 
 from reasoning_graph_contract import validate_guide_graph_alignment, validate_reasoning_graph
+from g_pc0 import validate_g_pc0_manifest
 
 
 CONDITIONS = ("S", "T_Q", "T_QA", "T_generic")
 CHOICES = ("A", "B", "C", "D")
+
+
+def validate_manifest_profile(
+    samples: list[dict], expected_n: int = 96, manifest_profile: str = "natural"
+) -> list[str]:
+    """Dispatch the shared runner to an explicitly declared manifest contract."""
+
+    if manifest_profile == "natural":
+        return validate_locked_manifest(samples, expected_n=expected_n)
+    if manifest_profile == "g_pc0":
+        return validate_g_pc0_manifest(samples, expected_n=expected_n)
+    return [f"unsupported manifest profile: {manifest_profile}"]
 
 
 def frozen_schedule(samples: list[dict], manifest_hash: str) -> list[tuple[dict, str]]:
@@ -275,6 +288,9 @@ def validate_results_against_manifest(
                 ).encode("utf-8")
             ).hexdigest(),
         }
+        for field in ("experiment_role", "positive_control_family", "generator_id"):
+            if str(sample.get(field, "")).strip():
+                expected_values[field] = str(sample[field])
         for field, value in expected_values.items():
             if str(row.get(field, "")) != value:
                 errors.append(f"record-{index}/{sample_id}: {field} differs from frozen manifest")
@@ -448,6 +464,10 @@ def validate_result_records(
             values = {str(row.get(field, "")).strip() for row in rows}
             if "" in values or len(values) != 1:
                 errors.append(f"{sample_id}: {field} must be present and invariant")
+        for field in ("experiment_role", "positive_control_family", "generator_id"):
+            values = {str(row.get(field, "")).strip() for row in rows}
+            if any(values) and ("" in values or len(values) != 1):
+                errors.append(f"{sample_id}: {field} must be present and invariant when used")
         prompt_hashes = [str(row.get("prompt_hash", "")).strip() for row in rows]
         if any(not value for value in prompt_hashes):
             errors.append(f"{sample_id}: prompt_hash is required")
