@@ -1,0 +1,30 @@
+{
+  "analysis_status": "posthoc_descriptive",
+  "condition_generation_vote": {
+    "S": {
+      "correct": 0,
+      "ties_or_abstentions": 15,
+      "unique_winners": 1
+    },
+    "T_Q": {
+      "correct": 1,
+      "ties_or_abstentions": 14,
+      "unique_winners": 2
+    },
+    "T_QA": {
+      "correct": 6,
+      "ties_or_abstentions": 8,
+      "unique_winners": 8
+    },
+    "T_generic": {
+      "correct": 0,
+      "ties_or_abstentions": 16,
+      "unique_winners": 0
+    }
+  },
+  "decision_changed": false,
+  "frozen_decision": "LABEL_INTERFACE_MASKED_G_SIGNAL",
+  "natural_image_claim_authorized": false,
+  "source_results_sha256": "55c7b1e86fb5335ed58b0750f529b727ea9a59c937989e0995be586d3c30c046",
+  "used_for_primary_decision": false
+}
