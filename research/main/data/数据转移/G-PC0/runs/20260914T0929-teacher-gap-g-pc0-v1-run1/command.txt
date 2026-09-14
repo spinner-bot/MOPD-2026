@@ -1,1 +1,0 @@
-sbatch --export=ALL,MOPD_G_PC0_RUN_ID=20260914T0929-teacher-gap-g-pc0-v1-run1,MOPD_EXPECTED_CODE_COMMIT=52b89d27cdce58c2c00fe555ec9e35885dd5c2dc research/main/code/utils/submit_g_pc0.sbatch

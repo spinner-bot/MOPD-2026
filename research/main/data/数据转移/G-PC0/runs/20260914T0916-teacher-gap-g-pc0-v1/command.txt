@@ -1,1 +1,0 @@
-/leonardo_scratch/fast/AIFAC_F02_774/rqian000/envs/mopd-stage0-py311/bin/python research/main/code/data_pipeline/generate_g_pc0.py --output-dir research/main/outputs/runs/20260914T0916-teacher-gap-g-pc0-v1/outputs --image-prefix research/main/outputs/runs/20260914T0916-teacher-gap-g-pc0-v1/outputs/images --seed 20260914
