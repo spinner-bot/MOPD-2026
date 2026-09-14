@@ -6,11 +6,11 @@
 
 **创建原因**：W2 teacher-gap pilot 完成后需进行人工审核，提前准备指引文档
 
-**修改时间**：2026-09-14 11:52（UTC+8）
+**修改时间**：2026-09-14 11:55（UTC+8）
 
 **修改作者**：Codex (CINECA Leonardo)
 
-**修改原因**：同步 1064 的固定审核队列全覆盖与 cluster-map 图片字节身份合同
+**修改原因**：同步 1065/`f2ffb85` 已实现的审核覆盖与图片身份门
 
 ---
 
@@ -143,3 +143,4 @@ JSON 布尔值必须写成不带引号的 `true`/`false`。`"yes"`、`"no"`、`1
 | 2026-09-14 04:46 | Codex (CINECA Leonardo) | 修订：冻结清单保留 canonical answer 与困难视觉证据，使 bundle gate 可独立重验答案、证据/DAG、R/PR 和 guide 对齐。 |
 | 2026-09-14 11:27 | Codex (CINECA Leonardo) | 修订：依据 1060/`6c11452` 增加冻结器完整 commit、tokenizer revision、输入与源码 SHA-256 合同。 |
 | 2026-09-14 11:52 | Codex (CINECA Leonardo) | 修订：依据 1064 增加固定 queue source 全覆盖和 duplicate-cluster map 图片字节重验要求，防止完成稿删行和过期簇身份。 |
+| 2026-09-14 11:55 | Codex (CINECA Leonardo) | 修订：记录 1065/`f2ffb85` 已实现集合与图片身份门；全套测试增至 178。 |
