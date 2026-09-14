@@ -1,9 +1,7 @@
 # 20260914T0200-teacher-gap-construct-c1-128-r7
 
-阶段：W2B C1-128 候选构造。
-
-目的：Construct proposals only after the complete r7 screen passes。全部产物仍为机器提议；未经人工复核不得冻结。
+阶段：原 r7 W2B 依赖作业。
 
 ## 结果
 
-待提交。
+作业 `57593318` 在 `PENDING (Dependency)`、累计运行 `00:00:00` 时取消；没有占用 GPU、没有模型输出。原因是提交后发现多答案干扰项基数与 guide 图对齐未在构造 gate 中即时校验。修复与测试见 1033 和提交 `99e477c`。后继 r7b 将消费已完成的 r7 screen 输出，不复用此作业 ID 或声称已有构造结果。

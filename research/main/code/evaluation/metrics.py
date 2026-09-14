@@ -193,86 +193,35 @@ def aggregate_metrics(results: list[dict]) -> dict:
 
 
 # === Stage 0 Go/No-Go 判定（方案 §23）===
+# === Retired Stage 0 decision entry point ===
 
 def check_stage0_go_criteria(
     metrics_by_condition: dict[str, list[dict]],
     paired_tests: dict[str, dict] | None = None,
     threshold_gap: float = 0.02,
     threshold_logp: float = 0.1,
-    threshold_depth3_gain: float = 0.03
+    threshold_depth3_gain: float = 0.03,
 ) -> dict:
+    """Fail closed: the pre-1017 fixed-label Stage 0 selector is retired.
+
+    This historical interface selected T-Q or T-QA after observing their
+    log-probability effects and used one unmatched generic/random condition.
+    It cannot represent the natural_rotation contract, the two per-item
+    Generic controls, semantic label aggregation, the fixed decision-rule
+    hash, or the result-integrity gates.  Keeping a false-returning shim makes
+    old imports explicit without allowing this path to authorize an experiment.
+
+    Use ``exploratory_teacher_gap.decide_teacher_gap_label_rotation`` only
+    after its locked-manifest/result/asset gates have passed.
     """
-    检查 Stage 0 Go/No-Go 条件
 
-    Args:
-        metrics_by_condition: 各条件的指标列表
-            键: "S", "T_Q", "T_QA", "T_random", "T_generic", etc.
-        threshold_gap: 最小准确率差距
-        threshold_logp: 最小 log-prob 差距
-        threshold_depth3_gain: depth>=3 的最小增益
-
-    Returns:
-        判定结果
-    """
-    paired_tests = paired_tests or {}
-    required = {"T_Q", "T_QA", "T_random", "T_generic"}
-    missing = sorted(key for key in required if not metrics_by_condition.get(key))
-    if missing:
-        return {"overall_go": False, "status": "incomplete", "missing_conditions": missing}
-
-    def summarize(condition: str) -> dict:
-        rows = metrics_by_condition[condition]
-        depth3_rows = [row for row in rows if row.get("reasoning_depth", 0) >= 3]
-        return {
-            "accuracy_gap": float(np.mean([row["accuracy_gap"] for row in rows])),
-            "log_prob_gap": float(np.mean([row["log_prob_gap"] for row in rows])),
-            "depth3_accuracy_gap": (
-                float(np.mean([row["accuracy_gap"] for row in depth3_rows]))
-                if depth3_rows else None
-            ),
-            "n": len(rows),
-            "n_depth3": len(depth3_rows),
-        }
-
-    summaries = {condition: summarize(condition) for condition in required}
-    candidates = ["T_Q", "T_QA"]
-    selected = max(candidates, key=lambda condition: summaries[condition]["log_prob_gap"])
-    selected_summary = summaries[selected]
-
-    def significant(name: str) -> bool:
-        return bool(paired_tests.get(name, {}).get("significant", False))
-
-    controls = {
-        "random": summaries[selected]["accuracy_gap"] - summaries["T_random"]["accuracy_gap"],
-        "generic": summaries[selected]["accuracy_gap"] - summaries["T_generic"]["accuracy_gap"],
-    }
-    criteria = {
-        "positive_teacher_gap": {
-            "value": selected_summary["accuracy_gap"], "threshold": threshold_gap,
-            "pass": selected_summary["accuracy_gap"] >= threshold_gap and significant(selected),
-        },
-        "log_prob_increase": {
-            "value": selected_summary["log_prob_gap"], "threshold": threshold_logp,
-            "pass": selected_summary["log_prob_gap"] >= threshold_logp and significant(selected),
-        },
-        "depth3_gain": {
-            "value": selected_summary["depth3_accuracy_gap"], "threshold": threshold_depth3_gain,
-            "pass": selected_summary["depth3_accuracy_gap"] is not None
-            and selected_summary["depth3_accuracy_gap"] >= threshold_depth3_gain,
-        },
-        "structured_vs_random": {
-            "value": controls["random"], "threshold": 0.01,
-            "pass": controls["random"] > 0.01 and significant(f"{selected}_vs_T_random"),
-        },
-        "structured_vs_generic": {
-            "value": controls["generic"], "threshold": 0.01,
-            "pass": controls["generic"] > 0.01 and significant(f"{selected}_vs_T_generic"),
-        },
-    }
+    del (metrics_by_condition, paired_tests, threshold_gap, threshold_logp, threshold_depth3_gain)
     return {
-        "overall_go": all(item["pass"] for item in criteria.values()),
-        "status": "complete",
-        "selected_text_method": selected,
-        "summaries": summaries,
-        "criteria": criteria,
+        "overall_go": False,
+        "status": "retired_unsafe",
+        "replacement": "exploratory_teacher_gap.decide_teacher_gap_label_rotation",
+        "reason": (
+            "pre-1017 selector lacks label rotation, paired Generic-Q/Generic-QA, "
+            "locked-result gates and a hashed decision rule"
+        ),
     }

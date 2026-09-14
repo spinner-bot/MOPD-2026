@@ -1,0 +1,8 @@
+{
+  "input_path": "research/main/outputs/runs/20260914T0200-teacher-gap-screen-c1-128-r7/parsed/construction-inputs.jsonl",
+  "input_sha256": "82f977aafb5c7153aefcfd38e2e005bf38c7d5d5b7ffc6935da2acc19cdb5843",
+  "records": 8,
+  "upstream_run_id": "20260914T0200-teacher-gap-screen-c1-128-r7",
+  "upstream_code_commit": "21f54f08caaae7e8e8c743b0b81e0230e8432ea7",
+  "answer_contract": "m3vqa-answer-contract-v1"
+}

@@ -1,0 +1,14 @@
+{
+  "run_id": "20260914T1101-gpc0-control-length-audit",
+  "stage": "input-only generic control length audit",
+  "created_at": "2026-09-14T11:01:00+08:00",
+  "last_modified_at": "2026-09-14T11:01:00+08:00",
+  "created_by": "Codex (CINECA Leonardo)",
+  "trigger": "1055 found that the historical single Generic-T was matched to T-Q but used to judge the longer T-QA condition",
+  "code_commit": "ec4b4bee1e3a64f668b0fe8f7456fac41284a0af",
+  "source_manifest": "research/main/outputs/runs/20260914T0916-teacher-gap-g-pc0-v1/outputs/manifest.jsonl",
+  "source_manifest_sha256": "10b09d122a5781df564a63cac8449d368a2d785c3fb06ba15c3887db2433bb1c",
+  "model_revision": "851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a",
+  "performance_results_read": false,
+  "gpu_used": false
+}

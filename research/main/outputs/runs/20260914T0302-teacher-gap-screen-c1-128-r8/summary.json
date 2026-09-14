@@ -1,0 +1,14 @@
+{
+  "status": "failed_closed_canary_path_root",
+  "slurm_job_id": "57599082",
+  "human_verified": 0,
+  "submitted_code_commit": "63b9bf4b1b3cb409afa45c66c5913e04fa0d9faa",
+  "run_worktree": "/leonardo/home/userexternal/rqian000/spinner-bot/MOPD-2026-codex-r8",
+  "canary_total": 8,
+  "valid_parsed": 0,
+  "runner_errors": 8,
+  "model_generations": 0,
+  "full_ran": false,
+  "audit_ran": false,
+  "human_verified": 0
+}

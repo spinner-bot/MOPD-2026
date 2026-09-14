@@ -8,8 +8,19 @@ import json
 import subprocess
 from pathlib import Path
 
-from exploratory_teacher_gap import CHOICES, CONDITIONS, validate_locked_manifest
+from exploratory_teacher_gap import CHOICES, conditions_for_profile, frozen_schedule, validate_manifest_profile
 from teacher_gap_inputs import render_teacher_gap_input, validate_generic_length
+
+
+RUNTIME_CODE_PATHS = {
+    "run_exploratory_teacher_gap.py": Path(__file__).resolve(),
+    "exploratory_teacher_gap.py": Path(__file__).resolve().with_name("exploratory_teacher_gap.py"),
+    "teacher_gap_inputs.py": Path(__file__).resolve().with_name("teacher_gap_inputs.py"),
+    "reasoning_graph_contract.py": Path(__file__).resolve().parents[1]
+    / "data_pipeline"
+    / "reasoning_graph_contract.py",
+    "g_pc0.py": Path(__file__).resolve().with_name("g_pc0.py"),
+}
 
 
 def sha256_bytes(value: bytes) -> str:
@@ -22,6 +33,10 @@ def sha256_file(path: Path) -> str:
         for block in iter(lambda: source.read(1024 * 1024), b""):
             digest.update(block)
     return digest.hexdigest()
+
+
+def runtime_code_hashes() -> dict[str, str]:
+    return {name: sha256_file(path) for name, path in sorted(RUNTIME_CODE_PATHS.items())}
 
 
 def git_commit() -> str:
@@ -39,16 +54,6 @@ def load_jsonl(path: Path) -> list[dict]:
         return [json.loads(line) for line in source if line.strip()]
 
 
-def frozen_schedule(samples: list[dict], manifest_hash: str) -> list[tuple[dict, str]]:
-    pairs = [(sample, condition) for sample in samples for condition in CONDITIONS]
-    return sorted(
-        pairs,
-        key=lambda pair: sha256_bytes(
-            f"{manifest_hash}\0{pair[0]['sample_id']}\0{pair[1]}".encode("utf-8")
-        ),
-    )
-
-
 def choice_token_sequences(tokenizer) -> dict[str, list[int]]:
     sequences = {choice: list(tokenizer.encode(choice, add_special_tokens=False)) for choice in CHOICES}
     if any(not sequence for sequence in sequences.values()):
@@ -56,11 +61,25 @@ def choice_token_sequences(tokenizer) -> dict[str, list[int]]:
     tuples = list(map(tuple, sequences.values()))
     if len(set(tuples)) != len(tuples):
         raise ValueError("choice label token sequences must be distinct")
+    if len({len(sequence) for sequence in tuples}) != 1:
+        raise ValueError("choice label token sequences must have equal lengths")
     for left in tuples:
         for right in tuples:
             if left != right and len(left) <= len(right) and right[: len(left)] == left:
                 raise ValueError("choice label token sequences must not be prefixes of one another")
     return sequences
+
+
+def validate_choice_continuations(tokenizer, prefix_text: str, sequences: dict[str, list[int]]) -> None:
+    """Ensure standalone frozen labels are the exact suffix after this template."""
+
+    prefix = list(tokenizer.encode(prefix_text, add_special_tokens=False))
+    for choice, expected in sequences.items():
+        combined = list(tokenizer.encode(prefix_text + choice, add_special_tokens=False))
+        if combined[: len(prefix)] != prefix:
+            raise ValueError(f"chat-template boundary retokenizes before choice {choice}")
+        if combined[len(prefix) :] != expected:
+            raise ValueError(f"choice {choice} continuation differs from frozen token sequence")
 
 
 def allowed_token_function(prefix_length: int, sequences: dict[str, list[int]], eos_ids: set[int]):
@@ -93,6 +112,17 @@ def conditional_choice_scores(model, inputs, sequences: dict[str, list[int]], to
         model_inputs = {
             key: value for key, value in inputs.items() if key not in {"input_ids", "attention_mask"}
         }
+        # Qwen3.5 processors return one modality tag per prompt token.  Choice
+        # tokens are ordinary text and therefore need matching zero tags.  If
+        # this stays at the prefix length, M-RoPE indexes it with the extended
+        # attention mask and fails by exactly the answer-sequence length.
+        mm_types = model_inputs.get("mm_token_type_ids")
+        if mm_types is not None:
+            if mm_types.ndim != 2 or tuple(mm_types.shape) != tuple(prefix_ids.shape):
+                raise ValueError("mm_token_type_ids must align exactly with prefix input_ids")
+            model_inputs["mm_token_type_ids"] = torch.cat(
+                [mm_types, torch.zeros_like(target)], dim=1
+            )
         model_inputs.update({"input_ids": combined_ids, "attention_mask": combined_mask})
         logits = model(**model_inputs, use_cache=False).logits
         log_probs = torch.log_softmax(logits[0, prefix_length - 1 : prefix_length - 1 + len(sequence)], dim=-1)
@@ -113,6 +143,12 @@ def main() -> None:
     parser.add_argument("--rank", type=int, default=0)
     parser.add_argument("--world-size", type=int, default=1)
     parser.add_argument("--expected-samples", type=int, default=96)
+    parser.add_argument(
+        "--manifest-profile",
+        choices=("natural", "natural_rotation", "g_pc0", "g_pc0_rotation"),
+        default="natural",
+    )
+    parser.add_argument("--base-manifest", type=Path)
     parser.add_argument("--limit", type=int, default=0, help="per-rank scheduled-pair limit")
     args = parser.parse_args()
 
@@ -123,11 +159,22 @@ def main() -> None:
         raise SystemExit(
             f"code commit changed after submission: expected={args.code_commit} actual={current_commit}"
         )
+    if args.output.exists():
+        raise SystemExit(f"refusing to overwrite existing raw output: {args.output}")
     samples = load_jsonl(args.manifest)
-    manifest_errors = validate_locked_manifest(samples, expected_n=args.expected_samples)
+    base_samples = load_jsonl(args.base_manifest) if args.base_manifest else None
+    base_manifest_hash = sha256_file(args.base_manifest) if args.base_manifest else None
+    manifest_errors = validate_manifest_profile(
+        samples,
+        expected_n=args.expected_samples,
+        manifest_profile=args.manifest_profile,
+        base_samples=base_samples,
+        base_manifest_hash=base_manifest_hash,
+    )
     if manifest_errors:
         raise SystemExit("locked manifest invalid: " + "; ".join(manifest_errors))
     manifest_hash = sha256_file(args.manifest)
+    code_hashes = runtime_code_hashes()
     image_root = args.image_root.resolve(strict=True)
 
     import torch
@@ -139,8 +186,11 @@ def main() -> None:
         args.model, torch_dtype="auto", local_files_only=True
     ).to("cuda").eval()
     sequences = choice_token_sequences(processor.tokenizer)
+    dual_control = args.manifest_profile == "natural_rotation"
     length_check = validate_generic_length(
-        samples, lambda text: len(processor.tokenizer.encode(text, add_special_tokens=False))
+        samples,
+        lambda text: len(processor.tokenizer.encode(text, add_special_tokens=False)),
+        dual_control=dual_control,
     )
     if not length_check["passes"]:
         raise SystemExit(f"Generic-T length contract failed: {length_check}")
@@ -155,10 +205,10 @@ def main() -> None:
     if pad_token_id is None:
         pad_token_id = min(eos_ids)
 
-    schedule = frozen_schedule(samples, manifest_hash)
+    schedule = frozen_schedule(samples, manifest_hash, conditions_for_profile(args.manifest_profile))
     args.output.parent.mkdir(parents=True, exist_ok=True)
     processed = 0
-    with args.output.open("w", encoding="utf-8") as sink, torch.inference_mode():
+    with args.output.open("x", encoding="utf-8") as sink, torch.inference_mode():
         for schedule_index, (sample, condition) in enumerate(schedule):
             if schedule_index % args.world_size != args.rank:
                 continue
@@ -168,8 +218,12 @@ def main() -> None:
             rendered = render_teacher_gap_input(sample, condition)
             record = {
                 "sample_id": sample["sample_id"],
+                "source_dataset": sample["source_dataset"],
+                "source_record_id": sample["source_record_id"],
                 "source_image_id": sample["source_image_id"],
                 "source_cluster_id": sample["source_cluster_id"],
+                "task_family": sample["task_family"],
+                "reasoning_depth": sample["reasoning_depth"],
                 "condition": condition,
                 "schedule_index": schedule_index,
                 "rank": args.rank,
@@ -178,6 +232,7 @@ def main() -> None:
                 "model_revision": args.model_revision,
                 "processor_revision": args.model_revision,
                 "code_commit": args.code_commit,
+                "runtime_code_hashes": code_hashes,
                 "prompt_hash": rendered.prompt_hash,
                 "shell_hash": rendered.shell_hash,
                 "question_hash": sha256_bytes(sample["final_question"].encode("utf-8")),
@@ -191,6 +246,20 @@ def main() -> None:
                 "chat_template": {"enable_thinking": False, "add_generation_prompt": True},
                 "generation_config": {"do_sample": False, "constrained_to": list(CHOICES)},
             }
+            for field in (
+                "experiment_role",
+                "positive_control_family",
+                "generator_id",
+                "base_sample_id",
+                "base_manifest_sha256",
+                "label_rotation",
+                "rotation_spec_hash",
+                "semantic_options",
+                "correct_semantic_option_id",
+                "displayed_label_to_semantic_option",
+            ):
+                if field in sample:
+                    record[field] = sample[field]
             try:
                 image_path = Path(rendered.image_path).resolve(strict=True)
                 if not image_path.is_relative_to(image_root):
@@ -211,6 +280,7 @@ def main() -> None:
                     add_generation_prompt=True,
                     enable_thinking=False,
                 )
+                validate_choice_continuations(processor.tokenizer, template, sequences)
                 images, videos = process_vision_info(messages)
                 inputs = processor(
                     text=[template], images=images, videos=videos, padding=True, return_tensors="pt"
@@ -231,6 +301,7 @@ def main() -> None:
                     "image_checksum": image_checksum,
                     "input_tokens": prefix_length,
                     "choice_log_likelihoods": scores,
+                    "choice_continuation_verified": True,
                     "generated_token_ids": token_list,
                     "generated_tokens": len(token_list),
                     "eos_reached": any(token in eos_ids for token in token_list),

@@ -2,12 +2,16 @@
 依赖性测试 (Dependency Test)
 
 按实验方案 §12 实现：
-检测引导问题是否构成"真正的推理链"，而非伪引导。
+测量冻结 guide 在特定实验模型上的利用贡献。
 
 定义 guide g_i 的删除贡献：
 Contribution(g_i) = log P(A*|I,G,Q) - log P(A*|I,G\{g_i},Q)
 
-如果 Contribution(g_i) ≈ 0，则该 guide 不是关键 reasoning node。
+如果 Contribution(g_i) ≈ 0，只说明该模型没有体现正利用；guide 的
+语义必要性由结果盲 DAG/反事实审核 D_sem 决定。
+
+IMPORTANT: 本模块是 analysis-only。返回值不得用于 G0/G1/test 成员、
+family/depth 标签、guide 重写或第一版主训练数据的准入（1082）。
 
 测试步骤：
 1. 完整链 G1, G2, G3
@@ -19,7 +23,6 @@ Contribution(g_i) = log P(A*|I,G,Q) - log P(A*|I,G\{g_i},Q)
 import numpy as np
 from typing import Callable
 from dataclasses import dataclass
-from itertools import combinations
 
 
 @dataclass
@@ -28,7 +31,9 @@ class DependencyResult:
     guide_id: str
     contribution: float  # 删除该 guide 后的 log-prob 下降
     relative_contribution: float  # 相对贡献比例
-    is_critical: bool  # 是否为关键节点
+    is_critical: bool  # Legacy model-utilization threshold flag, not D_sem.
+    analysis_only: bool = True
+    selection_safe: bool = False
 
 
 def compute_contribution(
@@ -56,7 +61,7 @@ def run_dependency_test(
     threshold: float = 0.1
 ) -> list[DependencyResult]:
     """
-    运行完整的依赖性测试（方案 §12）
+    运行冻结样本的模型利用分析（方案 §12，1082 勘误）
 
     Args:
         guides: 引导问题列表 [{"question": ..., "answer": ...}, ...]
@@ -65,7 +70,8 @@ def run_dependency_test(
         threshold: 判定为"关键节点"的最小贡献阈值
 
     Returns:
-        每个 guide 的依赖性测试结果
+        每个 guide 的模型利用结果。结果始终标记 analysis_only，不能
+        反馈到确认性样本选择。
     """
     n_guides = len(guides)
 
@@ -94,7 +100,9 @@ def run_dependency_test(
             guide_id=f"G{i+1}",
             contribution=contribution,
             relative_contribution=0.0,  # 稍后计算
-            is_critical=contribution >= threshold
+            is_critical=contribution >= threshold,
+            analysis_only=True,
+            selection_safe=False,
         ))
 
     # 计算相对贡献
@@ -122,7 +130,11 @@ def analyze_dependency_pattern(
         }
     """
     if not results:
-        return {"chain_quality": "no_guides"}
+        return {
+            "chain_quality": "no_guides",
+            "analysis_only": True,
+            "selection_safe": False,
+        }
 
     n_critical = sum(1 for r in results if r.is_critical)
     n_total = len(results)
@@ -149,7 +161,9 @@ def analyze_dependency_pattern(
         "strongest_contribution": strongest[1],
         "n_critical": n_critical,
         "n_total": n_total,
-        "chain_quality": chain_quality
+        "chain_quality": chain_quality,
+        "analysis_only": True,
+        "selection_safe": False,
     }
 
 
@@ -193,4 +207,6 @@ def run_partial_chain_analysis(
         gains[k] = results[f"k_{k}"] - baseline
 
     results["gains"] = gains
+    results["analysis_only"] = True
+    results["selection_safe"] = False
     return results

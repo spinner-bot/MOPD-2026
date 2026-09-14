@@ -1,0 +1,1 @@
+/leonardo_scratch/fast/AIFAC_F02_774/rqian000/envs/mopd-stage0-py311/bin/python research/main/code/utils/analyze_teacher_gap_mcnemar_power.py --samples 96 --accuracy-delta 0.08 --alpha 0.025 --discordance-rates 0.10 0.15 0.20 0.30 0.40 0.50 --target-power 0.80 --max-samples 800 --output research/main/outputs/runs/20260914T0408-teacher-gap-g0-power-audit/summary.json

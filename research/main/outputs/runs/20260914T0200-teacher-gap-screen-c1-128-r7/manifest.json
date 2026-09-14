@@ -5,9 +5,9 @@
   "created_at_utc": "2026-09-13T18:00:00+00:00",
   "operator": "Codex (CINECA Leonardo)",
   "hostname": "login07.leonardo.local",
-  "git_commit": "d2ceb00b016b312e4975af83836799d5047b79be",
-  "slurm_job_id": null,
-  "status": "prepared_not_submitted",
+  "git_commit": "21f54f08caaae7e8e8c743b0b81e0230e8432ea7",
+  "slurm_job_id": "57593306",
+  "status": "completed",
   "submit_hostname": "login07.leonardo.local",
   "resources": {
     "nodes": 1,
@@ -15,5 +15,11 @@
     "gpus": 4,
     "gpu_type": "A100",
     "time_limit": "48:00:00"
-  }
+  },
+  "started_at_local": "2026-09-13T20:00:10+02:00",
+  "ended_at_local": "2026-09-13T20:19:55+02:00",
+  "elapsed": "00:19:45",
+  "node": "lrdn1117",
+  "run_worktree": "/leonardo/home/userexternal/rqian000/spinner-bot/MOPD-2026-codex-r7",
+  "construction_input_sha256": "82f977aafb5c7153aefcfd38e2e005bf38c7d5d5b7ffc6935da2acc19cdb5843"
 }

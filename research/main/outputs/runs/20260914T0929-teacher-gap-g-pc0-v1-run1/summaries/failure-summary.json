@@ -1,0 +1,19 @@
+{
+  "elapsed": "00:04:38",
+  "expected_records": 64,
+  "job_id": 57636033,
+  "mask_minus_tensor_length": {
+    "1": 64
+  },
+  "normalized_errors": {
+    "IndexError: The shape of the mask [N] at index 0 does not match the shape of the indexed tensor [N] at index 0": 64
+  },
+  "performance_results_available": false,
+  "raw_records": 64,
+  "result_gate_status": "failed",
+  "retry_policy": "same frozen manifest only, after runner configuration fix and a new run ID",
+  "root_cause": "choice scoring appended each answer token to input_ids and attention_mask but did not append the corresponding text tag to mm_token_type_ids",
+  "scientific_interpretation_authorized": false,
+  "slurm_state": "FAILED",
+  "successful_inference_records": 0
+}

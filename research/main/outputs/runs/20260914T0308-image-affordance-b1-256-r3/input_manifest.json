@@ -1,0 +1,12 @@
+{
+  "input_path": "research/main/outputs/runs/20260914T0236-m3vqa-image-affordance-pool-v1/outputs/sample-256.jsonl",
+  "input_sha256": "e69b6d14fe8da625720af1ee7198213b909c682c10e2313003f43c2c139debf4",
+  "records": 256,
+  "rules_version": "m3vqa-image-affordance-pool-v1",
+  "source_questions_exposed": false,
+  "runner_sha256": "ea6c78130484ad269447a855a12ac65d2ca31887e2c4f7aeb15ab327388f3579",
+  "processor_sha256": "e6eb9f3cb807a0404812bfecdca9db1762084f5bf67c1e0f197a16bb2fcc56a5",
+  "contract_sha256": "a709286b834eb6fcedaa987fd40460d0a4406649b6936914271500f99170b9de",
+  "gate_sha256": "93329c59ffab6ef28ca62b8f69341565650bcf470c654f5378a6c1524ee3e645",
+  "submit_script_sha256": "2a20cdfe3ec7faf2a0ea20e63cbff6e74bcbae19444214654b4742d47c95d361"
+}

@@ -1,0 +1,23 @@
+{
+  "knowledge_labels": {
+    "ambiguous": 4,
+    "external_required": 115
+  },
+  "observed": 128,
+  "parse_rate": 0.9296875,
+  "parsed_valid": 119,
+  "rejected": 9,
+  "rejection_reasons": {
+    "answer_node_missing_canonical_item": 4,
+    "answer_node_negates_required_item": 1,
+    "hedged_or_associative_entailment": 3,
+    "invalid_json": 1,
+    "nonvisual_or_meta_evidence_claim": 3,
+    "reference_entailment_explanation_conflict": 1,
+    "truncated_output": 1
+  },
+  "stage": "audit",
+  "task_families": {
+    "None": 119
+  }
+}

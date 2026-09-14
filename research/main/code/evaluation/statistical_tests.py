@@ -10,9 +10,7 @@
 
 import numpy as np
 from typing import Literal
-from scipy import stats
-from statsmodels.stats.multitest import multipletests
-import statsmodels.api as sm
+from scipy import optimize, special, stats
 
 
 def clustered_paired_bootstrap(
@@ -178,9 +176,20 @@ def holm_correction(
             "alphacBonferroni": Bonferroni 校正 alpha
         }
     """
-    reject, pvals_corrected, alphacSidak, alphacBonferroni = multipletests(
-        p_values, alpha=alpha, method=method
-    )
+    values = np.asarray(p_values, dtype=float)
+    if values.ndim != 1 or not np.all(np.isfinite(values)) or np.any((values < 0) | (values > 1)):
+        raise ValueError("p_values must be a finite one-dimensional array in [0, 1]")
+    if method != "holm":
+        raise ValueError("only the auditable Holm step-down method is supported")
+    order = np.argsort(values, kind="stable")
+    ordered = values[order]
+    adjusted_ordered = np.maximum.accumulate((len(values) - np.arange(len(values))) * ordered)
+    adjusted_ordered = np.minimum(adjusted_ordered, 1.0)
+    pvals_corrected = np.empty_like(adjusted_ordered)
+    pvals_corrected[order] = adjusted_ordered
+    reject = pvals_corrected <= alpha
+    alphacSidak = 1 - (1 - alpha) ** (1 / len(values)) if len(values) else np.nan
+    alphacBonferroni = alpha / len(values) if len(values) else np.nan
 
     return {
         "reject": reject,
@@ -201,7 +210,7 @@ def factorial_regression(
     cluster_ids: np.ndarray = None
 ) -> dict:
     """
-    Factorial regression（方案 §66）
+    Descriptive factorial logistic regression（方案 §66）
 
     Correct ~ V + T + V:T
     进一步: Correct ~ V + T + V:T + Depth + Clarity + TargetSize
@@ -215,7 +224,8 @@ def factorial_regression(
         depth: 推理深度 (可选)
         clarity: 视觉清晰度 (可选)
         target_size: 目标大小 (可选)
-        cluster_ids: cluster ID (可选，用于 cluster-robust SE)
+        cluster_ids: cluster ID。提供时必须至少有两个 cluster，并使用
+            cluster-sandwich covariance；不会被静默忽略。
 
     Returns:
         {
@@ -225,6 +235,14 @@ def factorial_regression(
             "summary": 模型摘要
         }
     """
+    arrays = [np.asarray(correct), np.asarray(v_privilege), np.asarray(t_privilege)]
+    if any(array.ndim != 1 for array in arrays) or len({len(array) for array in arrays}) != 1:
+        return {"error": "correct, v_privilege and t_privilege must be aligned 1-D arrays",
+                "coefficients": None, "p_values": None}
+    if len(correct) == 0 or not np.all(np.isin(arrays[0], [0, 1])):
+        return {"error": "correct must be a non-empty binary array",
+                "coefficients": None, "p_values": None}
+
     # 构建设计矩阵
     X_data = [
         np.ones(len(correct)),  # 截距
@@ -255,18 +273,79 @@ def factorial_regression(
 
     X = np.column_stack(X_data)
 
-    # 逻辑回归
+    if not np.all(np.isfinite(X)) or np.linalg.matrix_rank(X) < X.shape[1]:
+        return {"error": "design matrix must be finite and full rank",
+                "coefficients": None, "p_values": None}
+
+    groups = None
+    if cluster_ids is not None:
+        groups = np.asarray(cluster_ids)
+        if groups.ndim != 1 or len(groups) != len(correct):
+            return {"error": "cluster_ids must be a 1-D array aligned with outcomes",
+                    "coefficients": None, "p_values": None}
+        if len(np.unique(groups)) < 2:
+            return {"error": "cluster-robust covariance requires at least two clusters",
+                    "coefficients": None, "p_values": None}
+
+    y = arrays[0].astype(float)
+
+    def objective(beta):
+        eta = X @ beta
+        return float(np.sum(np.logaddexp(0.0, eta) - y * eta))
+
+    def gradient(beta):
+        probability = special.expit(X @ beta)
+        return X.T @ (probability - y)
+
+    # scipy keeps this utility usable in the project's frozen environments,
+    # which do not install statsmodels.  G1 still requires its separately
+    # frozen mixed-effects model; this function is a descriptive/smoke fit.
     try:
-        model = sm.Logit(correct, X)
-        result = model.fit(disp=0)
+        fit = optimize.minimize(
+            objective,
+            np.zeros(X.shape[1], dtype=float),
+            jac=gradient,
+            method="BFGS",
+            options={"gtol": 1e-8, "maxiter": 1000},
+        )
+        if not fit.success or not np.all(np.isfinite(fit.x)):
+            raise ValueError(f"logistic optimization failed: {fit.message}")
+        beta = fit.x
+        probability = special.expit(X @ beta)
+        hessian = X.T @ ((probability * (1.0 - probability))[:, None] * X)
+        bread = np.linalg.inv(hessian)
+        if groups is None:
+            covariance = bread
+            covariance_type = "model_based"
+            n_clusters = None
+        else:
+            scores = X * (y - probability)[:, None]
+            unique_groups = np.unique(groups)
+            cluster_scores = np.stack([scores[groups == group].sum(axis=0) for group in unique_groups])
+            meat = cluster_scores.T @ cluster_scores
+            n_obs, n_parameters = X.shape
+            n_clusters = len(unique_groups)
+            if n_obs <= n_parameters:
+                raise ValueError("cluster correction requires observations > parameters")
+            correction = (n_clusters / (n_clusters - 1)) * ((n_obs - 1) / (n_obs - n_parameters))
+            covariance = correction * bread @ meat @ bread
+            covariance_type = "cluster_sandwich"
+        standard_errors = np.sqrt(np.diag(covariance))
+        if not np.all(np.isfinite(standard_errors)) or np.any(standard_errors <= 0):
+            raise ValueError("non-finite or non-positive standard errors")
+        z_values = beta / standard_errors
+        p_values = 2.0 * stats.norm.sf(np.abs(z_values))
 
         return {
-            "coefficients": dict(zip(feature_names, result.params)),
-            "std_errors": dict(zip(feature_names, result.bse)),
-            "p_values": dict(zip(feature_names, result.pvalues)),
-            "summary": result.summary().as_text(),
-            "aic": result.aic,
-            "bic": result.bic
+            "coefficients": dict(zip(feature_names, beta)),
+            "std_errors": dict(zip(feature_names, standard_errors)),
+            "p_values": dict(zip(feature_names, p_values)),
+            "covariance_type": covariance_type,
+            "n_observations": len(y),
+            "n_clusters": n_clusters,
+            "converged": True,
+            "analysis_role": "descriptive_smoke_only",
+            "g1_confirmatory_model": False,
         }
     except Exception as e:
         return {

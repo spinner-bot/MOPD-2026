@@ -1,6 +1,9 @@
-# 训练配置模板
-# 按实验方案 §28, §30 定义
-# 用于 Stage 1+ 训练
+# 历史训练设计模板；不得直接作为 Stage 1+ 运行配置。
+# 创建来源：项目初始化（0001）；2026-09-14 13:21 UTC+8 由 Codex (CINECA Leonardo)
+# 修订状态标记。触发原因：1071/1078/1084/1085 已改变最小对照、分母和
+# response-logits/JSD 验收要求；当前 code/training 尚无训练实现。
+# 实际训练须在相应阶段结果前另行冻结 resolved config 与 hash。
+status: legacy_design_template_not_run_authority
 
 # === 基础配置 ===
 model:

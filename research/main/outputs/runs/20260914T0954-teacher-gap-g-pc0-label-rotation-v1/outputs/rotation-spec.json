@@ -1,0 +1,18 @@
+{
+  "aggregation": "mean raw single-token log-likelihood by semantic option across four rotations",
+  "base_manifest_sha256": "10b09d122a5781df564a63cac8449d368a2d785c3fb06ba15c3887db2433bb1c",
+  "displayed_to_semantic_rule": "semantic_index=(displayed_index+rotation) mod 4",
+  "rotation_order": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "tie_break": [
+    "A",
+    "B",
+    "C",
+    "D"
+  ],
+  "version": "g-pc0-label-rotation-v1"
+}

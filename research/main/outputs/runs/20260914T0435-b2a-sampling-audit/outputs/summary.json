@@ -1,0 +1,54 @@
+{
+  "all_assertions_passed": true,
+  "assertions": {
+    "b2a_ids_equal_sample_prefix32": true,
+    "b2a_machine_proposals_hidden": true,
+    "b2a_source_indices_are_contiguous": true,
+    "b2a_source_questions_hidden": true,
+    "pool_image_candidate_ids_unique": true,
+    "sample_exactly_replays_global_hash_selection": true,
+    "sample_is_strictly_hash_ordered": true,
+    "sample_prefix32_equals_direct_global32": true
+  },
+  "b2a_sha256": "b61839ddb4111f1be5d2d67f165c40dc05cd10daf8d5ca02a202b707a1057a58",
+  "descriptive_source_record_counts": {
+    "b2a_prefix_32": {
+      "images": 32,
+      "multi_record_image_rate": 0.09375,
+      "multi_record_images": 3,
+      "source_question_record_sum": 35,
+      "source_record_count_max": 2,
+      "source_record_count_mean": 1.09375,
+      "source_record_count_median": 1.0,
+      "source_record_count_min": 1
+    },
+    "frozen_sample_256": {
+      "images": 256,
+      "multi_record_image_rate": 0.140625,
+      "multi_record_images": 36,
+      "source_question_record_sum": 317,
+      "source_record_count_max": 8,
+      "source_record_count_mean": 1.23828125,
+      "source_record_count_median": 1.0,
+      "source_record_count_min": 1
+    },
+    "full_unique_image_pool": {
+      "images": 10565,
+      "multi_record_image_rate": 0.13251301467108376,
+      "multi_record_images": 1400,
+      "source_question_record_sum": 13125,
+      "source_record_count_max": 11,
+      "source_record_count_mean": 1.2423095125414103,
+      "source_record_count_median": 1,
+      "source_record_count_min": 1
+    }
+  },
+  "human_verified_records": 0,
+  "pool_sha256": "d16bc8ab8954c8dc782b1d3d029ab6b4ad23d20f1ba62b9da948347ec39e927b",
+  "question_content_read": false,
+  "ranking_function": "sha256(seed\\0image_candidate_id)",
+  "rules_version": "b2a-sampling-audit-v1",
+  "sample_sha256": "e69b6d14fe8da625720af1ee7198213b909c682c10e2313003f43c2c139debf4",
+  "seed": 20260914,
+  "semantic_image_review_performed": false
+}

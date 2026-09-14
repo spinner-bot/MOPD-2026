@@ -2,7 +2,7 @@
 
 This deterministic step never fills human fields.  It joins completed reviews
 to valid construction proposals, removes duplicate-image clusters, balances
-answer labels, creates a tokenizer-matched generic control, and fails closed if
+answer labels, creates per-sample tokenizer-matched generic controls, and fails closed if
 the full three-way partition cannot be produced.
 """
 
@@ -11,6 +11,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import subprocess
 import sys
 from collections import Counter
 from datetime import datetime
@@ -18,6 +19,7 @@ from pathlib import Path
 
 
 CODE_ROOT = Path(__file__).resolve().parents[1]
+REPO_ROOT = Path(__file__).resolve().parents[4]
 sys.path.insert(0, str(CODE_ROOT / "evaluation"))
 
 from exploratory_teacher_gap import validate_locked_manifest, validate_partition_isolation
@@ -34,6 +36,19 @@ GENERIC_WORDS = (
     "order and avoid relying on outside facts. Recheck plausible alternatives against what is directly "
     "shown and choose only the conclusion supported by the complete visual evidence."
 ).split()
+FINALIZER_CODE_PATHS = {
+    "finalize_teacher_gap_manifests.py": Path(__file__).resolve(),
+    "build_teacher_gap_human_review_queue.py": Path(__file__).resolve().with_name(
+        "build_teacher_gap_human_review_queue.py"
+    ),
+    "reasoning_graph_contract.py": Path(__file__).resolve().with_name("reasoning_graph_contract.py"),
+    "effect_selection_firewall.py": Path(__file__).resolve().with_name(
+        "effect_selection_firewall.py"
+    ),
+    "exploratory_teacher_gap.py": CODE_ROOT / "evaluation" / "exploratory_teacher_gap.py",
+    "teacher_gap_inputs.py": CODE_ROOT / "evaluation" / "teacher_gap_inputs.py",
+    "g_pc0.py": CODE_ROOT / "evaluation" / "g_pc0.py",
+}
 
 
 def stable_hash(value: str) -> str:
@@ -48,19 +63,60 @@ def sha256_file(path: Path) -> str:
     return digest.hexdigest()
 
 
+def runtime_code_hashes() -> dict[str, str]:
+    return {name: sha256_file(path) for name, path in sorted(FINALIZER_CODE_PATHS.items())}
+
+
+def assert_code_state(expected_commit: str) -> None:
+    if len(expected_commit) != 40 or any(char not in "0123456789abcdef" for char in expected_commit):
+        raise ValueError("code commit must be the full 40-character lowercase git hash")
+    actual_commit = subprocess.check_output(
+        ["git", "-C", str(REPO_ROOT), "rev-parse", "HEAD"], text=True
+    ).strip()
+    if actual_commit != expected_commit:
+        raise ValueError(f"code commit mismatch: expected={expected_commit} actual={actual_commit}")
+    relative_paths = [str(path.relative_to(REPO_ROOT)) for path in FINALIZER_CODE_PATHS.values()]
+    result = subprocess.run(
+        ["git", "-C", str(REPO_ROOT), "diff", "--quiet", "HEAD", "--", *relative_paths],
+        check=False,
+    )
+    if result.returncode != 0:
+        raise ValueError("tracked finalizer runtime code differs from the pinned commit")
+
+
 def load_jsonl(path: Path) -> list[dict]:
     with path.open(encoding="utf-8") as source:
         return [json.loads(line) for line in source if line.strip()]
 
 
 def write_jsonl(path: Path, rows: list[dict]) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    with path.open("w", encoding="utf-8") as sink:
+    with path.open("x", encoding="utf-8") as sink:
         for row in rows:
             sink.write(json.dumps(row, ensure_ascii=False, sort_keys=True) + "\n")
 
 
-def duplicate_cluster_map(path: Path) -> dict[str, str]:
+def write_json_exclusive(path: Path, value: dict) -> None:
+    with path.open("x", encoding="utf-8") as sink:
+        sink.write(json.dumps(value, ensure_ascii=False, indent=2, sort_keys=True) + "\n")
+
+
+def require_new_output_dir(path: Path) -> None:
+    """Reject reuse before reading reviews or loading the tokenizer."""
+
+    if path.exists():
+        raise ValueError(f"output directory already exists; use a new run ID: {path}")
+
+
+def source_dataset_for_candidate(candidate: dict) -> str:
+    """Return explicit provenance; never infer it from a candidate ID."""
+
+    value = str(candidate.get("source_dataset", "")).strip()
+    if not value:
+        raise ValueError("candidate_missing_source_dataset")
+    return value
+
+
+def duplicate_cluster_metadata(path: Path) -> tuple[dict[str, str], dict[str, str]]:
     data = json.loads(path.read_text(encoding="utf-8"))
     images = data.get("images")
     clusters = data.get("duplicate_clusters")
@@ -86,14 +142,63 @@ def duplicate_cluster_map(path: Path) -> dict[str, str]:
         for member in members[1:]:
             union(members[0], member)
     grouped = {}
+    expected_sha256 = {}
     for index, image in enumerate(images):
         image_path = str(image.get("image_original", ""))
         digest = str(image.get("sha256", ""))
-        if not image_path or not digest:
+        if (
+            not image_path
+            or len(digest) != 64
+            or any(char not in "0123456789abcdef" for char in digest)
+        ):
             raise ValueError("cluster-map image lacks path or sha256")
+        if image_path in expected_sha256:
+            raise ValueError("duplicate image path in cluster map")
+        expected_sha256[image_path] = digest
         grouped.setdefault(find(index), []).append(digest)
     cluster_ids = {root: "sha256-cluster-" + min(values)[:20] for root, values in grouped.items()}
-    return {str(image["image_original"]): cluster_ids[find(index)] for index, image in enumerate(images)}
+    cluster_by_path = {
+        str(image["image_original"]): cluster_ids[find(index)]
+        for index, image in enumerate(images)
+    }
+    return cluster_by_path, expected_sha256
+
+
+def duplicate_cluster_map(path: Path) -> dict[str, str]:
+    """Compatibility view used by earlier callers and tests."""
+
+    return duplicate_cluster_metadata(path)[0]
+
+
+def review_coverage(constructed_rows: list[dict], reviews: list[dict]) -> dict:
+    """Require completed reviews to cover the exact queue-eligible ID set."""
+
+    queue_ids = {
+        str(row.get("candidate_id", "")).strip()
+        for row in constructed_rows
+        if not validate_constructed_row(row)
+    }
+    review_ids = {str(row.get("candidate_id", "")).strip() for row in reviews}
+    missing = sorted(queue_ids - review_ids)
+    unexpected = sorted(review_ids - queue_ids)
+    return {
+        "queue_eligible": len(queue_ids),
+        "reviewed": len(review_ids),
+        "missing_candidate_ids": missing,
+        "unexpected_candidate_ids": unexpected,
+        "passes": not missing and not unexpected,
+    }
+
+
+def verify_image_checksum(path: Path, expected_sha256: str) -> tuple[str | None, list[str]]:
+    """Bind the reviewed image bytes to the duplicate-cluster inventory."""
+
+    if not path.is_file():
+        return None, ["image_file_missing"]
+    actual = sha256_file(path)
+    if actual != expected_sha256:
+        return actual, ["image_checksum_mismatch_with_cluster_map"]
+    return actual, []
 
 
 def validate_human_review(review: dict) -> list[str]:
@@ -129,33 +234,95 @@ def validate_human_review(review: dict) -> list[str]:
         except ValueError:
             errors.append("invalid_human_reviewed_at")
     evidence = review.get("human_required_evidence")
-    if not isinstance(evidence, list) or len(evidence) < 2 or any(not str(value).strip() for value in evidence):
+    evidence_valid = (
+        isinstance(evidence, list)
+        and len(evidence) >= 2
+        and all(isinstance(value, str) and value.strip() for value in evidence)
+        and len({value.strip().casefold() for value in evidence}) == len(evidence)
+    )
+    if not evidence_valid:
         errors.append("invalid_human_required_evidence")
     depth = review.get("human_reasoning_depth")
     if not isinstance(depth, int) or isinstance(depth, bool) or depth < 2:
         errors.append("invalid_human_reasoning_depth")
+    graph = review.get("human_reasoning_graph")
     graph_errors, _ = validate_reasoning_graph(
-        review.get("human_reasoning_graph"),
+        graph,
         declared_depth=depth,
         require_two_evidence=True,
     )
     errors.extend(f"invalid_human_reasoning_graph:{error}" for error in graph_errors)
+    if evidence_valid and isinstance(graph, dict) and isinstance(graph.get("nodes"), list):
+        graph_evidence = {
+            str(node.get("claim", "")).strip().casefold()
+            for node in graph["nodes"]
+            if isinstance(node, dict) and node.get("type") == "evidence"
+        }
+        if graph_evidence != {value.strip().casefold() for value in evidence}:
+            errors.append("human_required_evidence_must_match_graph_evidence")
+
+    difficult = review.get("human_difficult_visual_evidence")
+    difficult_valid = (
+        isinstance(difficult, list)
+        and all(isinstance(value, str) and value.strip() for value in difficult)
+        and len({value.strip().casefold() for value in difficult}) == len(difficult)
+    )
+    if not difficult_valid:
+        errors.append("invalid_human_difficult_visual_evidence")
+    elif evidence_valid and any(
+        value.strip().casefold() not in {item.strip().casefold() for item in evidence}
+        for value in difficult
+    ):
+        errors.append("human_difficult_evidence_not_in_required_evidence")
+    elif review.get("human_task_family") == "PR" and not difficult:
+        errors.append("human_PR_requires_difficult_visual_evidence")
+    elif review.get("human_task_family") == "R" and difficult:
+        errors.append("human_R_must_not_have_difficult_visual_evidence")
     return errors
 
 
-def generic_context_for(samples: list[dict], tokenizer) -> str:
-    target_lengths = sorted(len(tokenizer.encode(privileged_context(row, "T_Q"), add_special_tokens=False)) for row in samples)
+def generic_candidate_pool(tokenizer) -> tuple[tuple[str, int], ...]:
+    """Tokenize the fixed neutral prefixes once for a finalization run."""
+
+    words = GENERIC_WORDS * 12
+    return tuple(
+        (text, len(tokenizer.encode(text, add_special_tokens=False)))
+        for text in (" ".join(words[:count]) for count in range(5, len(words) + 1))
+    )
+
+
+def generic_context_for(
+    samples: list[dict],
+    tokenizer,
+    target_condition: str = "T_Q",
+    candidate_pool: tuple[tuple[str, int], ...] | None = None,
+) -> str:
+    """Build neutral text for one sample's frozen structured-context length."""
+
+    if target_condition not in {"T_Q", "T_QA"}:
+        raise ValueError("generic target condition must be T_Q or T_QA")
+    if len(samples) != 1:
+        raise ValueError("per-sample generic construction requires exactly one sample")
+    target_lengths = sorted(
+        len(tokenizer.encode(privileged_context(row, target_condition), add_special_tokens=False))
+        for row in samples
+    )
     middle = len(target_lengths) // 2
     target = target_lengths[middle] if len(target_lengths) % 2 else (target_lengths[middle - 1] + target_lengths[middle]) / 2
-    words = GENERIC_WORDS * 12
-    candidates = [" ".join(words[:count]) for count in range(5, len(words) + 1)]
-    return min(candidates, key=lambda text: abs(len(tokenizer.encode(text, add_special_tokens=False)) - target))
+    candidates = candidate_pool if candidate_pool is not None else generic_candidate_pool(tokenizer)
+    if not candidates:
+        raise ValueError("generic candidate pool must not be empty")
+    return min(candidates, key=lambda item: abs(item[1] - target))[0]
 
 
 def arrange_options(proposal: dict, correct_label: str, candidate_id: str) -> dict[str, str]:
     correct = str(proposal["correct_answer_text"]).strip()
+    def render(value) -> str:
+        if isinstance(value, list):
+            return json.dumps(value, ensure_ascii=False, separators=(",", ":"))
+        return str(value).strip()
     distractors = sorted(
-        [str(value).strip() for value in proposal["distractors"]],
+        [render(value) for value in proposal["distractors"]],
         key=lambda value: stable_hash(f"{candidate_id}\0{value}"),
     )
     values = iter(distractors)
@@ -168,9 +335,29 @@ def main() -> None:
     parser.add_argument("--human-review", type=Path, required=True)
     parser.add_argument("--duplicate-clusters", type=Path, required=True)
     parser.add_argument("--tokenizer", type=Path, required=True)
+    parser.add_argument("--tokenizer-revision", required=True)
+    parser.add_argument("--code-commit", required=True)
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--seed", type=int, default=20260911)
     args = parser.parse_args()
+
+    try:
+        require_new_output_dir(args.output_dir)
+        assert_code_state(args.code_commit)
+    except ValueError as error:
+        raise SystemExit(str(error)) from error
+
+    if len(args.tokenizer_revision) != 40 or any(
+        char not in "0123456789abcdef" for char in args.tokenizer_revision
+    ):
+        raise SystemExit("tokenizer revision must be the full 40-character lowercase hash")
+
+    input_hashes = {
+        "constructed": sha256_file(args.constructed),
+        "human_review": sha256_file(args.human_review),
+        "duplicate_clusters": sha256_file(args.duplicate_clusters),
+    }
+    code_hashes = runtime_code_hashes()
 
     from transformers import AutoTokenizer
 
@@ -180,9 +367,16 @@ def main() -> None:
         raise SystemExit("constructed candidate_id values must be non-empty and unique")
     constructed = dict(zip(constructed_ids, constructed_rows))
     reviews = load_jsonl(args.human_review)
-    if len({row.get("candidate_id") for row in reviews}) != len(reviews):
+    review_ids = [str(row.get("candidate_id", "")).strip() for row in reviews]
+    if any(not value for value in review_ids) or len(set(review_ids)) != len(reviews):
         raise SystemExit("human review candidate_id values must be unique")
-    cluster_by_path = duplicate_cluster_map(args.duplicate_clusters)
+    coverage = review_coverage(constructed_rows, reviews)
+    if not coverage["passes"]:
+        raise SystemExit(
+            "human review must exactly cover queue-eligible construction candidates: "
+            + json.dumps(coverage, ensure_ascii=False, sort_keys=True)
+        )
+    cluster_by_path, expected_sha256_by_path = duplicate_cluster_metadata(args.duplicate_clusters)
     eligible, rejected = [], []
     for review in reviews:
         candidate_id = review.get("candidate_id")
@@ -194,6 +388,10 @@ def main() -> None:
             candidate = construction.get("candidate", {})
             proposal = construction.get("proposal", {})
             reasons.extend(validate_constructed_row(construction))
+            try:
+                source_dataset_for_candidate(candidate)
+            except ValueError as error:
+                reasons.append(str(error))
             reasons.extend(
                 f"guide_graph:{error}"
                 for error in validate_guide_graph_alignment(
@@ -203,10 +401,21 @@ def main() -> None:
             image_path = str(candidate.get("image_original", ""))
             if image_path not in cluster_by_path:
                 reasons.append("image_missing_from_cluster_map")
+                image_checksum = None
+            else:
+                image_checksum, image_errors = verify_image_checksum(
+                    Path(image_path), expected_sha256_by_path[image_path]
+                )
+                reasons.extend(image_errors)
         if reasons:
             rejected.append({"candidate_id": candidate_id, "rejection_reasons": sorted(set(reasons))})
             continue
-        eligible.append({"review": review, "construction": construction, "cluster_id": cluster_by_path[image_path]})
+        eligible.append({
+            "review": review,
+            "construction": construction,
+            "cluster_id": cluster_by_path[image_path],
+            "image_checksum": image_checksum,
+        })
 
     # Keep one question per known exact/near-duplicate cluster for this pilot.
     unique_clusters = {}
@@ -215,21 +424,40 @@ def main() -> None:
     ordered = list(unique_clusters.values())
     required = sum(PARTITION_SIZES.values())
     if len(ordered) < required:
-        args.output_dir.mkdir(parents=True, exist_ok=True)
+        args.output_dir.mkdir(parents=True, exist_ok=False)
         write_jsonl(args.output_dir / "finalization-rejects.jsonl", rejected)
         summary = {
+            "code_commit": args.code_commit,
+            "runtime_code_sha256": code_hashes,
+            "input_sha256": input_hashes,
+            "tokenizer_source": str(args.tokenizer.resolve()),
+            "tokenizer_revision": args.tokenizer_revision,
             "human_reviews": len(reviews),
+            "review_coverage": coverage,
             "eligible_before_cluster_dedup": len(eligible),
             "eligible_unique_clusters": len(ordered),
             "required": required,
             "status": "insufficient_human_verified_unique_clusters",
         }
-        (args.output_dir / "finalization-summary.json").write_text(
-            json.dumps(summary, ensure_ascii=False, indent=2, sort_keys=True) + "\n", encoding="utf-8"
-        )
+        write_json_exclusive(args.output_dir / "finalization-summary.json", summary)
         raise SystemExit(json.dumps(summary, ensure_ascii=False, sort_keys=True))
 
     tokenizer = AutoTokenizer.from_pretrained(args.tokenizer, local_files_only=True)
+    tokenizer_artifact_hashes = {
+        name: sha256_file(args.tokenizer / name)
+        for name in ("tokenizer.json", "tokenizer_config.json", "config.json")
+        if (args.tokenizer / name).is_file()
+    }
+    if not tokenizer_artifact_hashes:
+        raise SystemExit("tokenizer path has no hashable tokenizer/config artifacts")
+    tokenizer_source = str(args.tokenizer.resolve())
+    generic_candidates = generic_candidate_pool(tokenizer)
+    finalization_provenance = {
+        "code_commit": args.code_commit,
+        "runtime_code_sha256": code_hashes,
+        "input_sha256": input_hashes,
+        "seed": args.seed,
+    }
     partitions = {}
     offset = 0
     for name, size in PARTITION_SIZES.items():
@@ -245,17 +473,23 @@ def main() -> None:
             image_path = Path(candidate["image_original"])
             rows.append({
                 "sample_id": "tg-" + construction["candidate_id"],
+                "dataset_role": "G0-locked-method-selection",
+                "selection_uses_model_effect": False,
                 "source_image_id": candidate["source_image_id"],
                 "source_cluster_id": item["cluster_id"],
-                "source_dataset": "M3VQA",
+                "source_dataset": source_dataset_for_candidate(candidate),
                 "source_record_id": construction["candidate_id"],
                 "image_original": str(image_path),
-                "image_checksum": sha256_file(image_path),
+                "image_checksum": item["image_checksum"],
                 "final_question": candidate["final_question_source"],
                 **{f"option_{choice}": options[choice] for choice in CHOICES},
                 "final_answer": correct_label,
+                "canonical_answer_text": candidate["canonical_answer_text"],
                 "guides": proposal["guides"],
                 "generic_context": "PENDING_TOKEN_MATCH",
+                "generic_context_t_q": "PENDING_TOKEN_MATCH",
+                "generic_context_t_qa": "PENDING_TOKEN_MATCH",
+                "finalization_provenance": finalization_provenance,
                 "knowledge_dependency_label": "image_only",
                 "task_family": review["human_task_family"],
                 "full_image_reference_valid": True,
@@ -266,17 +500,39 @@ def main() -> None:
                 "answer_leakage": 0,
                 "external_fact_injected": 0,
                 "required_evidence": review["human_required_evidence"],
+                "difficult_visual_evidence": review["human_difficult_visual_evidence"],
                 "reasoning_depth": review["human_reasoning_depth"],
                 "minimal_reasoning_graph": review["human_reasoning_graph"],
             })
-        generic = generic_context_for(rows, tokenizer)
         for row in rows:
-            row["generic_context"] = generic
+            generic_q = generic_context_for([row], tokenizer, "T_Q", generic_candidates)
+            generic_qa = generic_context_for([row], tokenizer, "T_QA", generic_candidates)
+            row["generic_context"] = generic_q
+            row["generic_context_t_q"] = generic_q
+            row["generic_context_t_qa"] = generic_qa
         length_result = validate_generic_length(
-            rows, lambda text: len(tokenizer.encode(text, add_special_tokens=False))
+            rows,
+            lambda text: len(tokenizer.encode(text, add_special_tokens=False)),
+            dual_control=True,
         )
         if not length_result["passes"]:
-            raise SystemExit(f"unable to satisfy Generic-T length contract for {name}: {length_result}")
+            raise SystemExit(f"unable to satisfy per-sample generic length contract for {name}: {length_result}")
+        comparison_q = length_result["comparisons"]["T_Q_vs_T_generic_Q"]
+        comparison_qa = length_result["comparisons"]["T_QA_vs_T_generic_QA"]
+        checks_q = {check["sample_id"]: check for check in comparison_q["sample_checks"]}
+        checks_qa = {check["sample_id"]: check for check in comparison_qa["sample_checks"]}
+        for row in rows:
+            sample_id = row["sample_id"]
+            row["generic_length_control"] = {
+                "algorithm": "neutral-prefix-nearest-per-sample-v1",
+                "neutral_word_bank_sha256": stable_hash(" ".join(GENERIC_WORDS)),
+                "tokenizer_source": tokenizer_source,
+                "tokenizer_revision": args.tokenizer_revision,
+                "tokenizer_artifact_sha256": tokenizer_artifact_hashes,
+                "tolerance": length_result["tolerance"],
+                "T_Q_vs_T_generic_Q": checks_q[sample_id],
+                "T_QA_vs_T_generic_QA": checks_qa[sample_id],
+            }
         errors = validate_locked_manifest(rows, expected_n=size)
         if errors:
             raise SystemExit(f"{name} manifest invalid: {'; '.join(errors)}")
@@ -285,7 +541,7 @@ def main() -> None:
     isolation_errors = validate_partition_isolation(partitions)
     if isolation_errors:
         raise SystemExit("partition isolation failed: " + "; ".join(isolation_errors))
-    args.output_dir.mkdir(parents=True, exist_ok=True)
+    args.output_dir.mkdir(parents=True, exist_ok=False)
     hashes = {}
     for name, rows in partitions.items():
         path = args.output_dir / f"{name}.jsonl"
@@ -293,8 +549,17 @@ def main() -> None:
         hashes[path.name] = sha256_file(path)
     write_jsonl(args.output_dir / "finalization-rejects.jsonl", rejected)
     summary = {
+        "code_commit": args.code_commit,
+        "runtime_code_sha256": code_hashes,
+        "input_sha256": input_hashes,
+        "tokenizer_source": tokenizer_source,
+        "tokenizer_revision": args.tokenizer_revision,
+        "tokenizer_artifact_sha256": tokenizer_artifact_hashes,
+        "generic_control_algorithm": "neutral-prefix-nearest-per-sample-v1",
+        "generic_neutral_word_bank_sha256": stable_hash(" ".join(GENERIC_WORDS)),
         "seed": args.seed,
         "human_reviews": len(reviews),
+        "review_coverage": coverage,
         "eligible_before_cluster_dedup": len(eligible),
         "eligible_unique_clusters": len(ordered),
         "partition_sizes": PARTITION_SIZES,
@@ -302,9 +567,7 @@ def main() -> None:
         "hashes": hashes,
         "status": "frozen",
     }
-    (args.output_dir / "finalization-summary.json").write_text(
-        json.dumps(summary, ensure_ascii=False, indent=2, sort_keys=True) + "\n", encoding="utf-8"
-    )
+    write_json_exclusive(args.output_dir / "finalization-summary.json", summary)
     print(json.dumps(summary, ensure_ascii=False, sort_keys=True))
 
 

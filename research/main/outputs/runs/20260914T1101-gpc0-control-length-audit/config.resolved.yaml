@@ -1,0 +1,9 @@
+analysis: input_only_control_length_audit
+conditions:
+  - T_Q
+  - T_QA
+  - T_generic
+length_unit: frozen_tokenizer_tokens
+model_revision: 851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a
+performance_results_read: false
+gpu_used: false

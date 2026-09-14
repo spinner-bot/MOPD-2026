@@ -1,0 +1,11 @@
+{
+  "status": "failed_preflight_missing_python",
+  "slurm_job_id": "57597609",
+  "human_verified": 0,
+  "submitted_code_commit": "e5edf8d98c0dc47e23c9e56d44ab00c836a3c617",
+  "run_worktree": "/leonardo/home/userexternal/rqian000/spinner-bot/MOPD-2026-codex-b1",
+  "failure_reason": "configured MOPD_PYTHON executable did not exist",
+  "generated_records": 0,
+  "canary_ran": false,
+  "full_ran": false
+}

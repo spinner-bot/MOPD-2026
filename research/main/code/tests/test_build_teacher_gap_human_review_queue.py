@@ -107,6 +107,13 @@ class HumanReviewQueueTests(unittest.TestCase):
         self.assertEqual(queued, [])
         self.assertTrue(any("unknown_supports_next" in error for error in rejected[0]["rejection_reasons"]))
 
+    def test_guide_may_elicit_an_evidence_node(self):
+        row = constructed()
+        row["proposal"]["guides"][0]["supports_next"] = "e1"
+        queued, rejected, _ = build_queue([row])
+        self.assertEqual(len(queued), 1)
+        self.assertEqual(rejected, [])
+
     def test_duplicate_candidate_ids_fail_closed(self):
         queued, rejected, _ = build_queue([constructed(), constructed()])
         self.assertEqual(len(queued), 1)

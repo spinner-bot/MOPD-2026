@@ -1,0 +1,31 @@
+{
+  "analysis_type": "input_only_control_length_audit",
+  "gpu_used": false,
+  "manifest_sha256": "10b09d122a5781df564a63cac8449d368a2d785c3fb06ba15c3887db2433bb1c",
+  "model_revision": "851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a",
+  "performance_results_read": false,
+  "records": 16,
+  "run_id": "20260914T1101-gpc0-control-length-audit",
+  "status": "complete",
+  "token_lengths": {
+    "T_Q": {
+      "max": 58,
+      "mean": 50.5,
+      "median": 49.0,
+      "min": 46
+    },
+    "T_QA": {
+      "max": 110,
+      "mean": 82.125,
+      "median": 74.0,
+      "min": 68
+    },
+    "T_generic": {
+      "max": 49,
+      "mean": 49.0,
+      "median": 49.0,
+      "min": 49
+    }
+  },
+  "tqa_vs_generic_median_ratio": 1.510204081632653
+}

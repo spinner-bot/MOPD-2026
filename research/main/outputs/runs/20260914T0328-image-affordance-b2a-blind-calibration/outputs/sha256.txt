@@ -1,0 +1,3 @@
+e69b6d14fe8da625720af1ee7198213b909c682c10e2313003f43c2c139debf4  research/main/outputs/runs/20260914T0236-m3vqa-image-affordance-pool-v1/outputs/sample-256.jsonl
+b61839ddb4111f1be5d2d67f165c40dc05cd10daf8d5ca02a202b707a1057a58  research/main/outputs/runs/20260914T0328-image-affordance-b2a-blind-calibration/outputs/blind-review-32.jsonl
+42225bf4c9d123f83381020b5fac0a47974165e5dca95777bcb4b36d12378638  research/main/outputs/runs/20260914T0328-image-affordance-b2a-blind-calibration/outputs/summary.json

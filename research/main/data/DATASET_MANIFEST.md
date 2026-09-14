@@ -3,7 +3,15 @@
 > 本清单用于追溯所有实验依赖的数据来源。下载前请确认每一项已获得官方授权。
 >
 > 创建时间：2026-09-09
-> 状态：下载已完成；大文件 payload 使用 Leonardo Work 存储，main 保存清单、映射和运行记录
+> 创建作者：claude code (local)
+>
+> 修改时间：2026-09-14 04:14（UTC+8）
+>
+> 修改作者：Codex (CINECA Leonardo)
+>
+> 修改原因：Leonardo payload 已迁移到 large scratch 并发生一次项目化顶层重排；修正已失效的 Work 路径，登记真实根与兼容入口，避免后续作业继续引用错误位置。
+>
+> 状态：既有下载已完成；大文件 payload 使用 Leonardo large scratch，main 保存清单、映射和运行记录；1035 裁决 B2a 人工校准前暂停新增大型下载。
 
 ---
 
@@ -245,7 +253,16 @@
 
 ## 9. 可执行下载与验证流程
 
-项目逻辑路径均登记在 `research/main/`；模型和数据 payload 实际存放于 `/leonardo_work/AIFAC_F02_774/rqian000/MOPD-2026/`，再通过 main 中的路径映射访问。不要把全量 payload 写入 `/leonardo/home`：该文件系统空间不足。每项资源均建立独立下载 run archive；下载前以 `hf models info` 或 `hf datasets info` 记录具体 revision SHA，再把 SHA 替换进命令中的 `<REVISION>`，不得使用浮动的 `main`。使用 `hf`，不使用已弃用的 `huggingface-cli`。
+项目逻辑路径均登记在 `research/main/`。截至 2026-09-14，数据与模型的真实目录分别是：
+
+```text
+/leonardo_scratch/large/userexternal/rqian000/ICLR-2027-czy/data
+/leonardo_scratch/large/userexternal/rqian000/ICLR-2027-czy/models
+```
+
+为兼容仓库软链接、历史清单绝对路径和已归档命令，large scratch 顶层保留 `data`、`models`、`sqs` 三个相对软链接；仓库通过 `research/main/data/external` 与 `research/main/models` 访问。Python 环境位于 `/leonardo_scratch/fast/AIFAC_F02_774/rqian000/envs/`。1036 记录了兼容入口恢复和 C1/B0/B2a 共 416 条图片路径与 SHA-256 复核。
+
+不要把全量 payload 写入 `/leonardo/home`。任何后续下载必须先经过 1035 的来源裁决并建立独立 run archive；下载前以 `hf models info` 或 `hf datasets info` 记录具体 revision SHA，再把 SHA 替换进命令中的 `<REVISION>`，不得使用浮动的 `main`。使用 `hf`，不使用已弃用的 `huggingface-cli`。
 
 ```bash
 hf download Qwen/Qwen3.5-4B --revision <REVISION> --local-dir models/Qwen3.5-4B
@@ -271,6 +288,8 @@ git clone https://github.com/ahang0712/vistahop.git data/external/vistahop && gi
 
 ## 10. 下一步动作
 
+当前先完成 B2a 32 图人工盲校准。校准证明 M3VQA 图片可供性不足、且 1035 决定比较新来源后，才执行以下新增下载动作；不能因现有目录中缺少某项就自动补下。
+
 1. **许可确认**：审阅并留档受限项目的可用性；未确认者不得启动下载
 2. **确认待查项**：
    - HR-Bench LICENSE 文件
@@ -279,3 +298,9 @@ git clone https://github.com/ahang0712/vistahop.git data/external/vistahop && gi
 3. **服务器环境准备**：在 Leonardo 上准备 Python 环境 + `hf` CLI
 4. **分批下载**：按 §8 顺序下载全部资源，固定 revision 并存入 §9 的目标目录
 5. **下载验收**：每项保存时间、revision、许可快照、文件哈希和 run archive；全部验收后才进入正式实验
+
+## 11. 修订记录
+
+| 时间（UTC+8） | 作者 | 触发原因 |
+|---|---|---|
+| 2026-09-14 04:14 | Codex (CINECA Leonardo) | 修正迁移后的真实数据/模型/环境根，登记兼容入口与 1036 校验，并按 1035 暂停 B2a 前的新增大型下载。 |
