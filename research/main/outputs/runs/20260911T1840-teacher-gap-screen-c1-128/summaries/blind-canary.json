@@ -1,0 +1,33 @@
+{
+  "code_commits": [
+    "3707bdc5091cf5d90e44534ecf50d58f7a6382a1"
+  ],
+  "files": [
+    "/leonardo/home/userexternal/rqian000/spinner-bot/MOPD-2026/research/main/outputs/runs/20260911T1840-teacher-gap-screen-c1-128/canary/blind/rank-0.jsonl",
+    "/leonardo/home/userexternal/rqian000/spinner-bot/MOPD-2026/research/main/outputs/runs/20260911T1840-teacher-gap-screen-c1-128/canary/blind/rank-1.jsonl",
+    "/leonardo/home/userexternal/rqian000/spinner-bot/MOPD-2026/research/main/outputs/runs/20260911T1840-teacher-gap-screen-c1-128/canary/blind/rank-2.jsonl",
+    "/leonardo/home/userexternal/rqian000/spinner-bot/MOPD-2026/research/main/outputs/runs/20260911T1840-teacher-gap-screen-c1-128/canary/blind/rank-3.jsonl"
+  ],
+  "model_revisions": [
+    "c202236235762e1c871ad0ccb60c8ee5ba337b9a"
+  ],
+  "parse_rate": 0.875,
+  "parse_summary": {
+    "observed": 8,
+    "parse_rate": 0.875,
+    "parsed_valid": 7,
+    "rejected": 1,
+    "rejection_reasons": {
+      "invalid_json": 1,
+      "truncated_output": 1
+    },
+    "stage": "blind"
+  },
+  "rejected": 1,
+  "runner_errors": 0,
+  "stage": "blind",
+  "total": 8,
+  "truncated_or_missing_eos": 1,
+  "unique_candidate_ids": 8,
+  "valid_parsed": 7
+}
