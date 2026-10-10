@@ -48,7 +48,7 @@ for item in items:
     ranked.append((score, record))
 ranked.sort(key=lambda x: x[0])
 sample = [record for _, record in ranked[:12]]
-target.write_text("\n".join(json.dumps(x, ensure_ascii=False) for x in sample) + "\n", encoding="utf-8")
+target.write_text(json.dumps(sample, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 print(json.dumps({"source_count": len(items), "sample_count": len(sample), "question_ids": [x.get("question_id") for x in sample]}, ensure_ascii=False))
 PY
 
