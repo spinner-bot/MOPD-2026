@@ -1,0 +1,17 @@
+The fast path is not available because one of the required library is not installed. Falling back to torch implementation. To install follow https://github.com/fla-org/flash-linear-attention#installation and https://github.com/Dao-AILab/causal-conv1d
+The fast path is not available because one of the required library is not installed. Falling back to torch implementation. To install follow https://github.com/fla-org/flash-linear-attention#installation and https://github.com/Dao-AILab/causal-conv1d
+The fast path is not available because one of the required library is not installed. Falling back to torch implementation. To install follow https://github.com/fla-org/flash-linear-attention#installation and https://github.com/Dao-AILab/causal-conv1d
+The fast path is not available because one of the required library is not installed. Falling back to torch implementation. To install follow https://github.com/fla-org/flash-linear-attention#installation and https://github.com/Dao-AILab/causal-conv1d
+Loading weights:   0%|          | 0/760 [00:00<?, ?it/s]Loading weights: 100%|██████████| 760/760 [00:00<00:00, 35471.77it/s]
+Loading weights:   0%|          | 0/760 [00:00<?, ?it/s]Loading weights: 100%|██████████| 760/760 [00:00<00:00, 35476.51it/s]
+Loading weights:   0%|          | 0/760 [00:00<?, ?it/s]Loading weights: 100%|██████████| 760/760 [00:00<00:00, 34900.87it/s]
+Loading weights:   0%|          | 0/760 [00:00<?, ?it/s]Loading weights: 100%|██████████| 760/760 [00:00<00:00, 34257.98it/s]
+Setting `pad_token_id` to `eos_token_id`:248044 for open-end generation.
+Setting `pad_token_id` to `eos_token_id`:248044 for open-end generation.
+Setting `pad_token_id` to `eos_token_id`:248044 for open-end generation.
+Setting `pad_token_id` to `eos_token_id`:248044 for open-end generation.
+Setting `pad_token_id` to `eos_token_id`:248044 for open-end generation.
+Setting `pad_token_id` to `eos_token_id`:248044 for open-end generation.
+Setting `pad_token_id` to `eos_token_id`:248044 for open-end generation.
+Setting `pad_token_id` to `eos_token_id`:248044 for open-end generation.
+teacher-gap candidate gate FAILED: parse_rate=0.000000 < 0.750000
