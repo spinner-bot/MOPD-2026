@@ -1,0 +1,25 @@
+{
+  "schema": "short-output-prompt-study-config-v1",
+  "experiment_id": "phase2-short-output-prompt-study",
+  "dataset": "nyu-visionx/CV-Bench",
+  "dataset_revision": "bc284db50d036958861cb60cdd7b77612052ce0d",
+  "sample_seed": 261011,
+  "sample_size": 2000,
+  "eligible_population_size": 2343,
+  "conditions": ["S0", "SC", "S1", "S2", "S3"],
+  "model_id": "OPD-V-Qwen3.5-4B",
+  "enable_thinking": false,
+  "temperature": 0,
+  "max_tokens": 2048,
+  "workers": 32,
+  "max_retries": 2,
+  "pairing_unit": "sample_id",
+  "primary_output_metrics": [
+    "answer_accuracy",
+    "format_compliance",
+    "visible_response_length",
+    "reasoning_marker_rate"
+  ],
+  "statistical_unit": "paired_sample",
+  "multiple_comparison_correction": "holm"
+}
