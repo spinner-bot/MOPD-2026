@@ -1,0 +1,4 @@
+# S0 — original baseline
+
+No system message is sent. Preserve the official Vision-OPD evaluation interface.
+
