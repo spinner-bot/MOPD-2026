@@ -1,0 +1,122 @@
+[
+  {
+    "index": 511,
+    "question_id": 511,
+    "images": [
+      "/leonardo_work/AIFAC_F02_774/sqs/data/HRBench_4k_images/00511.jpg"
+    ],
+    "query": "What word is written on the hang glider? Select from the following choices.\n(A) Cloudy\n(B) Windy\n(C) Stormy\n(D) Sunny",
+    "response": "D",
+    "category": "single"
+  },
+  {
+    "index": 106,
+    "question_id": 106,
+    "images": [
+      "/leonardo_work/AIFAC_F02_774/sqs/data/HRBench_4k_images/00106.jpg"
+    ],
+    "query": "What is the name of the place mentioned on the signboard above the left door? Select from the following choices.\n(A) ABRI PATARD\n(B) ABRI PRATARD\n(C) ABRI PATAUD\n(D) ABRI PATEAU",
+    "response": "C",
+    "category": "single"
+  },
+  {
+    "index": 595,
+    "question_id": 595,
+    "images": [
+      "/leonardo_work/AIFAC_F02_774/sqs/data/HRBench_4k_images/00595.jpg"
+    ],
+    "query": "On the provided map, which two numbered locations belong to the same country? Select from the following choices.\n(A) Locations 2 and 4\n(B) Locations 3 and 4\n(C) Locations 1 and 4\n(D) Locations 1 and 2",
+    "response": "D",
+    "category": "cross"
+  },
+  {
+    "index": 605,
+    "question_id": 605,
+    "images": [
+      "/leonardo_work/AIFAC_F02_774/sqs/data/HRBench_4k_images/00605.jpg"
+    ],
+    "query": "On the provided map, which two numbered locations belong to the same country? Select from the following choices.\n(A) Locations 2 and 3\n(B) Locations 1 and 2\n(C) Locations 2 and 4\n(D) Locations 1 and 3",
+    "response": "B",
+    "category": "cross"
+  },
+  {
+    "index": 630,
+    "question_id": 630,
+    "images": [
+      "/leonardo_work/AIFAC_F02_774/sqs/data/HRBench_4k_images/00630.jpg"
+    ],
+    "query": "On the provided map, which two numbered locations belong to the same country? Select from the following choices.\n(A) Locations 2 and 3\n(B) Locations 1 and 2\n(C) Locations 1 and 3\n(D) Locations 2 and 4",
+    "response": "C",
+    "category": "cross"
+  },
+  {
+    "index": 70,
+    "question_id": 70,
+    "images": [
+      "/leonardo_work/AIFAC_F02_774/sqs/data/HRBench_4k_images/00070.jpg"
+    ],
+    "query": "What is the name of the barge on the left side of the image? Select from the following choices.\n(A) PETER LUND\n(B) PETER LEND\n(C) PETER LIND\n(D) PETER LING",
+    "response": "C",
+    "category": "single"
+  },
+  {
+    "index": 505,
+    "question_id": 505,
+    "images": [
+      "/leonardo_work/AIFAC_F02_774/sqs/data/HRBench_4k_images/00505.jpg"
+    ],
+    "query": "What word is written on the hang glider? Select from the following choices.\n(A) Windy\n(B) Cloudy\n(C) Sunny\n(D) Stormy",
+    "response": "B",
+    "category": "single"
+  },
+  {
+    "index": 293,
+    "question_id": 293,
+    "images": [
+      "/leonardo_work/AIFAC_F02_774/sqs/data/HRBench_4k_images/00293.jpg"
+    ],
+    "query": "What's the number on the rectangular white sign? Select from the following choices.\n(A) 1\n(B) 3\n(C) 5\n(D) 8",
+    "response": "B",
+    "category": "single"
+  },
+  {
+    "index": 79,
+    "question_id": 79,
+    "images": [
+      "/leonardo_work/AIFAC_F02_774/sqs/data/HRBench_4k_images/00079.jpg"
+    ],
+    "query": "What is written on the road sign directly below the American flag? Select from the following choices.\n(A) ONE KIT\n(B) NO ENTRY\n(C) ONE KEY\n(D) ONE WAY",
+    "response": "D",
+    "category": "single"
+  },
+  {
+    "index": 393,
+    "question_id": 393,
+    "images": [
+      "/leonardo_work/AIFAC_F02_774/sqs/data/HRBench_4k_images/00393.jpg"
+    ],
+    "query": "What is the relative position of the white car compared to the large white building? Select from the following choices.\n(A) To the left and in front of the large white building\n(B) To the left and behind the large white building\n(C) To the right and in front of the large white building\n(D) To the right and behind the large white building",
+    "response": "B",
+    "category": "cross"
+  },
+  {
+    "index": 545,
+    "question_id": 545,
+    "images": [
+      "/leonardo_work/AIFAC_F02_774/sqs/data/HRBench_4k_images/00545.jpg"
+    ],
+    "query": "What is the object placed directly in front of the bench on the left side of the image? Select from the following choices.\n(A) car\n(B) bicycle\n(C) scooter\n(D) trash can",
+    "response": "B",
+    "category": "cross"
+  },
+  {
+    "index": 127,
+    "question_id": 127,
+    "images": [
+      "/leonardo_work/AIFAC_F02_774/sqs/data/HRBench_4k_images/00127.jpg"
+    ],
+    "query": "What's located in the middle of the water? Select from the following choices.\n(A) A small island with a bench\n(B) A small island with a statue\n(C) A small island with a gazebo\n(D) A small island with a tree",
+    "response": "D",
+    "category": "cross"
+  }
+]

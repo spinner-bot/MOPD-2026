@@ -1,0 +1,23 @@
+{"source_count": 800, "sample_count": 12, "question_ids": [511, 106, 595, 605, 630, 70, 505, 293, 79, 393, 545, 127]}
+RUN_ROOT=/leonardo/home/userexternal/rqian000/spinner-bot/MOPD-2026/research/main/Phase2/vision_opd_output_audit/runs/59907483-hrbench4k
+MODEL_DIR=/leonardo/home/userexternal/rqian000/spinner-bot/MOPD-2026/research/main/models/OPD-V-Qwen3.5-4B
+CUDA_VISIBLE_DEVICES=0,1,2,3
+0, NVIDIA A100-SXM-64GB, 65536 MiB
+1, NVIDIA A100-SXM-64GB, 65536 MiB
+2, NVIDIA A100-SXM-64GB, 65536 MiB
+3, NVIDIA A100-SXM-64GB, 65536 MiB
+Traceback (most recent call last):
+  File "/leonardo/home/userexternal/rqian000/spinner-bot/MOPD-2026/reproduction/1. Vision-OPD/code/eval/infer.py", line 268, in <module>
+    main()
+  File "/leonardo/home/userexternal/rqian000/spinner-bot/MOPD-2026/reproduction/1. Vision-OPD/code/eval/infer.py", line 151, in main
+    total_data = json.load(f)
+                 ^^^^^^^^^^^^
+  File "/leonardo_work/AIFAC_F02_774/chentian/envs/VisAlloc/lib/python3.11/json/__init__.py", line 293, in load
+    return loads(fp.read(),
+           ^^^^^^^^^^^^^^^^
+  File "/leonardo_work/AIFAC_F02_774/chentian/envs/VisAlloc/lib/python3.11/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/leonardo_work/AIFAC_F02_774/chentian/envs/VisAlloc/lib/python3.11/json/decoder.py", line 340, in decode
+    raise JSONDecodeError("Extra data", s, end)
+json.decoder.JSONDecodeError: Extra data: line 2 column 1 (char 289)

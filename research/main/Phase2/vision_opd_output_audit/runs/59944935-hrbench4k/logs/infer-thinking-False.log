@@ -1,0 +1,5 @@
+Remaining samples to process: 12
+Inference:   0%|          | 0/12 [00:00<?, ?case/s]Inference:   8%|▊         | 1/12 [00:14<02:34, 14.05s/case]Inference:  17%|█▋        | 2/12 [00:15<01:05,  6.54s/case]Inference:  58%|█████▊    | 7/12 [00:15<00:06,  1.29s/case]Inference:  75%|███████▌  | 9/12 [00:15<00:02,  1.11case/s]Inference:  92%|█████████▏| 11/12 [00:16<00:00,  1.35case/s]Inference: 100%|██████████| 12/12 [00:18<00:00,  1.52s/case]
+Compacted final output to 12 unique samples.
+Inference done in 18.3s
+Saved answers to: /leonardo/home/userexternal/rqian000/spinner-bot/MOPD-2026/research/main/Phase2/vision_opd_output_audit/runs/59944935-hrbench4k/outputs/thinking-False/hrbench-4k/OPD-V-Qwen3.5-4B-thinking-False_answer.jsonl

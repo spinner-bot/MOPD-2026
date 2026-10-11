@@ -1,0 +1,19 @@
+{"source_count": 800, "sample_count": 12, "question_ids": [511, 106, 595, 605, 630, 70, 505, 293, 79, 393, 545, 127]}
+RUN_ROOT=/leonardo/home/userexternal/rqian000/spinner-bot/MOPD-2026/research/main/Phase2/vision_opd_output_audit/runs/59918167-hrbench4k
+MODEL_DIR=/leonardo/home/userexternal/rqian000/spinner-bot/MOPD-2026/research/main/models/OPD-V-Qwen3.5-4B
+CUDA_VISIBLE_DEVICES=0,1,2,3
+0, NVIDIA A100-SXM-64GB, 65536 MiB
+1, NVIDIA A100-SXM-64GB, 65536 MiB
+2, NVIDIA A100-SXM-64GB, 65536 MiB
+3, NVIDIA A100-SXM-64GB, 65536 MiB
+Remaining samples to process: 12
+Inference:   0%|          | 0/12 [00:00<?, ?case/s]Inference:   8%|▊         | 1/12 [00:16<03:00, 16.40s/case]Inference:  33%|███▎      | 4/12 [00:16<00:25,  3.14s/case]Inference:  83%|████████▎ | 10/12 [00:17<00:02,  1.05s/case]Inference:  92%|█████████▏| 11/12 [00:30<00:01,  1.05s/case]Inference: 100%|██████████| 12/12 [01:25<00:00,  9.35s/case]Inference: 100%|██████████| 12/12 [01:26<00:00,  7.17s/case]
+Compacted final output to 12 unique samples.
+Inference done in 86.0s
+Saved answers to: /leonardo/home/userexternal/rqian000/spinner-bot/MOPD-2026/research/main/Phase2/vision_opd_output_audit/runs/59918167-hrbench4k/outputs/thinking-True/hrbench-4k/OPD-V-Qwen3.5-4B-thinking-True_answer.jsonl
+Remaining samples to process: 12
+Inference:   0%|          | 0/12 [00:00<?, ?case/s]Inference:   8%|▊         | 1/12 [00:02<00:23,  2.12s/case]Inference:  17%|█▋        | 2/12 [00:02<00:11,  1.18s/case]Inference:  25%|██▌       | 3/12 [00:02<00:06,  1.34case/s]Inference: 100%|██████████| 12/12 [00:02<00:00,  4.05case/s]
+Compacted final output to 12 unique samples.
+Inference done in 3.0s
+Saved answers to: /leonardo/home/userexternal/rqian000/spinner-bot/MOPD-2026/research/main/Phase2/vision_opd_output_audit/runs/59918167-hrbench4k/outputs/thinking-False/hrbench-4k/OPD-V-Qwen3.5-4B-thinking-False_answer.jsonl
+Completed output audit run: /leonardo/home/userexternal/rqian000/spinner-bot/MOPD-2026/research/main/Phase2/vision_opd_output_audit/runs/59918167-hrbench4k
