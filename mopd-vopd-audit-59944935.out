@@ -1,0 +1,19 @@
+{"source_count": 800, "sample_count": 12, "question_ids": [511, 106, 595, 605, 630, 70, 505, 293, 79, 393, 545, 127]}
+RUN_ROOT=/leonardo/home/userexternal/rqian000/spinner-bot/MOPD-2026/research/main/Phase2/vision_opd_output_audit/runs/59944935-hrbench4k
+MODEL_DIR=/leonardo/home/userexternal/rqian000/spinner-bot/MOPD-2026/research/main/models/OPD-V-Qwen3.5-4B
+CUDA_VISIBLE_DEVICES=0,1,2,3
+0, NVIDIA A100-SXM-64GB, 65536 MiB
+1, NVIDIA A100-SXM-64GB, 65536 MiB
+2, NVIDIA A100-SXM-64GB, 65536 MiB
+3, NVIDIA A100-SXM-64GB, 65536 MiB
+Remaining samples to process: 12
+Inference:   0%|          | 0/12 [00:00<?, ?case/s]Inference:   8%|▊         | 1/12 [01:27<16:00, 87.29s/case]Inference:  33%|███▎      | 4/12 [01:27<02:13, 16.67s/case]Inference:  67%|██████▋   | 8/12 [01:27<00:26,  6.57s/case]Inference:  92%|█████████▏| 11/12 [01:28<00:04,  4.03s/case]Inference: 100%|██████████| 12/12 [01:29<00:00,  7.44s/case]
+Compacted final output to 12 unique samples.
+Inference done in 89.3s
+Saved answers to: /leonardo/home/userexternal/rqian000/spinner-bot/MOPD-2026/research/main/Phase2/vision_opd_output_audit/runs/59944935-hrbench4k/outputs/thinking-True/hrbench-4k/OPD-V-Qwen3.5-4B-thinking-True_answer.jsonl
+Remaining samples to process: 12
+Inference:   0%|          | 0/12 [00:00<?, ?case/s]Inference:   8%|▊         | 1/12 [00:14<02:34, 14.05s/case]Inference:  17%|█▋        | 2/12 [00:15<01:05,  6.54s/case]Inference:  58%|█████▊    | 7/12 [00:15<00:06,  1.29s/case]Inference:  75%|███████▌  | 9/12 [00:15<00:02,  1.11case/s]Inference:  92%|█████████▏| 11/12 [00:16<00:00,  1.35case/s]Inference: 100%|██████████| 12/12 [00:18<00:00,  1.52s/case]
+Compacted final output to 12 unique samples.
+Inference done in 18.3s
+Saved answers to: /leonardo/home/userexternal/rqian000/spinner-bot/MOPD-2026/research/main/Phase2/vision_opd_output_audit/runs/59944935-hrbench4k/outputs/thinking-False/hrbench-4k/OPD-V-Qwen3.5-4B-thinking-False_answer.jsonl
+Completed output audit run: /leonardo/home/userexternal/rqian000/spinner-bot/MOPD-2026/research/main/Phase2/vision_opd_output_audit/runs/59944935-hrbench4k
