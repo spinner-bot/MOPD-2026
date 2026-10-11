@@ -43,7 +43,7 @@ def main():
     doc = f"""<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><title>Vision-OPD 样本与输出可视化审计</title><style>{css}</style></head><body><main>
 <h1>Vision-OPD：样本与输出可视化审计</h1><p class="sub">Run 59944935 · HRBench-4K · 论文式样本面板（图像已内嵌）</p>
 <div class="summary"><h2>结果摘要</h2><p>共展示 <b>{total}</b> 条样本；两种设置均为 <b>10/{total}</b> 正确。输出归类：<b>只有答案 0</b>，<b>相关推理/证据 {total}</b>，<b>与推理无关 0</b>；其中 <b>{wrong}</b> 条是“有相关推理但最终答错”（样本 393、127）。</p><p>绿色=正确，红色=错误；蓝色标签=输出类型分类。</p></div>
-<h2>逐样本展示</h2>{''.join(cards)}<p class="sub">说明：页面内嵌服务器生成的低分辨率缩略图；原始高分辨率 benchmark 图像不纳入仓库。</p></main></body></html>"""
+<h2>逐样本展示</h2>{''.join(cards)}<p class="sub">图像按统一尺寸呈现，仅用于样本对照。</p></main></body></html>"""
     Path(a.output).write_text(doc, encoding="utf-8")
 
 if __name__ == "__main__":
