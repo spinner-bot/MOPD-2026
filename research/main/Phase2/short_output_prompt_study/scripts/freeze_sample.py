@@ -21,8 +21,10 @@ def main() -> None:
     args = parser.parse_args()
 
     source = json.loads(args.source.read_text(encoding="utf-8"))
+    if isinstance(source, dict) and isinstance(source.get("records"), list):
+        source = source["records"]
     if not isinstance(source, list):
-        raise ValueError("source must be a JSON array")
+        raise ValueError("source must be a JSON array or an object with records")
     if len(source) < args.sample_size:
         raise ValueError(
             f"insufficient source data: {len(source)} valid records, "
