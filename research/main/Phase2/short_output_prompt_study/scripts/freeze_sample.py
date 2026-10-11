@@ -34,10 +34,10 @@ def main() -> None:
     records = []
     seen = set()
     for row in source:
-        qid = str(row.get("question_id", row.get("index", "")))
+        qid = str(row.get("sample_id", row.get("question_id", row.get("index", ""))))
         if not qid or qid in seen:
             continue
-        if not row.get("images") or not row.get("query") or not row.get("response"):
+        if not (row.get("images") or row.get("filename")) or not row.get("query") or not row.get("response"):
             continue
         seen.add(qid)
         records.append(row)
@@ -59,7 +59,7 @@ def main() -> None:
         "source_file": str(args.source),
         "source_sha256": hashlib.sha256(args.source.read_bytes()).hexdigest(),
         "sample_ids_sha256": sha256_text(
-            "\n".join(str(x.get("question_id", x.get("index", ""))) for x in selected)
+            "\n".join(str(x.get("sample_id", x.get("question_id", x.get("index", "")))) for x in selected)
         ),
         "records": selected,
     }
