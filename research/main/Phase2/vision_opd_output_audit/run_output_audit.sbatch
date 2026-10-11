@@ -61,7 +61,7 @@ nvidia-smi --query-gpu=index,name,memory.total --format=csv,noheader
   --served-model-name OPD-V-Qwen3.5-4B \
   --tensor-parallel-size 4 \
   --gpu-memory-utilization 0.90 \
-  --max-model-len 8192 \
+  --max-model-len 32768 \
   --trust-remote-code \
   >"${RUN_ROOT}/logs/vllm-server.log" 2>&1 &
 SERVER_PID=$!
