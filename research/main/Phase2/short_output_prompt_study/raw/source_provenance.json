@@ -1,0 +1,32 @@
+{
+  "schema": "short-output-source-provenance-v1",
+  "dataset": "nyu-visionx/CV-Bench",
+  "dataset_revision": "bc284db50d036958861cb60cdd7b77612052ce0d",
+  "source_files": {
+    "/leonardo_scratch/fast/AIFAC_F02_774/rqian000/phase2_cvbench/test_2d.jsonl": {
+      "bytes": 820585,
+      "sha256": "f9c02a098935191cf0e53bfa8fa2458a71828fdc2df63c251516b1e242de3e43"
+    },
+    "/leonardo_scratch/fast/AIFAC_F02_774/rqian000/phase2_cvbench/test_3d.jsonl": {
+      "bytes": 1069448,
+      "sha256": "4e9156cefa59ad5d674f21a5c4e57c71de8c64ee3e5337e5f0ac7e3c6646c023"
+    },
+    "/leonardo_scratch/fast/AIFAC_F02_774/rqian000/phase2_cvbench/test_2d.parquet": {
+      "bytes": 184906137,
+      "sha256": "33196034ef4bf3265cae4a7ff5c4071b2ff1cc21123e8e285c6a91393897ecbc"
+    },
+    "/leonardo_scratch/fast/AIFAC_F02_774/rqian000/phase2_cvbench/test_3d.parquet": {
+      "bytes": 219902227,
+      "sha256": "ef91fe8b5392eb2a16e318ca68fa02449d45ba1e152afece12a0a526e9fbbc25"
+    }
+  },
+  "source_counts": {
+    "test_2d": 1438,
+    "test_3d": 1200,
+    "total": 2638,
+    "eligible_after_option_filter": 2343
+  },
+  "sample_seed": 261011,
+  "sample_size": 2000,
+  "image_archive_root": "/leonardo_scratch/large/userexternal/rqian000/Phase2/short_output_prompt_study/raw/images"
+}
