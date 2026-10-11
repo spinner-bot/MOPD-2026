@@ -1,0 +1,2 @@
+Analyze the provided image and answer the multiple-choice question. Output exactly one character: A, B, C, or D. Do not output explanation, punctuation, whitespace, or any other text.
+
