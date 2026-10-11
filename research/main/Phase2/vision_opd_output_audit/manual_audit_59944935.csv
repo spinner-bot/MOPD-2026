@@ -1,0 +1,13 @@
+question_id,reference,true_answer,false_answer,correctness,output_class,claimed_visual_evidence,reasoning_decision_relevance,answer_before_reasoning,human_image_verification
+511,D,D,D,both_correct,choice_with_explanation,hang_glider_text_Sunny,yes,yes,pending_image_review
+70,C,C,C,both_correct,choice_with_explanation,barge_text_PETER_LIND,yes,yes,pending_image_review
+505,B,B,B,both_correct,choice_with_explanation,hang_glider_text_Cloudy,yes,yes,pending_image_review
+293,B,B,B,both_correct,choice_with_explanation,white_sign_green_3,yes,yes,pending_image_review
+393,B,A,A,both_wrong,reasoning_then_choice,car_left_and_in_front_claim,yes_but_wrong,no,pending_image_review
+79,D,D,D,both_correct,choice_with_explanation,road_sign_ONE_WAY_and_arrow,yes,yes,pending_image_review
+545,B,B,B,both_correct,choice_with_explanation,bicycle_visual_attributes,yes,yes,pending_image_review
+106,C,C,C,both_correct,choice_with_explanation,sign_ABRI_PATAUD_and_cross_reference,yes,yes,pending_image_review
+127,D,C,C,both_wrong,reasoning_then_choice,tree_and_gazebo_competition,yes_but_wrong,no,pending_image_review
+595,D,D,D,both_correct,reasoning_then_choice,east_asia_map_location_claims,yes,yes,pending_image_review
+630,C,C,C,both_correct,reasoning_then_choice,north_america_map_location_claims,yes,no,pending_image_review
+605,B,B,B,both_correct,reasoning_then_choice,uk_ireland_europe_map_claims,yes,no,pending_image_review
