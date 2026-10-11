@@ -74,7 +74,16 @@ def call_one(client, record, condition, system_prompt, image_root, args):
         "source": record.get("source"),
         "image_archive_path": record["image_archive_path"],
         "image_sha256": record["image_sha256"],
-        "messages": messages,
+        "messages": [
+            *([{"role": "system", "content": system_prompt}] if system_prompt is not None else []),
+            {
+                "role": "user",
+                "content": [
+                    {"type": "image_ref", "path": record["image_archive_path"]},
+                    {"type": "text", "text": record["query"]},
+                ],
+            },
+        ],
         "response": None,
         "model_answer": None,
         "api_error": None,
