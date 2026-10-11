@@ -16,6 +16,7 @@ def normalize_answer(value):
 
 def load_rows(path, split):
     rows = []
+    excluded = {}
     for line_no, line in enumerate(Path(path).read_text(encoding="utf-8").splitlines(), 1):
         if not line.strip():
             continue
@@ -23,9 +24,13 @@ def load_rows(path, split):
         choices = row.get("choices")
         if not isinstance(choices, list) or len(choices) < 2:
             raise ValueError(f"{path}:{line_no}: invalid choices")
+        if len(choices) > 4:
+            excluded["more_than_four_choices"] = excluded.get("more_than_four_choices", 0) + 1
+            continue
         answer = normalize_answer(row.get("answer", ""))
         if answer not in "ABCD":
-            raise ValueError(f"{path}:{line_no}: invalid answer {answer!r}")
+            excluded["answer_outside_A_to_D"] = excluded.get("answer_outside_A_to_D", 0) + 1
+            continue
         filename = row.get("filename")
         if not filename:
             raise ValueError(f"{path}:{line_no}: missing filename")
@@ -45,7 +50,7 @@ def load_rows(path, split):
             "choices": choices,
             "response": answer,
         })
-    return rows
+    return rows, excluded
 
 
 def main():
@@ -55,7 +60,9 @@ def main():
     parser.add_argument("--output", required=True, type=Path)
     args = parser.parse_args()
 
-    rows = load_rows(args.two_d, "2D") + load_rows(args.three_d, "3D")
+    two_d, excluded_2d = load_rows(args.two_d, "2D")
+    three_d, excluded_3d = load_rows(args.three_d, "3D")
+    rows = two_d + three_d
     ids = [row["sample_id"] for row in rows]
     if len(ids) != len(set(ids)):
         raise ValueError("duplicate sample IDs")
@@ -64,9 +71,10 @@ def main():
         "dataset": "CV-Bench",
         "counts": {
             "total": len(rows),
-            "2D": sum(row["split"] == "2D" for row in rows),
-            "3D": sum(row["split"] == "3D" for row in rows),
+            "2D": len(two_d),
+            "3D": len(three_d),
         },
+        "excluded": {"2D": excluded_2d, "3D": excluded_3d},
         "source_sha256": {
             "2D": hashlib.sha256(args.two_d.read_bytes()).hexdigest(),
             "3D": hashlib.sha256(args.three_d.read_bytes()).hexdigest(),
