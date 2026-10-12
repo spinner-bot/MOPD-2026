@@ -53,7 +53,7 @@ def main() -> None:
         ("response_length_ci.png", "输出长度及 Bootstrap 置信区间 / Response length with bootstrap confidence intervals"),
     ]
     figures = "\n".join(
-        f'<figure><img class="zoomable" onclick="window.open(this.src, \'_blank\')" src="{image_data(args.figures / name)}" alt="{html.escape(title)}"><figcaption>{html.escape(title)} · click to enlarge</figcaption></figure>'
+        f'<figure><img class="zoomable" onclick="window.open(this.src, \'_blank\')" src="{image_data(args.figures / name)}" alt="{html.escape(title)}"><figcaption>{html.escape(title)}</figcaption></figure>'
         for name, title in figure_names
         if (args.figures / name).exists()
     )
@@ -72,16 +72,6 @@ def main() -> None:
         f"<td>{row['mcnemar']['a_only']}</td><td>{row['mcnemar']['b_only']}</td>"
         f"<td>{row['mcnemar']['p_value']:.6g}</td></tr>"
         for row in summary["paired_comparisons"]
-    )
-    representative = []
-    for condition in ["S0", "SC", "S1", "S2", "S3"]:
-        representative.extend([row for row in per_sample if row["condition"] == condition][:2])
-    sample_rows = "\n".join(
-        "<tr>"
-        f"<td>{html.escape(row['condition'])}</td><td>{html.escape(row['sample_id'])}</td>"
-        f"<td>{html.escape(row['gold_answer'])}</td><td>{html.escape(row['parsed_answer'])}</td>"
-        f"<td>{html.escape(row['response'][:800])}</td></tr>"
-        for row in representative
     )
     input_comparison = ""
     if args.input_json and args.prompt_dir:
@@ -141,9 +131,50 @@ def main() -> None:
             uri = image_data(image_path)
             cards.append(
                 f'<figure class="sample-card"><img class="sample-image zoomable" onclick="window.open(this.src, \'_blank\')" src="{uri}" alt="{html.escape(row["sample_id"])}">'
-                f'<figcaption>{html.escape(row["sample_id"])}<br>标准答案 / Gold: {html.escape(row["gold_answer"])} · 点击查看高清原图 / click for full resolution</figcaption></figure>'
+                f'<figcaption>{html.escape(row["sample_id"])}<br>标准答案 / Gold: {html.escape(row["gold_answer"])}</figcaption></figure>'
             )
         image_gallery = "<div class=\"sample-gallery\">" + "\n".join(cards) + "</div>"
+    case_examples = ""
+    if args.image_root and args.image_manifest and args.input_json and args.prompt_dir:
+        manifest = json.loads(args.image_manifest.read_text(encoding="utf-8"))
+        image_by_id = {row["sample_id"]: row for row in manifest["records"]}
+        output_by_condition = {
+            condition: {row["sample_id"]: row for row in per_sample if row["condition"] == condition}
+            for condition in ["S0", "SC", "S1", "S2", "S3"]
+        }
+        case_cards = []
+        for index, sample in enumerate(input_payload["records"][:args.sample_images], start=1):
+            sample_id = sample["sample_id"]
+            image_record = image_by_id.get(sample_id)
+            if not image_record:
+                continue
+            image_path = args.image_root / image_record["archive_path"]
+            if not image_path.exists():
+                continue
+            choices_html = "".join(f"<li>({chr(65 + i)}) {html.escape(str(choice))}</li>" for i, choice in enumerate(sample.get("choices", [])))
+            modes = []
+            for condition in ["S0", "SC", "S1", "S2", "S3"]:
+                result = output_by_condition[condition].get(sample_id, {})
+                system = system_prompts.get(condition)
+                system_text = "（无 system message） / No system message" if system is None else system
+                user_json = json.dumps({"image": image_record["archive_path"], "image_sha256": image_record["sha256"], "text": sample["query"]}, ensure_ascii=False, indent=2)
+                modes.append(
+                    f"<div class=\"mode-card\"><h4>{condition}</h4>"
+                    f"<p><b>输入 / Input — system</b></p><pre>{html.escape(system_text)}</pre>"
+                    f"<p><b>输入 / Input — user</b></p><pre>{html.escape(user_json)}</pre>"
+                    f"<p><b>输出 / Output</b></p><pre>{html.escape(result.get('response', ''))}</pre>"
+                    f"<p>解析答案 / Parsed: <b>{html.escape(str(result.get('parsed_answer', '')))}</b> · "
+                    f"正确 / Correct: <b>{'Yes / 是' if result.get('correct') == 'True' or result.get('correct') is True else 'No / 否'}</b></p></div>"
+                )
+            uri = image_data(image_path)
+            case_cards.append(
+                f"<article class=\"case\"><h3>Case {index} / 样本 {index} — {html.escape(sample_id)}</h3>"
+                f"<img class=\"case-image zoomable\" onclick=\"window.open(this.src, '_blank')\" src=\"{uri}\" alt=\"{html.escape(sample_id)}\">"
+                f"<div class=\"question\"><b>原问题 / Original question</b><p>{html.escape(sample['question'])}</p><ol>{choices_html}</ol>"
+                f"<p>标准答案 / Gold answer: <b>{html.escape(str(sample.get('response', '')))}</b></p></div>"
+                f"<div class=\"mode-grid\">{' '.join(modes)}</div></article>"
+            )
+        case_examples = "<p class=\"note\">以下每个案例依次展示原图、原问题与选项，以及五种模式的实际输入和完整原始输出。<br>Each case shows the original image, question and choices, followed by the actual input and complete raw output under all five conditions.</p>" + "\n".join(case_cards)
     document = f"""<!doctype html>
 <html lang="zh-CN"><head><meta charset="utf-8"><title>短输出提示词研究 / Short-output prompt study</title>
 <style>
@@ -152,7 +183,7 @@ h1,h2{{color:#18324b}} table{{border-collapse:collapse;width:100%;margin:1rem 0 
 th,td{{border:1px solid #ccd3da;padding:.45rem;vertical-align:top}} th{{background:#edf2f6}}
 td:last-child{{max-width:52rem;white-space:pre-wrap;word-break:break-word}} .figures{{display:grid;grid-template-columns:repeat(auto-fit,minmax(360px,1fr));gap:1rem}}
 figure{{margin:0;border:1px solid #d9e0e6;padding:.5rem;background:#fff}} figure img{{width:100%;height:auto}} figcaption{{text-align:center;font-weight:600;padding:.35rem}} .zoomable{{cursor:zoom-in}} .sample-gallery{{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1rem}} .sample-card{{font-size:.78rem}} .sample-image{{max-height:260px;object-fit:contain;background:#f2f4f6}}
-.note{{background:#f5f7f9;border-left:4px solid #4c78a8;padding:.7rem 1rem}} pre{{background:#f5f7f9;border-left:4px solid #4c78a8;padding:.7rem;white-space:pre-wrap;word-break:break-word}} .input-grid{{display:grid;grid-template-columns:repeat(auto-fit,minmax(360px,1fr));gap:1rem}} .input-card{{border:1px solid #ccd3da;padding:.5rem;background:#fff}} .input-card h3{{margin:.2rem 0;color:#18324b}}
+.note{{background:#f5f7f9;border-left:4px solid #4c78a8;padding:.7rem 1rem}} pre{{background:#f5f7f9;border-left:4px solid #4c78a8;padding:.7rem;white-space:pre-wrap;word-break:break-word}} .input-grid,.mode-grid{{display:grid;grid-template-columns:repeat(auto-fit,minmax(360px,1fr));gap:1rem}} .input-card,.mode-card{{border:1px solid #ccd3da;padding:.5rem;background:#fff}} .input-card h3,.mode-card h4{{margin:.2rem 0;color:#18324b}} .case{{border:2px solid #9aafc2;padding:1rem;margin:2rem 0;background:#fff}} .case-image{{display:block;max-width:100%;max-height:520px;margin:0 auto 1rem;object-fit:contain;background:#f2f4f6}} .question{{background:#f7fafc;padding:.75rem;margin-bottom:1rem}}
 </style></head><body>
 <h1>短输出提示词研究 / Short-output prompt study</h1>
 <p class="note">本报告基于冻结的配对样本和保存的模型原始输出生成。所有统计图与代表性样本图像均已内嵌在本 HTML 文件中。<br>This report is generated from the frozen paired sample and preserved raw model responses. All figures and representative sample images are embedded in this HTML file.</p>
@@ -162,9 +193,7 @@ figure{{margin:0;border:1px solid #d9e0e6;padding:.5rem;background:#fff}} figure
 <h2>相对 S0 的配对比较 / Paired comparisons against S0</h2>
 <table><thead><tr><th>比较<br>Comparison</th><th>准确率差异<br>Accuracy difference</th><th>仅 S0 正确<br>S0 only correct</th><th>仅当前条件正确<br>Condition only correct</th><th>McNemar p 值<br>McNemar p</th></tr></thead><tbody>{paired_rows}</tbody></table>
 <h2>统计图 / Figures</h2><div class="figures">{figures}</div>
-<h2>内嵌样本图像 / Embedded sample images</h2><p class="note">以下代表性样本图像按原始分辨率内嵌。点击任意图像，即可在新标签页打开内嵌的高清原图。<br>The following representative images are embedded at their original resolution. Click any image to open the embedded high-resolution image in a new tab.</p>{image_gallery}
-<h2>代表性原始输出 / Representative raw responses</h2>
-<table><thead><tr><th>条件<br>Condition</th><th>样本<br>Sample</th><th>标准答案<br>Gold</th><th>解析答案<br>Parsed</th><th>原始输出片段<br>Raw response excerpt</th></tr></thead><tbody>{sample_rows}</tbody></table>
+<h2>具体案例 / Concrete cases</h2>{case_examples}
 <h2>解释边界 / Interpretation limits</h2>
 <ul><li>词法推理标记率是文本筛查指标，并不等于已证明模型存在可验证的隐藏推理过程。<br>The reasoning-marker rate is a lexical screening measure, not evidence of a hidden reasoning process.</li><li>所有提示词条件共享相同的图像、问题、模型、抽样框、temperature 和 thinking 设置。<br>All prompt conditions share the same image, query, model, sampling frame, temperature, and thinking setting.</li><li>统计结论应结合原始输出检查和配对样本设计共同解释。<br>Statistical conclusions should be interpreted jointly with raw-output inspection and the paired sample design.</li></ul>
 </body></html>"""
