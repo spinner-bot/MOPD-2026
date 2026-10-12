@@ -1,0 +1,7 @@
+condition,S0,S0,S1,S1,S2,S2,S3,S3,SC,SC
+correct_bool,False,True,False,True,False,True,False,True,False,True
+task,,,,,,,,,,
+Count,20,3,21,5,14,6,17,8,14,6
+Depth,0,0,5,4,1,0,0,0,2,0
+Distance,31,42,43,23,31,46,29,43,34,43
+Relation,4,0,3,1,1,1,2,1,3,0
