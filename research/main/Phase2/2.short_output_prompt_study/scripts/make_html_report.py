@@ -37,6 +37,8 @@ def main() -> None:
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--image-root", type=Path)
     parser.add_argument("--image-manifest", type=Path)
+    parser.add_argument("--input-json", type=Path)
+    parser.add_argument("--prompt-dir", type=Path)
     parser.add_argument("--sample-images", type=int, default=12)
     args = parser.parse_args()
     summary = json.loads((args.derived / "summary.json").read_text(encoding="utf-8"))
@@ -81,6 +83,43 @@ def main() -> None:
         f"<td>{html.escape(row['response'][:800])}</td></tr>"
         for row in representative
     )
+    input_comparison = ""
+    if args.input_json and args.prompt_dir:
+        input_payload = json.loads(args.input_json.read_text(encoding="utf-8"))
+        preview = input_payload["records"][0]
+        prompt_files = {"SC": "SC-neutral.txt", "S1": "S1-concise.txt", "S2": "S2-option-letter.txt", "S3": "S3-single-character.txt"}
+        system_prompts = {"S0": None}
+        for condition, filename in prompt_files.items():
+            system_prompts[condition] = (args.prompt_dir / filename).read_text(encoding="utf-8").strip()
+        input_rows = []
+        input_cards = []
+        for condition in ["S0", "SC", "S1", "S2", "S3"]:
+            system = system_prompts[condition]
+            system_display = "（无 system message）<br>No system message" if system is None else html.escape(system).replace("\n", "<br>")
+            input_rows.append(
+                "<tr>"
+                f"<td><b>{condition}</b></td>"
+                f"<td>{system_display}</td>"
+                f"<td>同一图像 / Same image<br><code>{html.escape(preview['image_archive_path'])}</code><br>SHA-256: <code>{html.escape(preview['image_sha256'])}</code></td>"
+                f"<td>{html.escape(preview['query'])}</td></tr>"
+            )
+            messages = []
+            if system is not None:
+                messages.append({"role": "system", "content": system})
+            messages.append({"role": "user", "content": [
+                {"type": "image_url", "image_url": {"url": "data:<image-mime>;base64,<same image bytes>"}},
+                {"type": "text", "text": preview["query"]},
+            ]})
+            input_cards.append(f"<div class=\"input-card\"><h3>{condition}</h3><pre>{html.escape(json.dumps(messages, ensure_ascii=False, indent=2))}</pre></div>")
+        input_comparison = (
+            "<p class=\"note\"><b>真实请求结构 / Actual request structure.</b> "
+            "S0 没有 system message，但仍然有包含图像和问题的 user message；五组共享同一图像、问题、模型和推理参数。<br>"
+            "S0 has no system message, but it still has a user message containing the image and query. All five conditions share the same image, query, model, and inference settings.</p>"
+            "<table><thead><tr><th>条件 / Condition</th><th>System message</th><th>图像 / Image</th><th>User text</th></tr></thead><tbody>"
+            + "\n".join(input_rows)
+            + "</tbody></table><h3>同一 case 的 messages 结构 / JSON-like messages for the same case</h3><div class=\"input-grid\">"
+            + "\n".join(input_cards) + "</div>"
+        )
     image_gallery = ""
     if args.image_root and args.image_manifest:
         manifest = json.loads(args.image_manifest.read_text(encoding="utf-8"))
@@ -113,10 +152,11 @@ h1,h2{{color:#18324b}} table{{border-collapse:collapse;width:100%;margin:1rem 0 
 th,td{{border:1px solid #ccd3da;padding:.45rem;vertical-align:top}} th{{background:#edf2f6}}
 td:last-child{{max-width:52rem;white-space:pre-wrap;word-break:break-word}} .figures{{display:grid;grid-template-columns:repeat(auto-fit,minmax(360px,1fr));gap:1rem}}
 figure{{margin:0;border:1px solid #d9e0e6;padding:.5rem;background:#fff}} figure img{{width:100%;height:auto}} figcaption{{text-align:center;font-weight:600;padding:.35rem}} .zoomable{{cursor:zoom-in}} .sample-gallery{{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1rem}} .sample-card{{font-size:.78rem}} .sample-image{{max-height:260px;object-fit:contain;background:#f2f4f6}}
-.note{{background:#f5f7f9;border-left:4px solid #4c78a8;padding:.7rem 1rem}}
+.note{{background:#f5f7f9;border-left:4px solid #4c78a8;padding:.7rem 1rem}} pre{{background:#f5f7f9;border-left:4px solid #4c78a8;padding:.7rem;white-space:pre-wrap;word-break:break-word}} .input-grid{{display:grid;grid-template-columns:repeat(auto-fit,minmax(360px,1fr));gap:1rem}} .input-card{{border:1px solid #ccd3da;padding:.5rem;background:#fff}} .input-card h3{{margin:.2rem 0;color:#18324b}}
 </style></head><body>
 <h1>短输出提示词研究 / Short-output prompt study</h1>
 <p class="note">本报告基于冻结的配对样本和保存的模型原始输出生成。所有统计图与代表性样本图像均已内嵌在本 HTML 文件中。<br>This report is generated from the frozen paired sample and preserved raw model responses. All figures and representative sample images are embedded in this HTML file.</p>
+<h2>输入对照 / Input comparison</h2>{input_comparison}
 <h2>结果摘要 / Summary</h2>
 <table><thead><tr><th>条件<br>Condition</th><th>样本数<br>N</th><th>准确率<br>Accuracy</th><th>有效答案率<br>Valid answer</th><th>严格格式遵从率<br>Strict format</th><th>推理标记率<br>Reasoning marker</th><th>平均字符数<br>Mean chars</th><th>字符数中位数<br>Median chars</th><th>API 错误<br>API errors</th></tr></thead><tbody>{summary_rows}</tbody></table>
 <h2>相对 S0 的配对比较 / Paired comparisons against S0</h2>
