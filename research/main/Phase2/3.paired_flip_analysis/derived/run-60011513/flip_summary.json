@@ -1,0 +1,267 @@
+{
+  "schema": "paired-flip-analysis-v1",
+  "included_conditions": [
+    "S0",
+    "S1",
+    "S3"
+  ],
+  "excluded_conditions": [
+    "SC",
+    "S2"
+  ],
+  "n_samples": 2000,
+  "targets": [
+    {
+      "target": "S1",
+      "n": 2000,
+      "gain_n": 298,
+      "loss_n": 45,
+      "gain_rate_of_all": 0.149,
+      "loss_rate_of_all": 0.0225,
+      "net_gain": 253,
+      "gain_ci95": null,
+      "gain_mean_token_delta": -77.40939597315436,
+      "loss_mean_token_delta": -77.13333333333334,
+      "gain_median_token_delta": -60.0,
+      "loss_median_token_delta": -69.0,
+      "gain_vs_loss_mann_whitney_p": 0.6492163719307407,
+      "discordant_n": 343
+    },
+    {
+      "target": "S3",
+      "n": 2000,
+      "gain_n": 262,
+      "loss_n": 61,
+      "gain_rate_of_all": 0.131,
+      "loss_rate_of_all": 0.0305,
+      "net_gain": 201,
+      "gain_ci95": null,
+      "gain_mean_token_delta": -85.48473282442748,
+      "loss_mean_token_delta": -57.26229508196721,
+      "gain_median_token_delta": -66.0,
+      "loss_median_token_delta": -39.0,
+      "gain_vs_loss_mann_whitney_p": 0.006167036603480403,
+      "discordant_n": 323
+    }
+  ],
+  "cross": {
+    "common_gain": 214,
+    "either_gain": 346,
+    "common_loss": 26,
+    "either_loss": 80,
+    "s1_only_gain": 84,
+    "s3_only_gain": 48,
+    "s1_only_loss": 19,
+    "s3_only_loss": 35,
+    "disagreement": 186
+  },
+  "task_rows": [
+    {
+      "target": "S1",
+      "category": "gain",
+      "task": "Count",
+      "source": "ADE20K",
+      "split": "2D",
+      "n": 5,
+      "mean_token_delta": -339.2
+    },
+    {
+      "target": "S1",
+      "category": "gain",
+      "task": "Count",
+      "source": "COCO",
+      "split": "2D",
+      "n": 6,
+      "mean_token_delta": -27.5
+    },
+    {
+      "target": "S1",
+      "category": "gain",
+      "task": "Depth",
+      "source": "Omni3D",
+      "split": "3D",
+      "n": 83,
+      "mean_token_delta": -41.68674698795181
+    },
+    {
+      "target": "S1",
+      "category": "gain",
+      "task": "Distance",
+      "source": "Omni3D",
+      "split": "3D",
+      "n": 117,
+      "mean_token_delta": -111.43589743589743
+    },
+    {
+      "target": "S1",
+      "category": "gain",
+      "task": "Relation",
+      "source": "ADE20K",
+      "split": "2D",
+      "n": 49,
+      "mean_token_delta": -52.0
+    },
+    {
+      "target": "S1",
+      "category": "gain",
+      "task": "Relation",
+      "source": "COCO",
+      "split": "2D",
+      "n": 38,
+      "mean_token_delta": -56.86842105263158
+    },
+    {
+      "target": "S1",
+      "category": "loss",
+      "task": "Count",
+      "source": "ADE20K",
+      "split": "2D",
+      "n": 2,
+      "mean_token_delta": 955.0
+    },
+    {
+      "target": "S1",
+      "category": "loss",
+      "task": "Count",
+      "source": "COCO",
+      "split": "2D",
+      "n": 5,
+      "mean_token_delta": 47.2
+    },
+    {
+      "target": "S1",
+      "category": "loss",
+      "task": "Depth",
+      "source": "Omni3D",
+      "split": "3D",
+      "n": 8,
+      "mean_token_delta": -3.0
+    },
+    {
+      "target": "S1",
+      "category": "loss",
+      "task": "Distance",
+      "source": "Omni3D",
+      "split": "3D",
+      "n": 27,
+      "mean_token_delta": -196.55555555555554
+    },
+    {
+      "target": "S1",
+      "category": "loss",
+      "task": "Relation",
+      "source": "ADE20K",
+      "split": "2D",
+      "n": 3,
+      "mean_token_delta": -95.33333333333333
+    },
+    {
+      "target": "S3",
+      "category": "gain",
+      "task": "Count",
+      "source": "ADE20K",
+      "split": "2D",
+      "n": 11,
+      "mean_token_delta": -330.6363636363636
+    },
+    {
+      "target": "S3",
+      "category": "gain",
+      "task": "Count",
+      "source": "COCO",
+      "split": "2D",
+      "n": 6,
+      "mean_token_delta": -11.666666666666666
+    },
+    {
+      "target": "S3",
+      "category": "gain",
+      "task": "Depth",
+      "source": "Omni3D",
+      "split": "3D",
+      "n": 74,
+      "mean_token_delta": -59.25675675675676
+    },
+    {
+      "target": "S3",
+      "category": "gain",
+      "task": "Distance",
+      "source": "Omni3D",
+      "split": "3D",
+      "n": 91,
+      "mean_token_delta": -103.9010989010989
+    },
+    {
+      "target": "S3",
+      "category": "gain",
+      "task": "Relation",
+      "source": "ADE20K",
+      "split": "2D",
+      "n": 43,
+      "mean_token_delta": -59.27906976744186
+    },
+    {
+      "target": "S3",
+      "category": "gain",
+      "task": "Relation",
+      "source": "COCO",
+      "split": "2D",
+      "n": 37,
+      "mean_token_delta": -62.189189189189186
+    },
+    {
+      "target": "S3",
+      "category": "loss",
+      "task": "Count",
+      "source": "ADE20K",
+      "split": "2D",
+      "n": 4,
+      "mean_token_delta": 320.75
+    },
+    {
+      "target": "S3",
+      "category": "loss",
+      "task": "Count",
+      "source": "COCO",
+      "split": "2D",
+      "n": 4,
+      "mean_token_delta": -22.5
+    },
+    {
+      "target": "S3",
+      "category": "loss",
+      "task": "Depth",
+      "source": "Omni3D",
+      "split": "3D",
+      "n": 14,
+      "mean_token_delta": -54.714285714285715
+    },
+    {
+      "target": "S3",
+      "category": "loss",
+      "task": "Distance",
+      "source": "Omni3D",
+      "split": "3D",
+      "n": 31,
+      "mean_token_delta": -112.80645161290323
+    },
+    {
+      "target": "S3",
+      "category": "loss",
+      "task": "Relation",
+      "source": "ADE20K",
+      "split": "2D",
+      "n": 7,
+      "mean_token_delta": -61.714285714285715
+    },
+    {
+      "target": "S3",
+      "category": "loss",
+      "task": "Relation",
+      "source": "COCO",
+      "split": "2D",
+      "n": 1,
+      "mean_token_delta": 9.0
+    }
+  ]
+}
