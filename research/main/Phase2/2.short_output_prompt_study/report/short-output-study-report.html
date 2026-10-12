@@ -50,15 +50,16 @@ section h2 { margin-left:-1.2rem; margin-right:-1.2rem; border-radius:12px 12px 
 .toc a { color:#2f6f9f; text-decoration:none; }
 .toc a:hover { text-decoration:underline; }
 @media (max-width:760px) { .toc ol { columns:1; } }
+.author { margin:-.7rem 0 1.4rem; padding-left:.35rem; color:#5b6875; font-size:.95rem; }
 </style></head><body>
-<h1>短输出提示词研究 / Short-output prompt study</h1>
+<h1>短输出提示词研究 / Short-output prompt study</h1><p class="author">作者 / Author: <a href="https://github.com/spinner-bot" target="_blank" rel="noopener">spinner-bot</a>（GitHub）</p>
 <p class="note">本报告基于冻结的配对样本和保存的模型原始输出生成。所有统计图与代表性样本图像均已内嵌在本 HTML 文件中。<br>This report is generated from the frozen paired sample and preserved raw model responses. All figures and representative sample images are embedded in this HTML file.</p>
 <nav class="toc" id="report-toc" aria-label="Table of contents">
 <div class="toc-title">目录 / Table of contents</div>
 <ol id="report-toc-list"></ol>
 </nav>
 <script>
-(() => {
+document.addEventListener('DOMContentLoaded', () => {
   const list = document.getElementById('report-toc-list');
   const headings = [...document.querySelectorAll('h2, h3')];
   let h2 = 0, h3 = 0;
@@ -76,7 +77,7 @@ section h2 { margin-left:-1.2rem; margin-right:-1.2rem; border-radius:12px 12px 
     item.appendChild(link);
     list.appendChild(item);
   });
-})();
+});
 </script>
 
 <h2>输入对照 / Input comparison</h2><p class="note"><b>真实请求结构 / Actual request structure.</b> S0 没有 system message，但仍然有包含图像和问题的 user message；五组共享同一图像、问题、模型和推理参数。<br>S0 has no system message, but it still has a user message containing the image and query. All five conditions share the same image, query, model, and inference settings.</p><table><thead><tr><th>条件 / Condition</th><th>System message</th><th>图像 / Image</th><th>User text</th></tr></thead><tbody><tr><td><b>S0</b></td><td>（无 system message）<br>No system message</td><td>同一图像 / Same image<br><code>2D/cvbench-2D-ADE20K-ADE_val_00001145.jpg-348.png</code><br>SHA-256: <code>e0ebfceb55d8c0620e0744e6b53f4ab8f09a74236b1bea7bd49ec9851477a3b5</code></td><td>Considering the relative positions of the switch and the bottle in the image provided, where is the switch located with respect to the bottle? Select from the following choices.

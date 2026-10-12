@@ -49,8 +49,11 @@ section h2 { margin-left:-1.2rem; margin-right:-1.2rem; border-radius:12px 12px 
 .toc li { break-inside:avoid; margin:.25rem 0; }
 .toc a { color:#2f6f9f; text-decoration:none; }
 .toc a:hover { text-decoration:underline; }
+.author { margin:-.7rem 0 1.4rem; padding-left:.35rem; color:#5b6875; font-size:.95rem; }
 @media (max-width:760px) { .toc ol { columns:1; } }
 """
+
+AUTHOR = '<p class="author">作者 / Author: <a href="https://github.com/spinner-bot" target="_blank" rel="noopener">spinner-bot</a>（GitHub）</p>'
 
 TOC = r'''
 <nav class="toc" id="report-toc" aria-label="Table of contents">
@@ -58,7 +61,7 @@ TOC = r'''
 <ol id="report-toc-list"></ol>
 </nav>
 <script>
-(() => {
+document.addEventListener('DOMContentLoaded', () => {
   const list = document.getElementById('report-toc-list');
   const headings = [...document.querySelectorAll('h2, h3')];
   let h2 = 0, h3 = 0;
@@ -76,7 +79,7 @@ TOC = r'''
     item.appendChild(link);
     list.appendChild(item);
   });
-})();
+});
 </script>
 '''
 
@@ -89,6 +92,8 @@ def main() -> None:
     if "/* layout refinement */" in text:
         raise SystemExit("layout refinement already present")
     text = text.replace("</style>", STYLE + "</style>", 1)
+    if 'class="author"' not in text:
+        text = text.replace("</h1>", "</h1>" + AUTHOR, 1)
     marker = "</p>\n<h2>"
     if marker not in text:
         raise SystemExit("top insertion marker not found")
