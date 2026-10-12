@@ -1,0 +1,151 @@
+{
+  "schema": "short-output-derived-analysis-v1",
+  "sample_size": 2000,
+  "counts": {
+    "S0": 2000,
+    "SC": 2000,
+    "S1": 2000,
+    "S2": 2000,
+    "S3": 2000
+  },
+  "summary": [
+    {
+      "condition": "S0",
+      "n": 2000,
+      "accuracy": 0.616,
+      "valid_answer_rate": 1.0,
+      "strict_format_rate": 0.0,
+      "reasoning_marker_rate": 0.8635,
+      "response_chars_mean": 475.1615,
+      "response_chars_median": 346.5,
+      "response_chars_ci95": [
+        453.84983750000004,
+        497.65425
+      ],
+      "api_error_count": 0
+    },
+    {
+      "condition": "SC",
+      "n": 2000,
+      "accuracy": 0.6185,
+      "valid_answer_rate": 1.0,
+      "strict_format_rate": 0.0,
+      "reasoning_marker_rate": 0.9085,
+      "response_chars_mean": 470.5205,
+      "response_chars_median": 339.0,
+      "response_chars_ci95": [
+        447.99615,
+        495.5667375
+      ],
+      "api_error_count": 0
+    },
+    {
+      "condition": "S1",
+      "n": 2000,
+      "accuracy": 0.7425,
+      "valid_answer_rate": 1.0,
+      "strict_format_rate": 0.0,
+      "reasoning_marker_rate": 0.497,
+      "response_chars_mean": 253.1155,
+      "response_chars_median": 220.0,
+      "response_chars_ci95": [
+        240.938975,
+        267.3040125
+      ],
+      "api_error_count": 0
+    },
+    {
+      "condition": "S2",
+      "n": 2000,
+      "accuracy": 0.605,
+      "valid_answer_rate": 1.0,
+      "strict_format_rate": 0.0,
+      "reasoning_marker_rate": 0.8485,
+      "response_chars_mean": 401.805,
+      "response_chars_median": 307.0,
+      "response_chars_ci95": [
+        382.672575,
+        422.20821249999995
+      ],
+      "api_error_count": 0
+    },
+    {
+      "condition": "S3",
+      "n": 2000,
+      "accuracy": 0.7165,
+      "valid_answer_rate": 1.0,
+      "strict_format_rate": 0.0,
+      "reasoning_marker_rate": 0.478,
+      "response_chars_mean": 236.8385,
+      "response_chars_median": 187.0,
+      "response_chars_ci95": [
+        219.56959999999998,
+        256.35859999999997
+      ],
+      "api_error_count": 0
+    }
+  ],
+  "paired_comparisons": [
+    {
+      "comparison": "SC vs S0",
+      "accuracy_difference": 0.0025,
+      "accuracy_difference_ci95": [
+        -0.0105,
+        0.0155
+      ],
+      "mcnemar": {
+        "a_only": 84,
+        "b_only": 89,
+        "discordant": 173,
+        "p_value": 0.7611429709016686
+      }
+    },
+    {
+      "comparison": "S1 vs S0",
+      "accuracy_difference": 0.1265,
+      "accuracy_difference_ci95": [
+        0.1095,
+        0.144
+      ],
+      "mcnemar": {
+        "a_only": 45,
+        "b_only": 298,
+        "discordant": 343,
+        "p_value": 6.563442385088907e-47
+      }
+    },
+    {
+      "comparison": "S2 vs S0",
+      "accuracy_difference": -0.011,
+      "accuracy_difference_ci95": [
+        -0.025,
+        0.003
+      ],
+      "mcnemar": {
+        "a_only": 110,
+        "b_only": 88,
+        "discordant": 198,
+        "p_value": 0.13539129748732068
+      }
+    },
+    {
+      "comparison": "S3 vs S0",
+      "accuracy_difference": 0.1005,
+      "accuracy_difference_ci95": [
+        0.0839875,
+        0.11701249999999982
+      ],
+      "mcnemar": {
+        "a_only": 61,
+        "b_only": 262,
+        "discordant": 323,
+        "p_value": 8.083444141921781e-31
+      }
+    }
+  ],
+  "notes": [
+    "gold_answer is taken from the frozen sample manifest response field.",
+    "reasoning_marker_rate is a lexical screening metric, not a semantic proof of reasoning.",
+    "raw model responses are preserved separately; this file contains derived metrics only."
+  ]
+}
