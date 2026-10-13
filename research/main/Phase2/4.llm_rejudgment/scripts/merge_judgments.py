@@ -7,6 +7,7 @@ import argparse
 import csv
 import json
 import math
+import random
 from collections import Counter
 from pathlib import Path
 
@@ -51,6 +52,18 @@ def compare(a: list[bool], b: list[bool]) -> dict:
         "mcnemar_exact_p": p,
         "cohens_kappa_correctness": cohens_kappa(a, b),
     }
+
+
+def bootstrap_ci(values: list[float], seed: int, iterations: int = 5000) -> list[float | None]:
+    if not values:
+        return [None, None]
+    rng = random.Random(seed)
+    n = len(values)
+    means = []
+    for _ in range(iterations):
+        means.append(sum(values[rng.randrange(n)] for _ in range(n)) / n)
+    means.sort()
+    return [means[int(0.025 * (iterations - 1))], means[int(0.975 * (iterations - 1))]]
 
 
 def main() -> None:
@@ -142,6 +155,11 @@ def main() -> None:
             "llm_status": llm_status,
             "llm_parsed_answer": llm_answer or "",
             "llm_correct": llm_correct,
+            "correct": llm_correct,
+            "parsed_answer": llm_answer or "",
+            "answer_valid": llm_status == "ANSWERED",
+            "strict_format": as_bool(old.get("strict_format")),
+            "reasoning_marker": as_bool(old.get("reasoning_marker")),
             "llm_evidence": judge.get("evidence", ""),
             "llm_reason_code": judge.get("reason_code", ""),
             "llm_raw_text": judge.get("judge_raw_text", ""),
@@ -193,6 +211,40 @@ def main() -> None:
             **comparison,
         })
 
+    summary_rows = []
+    for condition_index, condition in enumerate(CONDITIONS):
+        subset = [row for row in output_rows if row["condition"] == condition]
+        correct = [float(bool(row["llm_correct"])) for row in subset]
+        chars = [float(row["response_chars"]) for row in subset]
+        summary_rows.append({
+            "condition": condition,
+            "n": len(subset),
+            "accuracy": sum(correct) / len(correct),
+            "valid_answer_rate": sum(row["llm_status"] == "ANSWERED" for row in subset) / len(subset),
+            "strict_format_rate": sum(bool(row["strict_format"]) for row in subset) / len(subset),
+            "reasoning_marker_rate": sum(bool(row["reasoning_marker"]) for row in subset) / len(subset),
+            "response_chars_mean": sum(chars) / len(chars),
+            "response_chars_median": sorted(chars)[len(chars) // 2] if len(chars) % 2 else (sorted(chars)[len(chars)//2 - 1] + sorted(chars)[len(chars)//2]) / 2,
+            "response_chars_ci95": bootstrap_ci(chars, seed=261013 + condition_index),
+            "api_error_count": sum(bool(row["api_error"]) for row in subset),
+        })
+    by_condition_id = {
+        condition: {row["sample_id"]: bool(row["llm_correct"]) for row in output_rows if row["condition"] == condition}
+        for condition in CONDITIONS
+    }
+    paired_comparisons = []
+    for condition_index, condition in enumerate(CONDITIONS[1:], start=1):
+        ids = sorted(by_condition_id["S0"])
+        a = [by_condition_id["S0"][sample_id] for sample_id in ids]
+        b = [by_condition_id[condition][sample_id] for sample_id in ids]
+        diff = [float(y) - float(x) for x, y in zip(a, b)]
+        paired_comparisons.append({
+            "comparison": f"{condition} vs S0",
+            "accuracy_difference": sum(diff) / len(diff),
+            "accuracy_difference_ci95": bootstrap_ci(diff, seed=261023 + condition_index),
+            "mcnemar": compare(a, b),
+        })
+
     overall = compare(all_rule_correct, all_llm_correct)
     summary = {
         "schema": "phase2-rule-vs-llm-rejudgment-v1",
@@ -218,6 +270,13 @@ def main() -> None:
         writer = csv.DictWriter(handle, fieldnames=list(per_condition[0]))
         writer.writeheader()
         writer.writerows(per_condition)
+    (args.output_dir / "summary.json").write_text(json.dumps({
+        "schema": "short-output-rejudged-summary-v1",
+        "sample_size": 2000,
+        "counts": dict(Counter(row["condition"] for row in output_rows)),
+        "summary": summary_rows,
+        "paired_comparisons": paired_comparisons,
+    }, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(json.dumps({"n": len(output_rows), "statuses": summary["llm_status_counts"], "differences": len(delta_records)}, ensure_ascii=False))
 
 
