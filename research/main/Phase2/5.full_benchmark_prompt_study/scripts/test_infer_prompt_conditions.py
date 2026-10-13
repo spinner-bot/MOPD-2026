@@ -18,6 +18,9 @@ REGISTRY = WORK5 / "prompts/prompt_registry-v1.json"
 def main() -> None:
     if "openai" not in sys.modules:
         sys.modules["openai"] = SimpleNamespace(OpenAI=object)
+    # Inference replaces image_to_data_uri below; this contract test must not
+    # depend on local binary Pillow wheels being installed/ABI-compatible.
+    sys.modules["PIL"] = SimpleNamespace(Image=object)
     spec = importlib.util.spec_from_file_location("vision_opd_infer_work5_test", EVAL)
     module = importlib.util.module_from_spec(spec)
     assert spec.loader is not None
@@ -65,6 +68,7 @@ def main() -> None:
                 assert messages[0]["content"] == config["system_message"]
             output = out_dir / "toy" / f"contract-{condition}_answer.jsonl"
             record = json.loads(output.read_text(encoding="utf-8").splitlines()[0])
+            assert record["sample_uid"] == "toy:1"
             assert record["prompt_condition"] == condition
             assert record["model_answer"] == "B"
             assert record["api_usage"] == {"prompt_tokens": 17, "completion_tokens": 3, "total_tokens": 20}
