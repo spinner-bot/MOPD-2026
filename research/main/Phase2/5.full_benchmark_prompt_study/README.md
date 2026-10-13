@@ -19,6 +19,9 @@
 - `scripts/fetch_pinned_datasets.py`：在服务器直接从 Hugging Face 下载固定 revision 的 parquet，并输出行数、文件大小与 SHA-256 清单；不经 SSH 传输数据。
 - `scripts/audit_dataset_schema.py`：只读取 parquet schema 和类别/任务字段（排除图像载荷），输出用于转换方案复核的字段及其分布。
 - `scripts/audit_sample_keys_and_answers.py`：扫描主键、参考答案、选项数及题型/类别分布，不读取图像载荷。
+- `scripts/audit_task_edge_cases.py`：交叉核对Zoom题型/答案格式并完整导出MME六选项边界题。
+- `scripts/prepare_pinned_benchmarks.py`：读取固定revision parquet，逐批提取图像并复现官方query构造；保留稳定UID和类别元数据。
+- `scripts/prepare_pinned_benchmarks.sbatch`：在CPU分区运行固定版数据转换。
 - `audits/`：由服务器生成并经 GitHub 中转的小型字段审计中间产物；原始图片和数据不入 Git。
 - `prompts/`：冻结后的条件提示词及按题型适配的模板；修改必须升版本并记录影响。
 - `prompts/prompt_registry-v1.json`：首版五条件完整提示词注册表；S0 的 `null` 表示不发送 system message。修改需升版本并重新记录SHA-256。
