@@ -167,7 +167,7 @@ def main() -> None:
     s2_task_table = table(["结构", "任务", "样本数", "该结构中的比例"], s2_task_rows)
 
     figures = []
-    figures += [image(figures2 / "accuracy_overview.png", "Accuracy under the five prompting modes / 五种模式准确率")]
+    figures += [image(figures2 / "accuracy_overview.png/accuracy.png", "Accuracy under the five prompting modes / 五种模式准确率")]
     figures += [image(figures2 / "length_distribution_shape.png", "Visible response-length distributions / 可见输出长度分布")]
     figures += [image(figures2 / "length_by_correctness.png", "Character length by correctness / 按正确性分组的字符长度")]
     figures += [image(figures2 / "accuracy_by_length_decile.png", "Accuracy by character-length decile / 字符长度分位与准确率")]
