@@ -14,6 +14,7 @@ set -euo pipefail
 REPO="/leonardo/home/userexternal/rqian000/spinner-bot/MOPD-2026"
 WORK="${REPO}/research/main/Phase2/4.llm_rejudgment"
 PYTHON="/leonardo_scratch/fast/AIFAC_F02_774/rqian000/envs/sc-vllm/bin/python"
+export PATH="/leonardo_scratch/fast/AIFAC_F02_774/rqian000/envs/sc-vllm/bin:${PATH}"
 MODEL="/leonardo_scratch/large/userexternal/rqian000/models/Qwen3.8-27B"
 RUN_TAG="${RUN_TAG:?set RUN_TAG}"
 SHARD_INDEX="${SHARD_INDEX:-0}"
