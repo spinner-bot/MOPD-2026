@@ -24,6 +24,8 @@
 - `scripts/prepare_pinned_benchmarks.py`：读取固定revision parquet，逐批提取图像并复现官方query构造；保留稳定UID和类别元数据。
 - `scripts/prepare_pinned_benchmarks.sbatch`：在账户允许的GPU分区运行CPU为主的固定版数据转换（1张卡用于满足分区准入）。
 - `scripts/test_infer_prompt_conditions.py`：以模拟API做无GPU契约测试，校验S0无system message且其余条件只增加注册表中的system文本。
+- `scripts/make_stratified_pilot.py`：确定性选择覆盖六个track、主类别、Zoom题型及MME六选项异常的小样本pilot。
+- `scripts/run_stratified_pilot.sbatch`：单A100启动vLLM，并通过官方infer接口跑五条件pilot。
 - `audits/`：由服务器生成并经 GitHub 中转的小型字段审计中间产物；原始图片和数据不入 Git。
 - `prompts/`：冻结后的条件提示词及按题型适配的模板；修改必须升版本并记录影响。
 - `prompts/prompt_registry-v1.json`：首版五条件完整提示词注册表；S0 的 `null` 表示不发送 system message。修改需升版本并重新记录SHA-256。
