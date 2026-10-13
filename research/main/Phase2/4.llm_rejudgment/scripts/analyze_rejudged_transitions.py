@@ -309,7 +309,7 @@ def main() -> None:
                 delta_groups.append({"target": target, "category": category, "n": int(len(vals)), "mean_delta": float(vals.mean()), "median_delta": float(vals.median()), "q25": float(vals.quantile(.25)), "q75": float(vals.quantile(.75))})
     if data:
         fig, ax = plt.subplots(figsize=(9, 5.4))
-        bp = ax.boxplot(data, patch_artist=True, labels=labels, showfliers=False)
+        bp = ax.boxplot(data, patch_artist=True, tick_labels=labels, showfliers=False)
         for box, color in zip(bp["boxes"], box_colors):
             box.set_facecolor(color)
             box.set_alpha(0.72)
