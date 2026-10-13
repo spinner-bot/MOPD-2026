@@ -24,7 +24,12 @@ def pick_image_path(item):
 
 
 def make_sample_uid(item, benchmark):
-    for key in ("sample_uid", "uid", "index", "question_id", "id"):
+    # Prepared Work5 UIDs already include the benchmark namespace; do not wrap
+    # them again as ``benchmark:sample_uid:<uid>``.
+    sample_uid = item.get("sample_uid")
+    if sample_uid is not None and str(sample_uid) != "":
+        return str(sample_uid)
+    for key in ("uid", "index", "question_id", "id"):
         value = item.get(key)
         if value is not None and str(value) != "":
             return f"{benchmark}:{key}:{value}"

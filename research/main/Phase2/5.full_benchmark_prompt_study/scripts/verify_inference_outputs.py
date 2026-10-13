@@ -60,6 +60,7 @@ def main() -> None:
         raise ValueError("Duplicate prepared sample_uid in input")
 
     summary = {"conditions": {}, "tracks": tracks, "pilot": args.pilot}
+    uid_compatibility = {"legacy_wrapped_uid_rows": 0}
     baseline = {}
     for condition in conditions:
         config = registry["conditions"][condition]
@@ -70,10 +71,26 @@ def main() -> None:
             path = args.run_root / "outputs" / condition / track / f"{args.model_id}-{condition}_answer.jsonl"
             outputs = read_jsonl(path)
             wanted = common_ids[track]
-            observed = set(outputs)
+            input_by_id = {row["sample_uid"]: row for row in expected[track]}
+            normalized_outputs = {}
+            legacy_prefix = f"{track}:sample_uid:"
+            for raw_uid, record in outputs.items():
+                uid = raw_uid
+                if uid not in wanted and uid.startswith(legacy_prefix) and uid[len(legacy_prefix):] in wanted:
+                    uid = uid[len(legacy_prefix):]
+                    uid_compatibility["legacy_wrapped_uid_rows"] += 1
+                if uid in normalized_outputs:
+                    raise ValueError(f"{condition}/{track}: duplicate UID after compatibility normalization: {uid}")
+                normalized_outputs[uid] = record
+            observed = set(normalized_outputs)
             if observed != wanted:
-                raise ValueError(f"{condition}/{track}: output UID coverage {len(observed)} != expected {len(wanted)}")
-            for uid, record in outputs.items():
+                missing = sorted(wanted - observed)[:3]
+                unexpected = sorted(observed - wanted)[:3]
+                raise ValueError(
+                    f"{condition}/{track}: output UID set mismatch; expected={len(wanted)}, "
+                    f"observed={len(observed)}, missing_examples={missing}, unexpected_examples={unexpected}"
+                )
+            for uid, record in normalized_outputs.items():
                 if record.get("prompt_condition") != condition:
                     raise ValueError(f"{condition}/{track}/{uid}: condition metadata mismatch")
                 if record.get("system_prompt_sha256") != system_hash:
@@ -83,26 +100,27 @@ def main() -> None:
                 answer = record.get("model_answer")
                 if not isinstance(answer, str) or not answer.strip() or answer.startswith(("[API_ERROR]", "[FUTURE_ERROR]")):
                     raise ValueError(f"{condition}/{track}/{uid}: empty or technical-error model output")
-            input_by_id = {row["sample_uid"]: row for row in expected[track]}
-            for uid, record in outputs.items():
+            for uid, record in normalized_outputs.items():
                 source = input_by_id[uid]
                 for key, value in source.items():
-                    if record.get(key) != value:
+                    observed_value = uid if key == "sample_uid" else record.get(key)
+                    if observed_value != value:
                         raise ValueError(f"{condition}/{track}/{uid}: inference changed input field {key}")
             if condition == "S0":
-                baseline[track] = outputs
+                baseline[track] = normalized_outputs
             else:
-                for uid, record in outputs.items():
+                for uid, record in normalized_outputs.items():
                     base = baseline[track][uid]
                     for key in ("query", "response", "images", "crop_images", "category", "l2-category", "cycle_category", "question_type", "bbox", "language"):
                         if record.get(key) != base.get(key):
                             raise ValueError(f"{condition}/{track}/{uid}: paired condition input mismatch at {key}")
-            summary["conditions"][condition][track] = {"n": len(outputs), "technical_errors": 0}
-            print(f"PASS {condition}/{track}: {len(outputs)} outputs", flush=True)
+            summary["conditions"][condition][track] = {"n": len(normalized_outputs), "technical_errors": 0}
+            print(f"PASS {condition}/{track}: {len(normalized_outputs)} outputs", flush=True)
 
     summary["total_records_per_condition"] = sum(len(rows) for rows in expected.values())
     summary["total_generation_outputs"] = summary["total_records_per_condition"] * len(conditions)
     summary["prompt_registry_sha256"] = registry_hash
+    summary["uid_compatibility"] = uid_compatibility
     args.run_root.mkdir(parents=True, exist_ok=True)
     result_path = args.run_root / "output-verification.json"
     result_path.write_text(json.dumps(summary, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
