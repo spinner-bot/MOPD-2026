@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import fcntl
 import hashlib
 import json
 import platform
@@ -11,6 +12,8 @@ import sys
 from collections import Counter
 from datetime import datetime, timezone
 from pathlib import Path
+
+CONDITIONS = ["S0", "SC", "S1", "S2", "S3"]
 
 
 def sha256(path: Path) -> str:
@@ -90,8 +93,28 @@ def main() -> None:
         row for index, row in enumerate(all_rows)
         if index % args.num_shards == args.shard_index
     ]
+    if args.limit_per_condition is None:
+        if 10000 % args.num_shards or 2000 % args.num_shards:
+            raise ValueError("num_shards must evenly divide the frozen dataset and each condition")
+        expected_per_condition = 2000 // args.num_shards
+        selected_counts = Counter(row["condition"] for row in selected)
+        if len(selected) != 10000 // args.num_shards or selected_counts != {
+            condition: expected_per_condition for condition in CONDITIONS
+        }:
+            raise ValueError(
+                f"shard partition gate failed: n={len(selected)}, counts={dict(selected_counts)}"
+            )
 
     args.output.parent.mkdir(parents=True, exist_ok=True)
+    expected_name = f"judge-shard-{args.shard_index}.jsonl"
+    if args.output.name != expected_name:
+        raise ValueError(f"output filename must match shard index: expected {expected_name}")
+    lock_path = args.output.with_suffix(args.output.suffix + ".lock")
+    lock_handle = lock_path.open("a", encoding="utf-8")
+    try:
+        fcntl.flock(lock_handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except BlockingIOError as exc:
+        raise RuntimeError(f"another process already owns this shard output: {lock_path}") from exc
     manifest_path = args.output.with_suffix(".manifest.json")
 
     import vllm
