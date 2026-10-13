@@ -34,7 +34,7 @@ def choose(track: str, rows: list[dict]) -> list[dict]:
             add_first(lambda row, category=category: row.get("category") == category)
     elif track == "zoombench":
         add_first(lambda row: str(row.get("question_type") or "").casefold() == "mcq")
-        add_first(lambda row: not str(row.get("question_type") or "").strip())
+        add_first(lambda row: str(row.get("question_type") or "").strip().casefold() == "blank")
     elif track.startswith("hrbench-"):
         for category in ("single", "cross"):
             for cycle in range(4):

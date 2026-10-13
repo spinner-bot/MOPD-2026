@@ -34,6 +34,10 @@ cd "${FAST_REPO}"
 printf 'job_id=%s\nstart=%s\ncommit=%s\ncondition_count=5\n' "${SLURM_JOB_ID}" "$(date -Is)" "$(git rev-parse HEAD)" | tee "${RUN_ROOT}/logs/run.txt"
 nvidia-smi | tee "${RUN_ROOT}/logs/gpu.txt"
 sha256sum "${MODEL_DIR}/config.json" "${MODEL_DIR}/model.safetensors" | tee "${RUN_ROOT}/logs/model-sha256.txt"
+WORK5_DATA_ROOT="${DATA_ROOT}" "${PYTHON}" "${FAST_REPO}/research/main/Phase2/5.full_benchmark_prompt_study/scripts/verify_prepared_benchmarks.py" \
+  2>&1 | tee "${RUN_ROOT}/logs/prepared-integrity.log"
+WORK5_DATA_ROOT="${DATA_ROOT}" "${PYTHON}" "${FAST_REPO}/research/main/Phase2/5.full_benchmark_prompt_study/scripts/make_stratified_pilot.py" \
+  2>&1 | tee "${RUN_ROOT}/logs/pilot-input-selection.log"
 
 "${VLLM}" serve "${MODEL_DIR}" \
   --served-model-name "${MODEL_ID}" \
