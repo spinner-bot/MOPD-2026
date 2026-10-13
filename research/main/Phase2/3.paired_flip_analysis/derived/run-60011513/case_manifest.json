@@ -1,0 +1,74 @@
+[
+  {
+    "case_index": 1,
+    "state": "001",
+    "sample_id": "cvbench-2D-ADE20K-ADE_val_00000921.jpg-55",
+    "selection": "large_reduction"
+  },
+  {
+    "case_index": 2,
+    "state": "001",
+    "sample_id": "cvbench-2D-ADE20K-ADE_val_00000417.jpg-549",
+    "selection": "typical"
+  },
+  {
+    "case_index": 3,
+    "state": "010",
+    "sample_id": "cvbench-3D-Omni3D-hypersim/ai_054_007/images/scene_cam_00_final_preview/frame.0070.tonemap.jpg-790",
+    "selection": "large_reduction"
+  },
+  {
+    "case_index": 4,
+    "state": "010",
+    "sample_id": "cvbench-3D-Omni3D-SUNRGBD/kv2/kinect2data/000012_2014-05-26_14-35-37_260595134347_rgbf000180-resize/image/0000180.jpg-912",
+    "selection": "typical"
+  },
+  {
+    "case_index": 5,
+    "state": "011",
+    "sample_id": "cvbench-3D-Omni3D-hypersim/ai_051_001/images/scene_cam_04_final_preview/frame.0094.tonemap.jpg-800",
+    "selection": "large_reduction"
+  },
+  {
+    "case_index": 6,
+    "state": "011",
+    "sample_id": "cvbench-2D-ADE20K-ADE_val_00000632.jpg-497",
+    "selection": "typical"
+  },
+  {
+    "case_index": 7,
+    "state": "100",
+    "sample_id": "cvbench-3D-Omni3D-SUNRGBD/xtion/sun3ddata/mit_dorm_mcc_eflr6/dorm_mcc_eflr6_oct_31_2012_scan1_erika/0000153-000006345759//image/0000153-000006345759.jpg-939",
+    "selection": "large_reduction"
+  },
+  {
+    "case_index": 8,
+    "state": "100",
+    "sample_id": "cvbench-2D-COCO-/coco/val2017/000000500826.jpg-848",
+    "selection": "typical"
+  },
+  {
+    "case_index": 9,
+    "state": "101",
+    "sample_id": "cvbench-3D-Omni3D-hypersim/ai_054_007/images/scene_cam_00_final_preview/frame.0099.tonemap.jpg-607",
+    "selection": "large_reduction"
+  },
+  {
+    "case_index": 10,
+    "state": "101",
+    "sample_id": "cvbench-3D-Omni3D-nuScenes/samples/CAM_FRONT/n008-2018-08-01-15-16-36-0400__CAM_FRONT__1533151882012404.jpg-1004",
+    "selection": "typical"
+  },
+  {
+    "case_index": 11,
+    "state": "110",
+    "sample_id": "cvbench-3D-Omni3D-nuScenes/samples/CAM_FRONT/n008-2018-08-01-15-16-36-0400__CAM_FRONT__1533151275012404.jpg-1002",
+    "selection": "large_reduction"
+  },
+  {
+    "case_index": 12,
+    "state": "110",
+    "sample_id": "cvbench-3D-Omni3D-SUNRGBD/kv2/align_kv2/2014-12-18_14-03-19_260595134347//image/0000134.jpg-943",
+    "selection": "typical"
+  }
+]

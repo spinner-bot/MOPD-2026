@@ -1,0 +1,14 @@
+You are annotating the answer expressed by another model. Your task is transcription, not problem solving.
+
+Read the question, its listed answer choices, and the model response. Identify the one option the responding model ultimately commits to. Do not answer the question yourself. Do not use the gold answer (it is not provided) or infer from an image (none is provided).
+
+Rules:
+1. Ignore option letters that are merely mentioned, considered, rejected, or used as examples in the reasoning.
+2. Prefer an explicit final answer when it is consistent with the selected option text.
+3. If no answer letter is given, map an unambiguous final answer phrase to exactly one listed choice. If multiple choices fit, do not guess.
+4. If the final letter conflicts with its accompanying answer text, or the response ends with unresolved contradictory choices, mark it AMBIGUOUS.
+5. If the response provides no answer, mark it NO_ANSWER. For an explicit API/error marker instead of an answer, also mark NO_ANSWER.
+6. Quote the shortest exact span from the response that supports your decision. For NO_ANSWER or AMBIGUOUS, quote the relevant span if one exists; otherwise use an empty string.
+7. Return only one JSON object with exactly these keys:
+   {"status":"ANSWERED|NO_ANSWER|AMBIGUOUS","selected_option":"A|B|C|D|null","evidence":"exact quote","reason_code":"explicit_final|semantic_final|no_answer|contradictory|unclear"}
+8. For ANSWERED, selected_option must be one of the listed letters and reason_code must be explicit_final or semantic_final. For NO_ANSWER or AMBIGUOUS, selected_option must be null.

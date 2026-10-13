@@ -1,0 +1,484 @@
+{
+  "schema": "paired-flip-eight-state-v1",
+  "sample_size": 2000,
+  "state_order": "S0,S1,S3; 1=correct, 0=incorrect",
+  "state_counts": {
+    "000": 422,
+    "001": 48,
+    "010": 84,
+    "011": 214,
+    "100": 26,
+    "101": 19,
+    "110": 35,
+    "111": 1152
+  },
+  "state_rates_all": {
+    "000": 0.211,
+    "001": 0.024,
+    "010": 0.042,
+    "011": 0.107,
+    "100": 0.013,
+    "101": 0.0095,
+    "110": 0.0175,
+    "111": 0.576
+  },
+  "groups": {
+    "baseline_wrong": 768,
+    "baseline_correct": 1232,
+    "both_recover": 214,
+    "either_recover": 346,
+    "both_lose": 26,
+    "either_lose": 80,
+    "s1_gain": 298,
+    "s3_gain": 262,
+    "s1_loss": 45,
+    "s3_loss": 61,
+    "s1_s3_disagree": 186
+  },
+  "group_ci95": {
+    "either_recover_given_s0_wrong": [
+      0.4149295056187342,
+      0.486493441476387
+    ],
+    "both_recover_given_s0_wrong": [
+      0.24718776384064944,
+      0.3118140091396535
+    ],
+    "either_lose_given_s0_correct": [
+      0.05182176681619866,
+      0.08016861753908584
+    ],
+    "both_lose_given_s0_correct": [
+      0.01383096126556298,
+      0.030770033374977662
+    ]
+  },
+  "task_stats": [
+    {
+      "task": "Count",
+      "measure": "either_recover",
+      "count": 21,
+      "denominator": 306,
+      "rate": 0.06862745098039216,
+      "ci95": [
+        0.042980285293566185,
+        0.1029933029556232
+      ]
+    },
+    {
+      "task": "Count",
+      "measure": "both_recover",
+      "count": 7,
+      "denominator": 306,
+      "rate": 0.02287581699346405,
+      "ci95": [
+        0.009245594649570456,
+        0.04656290191416294
+      ]
+    },
+    {
+      "task": "Count",
+      "measure": "either_lose",
+      "count": 11,
+      "denominator": 118,
+      "rate": 0.09322033898305085,
+      "ci95": [
+        0.04745897855039089,
+        0.16067637565779969
+      ]
+    },
+    {
+      "task": "Count",
+      "measure": "both_lose",
+      "count": 4,
+      "denominator": 118,
+      "rate": 0.03389830508474576,
+      "ci95": [
+        0.009311964949591404,
+        0.08452051529529046
+      ]
+    },
+    {
+      "task": "Count",
+      "measure": "s1_gain",
+      "count": 11,
+      "denominator": 306,
+      "rate": 0.03594771241830065,
+      "ci95": [
+        0.01807910160699091,
+        0.0634089145099759
+      ]
+    },
+    {
+      "task": "Count",
+      "measure": "s3_gain",
+      "count": 17,
+      "denominator": 306,
+      "rate": 0.05555555555555555,
+      "ci95": [
+        0.03269258874273985,
+        0.08746160090965244
+      ]
+    },
+    {
+      "task": "Count",
+      "measure": "s1_loss",
+      "count": 7,
+      "denominator": 118,
+      "rate": 0.059322033898305086,
+      "ci95": [
+        0.024180577056026397,
+        0.11840976951212587
+      ]
+    },
+    {
+      "task": "Count",
+      "measure": "s3_loss",
+      "count": 8,
+      "denominator": 118,
+      "rate": 0.06779661016949153,
+      "ci95": [
+        0.02972217906621245,
+        0.12921925152072575
+      ]
+    },
+    {
+      "task": "Depth",
+      "measure": "either_recover",
+      "count": 90,
+      "denominator": 119,
+      "rate": 0.7563025210084033,
+      "ci95": [
+        0.6691131274126987,
+        0.8303183447932636
+      ]
+    },
+    {
+      "task": "Depth",
+      "measure": "both_recover",
+      "count": 67,
+      "denominator": 119,
+      "rate": 0.5630252100840336,
+      "ci95": [
+        0.46909278308554286,
+        0.6537453839517969
+      ]
+    },
+    {
+      "task": "Depth",
+      "measure": "either_lose",
+      "count": 19,
+      "denominator": 396,
+      "rate": 0.047979797979797977,
+      "ci95": [
+        0.02913069469456835,
+        0.07391446677694104
+      ]
+    },
+    {
+      "task": "Depth",
+      "measure": "both_lose",
+      "count": 3,
+      "denominator": 396,
+      "rate": 0.007575757575757576,
+      "ci95": [
+        0.0015650364538885896,
+        0.021978871221400038
+      ]
+    },
+    {
+      "task": "Depth",
+      "measure": "s1_gain",
+      "count": 83,
+      "denominator": 119,
+      "rate": 0.6974789915966386,
+      "ci95": [
+        0.6065449697969407,
+        0.7783040986891099
+      ]
+    },
+    {
+      "task": "Depth",
+      "measure": "s3_gain",
+      "count": 74,
+      "denominator": 119,
+      "rate": 0.6218487394957983,
+      "ci95": [
+        0.5283634017895849,
+        0.7091159500689059
+      ]
+    },
+    {
+      "task": "Depth",
+      "measure": "s1_loss",
+      "count": 8,
+      "denominator": 396,
+      "rate": 0.020202020202020204,
+      "ci95": [
+        0.008761175169895252,
+        0.03941659438067392
+      ]
+    },
+    {
+      "task": "Depth",
+      "measure": "s3_loss",
+      "count": 14,
+      "denominator": 396,
+      "rate": 0.03535353535353535,
+      "ci95": [
+        0.019460398485086995,
+        0.058606283644849475
+      ]
+    },
+    {
+      "task": "Distance",
+      "measure": "either_recover",
+      "count": 138,
+      "denominator": 224,
+      "rate": 0.6160714285714286,
+      "ci95": [
+        0.5489535160322985,
+        0.6800735551703286
+      ]
+    },
+    {
+      "task": "Distance",
+      "measure": "both_recover",
+      "count": 70,
+      "denominator": 224,
+      "rate": 0.3125,
+      "ci95": [
+        0.2524171632828062,
+        0.37762650097990547
+      ]
+    },
+    {
+      "task": "Distance",
+      "measure": "either_lose",
+      "count": 42,
+      "denominator": 292,
+      "rate": 0.14383561643835616,
+      "ci95": [
+        0.10567075668156074,
+        0.18941183923429705
+      ]
+    },
+    {
+      "task": "Distance",
+      "measure": "both_lose",
+      "count": 16,
+      "denominator": 292,
+      "rate": 0.0547945205479452,
+      "ci95": [
+        0.031640570416653926,
+        0.08745940685599672
+      ]
+    },
+    {
+      "task": "Distance",
+      "measure": "s1_gain",
+      "count": 117,
+      "denominator": 224,
+      "rate": 0.5223214285714286,
+      "ci95": [
+        0.45475799034986164,
+        0.5892863455799376
+      ]
+    },
+    {
+      "task": "Distance",
+      "measure": "s3_gain",
+      "count": 91,
+      "denominator": 224,
+      "rate": 0.40625,
+      "ci95": [
+        0.3413273509815657,
+        0.4736882064019013
+      ]
+    },
+    {
+      "task": "Distance",
+      "measure": "s1_loss",
+      "count": 27,
+      "denominator": 292,
+      "rate": 0.09246575342465753,
+      "ci95": [
+        0.06182191975692592,
+        0.1316792418396298
+      ]
+    },
+    {
+      "task": "Distance",
+      "measure": "s3_loss",
+      "count": 31,
+      "denominator": 292,
+      "rate": 0.10616438356164383,
+      "ci95": [
+        0.07328160141566221,
+        0.14729943389083147
+      ]
+    },
+    {
+      "task": "Relation",
+      "measure": "either_recover",
+      "count": 97,
+      "denominator": 119,
+      "rate": 0.8151260504201681,
+      "ci95": [
+        0.7335866201033426,
+        0.880362962803095
+      ]
+    },
+    {
+      "task": "Relation",
+      "measure": "both_recover",
+      "count": 70,
+      "denominator": 119,
+      "rate": 0.5882352941176471,
+      "ci95": [
+        0.4943382809924458,
+        0.6776332215248051
+      ]
+    },
+    {
+      "task": "Relation",
+      "measure": "either_lose",
+      "count": 8,
+      "denominator": 426,
+      "rate": 0.018779342723004695,
+      "ci95": [
+        0.008141593299911386,
+        0.036666227241836144
+      ]
+    },
+    {
+      "task": "Relation",
+      "measure": "both_lose",
+      "count": 3,
+      "denominator": 426,
+      "rate": 0.007042253521126761,
+      "ci95": [
+        0.0014546431940874799,
+        0.020441552771899713
+      ]
+    },
+    {
+      "task": "Relation",
+      "measure": "s1_gain",
+      "count": 87,
+      "denominator": 119,
+      "rate": 0.7310924369747899,
+      "ci95": [
+        0.642089726179609,
+        0.8082407153845769
+      ]
+    },
+    {
+      "task": "Relation",
+      "measure": "s3_gain",
+      "count": 80,
+      "denominator": 119,
+      "rate": 0.6722689075630253,
+      "ci95": [
+        0.5802213958192048,
+        0.7555090426224014
+      ]
+    },
+    {
+      "task": "Relation",
+      "measure": "s1_loss",
+      "count": 3,
+      "denominator": 426,
+      "rate": 0.007042253521126761,
+      "ci95": [
+        0.0014546431940874799,
+        0.020441552771899713
+      ]
+    },
+    {
+      "task": "Relation",
+      "measure": "s3_loss",
+      "count": 8,
+      "denominator": 426,
+      "rate": 0.018779342723004695,
+      "ci95": [
+        0.008141593299911386,
+        0.036666227241836144
+      ]
+    }
+  ],
+  "length_summary": [
+    {
+      "state": "000",
+      "n": 422,
+      "S0_median_tokens": 72.5,
+      "S1_median_tokens": 50.0,
+      "S3_median_tokens": 49.0,
+      "s1_delta_median": -17.0,
+      "s3_delta_median": -21.0
+    },
+    {
+      "state": "001",
+      "n": 48,
+      "S0_median_tokens": 122.5,
+      "S1_median_tokens": 87.0,
+      "S3_median_tokens": 68.0,
+      "s1_delta_median": -31.5,
+      "s3_delta_median": -64.5
+    },
+    {
+      "state": "010",
+      "n": 84,
+      "S0_median_tokens": 131.5,
+      "S1_median_tokens": 59.5,
+      "S3_median_tokens": 61.0,
+      "s1_delta_median": -69.0,
+      "s3_delta_median": -66.5
+    },
+    {
+      "state": "011",
+      "n": 214,
+      "S0_median_tokens": 103.5,
+      "S1_median_tokens": 54.0,
+      "S3_median_tokens": 42.0,
+      "s1_delta_median": -59.0,
+      "s3_delta_median": -66.0
+    },
+    {
+      "state": "100",
+      "n": 26,
+      "S0_median_tokens": 133.5,
+      "S1_median_tokens": 64.5,
+      "S3_median_tokens": 63.5,
+      "s1_delta_median": -71.0,
+      "s3_delta_median": -32.0
+    },
+    {
+      "state": "101",
+      "n": 19,
+      "S0_median_tokens": 137.0,
+      "S1_median_tokens": 70.0,
+      "S3_median_tokens": 60.0,
+      "s1_delta_median": -69.0,
+      "s3_delta_median": -65.0
+    },
+    {
+      "state": "110",
+      "n": 35,
+      "S0_median_tokens": 102.0,
+      "S1_median_tokens": 59.0,
+      "S3_median_tokens": 52.0,
+      "s1_delta_median": -48.0,
+      "s3_delta_median": -40.0
+    },
+    {
+      "state": "111",
+      "n": 1152,
+      "S0_median_tokens": 79.0,
+      "S1_median_tokens": 48.5,
+      "S3_median_tokens": 38.0,
+      "s1_delta_median": -32.0,
+      "s3_delta_median": -42.0
+    }
+  ]
+}
