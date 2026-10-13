@@ -1,0 +1,48 @@
+{
+  "schema": "phase2-llm-rejudge-input-v1",
+  "run_id": "60011513",
+  "n_samples": 2000,
+  "conditions": [
+    "S0",
+    "SC",
+    "S1",
+    "S2",
+    "S3"
+  ],
+  "n_judgments": 10000,
+  "gold_source": "raw\\sample_manifest.json",
+  "gold_manifest_sha256": "5d2aa2b161c3ea0e79df43be09a2e8564e32e3ccdb08847cba655f20baec97c0",
+  "raw_outputs": {
+    "S0": {
+      "path": "runs\\60011513\\outputs\\S0.jsonl",
+      "sha256": "0be6f74b28d35b1184924b6d126a0719be17e9b481f4a66ffc11c046ad8c2e36"
+    },
+    "SC": {
+      "path": "runs\\60011513\\outputs\\SC.jsonl",
+      "sha256": "7124d98f8d4d29e8fcb1e5e0655e879eff703fc755b26e0f89fe3c19e642fc32"
+    },
+    "S1": {
+      "path": "runs\\60011513\\outputs\\S1.jsonl",
+      "sha256": "18ee20ab89c5d0b981b0b6302eff952a22a98572a570d35bd8c946cfd69e83d9"
+    },
+    "S2": {
+      "path": "runs\\60011513\\outputs\\S2.jsonl",
+      "sha256": "2372d066f31100ccfb4bff113447fa6ea57beacf3648d0c61311bae051cb9e14"
+    },
+    "S3": {
+      "path": "runs\\60011513\\outputs\\S3.jsonl",
+      "sha256": "b57d8c6ce3e6205d1790c4312d7bc0e1edcf4a44e8a82458fc33b1f9fe3a5cd5"
+    }
+  },
+  "condition_counts": {
+    "S0": 2000,
+    "SC": 2000,
+    "S1": 2000,
+    "S2": 2000,
+    "S3": 2000
+  },
+  "judge_requests_sha256": "9f07899dba3d4876128f5b44c6a915bf456c482c3c2a4b38ab1bc5f4bcfb1641",
+  "judge_requests_records": 10000,
+  "gold_option_sent_to_judge": false,
+  "image_sent_to_judge": false
+}
