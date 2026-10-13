@@ -25,11 +25,14 @@ RUN_ROOT="${DATA_ROOT}/pilot/runs/${SLURM_JOB_ID}"
 
 export WORK5_DATA_ROOT="${DATA_ROOT}"
 export HF_HOME="${DATA_ROOT}/hf-cache"
+export VLLM_CACHE_ROOT="${DATA_ROOT}/cache/${SLURM_JOB_ID}/vllm"
+export XDG_CACHE_HOME="${DATA_ROOT}/cache/${SLURM_JOB_ID}/xdg"
+export TORCHINDUCTOR_CACHE_DIR="${DATA_ROOT}/cache/${SLURM_JOB_ID}/torchinductor"
 export TMPDIR="/tmp"
 export PYTHONUNBUFFERED=1
 export VLLM_WORKER_MULTIPROC_METHOD=spawn
 
-mkdir -p "${RUN_ROOT}/logs" "${RUN_ROOT}/outputs"
+mkdir -p "${RUN_ROOT}/logs" "${RUN_ROOT}/outputs" "${VLLM_CACHE_ROOT}" "${XDG_CACHE_HOME}" "${TORCHINDUCTOR_CACHE_DIR}"
 cd "${FAST_REPO}"
 if find "${DATA_ROOT}/pilot/runs" -mindepth 2 -maxdepth 2 -type f -name COMPLETE -print -quit 2>/dev/null | grep -q .; then
   echo "A prior pilot already passed output verification; no duplicate pilot requests will be sent."
