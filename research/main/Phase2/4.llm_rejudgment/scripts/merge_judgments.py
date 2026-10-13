@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import hashlib
 import json
 import math
 import random
@@ -13,6 +14,14 @@ from pathlib import Path
 
 
 CONDITIONS = ["S0", "SC", "S1", "S2", "S3"]
+
+
+def sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
 
 
 def read_jsonl(path: Path):
@@ -84,6 +93,54 @@ def main() -> None:
     if len(requests) != 10000:
         raise ValueError(f"expected 10,000 frozen requests, got {len(requests)}")
 
+    shard_paths = sorted(args.judge_dir.glob("judge-shard-*.jsonl"))
+    if not shard_paths:
+        raise ValueError("no judge shard JSONL files found")
+    shard_manifests = {}
+    for path in shard_paths:
+        manifest_path = path.with_suffix(".manifest.json")
+        if not manifest_path.exists():
+            raise ValueError(f"missing shard manifest: {manifest_path}")
+        shard_manifests[path] = json.loads(manifest_path.read_text(encoding="utf-8"))
+    num_shards_values = {manifest.get("num_shards") for manifest in shard_manifests.values()}
+    shard_indices = {manifest.get("shard_index") for manifest in shard_manifests.values()}
+    if len(num_shards_values) != 1:
+        raise ValueError(f"inconsistent num_shards in manifests: {num_shards_values}")
+    num_shards = num_shards_values.pop()
+    if not isinstance(num_shards, int) or num_shards < 1:
+        raise ValueError(f"invalid num_shards in manifests: {num_shards}")
+    if shard_indices != set(range(num_shards)) or len(shard_paths) != num_shards:
+        raise ValueError(f"shard coverage failed: files={len(shard_paths)}, indices={shard_indices}, expected={num_shards}")
+    expected_keys_by_shard = {index: set() for index in range(num_shards)}
+    for index, key in enumerate(requests):
+        expected_keys_by_shard[index % num_shards].add(key)
+    expected_input_hash = sha256(args.input_freeze)
+    prompt_hashes = set()
+    model_config_hashes = set()
+    for path, manifest in shard_manifests.items():
+        index = manifest["shard_index"]
+        if path.name != f"judge-shard-{index}.jsonl":
+            raise ValueError(f"output filename/index mismatch: {path.name} vs {index}")
+        expected_conditions = Counter(requests[key]["condition"] for key in expected_keys_by_shard[index])
+        if manifest.get("input_sha256") != expected_input_hash:
+            raise ValueError(f"frozen input hash mismatch in {path}")
+        if manifest.get("selected_records") != len(expected_keys_by_shard[index]):
+            raise ValueError(f"manifest selected_records mismatch in {path}")
+        if manifest.get("successful_records") != len(expected_keys_by_shard[index]):
+            raise ValueError(f"manifest successful_records mismatch in {path}")
+        if manifest.get("selected_condition_counts") != dict(expected_conditions):
+            raise ValueError(f"manifest condition balance mismatch in {path}")
+        if manifest.get("limit_per_condition") is not None:
+            raise ValueError(f"full run manifest has a pilot limit: {path}")
+        if not manifest.get("finished_at_utc"):
+            raise ValueError(f"shard has no finished timestamp: {path}")
+        prompt_hashes.add(manifest.get("prompt_sha256"))
+        model_config_hashes.add(manifest.get("model_config_sha256"))
+    if len(prompt_hashes) != 1 or None in prompt_hashes:
+        raise ValueError(f"prompt hashes differ across shards: {prompt_hashes}")
+    if len(model_config_hashes) != 1 or None in model_config_hashes:
+        raise ValueError(f"model config hashes differ across shards: {model_config_hashes}")
+
     rules = {}
     with args.rule_per_sample.open(encoding="utf-8-sig", newline="") as handle:
         for row in csv.DictReader(handle):
@@ -97,11 +154,21 @@ def main() -> None:
     latest = {}
     technical_errors = []
     invalid_outputs = []
-    for path in sorted(args.judge_dir.glob("judge-shard-*.jsonl")):
+    first_shard_for_key = {}
+    latest_by_shard = {manifest["shard_index"]: set() for manifest in shard_manifests.values()}
+    for path in shard_paths:
+        shard_index = shard_manifests[path]["shard_index"]
         for line_no, row in read_jsonl(path):
             key = (row.get("sample_id"), row.get("condition"))
             if key not in requests:
                 raise ValueError(f"unknown output key at {path}:{line_no}: {key}")
+            expected_shard = next((i for i, keys in expected_keys_by_shard.items() if key in keys), None)
+            if expected_shard != shard_index:
+                raise ValueError(f"row routed to wrong shard at {path}:{line_no}: key={key}, expected={expected_shard}")
+            if key in first_shard_for_key and first_shard_for_key[key] != path:
+                raise ValueError(f"duplicate key across shard files: {key} in {first_shard_for_key[key]} and {path}")
+            first_shard_for_key[key] = path
+            latest_by_shard[shard_index].add(key)
             latest[key] = row
             if row.get("request_status") == "TECHNICAL_ERROR":
                 technical_errors.append({"path": str(path), "line": line_no, "key": key, "error": row.get("judge_error")})
@@ -117,6 +184,9 @@ def main() -> None:
         )
     if len(latest) != 10000:
         raise ValueError(f"expected 10,000 unique judged keys, got {len(latest)}")
+    for index, expected_keys in expected_keys_by_shard.items():
+        if latest_by_shard[index] != expected_keys:
+            raise ValueError(f"shard {index} key coverage mismatch: {len(latest_by_shard[index])}/{len(expected_keys)}")
 
     output_rows = []
     old_status_cross = Counter()
