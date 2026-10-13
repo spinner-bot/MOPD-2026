@@ -1,0 +1,150 @@
+{
+  "schema": "phase2-rule-vs-llm-rejudgment-v1",
+  "n": 10000,
+  "llm_status_counts": {
+    "ANSWERED": 9991,
+    "AMBIGUOUS": 8,
+    "NO_ANSWER": 1
+  },
+  "rule_accuracy": 0.6597,
+  "llm_accuracy": 0.8808,
+  "rule_llm_correctness_comparison": {
+    "rule_only_correct": 248,
+    "llm_only_correct": 2459,
+    "discordant_correctness": 2707,
+    "mcnemar_exact_p": 0.0,
+    "cohens_kappa_correctness": 0.284567418856678
+  },
+  "old_new_answered_n": 9991,
+  "old_new_same_answer_n": 7063,
+  "old_new_same_answer_rate_among_both_answered": 0.7069362426183565,
+  "old_parse_status_by_llm_status": {
+    "ANSWERED|AMBIGUOUS": 8,
+    "ANSWERED|ANSWERED": 9991,
+    "ANSWERED|NO_ANSWER": 1
+  },
+  "llm_evidence_validation_counts": {
+    "exact_substring": 9996,
+    "nonverbatim_optional_evidence_discarded": 3,
+    "empty_optional_evidence": 1
+  },
+  "per_condition": [
+    {
+      "condition": "S0",
+      "n": 2000,
+      "rule_accuracy": 0.616,
+      "llm_accuracy": 0.8875,
+      "llm_answered_n": 2000,
+      "llm_no_answer_n": 0,
+      "llm_ambiguous_n": 0,
+      "old_new_answer_letter_match_n": 1306,
+      "old_new_answered_both_n": 2000,
+      "old_new_answer_letter_match_rate_among_both_answered": 0.653,
+      "rule_only_correct": 52,
+      "llm_only_correct": 595,
+      "discordant_correctness": 647,
+      "mcnemar_exact_p": 8.315531734786677e-118,
+      "cohens_kappa_correctness": 0.2111680078029749
+    },
+    {
+      "condition": "SC",
+      "n": 2000,
+      "rule_accuracy": 0.6185,
+      "llm_accuracy": 0.8785,
+      "llm_answered_n": 1999,
+      "llm_no_answer_n": 0,
+      "llm_ambiguous_n": 1,
+      "old_new_answer_letter_match_n": 1305,
+      "old_new_answered_both_n": 1999,
+      "old_new_answer_letter_match_rate_among_both_answered": 0.6528264132066033,
+      "rule_only_correct": 60,
+      "llm_only_correct": 580,
+      "discordant_correctness": 640,
+      "mcnemar_exact_p": 7.934863462729958e-108,
+      "cohens_kappa_correctness": 0.2200743122944319
+    },
+    {
+      "condition": "S1",
+      "n": 2000,
+      "rule_accuracy": 0.7425,
+      "llm_accuracy": 0.8755,
+      "llm_answered_n": 1999,
+      "llm_no_answer_n": 0,
+      "llm_ambiguous_n": 1,
+      "old_new_answer_letter_match_n": 1617,
+      "old_new_answered_both_n": 1999,
+      "old_new_answer_letter_match_rate_among_both_answered": 0.8089044522261131,
+      "rule_only_correct": 38,
+      "llm_only_correct": 304,
+      "discordant_correctness": 342,
+      "mcnemar_exact_p": 1.1311349565637756e-52,
+      "cohens_kappa_correctness": 0.46206538579506556
+    },
+    {
+      "condition": "S2",
+      "n": 2000,
+      "rule_accuracy": 0.605,
+      "llm_accuracy": 0.8825,
+      "llm_answered_n": 1999,
+      "llm_no_answer_n": 0,
+      "llm_ambiguous_n": 1,
+      "old_new_answer_letter_match_n": 1285,
+      "old_new_answered_both_n": 1999,
+      "old_new_answer_letter_match_rate_among_both_answered": 0.6428214107053527,
+      "rule_only_correct": 59,
+      "llm_only_correct": 614,
+      "discordant_correctness": 673,
+      "mcnemar_exact_p": 2.1126690401736096e-117,
+      "cohens_kappa_correctness": 0.19818907487937093
+    },
+    {
+      "condition": "S3",
+      "n": 2000,
+      "rule_accuracy": 0.7165,
+      "llm_accuracy": 0.88,
+      "llm_answered_n": 1994,
+      "llm_no_answer_n": 1,
+      "llm_ambiguous_n": 5,
+      "old_new_answer_letter_match_n": 1550,
+      "old_new_answered_both_n": 1994,
+      "old_new_answer_letter_match_rate_among_both_answered": 0.7773319959879639,
+      "rule_only_correct": 39,
+      "llm_only_correct": 366,
+      "discordant_correctness": 405,
+      "mcnemar_exact_p": 9.831424195769733e-68,
+      "cohens_kappa_correctness": 0.3963512788409942
+    }
+  ],
+  "difference_records_n": 2937,
+  "technical_errors_encountered": [],
+  "invalid_outputs_encountered": [
+    {
+      "path": "research/main/Phase2/4.llm_rejudgment/raw/runs/full-v2/judge-shard-0.jsonl",
+      "line": 1282,
+      "key": [
+        "cvbench-2D-ADE20K-ADE_val_00001378.jpg-20",
+        "S1"
+      ],
+      "error": "ValueError: evidence is not an exact substring of the response"
+    },
+    {
+      "path": "research/main/Phase2/4.llm_rejudgment/raw/runs/full-v2/judge-shard-1.jsonl",
+      "line": 2096,
+      "key": [
+        "cvbench-3D-Omni3D-nuScenes/samples/CAM_FRONT/n008-2018-08-01-15-16-36-0400__CAM_FRONT__1533151616412404.jpg-1191",
+        "S3"
+      ],
+      "error": "ValueError: evidence is not an exact substring of the response"
+    },
+    {
+      "path": "research/main/Phase2/4.llm_rejudgment/raw/runs/full-v2/judge-shard-3.jsonl",
+      "line": 2373,
+      "key": [
+        "cvbench-3D-Omni3D-nuScenes/samples/CAM_FRONT/n008-2018-08-01-15-16-36-0400__CAM_FRONT__1533151735512404.jpg-1148",
+        "S3"
+      ],
+      "error": "ValueError: evidence is not an exact substring of the response"
+    }
+  ],
+  "interpretation_note": "The LLM label is an adjudication result, not an independently verified gold standard; report disagreement and manual-audit evidence separately."
+}
