@@ -1,0 +1,12 @@
+60275839       w4-judge  COMPLETED      0:0   00:14:31        lrdn0112 
+60275839.ba+      batch  COMPLETED      0:0   00:14:31        lrdn0112 
+60275839.ex+     extern  COMPLETED      0:0   00:14:31        lrdn0112 
+60275840       w4-judge  COMPLETED      0:0   00:14:40        lrdn2366 
+60275840.ba+      batch  COMPLETED      0:0   00:14:40        lrdn2366 
+60275840.ex+     extern  COMPLETED      0:0   00:14:40        lrdn2366 
+60275841       w4-judge  COMPLETED      0:0   00:14:37        lrdn2461 
+60275841.ba+      batch  COMPLETED      0:0   00:14:37        lrdn2461 
+60275841.ex+     extern  COMPLETED      0:0   00:14:37        lrdn2461 
+60275842       w4-judge  COMPLETED      0:0   00:14:27        lrdn2526 
+60275842.ba+      batch  COMPLETED      0:0   00:14:27        lrdn2526 
+60275842.ex+     extern  COMPLETED      0:0   00:14:27        lrdn2526 
