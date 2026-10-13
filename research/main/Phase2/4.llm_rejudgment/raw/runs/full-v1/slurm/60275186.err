@@ -1,0 +1,31 @@
+[transformers] The `use_fast` parameter is deprecated and will be removed in a future version. Use `backend="torchvision"` instead of `use_fast=True`, or `backend="pil"` instead of `use_fast=False`.
+[transformers] Qwen3VL video processing does not apply the per-frame pixel cap the reference implementation (qwen-vl-utils) applies, so some videos cost far more tokens than they would there. In v5.22 the capped behavior will become the default and `cap_pixels_per_frame` will be removed. Pass `cap_pixels_per_frame=True` to adopt the reference behavior now, or `False` to keep the current behavior and silence this warning.
+(EngineCore pid=2784532) <frozen importlib._bootstrap_external>:1241: FutureWarning: The cuda.cudart module is deprecated and will be removed in a future release, please switch to use the cuda.bindings.runtime module instead.
+(EngineCore pid=2784532) <frozen importlib._bootstrap_external>:1241: FutureWarning: The cuda.nvrtc module is deprecated and will be removed in a future release, please switch to use the cuda.bindings.nvrtc module instead.
+(EngineCore pid=2784532) Loading safetensors checkpoint shards:   0% Completed | 0/18 [00:00<?, ?it/s]
+(EngineCore pid=2784532) Loading safetensors checkpoint shards:   6% Completed | 1/18 [00:08<02:22,  8.40s/it]
+(EngineCore pid=2784532) Loading safetensors checkpoint shards:  11% Completed | 2/18 [00:09<01:06,  4.18s/it]
+(EngineCore pid=2784532) Loading safetensors checkpoint shards:  17% Completed | 3/18 [00:10<00:40,  2.73s/it]
+(EngineCore pid=2784532) Loading safetensors checkpoint shards:  22% Completed | 4/18 [00:12<00:31,  2.23s/it]
+(EngineCore pid=2784532) Loading safetensors checkpoint shards:  28% Completed | 5/18 [00:12<00:22,  1.74s/it]
+(EngineCore pid=2784532) Loading safetensors checkpoint shards:  33% Completed | 6/18 [00:14<00:19,  1.61s/it]
+(EngineCore pid=2784532) Loading safetensors checkpoint shards:  39% Completed | 7/18 [00:15<00:15,  1.37s/it]
+(EngineCore pid=2784532) Loading safetensors checkpoint shards:  44% Completed | 8/18 [00:16<00:13,  1.37s/it]
+(EngineCore pid=2784532) Loading safetensors checkpoint shards:  50% Completed | 9/18 [00:17<00:10,  1.20s/it]
+(EngineCore pid=2784532) Loading safetensors checkpoint shards:  56% Completed | 10/18 [00:18<00:09,  1.25s/it]
+(EngineCore pid=2784532) Loading safetensors checkpoint shards:  61% Completed | 11/18 [00:19<00:07,  1.12s/it]
+(EngineCore pid=2784532) Loading safetensors checkpoint shards:  67% Completed | 12/18 [00:20<00:07,  1.20s/it]
+(EngineCore pid=2784532) Loading safetensors checkpoint shards:  72% Completed | 13/18 [00:21<00:05,  1.08s/it]
+(EngineCore pid=2784532) Loading safetensors checkpoint shards:  78% Completed | 14/18 [00:23<00:04,  1.17s/it]
+(EngineCore pid=2784532) Loading safetensors checkpoint shards:  83% Completed | 15/18 [00:23<00:03,  1.06s/it]
+(EngineCore pid=2784532) Loading safetensors checkpoint shards:  89% Completed | 16/18 [00:25<00:02,  1.15s/it]
+(EngineCore pid=2784532) Loading safetensors checkpoint shards:  94% Completed | 17/18 [00:26<00:01,  1.05s/it]
+(EngineCore pid=2784532) Loading safetensors checkpoint shards: 100% Completed | 18/18 [00:27<00:00,  1.00it/s]
+(EngineCore pid=2784532) Loading safetensors checkpoint shards: 100% Completed | 18/18 [00:27<00:00,  1.50s/it]
+(EngineCore pid=2784532) 
+(EngineCore pid=2784532) [transformers] The `use_fast` parameter is deprecated and will be removed in a future version. Use `backend="torchvision"` instead of `use_fast=True`, or `backend="pil"` instead of `use_fast=False`.
+(EngineCore pid=2784532) Capturing CUDA graphs (PIECEWISE):   0%|          | 0/5 [00:00<?, ?it/s]Capturing CUDA graphs (PIECEWISE):  20%|██        | 1/5 [00:00<00:02,  1.99it/s]Capturing CUDA graphs (PIECEWISE):  40%|████      | 2/5 [00:00<00:00,  3.38it/s]Capturing CUDA graphs (PIECEWISE):  80%|████████  | 4/5 [00:00<00:00,  5.97it/s]Capturing CUDA graphs (PIECEWISE): 100%|██████████| 5/5 [00:00<00:00,  6.50it/s]Capturing CUDA graphs (PIECEWISE): 100%|██████████| 5/5 [00:00<00:00,  5.21it/s]
+(EngineCore pid=2784532) Capturing CUDA graphs (FULL):   0%|          | 0/2 [00:00<?, ?it/s]Capturing CUDA graphs (FULL): 100%|██████████| 2/2 [00:00<00:00, 14.01it/s]Capturing CUDA graphs (FULL): 100%|██████████| 2/2 [00:00<00:00, 13.99it/s]
+(EngineCore pid=2784532) Capturing CUDA graphs (PIECEWISE):   0%|          | 0/5 [00:00<?, ?it/s]Capturing CUDA graphs (PIECEWISE):  20%|██        | 1/5 [00:00<00:00,  6.15it/s]Capturing CUDA graphs (PIECEWISE):  60%|██████    | 3/5 [00:00<00:00,  9.64it/s]Capturing CUDA graphs (PIECEWISE): 100%|██████████| 5/5 [00:00<00:00, 10.79it/s]Capturing CUDA graphs (PIECEWISE): 100%|██████████| 5/5 [00:00<00:00, 10.13it/s]
+(EngineCore pid=2784532) Capturing CUDA graphs (FULL):   0%|          | 0/4 [00:00<?, ?it/s]Capturing CUDA graphs (FULL):  50%|█████     | 2/4 [00:00<00:00, 14.56it/s]Capturing CUDA graphs (FULL): 100%|██████████| 4/4 [00:00<00:00, 14.62it/s]Capturing CUDA graphs (FULL): 100%|██████████| 4/4 [00:00<00:00, 14.60it/s]
+[2026-10-13T10:17:57.469] error: *** JOB 60275186 ON lrdn3325 CANCELLED AT 2026-10-13T10:17:57 DUE to SIGNAL Terminated ***
