@@ -26,8 +26,11 @@ def main() -> None:
     cases = json.loads((w4 / "derived/run-60011513/transitions/rejudged_case_manifest.json").read_text(encoding="utf-8"))
     resolved = json.loads((w2 / "raw/resolved_image_manifest.json").read_text(encoding="utf-8"))
     by_id = {row["sample_id"]: row for row in resolved["records"]}
-    if len(cases) != 12 or len({row["sample_id"] for row in cases}) != 12:
-        raise ValueError("expected twelve unique corrected flip-case samples")
+    # A question may appear twice when it flips under both S1 and S3. Keep
+    # those as separate analytical cases; uniqueness is required only for the
+    # report's case indices, not for the underlying question/image IDs.
+    if len(cases) != 12 or len({row["case_index"] for row in cases}) != 12:
+        raise ValueError("expected twelve uniquely indexed corrected flip-case records")
     output = w4 / "raw/rejudged_case_images"
     output.mkdir(parents=True, exist_ok=True)
     records = []
