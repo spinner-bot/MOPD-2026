@@ -12,13 +12,19 @@
 - `report/2133-T-261014-0155-固定Revision数据清点与题数更正.md`：记录六个 track 固定 revision 的逐分片下载、源 parquet 行数及初版 HR 统计更正。
 - `report/2134-T-261014-0201-固定版本数据清单校验.md`：记录修订后的最终源行数、文件清单和哈希校验结果。
 - `report/2135-T-261014-0209-样本键与任务字段审计.md`：记录全样本主键唯一性、题型、类别与答案空间审计。
+- `report/2136-T-261014-0216-题型边界复核与五条件提示词冻结.md`：记录Zoom/MME题型边界逐项复核及v1提示词冻结。
+- `report/2136-T-261014-0222-题型边界复核与五条件提示词冻结.md`：记录Zoom数字短答和MME重复D选项边界核验，以及v1提示词文本。
 - `protocol.md`：冻结前协议草案；数据版本、题数、提示词模板、模型/推理参数、评分器版本待核验后逐项冻结。
 - `dataset_sources.tsv`：固定数据源 repository、revision 和待核验题数。
 - `scripts/fetch_pinned_datasets.py`：在服务器直接从 Hugging Face 下载固定 revision 的 parquet，并输出行数、文件大小与 SHA-256 清单；不经 SSH 传输数据。
 - `scripts/audit_dataset_schema.py`：只读取 parquet schema 和类别/任务字段（排除图像载荷），输出用于转换方案复核的字段及其分布。
 - `scripts/audit_sample_keys_and_answers.py`：扫描主键、参考答案、选项数及题型/类别分布，不读取图像载荷。
+- `scripts/audit_task_edge_cases.py`：交叉核对Zoom题型/答案格式并完整导出MME六选项边界题。
+- `scripts/prepare_pinned_benchmarks.py`：读取固定revision parquet，逐批提取图像并复现官方query构造；保留稳定UID和类别元数据。
+- `scripts/prepare_pinned_benchmarks.sbatch`：在CPU分区运行固定版数据转换。
 - `audits/`：由服务器生成并经 GitHub 中转的小型字段审计中间产物；原始图片和数据不入 Git。
 - `prompts/`：冻结后的条件提示词及按题型适配的模板；修改必须升版本并记录影响。
+- `prompts/prompt_registry-v1.json`：首版五条件完整提示词注册表；S0 的 `null` 表示不发送 system message。修改需升版本并重新记录SHA-256。
 - `scripts/`：数据清点、完整性门禁、推理编排、汇总统计与报告生成脚本。
 - `raw/`：完整原始回答、原生评分器原始输出、模型/API/Slurm 日志、数据下载 revision 和哈希。
 - `derived/`：逐题五条件合并表、逐题评分、类别统计、检验与置信区间等可重建派生产物。
