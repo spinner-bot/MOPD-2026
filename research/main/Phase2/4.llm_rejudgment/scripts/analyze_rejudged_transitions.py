@@ -46,6 +46,10 @@ def main() -> None:
     per = pd.read_csv(args.per_sample)
     tokens = pd.read_csv(args.tokens)
     token_cols = ["sample_id", "condition", "prompt_tokens", "completion_tokens", "total_tokens"]
+    # Usage extracted from the original inference JSONL is authoritative.
+    # The adjudicated per-sample table may also carry these fields, so remove
+    # its copies before joining to avoid pandas' _x/_y suffixes.
+    per = per.drop(columns=[column for column in token_cols[2:] if column in per])
     per = per.merge(tokens[token_cols], on=["sample_id", "condition"], how="inner", validate="one_to_one")
     if len(per) != 10000 or per.duplicated(["sample_id", "condition"]).any():
         raise ValueError("rejudged correctness/token join must contain exactly 10,000 unique rows")
