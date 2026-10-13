@@ -50,15 +50,26 @@ def compare(a: list[bool], b: list[bool]) -> dict:
     llm_only = sum(not x and y for x, y in zip(a, b))
     discordant = rule_only + llm_only
     if discordant == 0:
-        p = 1.0
+        p, log10_p = 1.0, 0.0
     else:
         lower_tail = min(llm_only, rule_only)
-        p = min(1.0, 2 * sum(math.comb(discordant, k) for k in range(lower_tail + 1)) / (2 ** discordant))
+        log_terms = [
+            math.lgamma(discordant + 1)
+            - math.lgamma(k + 1)
+            - math.lgamma(discordant - k + 1)
+            - discordant * math.log(2)
+            for k in range(lower_tail + 1)
+        ]
+        max_log = max(log_terms)
+        log_p = min(0.0, math.log(2) + max_log + math.log(sum(math.exp(x - max_log) for x in log_terms)))
+        log10_p = log_p / math.log(10)
+        p = math.exp(log_p) if log_p > -745 else 0.0
     return {
         "rule_only_correct": rule_only,
         "llm_only_correct": llm_only,
         "discordant_correctness": discordant,
         "mcnemar_exact_p": p,
+        "mcnemar_log10_p": log10_p,
         "cohens_kappa_correctness": cohens_kappa(a, b),
     }
 
@@ -227,6 +238,8 @@ def main() -> None:
             "source": old.get("source", ""),
             "split": old.get("split", ""),
             "gold_answer": req["gold_option"],
+            "question": req["question"],
+            "choices": json.dumps(req["choices"], ensure_ascii=False),
             "rule_parsed_answer": old_answer or "",
             "rule_answer_valid": old_answered,
             "rule_correct": old_correct,
@@ -299,6 +312,7 @@ def main() -> None:
             "condition": condition,
             "n": len(subset),
             "accuracy": sum(correct) / len(correct),
+            "accuracy_ci95": bootstrap_ci(correct, seed=261003 + condition_index),
             "valid_answer_rate": sum(row["llm_status"] == "ANSWERED" for row in subset) / len(subset),
             "strict_format_rate": sum(bool(row["strict_format"]) for row in subset) / len(subset),
             "reasoning_marker_rate": sum(bool(row["reasoning_marker"]) for row in subset) / len(subset),
