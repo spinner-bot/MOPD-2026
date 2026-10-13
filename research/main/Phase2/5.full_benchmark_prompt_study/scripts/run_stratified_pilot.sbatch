@@ -31,7 +31,7 @@ export VLLM_WORKER_MULTIPROC_METHOD=spawn
 
 mkdir -p "${RUN_ROOT}/logs" "${RUN_ROOT}/outputs"
 cd "${FAST_REPO}"
-if find "${DATA_ROOT}/pilot/runs" -mindepth 3 -maxdepth 3 -type f -name COMPLETE -print -quit 2>/dev/null | grep -q .; then
+if find "${DATA_ROOT}/pilot/runs" -mindepth 2 -maxdepth 2 -type f -name COMPLETE -print -quit 2>/dev/null | grep -q .; then
   echo "A prior pilot already passed output verification; no duplicate pilot requests will be sent."
   exit 0
 fi
