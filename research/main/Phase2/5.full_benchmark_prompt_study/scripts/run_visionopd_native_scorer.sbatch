@@ -5,11 +5,11 @@
 #SBATCH --qos=normal
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
-#SBATCH --gres=gpu:a100:1
+#SBATCH --gres=gpu:a100:2
 #SBATCH --cpus-per-task=12
 #SBATCH --mem=160G
 #SBATCH --time=1-00:00:00
-#SBATCH --array=0-29%8
+#SBATCH --array=0-29%4
 #SBATCH --output=/leonardo_scratch/large/userexternal/rqian000/MOPD-2026-work5-data/logs/native-score-%A_%a.out
 #SBATCH --error=/leonardo_scratch/large/userexternal/rqian000/MOPD-2026-work5-data/logs/native-score-%A_%a.err
 
@@ -62,6 +62,8 @@ find "${MODEL}" -maxdepth 1 -type f -name '*.safetensors' -printf '%f\t%s bytes\
   --model "${MODEL_ID}" \
   --judge_model_path "${MODEL}" \
   --judge_max_tokens 2048 \
+  --judge_tensor_parallel_size 2 \
+  --judge_max_model_len 65536 \
   2>&1 | tee "${LOG_DIR}/${CONDITION}-${TRACK}-${SLURM_JOB_ID}-judge.log"
 
 JUDGE_JSON="${TASK_ROOT}/judge/${TRACK}/${MODEL_ID}_answer.jsonl"

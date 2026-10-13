@@ -5,11 +5,11 @@
 #SBATCH --qos=normal
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
-#SBATCH --gres=gpu:a100:1
+#SBATCH --gres=gpu:a100:2
 #SBATCH --cpus-per-task=12
 #SBATCH --mem=160G
 #SBATCH --time=1-00:00:00
-#SBATCH --array=0-29%8
+#SBATCH --array=0-29%4
 #SBATCH --output=/leonardo_scratch/large/userexternal/rqian000/MOPD-2026-work5-data/logs/extract-%A_%a.out
 #SBATCH --error=/leonardo_scratch/large/userexternal/rqian000/MOPD-2026-work5-data/logs/extract-%A_%a.err
 
@@ -59,7 +59,8 @@ sha256sum "${INPUT}" "${PROMPT}" "${MODEL}/config.json" "${MODEL}/model.safetens
   --model "${MODEL}" \
   --output "${OUTPUT}" \
   --batch-size 8 \
-  --max-model-len 8192 \
+  --max-model-len 65536 \
+  --tensor-parallel-size 2 \
   --max-tokens 384 \
   --gpu-memory-utilization 0.90 \
   2>&1 | tee "${RUN_LOG_DIR}/${CONDITION}-${TRACK}-${SLURM_JOB_ID}.log"

@@ -157,7 +157,7 @@ def judge_via_api(prompts, api_base, api_key, judge_model, judge_max_tokens, par
     return results
 
 
-def judge_via_vllm(prompts, judge_model_path, judge_max_tokens):
+def judge_via_vllm(prompts, judge_model_path, judge_max_tokens, tensor_parallel_size=1, max_model_len=None):
     import torch._dynamo
 
     torch._dynamo.config.suppress_errors = True
@@ -166,7 +166,14 @@ def judge_via_vllm(prompts, judge_model_path, judge_max_tokens):
     from vllm import LLM, SamplingParams
 
     sampling_params = SamplingParams(max_tokens=judge_max_tokens, temperature=0)
-    llm = LLM(model=judge_model_path, tensor_parallel_size=1, gpu_memory_utilization=0.9)
+    llm_kwargs = {
+        "model": judge_model_path,
+        "tensor_parallel_size": tensor_parallel_size,
+        "gpu_memory_utilization": 0.9,
+    }
+    if max_model_len is not None:
+        llm_kwargs["max_model_len"] = max_model_len
+    llm = LLM(**llm_kwargs)
     tokenizer = AutoTokenizer.from_pretrained(judge_model_path)
 
     chat_prompts = []
@@ -188,6 +195,8 @@ def main():
     parser.add_argument("--api_key", default="EMPTY", type=str)
     parser.add_argument("--judge_model", default=None, type=str, help="Model name for API-based judging")
     parser.add_argument("--judge_max_tokens", default=2048, type=int)
+    parser.add_argument("--judge_tensor_parallel_size", default=1, type=int)
+    parser.add_argument("--judge_max_model_len", default=None, type=int)
     args = parser.parse_args()
 
     if not args.api_base and not args.judge_model_path:
@@ -276,7 +285,13 @@ def main():
                 prompt_lists, args.api_base, args.api_key, judge_model_name, args.judge_max_tokens
             )
         else:
-            results = judge_via_vllm(prompt_lists, args.judge_model_path, args.judge_max_tokens)
+            results = judge_via_vllm(
+                prompt_lists,
+                args.judge_model_path,
+                args.judge_max_tokens,
+                tensor_parallel_size=args.judge_tensor_parallel_size,
+                max_model_len=args.judge_max_model_len,
+            )
 
         for idx_in_llm, response_text in enumerate(results):
             original_idx = to_llm_indices[idx_in_llm]
