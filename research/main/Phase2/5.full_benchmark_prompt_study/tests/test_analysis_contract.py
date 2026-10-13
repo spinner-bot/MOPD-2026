@@ -30,6 +30,10 @@ class AnalysisContractTests(unittest.TestCase):
         adjusted = analysis.holm_adjust([0.01, 0.04, 0.03])
         self.assertEqual(adjusted, [0.03, 0.06, 0.06])
 
+    def test_spearman_handles_tied_binary_scores(self):
+        self.assertAlmostEqual(analysis.spearman_rho([1, 2, 3], [0, 1, 1]), 0.8660254037844387)
+        self.assertIsNone(analysis.spearman_rho([1, 1], [0, 1]))
+
     def test_small_complete_paired_summary(self):
         try:
             import numpy  # noqa: F401

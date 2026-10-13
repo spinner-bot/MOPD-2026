@@ -12,6 +12,7 @@ import hashlib
 import itertools
 import json
 import math
+import os
 import re
 import statistics
 from collections import Counter, defaultdict
@@ -81,13 +82,15 @@ def exact_mcnemar_p(better: int, worse: int) -> float:
     n = better + worse
     if n == 0:
         return 1.0
+    if better == worse:
+        return 1.0
     cutoff = min(better, worse)
-    log_terms = [
-        math.lgamma(n + 1) - math.lgamma(k + 1) - math.lgamma(n - k + 1) - n * math.log(2)
-        for k in range(cutoff + 1)
-    ]
-    peak = max(log_terms)
-    log_tail = peak + math.log(sum(math.exp(value - peak) for value in log_terms))
+    log_pmf = -n * math.log(2)
+    log_tail = log_pmf
+    for k in range(cutoff):
+        log_pmf += math.log(n - k) - math.log(k + 1)
+        peak = max(log_tail, log_pmf)
+        log_tail = peak + math.log1p(math.exp(min(log_tail, log_pmf) - peak))
     return min(1.0, 2.0 * math.exp(log_tail))
 
 
@@ -101,6 +104,31 @@ def holm_adjust(p_values: list[float]) -> list[float]:
         running = max(running, value)
         adjusted[index] = running
     return adjusted
+
+
+def average_ranks(values: list[float]) -> list[float]:
+    order = sorted(range(len(values)), key=values.__getitem__)
+    ranks = [0.0] * len(values)
+    start = 0
+    while start < len(order):
+        end = start + 1
+        while end < len(order) and values[order[end]] == values[order[start]]:
+            end += 1
+        rank = (start + 1 + end) / 2.0
+        for pos in range(start, end):
+            ranks[order[pos]] = rank
+        start = end
+    return ranks
+
+
+def spearman_rho(x_values: list[float], y_values: list[float]) -> float | None:
+    if len(x_values) != len(y_values) or len(x_values) < 2:
+        return None
+    x, y = average_ranks(x_values), average_ranks(y_values)
+    mx, my = statistics.mean(x), statistics.mean(y)
+    numerator = sum((a - mx) * (b - my) for a, b in zip(x, y))
+    denominator = math.sqrt(sum((a - mx) ** 2 for a in x) * sum((b - my) ** 2 for b in y))
+    return numerator / denominator if denominator else None
 
 
 def cluster_bootstrap_delta(rows: list[dict], a: str, b: str, source: str, seed: int, iterations=N_BOOTSTRAP):
@@ -143,6 +171,8 @@ def collect(data_root: Path) -> tuple[list[dict], dict]:
     if not (campaign / "output-verification.json").is_file():
         raise FileNotFoundError("Successful full-output verification marker is required")
     verification = load_json(campaign / "output-verification.json")
+    audits = {"duplicate_extraction_attempts": 0, "native_rows": 0, "extraction_rows": 0,
+              "source_files": [], "prompt_registry_sha256": verification.get("prompt_registry_sha256")}
     if verification.get("total_generation_outputs") != 160810:
         raise ValueError("Verified output manifest does not describe 160,810 full requests")
     expected_conditions = set(CONDITIONS)
@@ -150,7 +180,6 @@ def collect(data_root: Path) -> tuple[list[dict], dict]:
         raise ValueError("Full output manifest is missing one or more conditions")
 
     rows = []
-    audits = {"duplicate_extraction_attempts": 0, "native_rows": 0, "extraction_rows": 0, "source_files": []}
     audits["source_files"].append({"role": "full_output_verification", "path": str(campaign / "output-verification.json"),
                                    "sha256": sha256_file(campaign / "output-verification.json")})
     for track in TRACKS:
@@ -346,6 +375,22 @@ def summarize(rows: list[dict], seed: int) -> dict[str, list[dict]]:
             (r["condition"], r["track"], str(r["extraction_status"]), str(r["extraction_reason"])) for r in rows
         ).items())
     ]
+    association_scopes = [("micro_all", None, rows)]
+    association_scopes.extend(("track", track, [row for row in rows if row["track"] == track]) for track in TRACKS)
+    for scope_name, scope_value, scope_rows in association_scopes:
+        for condition in CONDITIONS:
+            group = [row for row in scope_rows if row["condition"] == condition]
+            for metric in ("response_chars", "response_words", "completion_tokens", "total_api_tokens"):
+                for source in ("native", "extraction"):
+                    selected = [row for row in group if isinstance(row[metric], (int, float))]
+                    tables["length_accuracy_association"].append({
+                        "scope": scope_name, "stratum": scope_value or "all_tracks", "condition": condition,
+                        "length_metric": metric, "score_source": source, "n": len(selected),
+                        "spearman_rho": spearman_rho(
+                            [row[metric] for row in selected],
+                            [row[f"{source}_correct"] for row in selected],
+                        ),
+                    })
     for source in ("native", "extraction"):
         for metric in ("response_chars", "response_words", "completion_tokens"):
             groups = defaultdict(list)
@@ -371,16 +416,19 @@ def main() -> None:
     output = args.data_root / "derived" / args.output-version
     if output.exists():
         raise FileExistsError(f"Refusing to overwrite derived analysis: {output}")
+    staging = output.parent / f".building-{args.output_version}-{os.environ.get('SLURM_JOB_ID', os.getpid())}"
+    if staging.exists():
+        raise FileExistsError(f"Refusing to overwrite incomplete prior analysis staging area: {staging}")
     rows, audit = collect(args.data_root)
     tables = summarize(rows, args.seed)
-    output.mkdir(parents=True, exist_ok=False)
-    write_csv(output / "sample_level_merged.csv", rows)
+    staging.mkdir(parents=True, exist_ok=False)
+    write_csv(staging / "sample_level_merged.csv", rows)
     for name, values in tables.items():
-        write_csv(output / f"{name}.csv", values)
+        write_csv(staging / f"{name}.csv", values)
     manifest = {
         "schema": "phase2-work5-statistics-v1", "input_verification": CAMPAIGN,
         "tracks": list(TRACKS), "conditions": list(CONDITIONS),
-        "prompt_registry_sha256": verification.get("prompt_registry_sha256"),
+        "prompt_registry_sha256": audit["prompt_registry_sha256"],
         "joined_records": len(rows), "seed": args.seed, "bootstrap_iterations": N_BOOTSTRAP,
         "paired_comparison_method": "two-sided exact McNemar; Holm-adjusted within each score source and scope",
         "confidence_intervals": "paired cluster bootstrap by image; 95 percent percentile interval",
@@ -388,7 +436,8 @@ def main() -> None:
         "audit": audit,
         "interpretation": "No pooled score should replace benchmark-stratified results; report micro and equal-track macro summaries separately.",
     }
-    (output / "analysis-manifest.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    (staging / "analysis-manifest.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    staging.rename(output)
     print(f"PASS: analyzed {len(rows)} joined condition-sample records; wrote {len(tables)} aggregate tables to {output}")
 
 
