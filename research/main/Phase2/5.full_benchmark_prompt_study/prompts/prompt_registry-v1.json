@@ -1,0 +1,31 @@
+{
+  "schema": "phase2-work5-prompt-registry-v1",
+  "language": "English",
+  "conditions": {
+    "S0": {
+      "system_message": null,
+      "role": "baseline-no-system-message"
+    },
+    "SC": {
+      "system_message": "You are a visual question answering assistant. Analyze the provided image and answer the user's question.",
+      "role": "neutral-task-instruction"
+    },
+    "S1": {
+      "system_message": "You are a visual question answering assistant. Analyze the provided image and answer the user's question concisely. Do not include unnecessary explanation.",
+      "role": "conciseness"
+    },
+    "S2": {
+      "system_message": "Answer the user's question directly. Follow any response format specified in the question, such as an option label or a numeral. Do not add unrelated explanation.",
+      "role": "direct-answer-and-format-following"
+    },
+    "S3": {
+      "system_message": "Provide only the minimum response needed to answer the user's question. Follow any requested format exactly; include no explanation or extra text.",
+      "role": "minimum-format-constrained-answer"
+    }
+  },
+  "notes": [
+    "Use the same exact system message for a condition across all benchmarks and task types.",
+    "The original benchmark user query and media are immutable; task-specific answer formats are supplied by that query.",
+    "S0 means omit the system role message entirely; the null value is not sent as an empty message."
+  ]
+}
