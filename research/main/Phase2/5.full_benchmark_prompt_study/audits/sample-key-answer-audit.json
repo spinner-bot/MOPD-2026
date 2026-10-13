@@ -1,0 +1,246 @@
+{
+  "vstar": {
+    "rows": 191,
+    "key_field": "question_id",
+    "unique_nonempty_keys": 191,
+    "missing_keys": 0,
+    "duplicate_keys": 0,
+    "field_counts": {
+      "label": {
+        "A": 71,
+        "B": 70,
+        "C": 27,
+        "D": 23
+      },
+      "category": {
+        "direct_attributes": 115,
+        "relative_position": 76
+      }
+    }
+  },
+  "zoombench": {
+    "rows": 845,
+    "key_field": "id",
+    "unique_nonempty_keys": 845,
+    "missing_keys": 0,
+    "duplicate_keys": 0,
+    "field_counts": {
+      "question_type": {
+        "blank": 224,
+        "mcq": 621
+      },
+      "response": {
+        "1": 6,
+        "10": 3,
+        "11": 4,
+        "12": 1,
+        "14": 4,
+        "18": 1,
+        "2": 63,
+        "3": 48,
+        "4": 42,
+        "5": 21,
+        "6": 13,
+        "7": 7,
+        "8": 9,
+        "9": 2,
+        "A": 178,
+        "B": 149,
+        "C": 159,
+        "D": 135
+      }
+    }
+  },
+  "hrbench-4k": {
+    "rows": 800,
+    "key_field": "index",
+    "unique_nonempty_keys": 800,
+    "missing_keys": 0,
+    "duplicate_keys": 0,
+    "field_counts": {
+      "answer": {
+        "A": 200,
+        "B": 200,
+        "C": 200,
+        "D": 200
+      },
+      "category": {
+        "cross": 400,
+        "single": 400
+      },
+      "cycle_category": {
+        "0": 200,
+        "1": 200,
+        "2": 200,
+        "3": 200
+      }
+    }
+  },
+  "hrbench-8k": {
+    "rows": 800,
+    "key_field": "index",
+    "unique_nonempty_keys": 800,
+    "missing_keys": 0,
+    "duplicate_keys": 0,
+    "field_counts": {
+      "answer": {
+        "A": 200,
+        "B": 200,
+        "C": 200,
+        "D": 200
+      },
+      "category": {
+        "cross": 400,
+        "single": 400
+      },
+      "cycle_category": {
+        "0": 200,
+        "1": 200,
+        "2": 200,
+        "3": 200
+      }
+    }
+  },
+  "mme-realworld": {
+    "rows": 23609,
+    "key_field": "index",
+    "unique_nonempty_keys": 23609,
+    "missing_keys": 0,
+    "duplicate_keys": 0,
+    "field_counts": {
+      "answer": {
+        "A": 6117,
+        "B": 6155,
+        "C": 5752,
+        "D": 4942,
+        "E": 643
+      },
+      "category": {
+        "Perception/Autonomous_Driving": 3660,
+        "Perception/Diagram and Table": 5433,
+        "Perception/Monitoring": 2196,
+        "Perception/OCR with Complex Context": 5740,
+        "Perception/Remote Sensing": 3738,
+        "Reasoning/Autonomous_Driving": 1344,
+        "Reasoning/Diagram and Table": 500,
+        "Reasoning/Monitoring": 498,
+        "Reasoning/OCR with Complex Context": 500
+      },
+      "l2-category": {
+        "Attention_TrafficSignal": 217,
+        "Attribute_Motion_MultiPedestrians": 493,
+        "Attribute_Motion_MultiVehicles": 823,
+        "Attribute_Motion_Pedestrain": 164,
+        "Attribute_Motion_Vehicle": 158,
+        "Attribute_Visual_TrafficSignal": 201,
+        "Character Identification": 250,
+        "Object_Count": 720,
+        "Objects_Identify": 1101,
+        "Person/counting": 28,
+        "Prediction_Intention_Ego": 304,
+        "Prediction_Intention_Pedestrian": 103,
+        "Prediction_Intention_Vehicle": 207,
+        "Relation_Interaction_Ego2Pedestrain": 106,
+        "Relation_Interaction_Ego2TrafficSignal": 105,
+        "Relation_Interaction_Ego2Vehicle": 101,
+        "Relation_Interaction_Other2Other": 201,
+        "Scene Understanding": 250,
+        "Vehicle/counting": 255,
+        "adver_and_product": 1558,
+        "book_map_poster": 1555,
+        "calculate": 300,
+        "color": 1255,
+        "count": 1226,
+        "diagram": 1589,
+        "intention": 98,
+        "license": 852,
+        "person/attribute/color": 89,
+        "person/attribute/orientation": 19,
+        "person/counting": 964,
+        "phone_and_address": 577,
+        "position": 1257,
+        "property": 100,
+        "table": 4344,
+        "text_recog": 1198,
+        "vehicle/attribute/color": 197,
+        "vehicle/attribute/orientation": 155,
+        "vehicle/counting": 353,
+        "vehicle/location": 136
+      },
+      "multi-choice options": {
+        "n=5": 23587,
+        "n=6": 22
+      }
+    }
+  },
+  "mme-realworld-cn": {
+    "rows": 5917,
+    "key_field": "index",
+    "unique_nonempty_keys": 5917,
+    "missing_keys": 0,
+    "duplicate_keys": 0,
+    "field_counts": {
+      "answer": {
+        "A": 1470,
+        "B": 1481,
+        "C": 1477,
+        "D": 1302,
+        "E": 187
+      },
+      "category": {
+        "Perception/Autonomous_Driving": 700,
+        "Perception/Diagram and Table": 602,
+        "Perception/Monitoring": 500,
+        "Perception/OCR with Complex Context": 1908,
+        "Perception/Remote Sensing": 300,
+        "Reasoning/Autonomous_Driving": 800,
+        "Reasoning/Diagram and Table": 602,
+        "Reasoning/Monitoring": 298,
+        "Reasoning/OCR with Complex Context": 207
+      },
+      "l2-category": {
+        "Attention_TrafficSignal": 100,
+        "Attribute_Motion_MultiPedestrians": 100,
+        "Attribute_Motion_MultiVehicles": 100,
+        "Attribute_Motion_Pedestrian": 100,
+        "Attribute_Motion_Vehicle": 100,
+        "Attribute_Visual_TrafficSignal": 100,
+        "Character Identification": 100,
+        "Diagram": 602,
+        "Object_Count": 100,
+        "Objects_Identify": 100,
+        "Prediction_Intention_Ego": 100,
+        "Prediction_Intention_Pedestrian": 100,
+        "Prediction_Intention_Vehicle": 100,
+        "Relation_Interaction_Ego2Pedestrian": 100,
+        "Relation_Interaction_Ego2TrafficSignal": 100,
+        "Relation_Interaction_Ego2Vehicle": 100,
+        "Relation_Interaction_Other2Other": 100,
+        "Scene Understanding": 107,
+        "Table": 602,
+        "adver_and_product": 515,
+        "book_map_poster": 420,
+        "calculate": 100,
+        "color": 100,
+        "count": 100,
+        "intention": 98,
+        "license": 83,
+        "person/attribute/color": 88,
+        "person/attribute/orientation": 12,
+        "person/counting": 100,
+        "phone_and_address": 408,
+        "position": 100,
+        "property": 100,
+        "text_recog": 482,
+        "vehicle/attribute/color": 71,
+        "vehicle/attribute/orientation": 29,
+        "vehicle/counting": 100,
+        "vehicle/location": 100
+      },
+      "multi-choice options": {
+        "n=5": 5909,
+        "n=6": 8
+      }
+    }
+  }
+}
