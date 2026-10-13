@@ -13,6 +13,7 @@
     "llm_only_correct": 2459,
     "discordant_correctness": 2707,
     "mcnemar_exact_p": 0.0,
+    "mcnemar_log10_p": -456.0701713085448,
     "cohens_kappa_correctness": 0.284567418856678
   },
   "old_new_answered_n": 9991,
@@ -43,7 +44,8 @@
       "rule_only_correct": 52,
       "llm_only_correct": 595,
       "discordant_correctness": 647,
-      "mcnemar_exact_p": 8.315531734786677e-118,
+      "mcnemar_exact_p": 8.315531734783386e-118,
+      "mcnemar_log10_p": -117.08010997469475,
       "cohens_kappa_correctness": 0.2111680078029749
     },
     {
@@ -60,7 +62,8 @@
       "rule_only_correct": 60,
       "llm_only_correct": 580,
       "discordant_correctness": 640,
-      "mcnemar_exact_p": 7.934863462729958e-108,
+      "mcnemar_exact_p": 7.934863462728249e-108,
+      "mcnemar_log10_p": -107.10046054186361,
       "cohens_kappa_correctness": 0.2200743122944319
     },
     {
@@ -77,7 +80,8 @@
       "rule_only_correct": 38,
       "llm_only_correct": 304,
       "discordant_correctness": 342,
-      "mcnemar_exact_p": 1.1311349565637756e-52,
+      "mcnemar_exact_p": 1.1311349565637895e-52,
+      "mcnemar_log10_p": -51.946485575981384,
       "cohens_kappa_correctness": 0.46206538579506556
     },
     {
@@ -94,7 +98,8 @@
       "rule_only_correct": 59,
       "llm_only_correct": 614,
       "discordant_correctness": 673,
-      "mcnemar_exact_p": 2.1126690401736096e-117,
+      "mcnemar_exact_p": 2.112669040174862e-117,
+      "mcnemar_log10_p": -116.67516853195076,
       "cohens_kappa_correctness": 0.19818907487937093
     },
     {
@@ -111,7 +116,8 @@
       "rule_only_correct": 39,
       "llm_only_correct": 366,
       "discordant_correctness": 405,
-      "mcnemar_exact_p": 9.831424195769733e-68,
+      "mcnemar_exact_p": 9.831424195773602e-68,
+      "mcnemar_log10_p": -67.00738356501999,
       "cohens_kappa_correctness": 0.3963512788409942
     }
   ],
