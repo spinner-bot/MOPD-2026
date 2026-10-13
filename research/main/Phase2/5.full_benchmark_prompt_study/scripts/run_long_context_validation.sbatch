@@ -28,7 +28,9 @@ export XDG_CACHE_HOME="${DATA_ROOT}/cache/${SLURM_JOB_ID}/xdg"
 export TORCHINDUCTOR_CACHE_DIR="${DATA_ROOT}/cache/${SLURM_JOB_ID}/torchinductor"
 export TMPDIR="/tmp" PYTHONUNBUFFERED=1 VLLM_WORKER_MULTIPROC_METHOD=spawn
 export VLLM_USE_FLASHINFER_SAMPLER=0 HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1
+set +euo pipefail
 source /etc/profile
+set -euo pipefail
 module load cuda/12.6
 cd "${FAST_REPO}"
 
