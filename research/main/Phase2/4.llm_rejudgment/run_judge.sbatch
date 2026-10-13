@@ -28,6 +28,7 @@ OUTPUT="${WORK}/raw/runs/${RUN_TAG}/judge-shard-${SHARD_INDEX}.jsonl"
 mkdir -p "$(dirname "${OUTPUT}")" /leonardo_scratch/large/userexternal/rqian000/Phase2/llm_rejudgment/logs
 cd "${REPO}"
 export VLLM_WORKER_MULTIPROC_METHOD=spawn
+export VLLM_USE_FLASHINFER_SAMPLER=0
 export HF_HUB_OFFLINE=1
 export TRANSFORMERS_OFFLINE=1
 
