@@ -7,7 +7,11 @@
 ## 当前交付与目录约定
 
 - `report/2130-T-261014-0101-Phase2工作5全量五模式评测实施方案.md`：启动阶段方法报告及工作流程；后续所有关键进展、偏差、结果与交付在本工作报告序列中续记。
+- `report/2131-T-261014-0116-CINECA工作存储与GitHub连接诊断.md`：记录存储挂载异常及替代路径。
+- `report/2132-T-261014-0136-数据源与服务器恢复检查.md`：记录本轮恢复后的服务器、模型、队列和固定 revision 数据审计进度。
 - `protocol.md`：冻结前协议草案；数据版本、题数、提示词模板、模型/推理参数、评分器版本待核验后逐项冻结。
+- `dataset_sources.tsv`：固定数据源 repository、revision 和待核验题数。
+- `scripts/fetch_pinned_datasets.py`：在服务器直接从 Hugging Face 下载固定 revision 的 parquet，并输出行数、文件大小与 SHA-256 清单；不经 SSH 传输数据。
 - `prompts/`：冻结后的条件提示词及按题型适配的模板；修改必须升版本并记录影响。
 - `scripts/`：数据清点、完整性门禁、推理编排、汇总统计与报告生成脚本。
 - `raw/`：完整原始回答、原生评分器原始输出、模型/API/Slurm 日志、数据下载 revision 和哈希。
