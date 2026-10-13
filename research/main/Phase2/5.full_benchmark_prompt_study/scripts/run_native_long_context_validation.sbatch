@@ -34,35 +34,9 @@ module load cuda/12.6
 cd "${FAST_REPO}"
 nvidia-smi
 
-"${PYTHON}" - "${FAST_REPO}" "${MODEL}" "${PREPARED}" "${INPUT}" "${OUTPUT}" <<'PY'
-import hashlib, json, re, sys
-from pathlib import Path
-repo, model, prepared, input_path, output_path = map(Path, sys.argv[1:])
-sys.path.insert(0, str(repo / "reproduction" / "1. Vision-OPD" / "code" / "eval"))
-from judge_qwenlm import PROMPT_TEMPLATE, judge_via_vllm
-
-request = json.loads(input_path.read_text(encoding="utf-8").splitlines()[0])
-source_rows = json.loads(prepared.read_text(encoding="utf-8"))
-source = next(row for row in source_rows if row["sample_uid"] == request["sample_uid"])
-response = request["model_response"]
-question = request["query"].replace("<image>", "")
-prompt = PROMPT_TEMPLATE.format(gt=source["response"], response=response, question=question)
-digest = hashlib.sha256(response.encode("utf-8")).hexdigest()
-result = judge_via_vllm(
-    [prompt], str(model), 2048, tensor_parallel_size=2, max_model_len=65536
-)
-if len(result) != 1 or not result[0].strip():
-    raise SystemExit(f"Native judge returned no response: {result!r}")
-if digest != request["model_response_sha256"]:
-    raise SystemExit("Native judge input response does not match the full pilot answer hash")
-payload = {
-    "sample_uid": request["sample_uid"], "condition": request["condition"],
-    "track": request["track"], "judge_output": result[0],
-    "judge_response": "Yes" if re.search(r"\byes\b", result[0], re.I) else "No/other",
-    "input_response_chars": len(response), "input_response_sha256": digest,
-    "prompt_chars": len(prompt), "tensor_parallel_size": 2, "max_model_len": 65536,
-}
-output_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-print(json.dumps({"status": "PASS", "judge_output": result[0], "response_chars": len(response),
-                  "prompt_chars": len(prompt), "sha256_matches": True}, ensure_ascii=False))
-PY
+"${PYTHON}" "${FAST_REPO}/research/main/Phase2/5.full_benchmark_prompt_study/scripts/validate_native_long_context.py" \
+  --repository "${FAST_REPO}" \
+  --model "${MODEL}" \
+  --prepared "${PREPARED}" \
+  --input "${INPUT}" \
+  --output "${OUTPUT}"
