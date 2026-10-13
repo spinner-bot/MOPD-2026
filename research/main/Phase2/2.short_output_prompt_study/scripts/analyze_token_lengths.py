@@ -50,6 +50,12 @@ def main() -> None:
     usage_df = pd.DataFrame(usage_rows)
     if len(usage_df) != 10000 or usage_df.duplicated(["sample_id", "condition"]).any():
         raise ValueError("usage records are not exactly one complete paired record per condition")
+    # Token fields in the adjudicated table are convenient for other analyses,
+    # but the inference output usage is authoritative. Avoid pandas' automatic
+    # _x/_y suffixes when both inputs already contain these columns.
+    per_sample = per_sample.drop(
+        columns=[column for column in ("prompt_tokens", "completion_tokens", "total_tokens") if column in per_sample]
+    )
     merged = per_sample.merge(usage_df, on=["sample_id", "condition"], how="inner", validate="one_to_one")
     if len(merged) != len(per_sample):
         raise ValueError("usage/per-sample join is incomplete")
