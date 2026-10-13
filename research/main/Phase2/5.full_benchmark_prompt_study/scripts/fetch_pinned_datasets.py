@@ -59,9 +59,10 @@ def main() -> None:
                 cache_dir=str(cache / "hub"),
                 allow_patterns=parquet_patterns + ["README.md", "*.json", "**/*.json"],
             )
-            matching = sorted(target.glob(parquet_pattern))
-            if not matching and parquet_pattern.startswith("**/"):
-                matching = sorted(target.glob(parquet_pattern.removeprefix("**/")))
+            if row["benchmark"].startswith("hrbench-"):
+                matching = sorted(target.rglob(Path(parquet_pattern).name))
+            else:
+                matching = sorted(target.rglob("*.parquet"))
             for path in matching:
                 metadata = pq.ParquetFile(path).metadata
                 manifest.append({
