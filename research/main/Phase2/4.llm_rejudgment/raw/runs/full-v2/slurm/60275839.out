@@ -1,0 +1,456 @@
+host=lrdn0112.leonardo.local job=60275839 tag=full-v2 shard=0/4
+INFO 10-13 10:23:39 [api_utils.py:286] non-default args: {'trust_remote_code': True, 'dtype': 'bfloat16', 'max_model_len': 8192, 'max_num_batched_tokens': 16384, 'max_num_seqs': 8, 'model': '/leonardo_scratch/large/userexternal/rqian000/models/Qwen3.8-27B'}
+INFO 10-13 10:23:44 [model.py:692] Resolved architecture: Qwen3_5ForConditionalGeneration
+INFO 10-13 10:23:44 [model.py:2030] Using max model len 8192
+WARNING 10-13 10:23:44 [model.py:994] Model does not support mm_device_do_normalize, forcing mm_device_do_normalize = False.
+INFO 10-13 10:23:47 [scheduler.py:288] Chunked prefill is enabled with max_num_batched_tokens=16384.
+INFO 10-13 10:23:47 [config.py:625] Mamba cache mode is set to 'align' for Qwen3_5ForConditionalGeneration by default when prefix caching is enabled
+INFO 10-13 10:23:47 [kernel.py:416] Final IR op priority after setting platform defaults: IrOpPriorityConfig(rms_norm=['native'], fused_add_rms_norm=['native'], gelu_and_mul_sparse=['triton', 'native'])
+(EngineCore pid=2005420) INFO 10-13 10:24:09 [core.py:123] Initializing a V1 LLM engine (v0.30.0) with config: model='/leonardo_scratch/large/userexternal/rqian000/models/Qwen3.8-27B', speculative_config=None, tokenizer='/leonardo_scratch/large/userexternal/rqian000/models/Qwen3.8-27B', skip_tokenizer_init=False, tokenizer_mode=auto, revision=None, tokenizer_revision=None, trust_remote_code=True, dtype=torch.bfloat16, max_seq_len=8192, download_dir=None, load_format=auto, tensor_parallel_size=1, pipeline_parallel_size=1, data_parallel_size=1, decode_context_parallel_size=1, dcp_comm_backend=ag_rs, disable_custom_all_reduce=False, quantization=None, quantization_config=None, enforce_eager=False, enable_return_routed_experts=False, kv_cache_dtype=auto, device_config=cuda, structured_outputs_config=StructuredOutputsConfig(backend='auto', disable_any_whitespace=False, disable_additional_properties=False, reasoning_parser='', reasoning_parser_plugin='', enable_in_reasoning=False), observability_config=ObservabilityConfig(show_hidden_metrics_for_version=None, otlp_traces_endpoint=None, collect_detailed_traces=None, per_request_spec_decode_metrics='none', kv_cache_metrics=False, kv_cache_metrics_sample=0.01, cudagraph_metrics=False, enable_layerwise_nvtx_tracing=False, enable_mfu_metrics=False, enable_mm_processor_stats=False, enable_logging_iteration_details=False, jit_monitor_mode='warn', jit_monitor_verbose=False), seed=0, served_model_name=/leonardo_scratch/large/userexternal/rqian000/models/Qwen3.8-27B, enable_prefix_caching=True, enable_chunked_prefill=True, pooler_config=None, compilation_config={'mode': <CompilationMode.VLLM_COMPILE: 3>, 'debug_dump_path': None, 'cache_dir': '', 'compile_cache_save_format': 'binary', 'backend': 'inductor', 'custom_ops': ['none'], 'ir_enable_torch_wrap': True, 'splitting_ops': ['vllm::unified_attention_with_output', 'vllm::unified_mla_attention_with_output', 'vllm::mamba_mixer2', 'vllm::mamba_mixer', 'vllm::short_conv', 'vllm::qwen4_exp_ple_short_conv', 'vllm::qwen4_exp_qsa_with_output', 'vllm::linear_attention', 'vllm::qwen_gdn_attention_core', 'vllm::qwen_gdn_attention_core_fused_norm_packed', 'vllm::gdn_attention_core_xpu', 'vllm::olmo_hybrid_gdn_full_forward', 'vllm::sparse_attn_indexer', 'vllm::rocm_aiter_sparse_attn_indexer', 'vllm::deepseek_v4_attention', 'vllm::hpc_rope_norm_forward', 'vllm::unified_kv_cache_update', 'vllm::unified_mla_kv_cache_update'], 'compile_mm_encoder': False, 'cudagraph_mm_encoder': False, 'encoder_cudagraph_token_budgets': [], 'encoder_cudagraph_max_vision_items_per_batch': 0, 'encoder_cudagraph_max_frames_per_batch': None, 'compile_sizes': [], 'compile_ranges_endpoints': [16384], 'inductor_compile_config': {'enable_auto_functionalized_v2': False, 'combo_kernels': True, 'benchmark_combo_kernel': True}, 'inductor_passes': {}, 'cudagraph_mode': <CUDAGraphMode.FULL_AND_PIECEWISE: (2, 1)>, 'cudagraph_num_of_warmups': 1, 'cudagraph_capture_sizes': [1, 2, 4, 8, 16], 'cudagraph_copy_inputs': False, 'cudagraph_specialize_lora': True, 'use_inductor_graph_partition': False, 'pass_config': {'fuse_norm_quant': False, 'fuse_act_quant': False, 'fuse_attn_quant': False, 'enable_sp': False, 'fuse_gemm_comms': False, 'fuse_allreduce_rms': False, 'enable_qk_norm_rope_fusion': False, 'fuse_rope_kvcache_cat_mla': False, 'fuse_act_padding': False, 'fuse_qk_norm_rope_kvcache': False}, 'max_cudagraph_capture_size': 16, 'dynamic_shapes_config': {'type': <DynamicShapesType.BACKED: 'backed'>, 'evaluate_guards': False, 'assume_32_bit_indexing': False}, 'local_cache_dir': None, 'fast_moe_cold_start': False, 'static_all_moe_layers': []}, kernel_config=KernelConfig(ir_op_priority=IrOpPriorityConfig(rms_norm=['native'], fused_add_rms_norm=['native'], gelu_and_mul_sparse=['triton', 'native']), enable_flashinfer_autotune=True, enable_cutedsl_warmup=True, enable_jit_warmup=True, moe_backend='auto', sparse_indexer_topk_backend='auto', linear_backend='auto', linear_backend_per_quant=None)
+INFO 10-13 10:24:10 [base.py:261] Multi-modal warmup completed in 15.108s
+(EngineCore pid=2005420) INFO 10-13 10:24:12 [parallel_state.py:1827] world_size=1 rank=0 local_rank=0 distributed_init_method=file:///tmp/vllm_dist_3c443ce826094862b53b75ca97ca261d backend=nccl
+INFO 10-13 10:24:12 [base.py:261] Readonly multi-modal warmup completed in 1.663s
+(EngineCore pid=2005420) INFO 10-13 10:24:12 [parallel_state.py:2267] rank 0 in world size 1 is assigned as DP rank 0, PP rank 0, PCP rank 0, TP rank 0, ETP rank 0, EP rank N/A, EPLB rank N/A
+(EngineCore pid=2005420) INFO 10-13 10:24:12 [gpu_worker.py:441] Using V2 Model Runner
+(EngineCore pid=2005420) INFO 10-13 10:24:13 [model_runner.py:396] Loading model from scratch...
+(EngineCore pid=2005420) INFO 10-13 10:24:13 [cuda.py:597] Using backend AttentionBackendEnum.FLASH_ATTN for vit attention
+(EngineCore pid=2005420) INFO 10-13 10:24:13 [mm_encoder_attention.py:372] Using AttentionBackendEnum.FLASH_ATTN for MMEncoderAttention.
+(EngineCore pid=2005420) INFO 10-13 10:24:13 [qwen_gdn_linear_attn.py:176] Using Triton/FLA GDN prefill kernel (requested=auto, head_k_dim=128).
+(EngineCore pid=2005420) INFO 10-13 10:24:13 [qwen_gdn_linear_attn.py:520] Falling back to the Triton GDN decode path: torch.ops._C.fused_gdn_decode_post_conv_mtp is not built
+(EngineCore pid=2005420) INFO 10-13 10:24:13 [qwen_gdn_linear_attn.py:528] GDN decode kernel: triton
+(EngineCore pid=2005420) INFO 10-13 10:24:15 [cuda.py:538] Using FLASH_ATTN attention backend out of potential backends: ['FLASH_ATTN', 'FLASHINFER', 'TRITON_ATTN', 'FLEX_ATTENTION'].
+(EngineCore pid=2005420) INFO 10-13 10:24:15 [flash_attn.py:1116] Using FlashAttention version 2
+(EngineCore pid=2005420) INFO 10-13 10:24:16 [weight_utils.py:895] Filesystem type for checkpoints: LUSTRE. Checkpoint size: 51.75 GiB. Available RAM: 446.15 GiB.
+(EngineCore pid=2005420) INFO 10-13 10:24:16 [weight_utils.py:857] Prefetching checkpoint files into page cache started (in background, num_threads=8, block_size=16777216 bytes)
+(EngineCore pid=2005420) INFO 10-13 10:24:18 [weight_utils.py:829] Prefetching checkpoint files: 10% (2/18)
+(EngineCore pid=2005420) INFO 10-13 10:24:19 [weight_utils.py:829] Prefetching checkpoint files: 20% (4/18)
+(EngineCore pid=2005420) INFO 10-13 10:24:20 [weight_utils.py:829] Prefetching checkpoint files: 30% (6/18)
+(EngineCore pid=2005420) INFO 10-13 10:24:22 [weight_utils.py:829] Prefetching checkpoint files: 40% (8/18)
+(EngineCore pid=2005420) INFO 10-13 10:24:22 [weight_utils.py:829] Prefetching checkpoint files: 50% (9/18)
+(EngineCore pid=2005420) INFO 10-13 10:24:23 [weight_utils.py:829] Prefetching checkpoint files: 60% (11/18)
+(EngineCore pid=2005420) INFO 10-13 10:24:24 [weight_utils.py:829] Prefetching checkpoint files: 70% (13/18)
+(EngineCore pid=2005420) INFO 10-13 10:24:26 [weight_utils.py:829] Prefetching checkpoint files: 80% (15/18)
+(EngineCore pid=2005420) INFO 10-13 10:24:30 [weight_utils.py:829] Prefetching checkpoint files: 90% (17/18)
+(EngineCore pid=2005420) INFO 10-13 10:24:31 [weight_utils.py:829] Prefetching checkpoint files: 100% (18/18)
+(EngineCore pid=2005420) INFO 10-13 10:24:31 [weight_utils.py:852] Prefetching checkpoint files into page cache finished in 15.19s
+(EngineCore pid=2005420) INFO 10-13 10:24:47 [default_loader.py:430] Loading weights took 31.34 seconds
+(EngineCore pid=2005420) INFO 10-13 10:24:47 [model_runner.py:428] Model loading took 51.1 GiB memory and 34.994268 seconds
+(EngineCore pid=2005420) INFO 10-13 10:24:48 [topk_topp_sampler.py:62] FlashInfer top-p/top-k sampling disabled via VLLM_USE_FLASHINFER_SAMPLER=0.
+(EngineCore pid=2005420) INFO 10-13 10:24:48 [interface.py:933] Setting attention block size to 784 tokens to ensure that attention page size is >= mamba page size.
+(EngineCore pid=2005420) INFO 10-13 10:24:48 [interface.py:957] Padding mamba page size by 0.13% to ensure that mamba page size and attention page size are exactly equal.
+(EngineCore pid=2005420) INFO 10-13 10:24:48 [utils.py:320] Using LBNHC KV cache layout.
+(EngineCore pid=2005420) INFO 10-13 10:24:53 [encoder_runner.py:131] Encoder cache will be initialized with a budget of 16384 tokens, and profiled with 1 image items of the maximum feature size.
+(EngineCore pid=2005420) INFO 10-13 10:25:00 [caching.py:343] reconstructed serializable fn from standalone compile artifacts. num_artifacts=21 num_submods=65
+(EngineCore pid=2005420) INFO 10-13 10:25:01 [decorators.py:313] Directly load AOT compilation from path /leonardo/home/userexternal/rqian000/.cache/vllm/torch_compile_cache/torch_aot_compile/17051bd4d62daf36a5704bd3c53af30e74d02e1a71219b9af0e389c91b4939d6/rank_0_0/model
+(EngineCore pid=2005420) INFO 10-13 10:25:01 [monitor.py:53] torch.compile took 0.77 s in total
+(EngineCore pid=2005420) INFO 10-13 10:25:04 [monitor.py:81] Initial profiling/warmup run took 3.17 s
+(EngineCore pid=2005420) INFO 10-13 10:25:06 [model_runner.py:1066] Graph capturing finished in 2 secs, took 0.46 GiB
+(EngineCore pid=2005420) INFO 10-13 10:25:07 [gpu_worker.py:640] Available KV cache memory: 3.6 GiB
+(EngineCore pid=2005420) INFO 10-13 10:25:07 [gpu_worker.py:655] CUDA graph memory profiling is enabled (default since v0.21.0). The current --gpu-memory-utilization=0.9200 is equivalent to --gpu-memory-utilization=0.9108 without CUDA graph memory profiling. To maintain the same effective KV cache size as before, increase --gpu-memory-utilization to 0.9292. To disable, set VLLM_MEMORY_PROFILER_ESTIMATE_CUDAGRAPHS=0.
+(EngineCore pid=2005420) INFO 10-13 10:25:07 [kv_cache_utils.py:2395] GPU KV cache size: 36,141 tokens, Maximum concurrency for 8,192 tokens per request: 4.41x
+(EngineCore pid=2005420) INFO 10-13 10:25:07 [kernel_warmup.py:172] JIT kernel warmup starting.
+(EngineCore pid=2005420) INFO 10-13 10:25:07 [kernel_warmup.py:185] JIT kernel warmup finished in 0.00s.
+(EngineCore pid=2005420) INFO 10-13 10:25:07 [qwen_triton_warmup.py:294] Warming up Qwen GDN Triton kernels for model_type=qwen3_5_text.
+(EngineCore pid=2005420) INFO 10-13 10:25:07 [qwen_vl_triton_warmup.py:57] Warmed position embedding and vision rotary kernels on grids=[(1, 16, 16), (1, 16, 2), (1, 2, 16), (1, 2, 2)].
+(EngineCore pid=2005420) INFO 10-13 10:25:07 [qwen_vl_triton_warmup.py:98] Warmed M-RoPE Triton kernels.
+(EngineCore pid=2005420) INFO 10-13 10:25:07 [mamba_triton_warmup.py:42] Warmed Mamba batch_memcpy_kernel.
+(EngineCore pid=2005420) INFO 10-13 10:25:11 [model_runner.py:1066] Graph capturing finished in 1 secs, took 0.16 GiB
+(EngineCore pid=2005420) INFO 10-13 10:25:11 [gpu_worker.py:825] CUDA graph pool memory: 0.16 GiB (actual), 0.58 GiB (estimated), difference: 0.42 GiB (256.0%).
+(EngineCore pid=2005420) INFO 10-13 10:25:11 [gpu_worker.py:888] Free memory on device (62.95/63.42 GiB) on startup. Desired GPU memory utilization is (0.92, 58.35 GiB). Actual usage is 51.41 GiB for consumed memory (weights + non-torch), 3.33 GiB for peak activation, and 0.16 GiB for CUDAGraph memory. Replace gpu_memory_utilization config with `--kv-cache-memory=3532889048` (3.29 GiB) to fit into requested memory, or `--kv-cache-memory=8477210624` (7.9 GiB) to fully utilize gpu memory. Current kv cache memory in use is 3.6 GiB.
+(EngineCore pid=2005420) INFO 10-13 10:25:13 [jit_monitor.py:85] Kernel JIT monitor activated; monitored JIT compilations during inference will use mode=warn.
+(EngineCore pid=2005420) INFO 10-13 10:25:13 [torch_utils.py:287] Reducing Torch threads from 12 to 1 for serving. Set OMP_NUM_THREADS in the external environment to override.
+(EngineCore pid=2005420) INFO 10-13 10:25:13 [core.py:372] init engine (profile, create kv cache, warmup model) took 25.86 s (compilation: 0.77 s)
+(EngineCore pid=2005420) INFO 10-13 10:25:13 [kv_cache_utils.py:748] kv cache group sizes [784, 784, 784, 784]
+(EngineCore pid=2005420) INFO 10-13 10:25:13 [kv_cache_utils.py:749] kv lcm block sizes 784
+(EngineCore pid=2005420) INFO 10-13 10:25:14 [kernel.py:416] Final IR op priority after setting platform defaults: IrOpPriorityConfig(rms_norm=['native'], fused_add_rms_norm=['native'], gelu_and_mul_sparse=['triton', 'native'])
+INFO 10-13 10:25:14 [hf.py:642] Detected the chat template content format to be 'openai'. You can set `--chat-template-content-format` to override this.
+completed 8/2500 in shard 0
+completed 16/2500 in shard 0
+completed 24/2500 in shard 0
+completed 32/2500 in shard 0
+INFO 10-13 10:25:26 [loggers.py:315] Engine 000: Avg prompt throughput: 1900.7 tokens/s, Avg generation throughput: 86.0 tokens/s, Running: 8 reqs, Waiting: 0 reqs, GPU KV cache usage: 43.2%, Prefix cache hit rate: 0.0%
+completed 40/2500 in shard 0
+completed 48/2500 in shard 0
+completed 56/2500 in shard 0
+completed 64/2500 in shard 0
+INFO 10-13 10:25:36 [loggers.py:315] Engine 000: Avg prompt throughput: 1868.3 tokens/s, Avg generation throughput: 107.4 tokens/s, Running: 8 reqs, Waiting: 0 reqs, GPU KV cache usage: 43.2%, Prefix cache hit rate: 0.0%
+completed 72/2500 in shard 0
+completed 80/2500 in shard 0
+completed 88/2500 in shard 0
+completed 96/2500 in shard 0
+completed 104/2500 in shard 0
+INFO 10-13 10:25:47 [loggers.py:315] Engine 000: Avg prompt throughput: 2140.4 tokens/s, Avg generation throughput: 95.1 tokens/s, Running: 8 reqs, Waiting: 0 reqs, GPU KV cache usage: 43.2%, Prefix cache hit rate: 0.0%
+completed 112/2500 in shard 0
+completed 120/2500 in shard 0
+completed 128/2500 in shard 0
+completed 136/2500 in shard 0
+INFO 10-13 10:25:57 [loggers.py:315] Engine 000: Avg prompt throughput: 2001.4 tokens/s, Avg generation throughput: 93.7 tokens/s, Running: 8 reqs, Waiting: 0 reqs, GPU KV cache usage: 48.6%, Prefix cache hit rate: 0.0%
+completed 144/2500 in shard 0
+completed 152/2500 in shard 0
+completed 160/2500 in shard 0
+completed 168/2500 in shard 0
+INFO 10-13 10:26:07 [loggers.py:315] Engine 000: Avg prompt throughput: 1959.0 tokens/s, Avg generation throughput: 108.1 tokens/s, Running: 8 reqs, Waiting: 0 reqs, GPU KV cache usage: 43.2%, Prefix cache hit rate: 0.0%
+completed 176/2500 in shard 0
+completed 184/2500 in shard 0
+completed 192/2500 in shard 0
+completed 200/2500 in shard 0
+INFO 10-13 10:26:17 [loggers.py:315] Engine 000: Avg prompt throughput: 1917.5 tokens/s, Avg generation throughput: 105.5 tokens/s, Running: 8 reqs, Waiting: 0 reqs, GPU KV cache usage: 44.6%, Prefix cache hit rate: 0.0%
+completed 208/2500 in shard 0
+completed 216/2500 in shard 0
+completed 224/2500 in shard 0
+completed 232/2500 in shard 0
+completed 240/2500 in shard 0
+INFO 10-13 10:26:27 [loggers.py:315] Engine 000: Avg prompt throughput: 2205.4 tokens/s, Avg generation throughput: 94.2 tokens/s, Running: 8 reqs, Waiting: 0 reqs, GPU KV cache usage: 43.2%, Prefix cache hit rate: 0.0%
+completed 248/2500 in shard 0
+completed 256/2500 in shard 0
+completed 264/2500 in shard 0
+completed 272/2500 in shard 0
+INFO 10-13 10:26:37 [loggers.py:315] Engine 000: Avg prompt throughput: 2085.3 tokens/s, Avg generation throughput: 101.7 tokens/s, Running: 8 reqs, Waiting: 0 reqs, GPU KV cache usage: 44.6%, Prefix cache hit rate: 0.0%
+completed 280/2500 in shard 0
+completed 288/2500 in shard 0
+completed 296/2500 in shard 0
+completed 304/2500 in shard 0
+INFO 10-13 10:26:47 [loggers.py:315] Engine 000: Avg prompt throughput: 1950.2 tokens/s, Avg generation throughput: 104.7 tokens/s, Running: 8 reqs, Waiting: 0 reqs, GPU KV cache usage: 43.2%, Prefix cache hit rate: 0.0%
+completed 312/2500 in shard 0
+completed 320/2500 in shard 0
+completed 328/2500 in shard 0
+completed 336/2500 in shard 0
+completed 344/2500 in shard 0
+INFO 10-13 10:26:58 [loggers.py:315] Engine 000: Avg prompt throughput: 2107.8 tokens/s, Avg generation throughput: 99.5 tokens/s, Running: 8 reqs, Waiting: 0 reqs, GPU KV cache usage: 43.2%, Prefix cache hit rate: 0.0%
+completed 352/2500 in shard 0
+completed 360/2500 in shard 0
+completed 368/2500 in shard 0
+completed 376/2500 in shard 0
+INFO 10-13 10:27:08 [loggers.py:315] Engine 000: Avg prompt throughput: 1890.1 tokens/s, Avg generation throughput: 108.9 tokens/s, Running: 8 reqs, Waiting: 0 reqs, GPU KV cache usage: 43.2%, Prefix cache hit rate: 0.0%
+completed 384/2500 in shard 0
+completed 392/2500 in shard 0
+completed 400/2500 in shard 0
+completed 408/2500 in shard 0
+INFO 10-13 10:27:18 [loggers.py:315] Engine 000: Avg prompt throughput: 1908.4 tokens/s, Avg generation throughput: 105.8 tokens/s, Running: 8 reqs, Waiting: 0 reqs, GPU KV cache usage: 43.2%, Prefix cache hit rate: 0.0%
+completed 416/2500 in shard 0
+completed 424/2500 in shard 0
+completed 432/2500 in shard 0
+completed 440/2500 in shard 0
+INFO 10-13 10:27:28 [loggers.py:315] Engine 000: Avg prompt throughput: 2135.8 tokens/s, Avg generation throughput: 99.3 tokens/s, Running: 6 reqs, Waiting: 0 reqs, GPU KV cache usage: 33.8%, Prefix cache hit rate: 0.0%
+completed 448/2500 in shard 0
+completed 456/2500 in shard 0
+completed 464/2500 in shard 0
+completed 472/2500 in shard 0
+INFO 10-13 10:27:38 [loggers.py:315] Engine 000: Avg prompt throughput: 2116.7 tokens/s, Avg generation throughput: 98.5 tokens/s, Running: 6 reqs, Waiting: 0 reqs, GPU KV cache usage: 35.1%, Prefix cache hit rate: 0.0%
+completed 480/2500 in shard 0
+completed 488/2500 in shard 0
+completed 496/2500 in shard 0
+completed 504/2500 in shard 0
+INFO 10-13 10:27:48 [loggers.py:315] Engine 000: Avg prompt throughput: 1902.0 tokens/s, Avg generation throughput: 95.4 tokens/s, Running: 8 reqs, Waiting: 0 reqs, GPU KV cache usage: 43.2%, Prefix cache hit rate: 0.0%
+completed 512/2500 in shard 0
+completed 520/2500 in shard 0
+completed 528/2500 in shard 0
+completed 536/2500 in shard 0
+completed 544/2500 in shard 0
+INFO 10-13 10:27:59 [loggers.py:315] Engine 000: Avg prompt throughput: 2204.3 tokens/s, Avg generation throughput: 93.7 tokens/s, Running: 8 reqs, Waiting: 0 reqs, GPU KV cache usage: 43.2%, Prefix cache hit rate: 0.0%
+completed 552/2500 in shard 0
+completed 560/2500 in shard 0
+completed 568/2500 in shard 0
+completed 576/2500 in shard 0
+INFO 10-13 10:28:09 [loggers.py:315] Engine 000: Avg prompt throughput: 1830.5 tokens/s, Avg generation throughput: 109.1 tokens/s, Running: 8 reqs, Waiting: 0 reqs, GPU KV cache usage: 43.2%, Prefix cache hit rate: 0.0%
+completed 584/2500 in shard 0
+completed 592/2500 in shard 0
+completed 600/2500 in shard 0
+completed 608/2500 in shard 0
+INFO 10-13 10:28:19 [loggers.py:315] Engine 000: Avg prompt throughput: 1861.0 tokens/s, Avg generation throughput: 105.4 tokens/s, Running: 1 reqs, Waiting: 0 reqs, GPU KV cache usage: 6.8%, Prefix cache hit rate: 0.0%
+completed 616/2500 in shard 0
+completed 624/2500 in shard 0
+completed 632/2500 in shard 0
+completed 640/2500 in shard 0
+completed 648/2500 in shard 0
+INFO 10-13 10:28:30 [loggers.py:315] Engine 000: Avg prompt throughput: 2174.1 tokens/s, Avg generation throughput: 92.8 tokens/s, Running: 8 reqs, Waiting: 0 reqs, GPU KV cache usage: 48.6%, Prefix cache hit rate: 0.0%
+completed 656/2500 in shard 0
+completed 664/2500 in shard 0
+completed 672/2500 in shard 0
+completed 680/2500 in shard 0
+INFO 10-13 10:28:40 [loggers.py:315] Engine 000: Avg prompt throughput: 2251.2 tokens/s, Avg generation throughput: 98.3 tokens/s, Running: 8 reqs, Waiting: 0 reqs, GPU KV cache usage: 45.9%, Prefix cache hit rate: 0.0%
+completed 688/2500 in shard 0
+completed 696/2500 in shard 0
+completed 704/2500 in shard 0
+completed 712/2500 in shard 0
+INFO 10-13 10:28:50 [loggers.py:315] Engine 000: Avg prompt throughput: 1896.9 tokens/s, Avg generation throughput: 95.7 tokens/s, Running: 8 reqs, Waiting: 0 reqs, GPU KV cache usage: 50.0%, Prefix cache hit rate: 0.0%
+completed 720/2500 in shard 0
+completed 728/2500 in shard 0
+completed 736/2500 in shard 0
+completed 744/2500 in shard 0
+INFO 10-13 10:29:00 [loggers.py:315] Engine 000: Avg prompt throughput: 2062.2 tokens/s, Avg generation throughput: 108.9 tokens/s, Running: 8 reqs, Waiting: 0 reqs, GPU KV cache usage: 43.2%, Prefix cache hit rate: 0.0%
+completed 752/2500 in shard 0
+completed 760/2500 in shard 0
+completed 768/2500 in shard 0
+completed 776/2500 in shard 0
+INFO 10-13 10:29:10 [loggers.py:315] Engine 000: Avg prompt throughput: 1900.2 tokens/s, Avg generation throughput: 106.4 tokens/s, Running: 3 reqs, Waiting: 0 reqs, GPU KV cache usage: 16.2%, Prefix cache hit rate: 0.0%
+completed 784/2500 in shard 0
+completed 792/2500 in shard 0
+completed 800/2500 in shard 0
+completed 808/2500 in shard 0
+completed 816/2500 in shard 0
+INFO 10-13 10:29:21 [loggers.py:315] Engine 000: Avg prompt throughput: 2157.4 tokens/s, Avg generation throughput: 93.0 tokens/s, Running: 8 reqs, Waiting: 0 reqs, GPU KV cache usage: 48.6%, Prefix cache hit rate: 0.0%
+completed 824/2500 in shard 0
+completed 832/2500 in shard 0
+completed 840/2500 in shard 0
+completed 848/2500 in shard 0
+INFO 10-13 10:29:31 [loggers.py:315] Engine 000: Avg prompt throughput: 1953.7 tokens/s, Avg generation throughput: 108.5 tokens/s, Running: 8 reqs, Waiting: 0 reqs, GPU KV cache usage: 43.2%, Prefix cache hit rate: 0.0%
+completed 856/2500 in shard 0
+completed 864/2500 in shard 0
+completed 872/2500 in shard 0
+completed 880/2500 in shard 0
+INFO 10-13 10:29:41 [loggers.py:315] Engine 000: Avg prompt throughput: 2101.5 tokens/s, Avg generation throughput: 99.8 tokens/s, Running: 8 reqs, Waiting: 0 reqs, GPU KV cache usage: 47.3%, Prefix cache hit rate: 0.0%
+completed 888/2500 in shard 0
+completed 896/2500 in shard 0
+INFO 10-13 10:29:51 [loggers.py:315] Engine 000: Avg prompt throughput: 867.0 tokens/s, Avg generation throughput: 46.5 tokens/s, Running: 8 reqs, Waiting: 0 reqs, GPU KV cache usage: 43.2%, Prefix cache hit rate: 0.0%
+completed 904/2500 in shard 0
+completed 912/2500 in shard 0
+completed 920/2500 in shard 0
+completed 928/2500 in shard 0
+INFO 10-13 10:30:01 [loggers.py:315] Engine 000: Avg prompt throughput: 1862.0 tokens/s, Avg generation throughput: 107.0 tokens/s, Running: 8 reqs, Waiting: 0 reqs, GPU KV cache usage: 44.6%, Prefix cache hit rate: 0.0%
+completed 936/2500 in shard 0
+completed 944/2500 in shard 0
+completed 952/2500 in shard 0
+completed 960/2500 in shard 0
+INFO 10-13 10:30:11 [loggers.py:315] Engine 000: Avg prompt throughput: 1954.2 tokens/s, Avg generation throughput: 103.3 tokens/s, Running: 8 reqs, Waiting: 0 reqs, GPU KV cache usage: 44.6%, Prefix cache hit rate: 0.0%
+completed 968/2500 in shard 0
+completed 976/2500 in shard 0
+completed 984/2500 in shard 0
+completed 992/2500 in shard 0
+INFO 10-13 10:30:21 [loggers.py:315] Engine 000: Avg prompt throughput: 1942.7 tokens/s, Avg generation throughput: 103.0 tokens/s, Running: 0 reqs, Waiting: 0 reqs, GPU KV cache usage: 0.0%, Prefix cache hit rate: 0.0%
+completed 1000/2500 in shard 0
+completed 1008/2500 in shard 0
+completed 1016/2500 in shard 0
+completed 1024/2500 in shard 0
+completed 1032/2500 in shard 0
+INFO 10-13 10:30:31 [loggers.py:315] Engine 000: Avg prompt throughput: 2169.1 tokens/s, Avg generation throughput: 94.2 tokens/s, Running: 8 reqs, Waiting: 0 reqs, GPU KV cache usage: 43.2%, Prefix cache hit rate: 0.0%
+completed 1040/2500 in shard 0
+completed 1048/2500 in shard 0
+completed 1056/2500 in shard 0
+completed 1064/2500 in shard 0
+INFO 10-13 10:30:41 [loggers.py:315] Engine 000: Avg prompt throughput: 1728.2 tokens/s, Avg generation throughput: 112.2 tokens/s, Running: 8 reqs, Waiting: 0 reqs, GPU KV cache usage: 43.2%, Prefix cache hit rate: 0.0%
+completed 1072/2500 in shard 0
+completed 1080/2500 in shard 0
+completed 1088/2500 in shard 0
+completed 1096/2500 in shard 0
+completed 1104/2500 in shard 0
+INFO 10-13 10:30:51 [loggers.py:315] Engine 000: Avg prompt throughput: 2192.0 tokens/s, Avg generation throughput: 95.5 tokens/s, Running: 8 reqs, Waiting: 0 reqs, GPU KV cache usage: 43.2%, Prefix cache hit rate: 0.0%
+completed 1112/2500 in shard 0
+completed 1120/2500 in shard 0
+completed 1128/2500 in shard 0
+completed 1136/2500 in shard 0
+INFO 10-13 10:31:01 [loggers.py:315] Engine 000: Avg prompt throughput: 1786.2 tokens/s, Avg generation throughput: 110.7 tokens/s, Running: 8 reqs, Waiting: 0 reqs, GPU KV cache usage: 43.2%, Prefix cache hit rate: 0.0%
+completed 1144/2500 in shard 0
+completed 1152/2500 in shard 0
+completed 1160/2500 in shard 0
+completed 1168/2500 in shard 0
+completed 1176/2500 in shard 0
+INFO 10-13 10:31:12 [loggers.py:315] Engine 000: Avg prompt throughput: 2120.8 tokens/s, Avg generation throughput: 96.1 tokens/s, Running: 8 reqs, Waiting: 0 reqs, GPU KV cache usage: 43.2%, Prefix cache hit rate: 0.0%
+completed 1184/2500 in shard 0
+completed 1192/2500 in shard 0
+completed 1200/2500 in shard 0
+completed 1208/2500 in shard 0
+INFO 10-13 10:31:22 [loggers.py:315] Engine 000: Avg prompt throughput: 1744.3 tokens/s, Avg generation throughput: 110.8 tokens/s, Running: 8 reqs, Waiting: 0 reqs, GPU KV cache usage: 43.2%, Prefix cache hit rate: 0.0%
+completed 1216/2500 in shard 0
+completed 1224/2500 in shard 0
+completed 1232/2500 in shard 0
+completed 1240/2500 in shard 0
+completed 1248/2500 in shard 0
+INFO 10-13 10:31:32 [loggers.py:315] Engine 000: Avg prompt throughput: 2088.0 tokens/s, Avg generation throughput: 97.3 tokens/s, Running: 8 reqs, Waiting: 0 reqs, GPU KV cache usage: 43.2%, Prefix cache hit rate: 0.0%
+completed 1256/2500 in shard 0
+completed 1264/2500 in shard 0
+completed 1272/2500 in shard 0
+completed 1280/2500 in shard 0
+INFO 10-13 10:31:42 [loggers.py:315] Engine 000: Avg prompt throughput: 1965.2 tokens/s, Avg generation throughput: 102.4 tokens/s, Running: 8 reqs, Waiting: 0 reqs, GPU KV cache usage: 47.3%, Prefix cache hit rate: 0.0%
+completed 1288/2500 in shard 0
+completed 1296/2500 in shard 0
+completed 1304/2500 in shard 0
+completed 1312/2500 in shard 0
+INFO 10-13 10:31:52 [loggers.py:315] Engine 000: Avg prompt throughput: 1700.3 tokens/s, Avg generation throughput: 88.9 tokens/s, Running: 8 reqs, Waiting: 0 reqs, GPU KV cache usage: 43.2%, Prefix cache hit rate: 0.0%
+completed 1320/2500 in shard 0
+completed 1328/2500 in shard 0
+completed 1336/2500 in shard 0
+completed 1344/2500 in shard 0
+INFO 10-13 10:32:02 [loggers.py:315] Engine 000: Avg prompt throughput: 1742.0 tokens/s, Avg generation throughput: 111.9 tokens/s, Running: 8 reqs, Waiting: 0 reqs, GPU KV cache usage: 43.2%, Prefix cache hit rate: 0.0%
+completed 1352/2500 in shard 0
+completed 1360/2500 in shard 0
+completed 1368/2500 in shard 0
+completed 1376/2500 in shard 0
+completed 1384/2500 in shard 0
+INFO 10-13 10:32:12 [loggers.py:315] Engine 000: Avg prompt throughput: 2170.4 tokens/s, Avg generation throughput: 94.9 tokens/s, Running: 8 reqs, Waiting: 0 reqs, GPU KV cache usage: 43.2%, Prefix cache hit rate: 0.0%
+completed 1392/2500 in shard 0
+completed 1400/2500 in shard 0
+completed 1408/2500 in shard 0
+completed 1416/2500 in shard 0
+INFO 10-13 10:32:22 [loggers.py:315] Engine 000: Avg prompt throughput: 1713.1 tokens/s, Avg generation throughput: 111.8 tokens/s, Running: 8 reqs, Waiting: 0 reqs, GPU KV cache usage: 43.2%, Prefix cache hit rate: 0.0%
+completed 1424/2500 in shard 0
+completed 1432/2500 in shard 0
+completed 1440/2500 in shard 0
+completed 1448/2500 in shard 0
+completed 1456/2500 in shard 0
+INFO 10-13 10:32:33 [loggers.py:315] Engine 000: Avg prompt throughput: 2037.3 tokens/s, Avg generation throughput: 95.7 tokens/s, Running: 8 reqs, Waiting: 0 reqs, GPU KV cache usage: 48.6%, Prefix cache hit rate: 0.0%
+completed 1464/2500 in shard 0
+completed 1472/2500 in shard 0
+completed 1480/2500 in shard 0
+completed 1488/2500 in shard 0
+INFO 10-13 10:32:43 [loggers.py:315] Engine 000: Avg prompt throughput: 1856.4 tokens/s, Avg generation throughput: 112.1 tokens/s, Running: 8 reqs, Waiting: 0 reqs, GPU KV cache usage: 43.2%, Prefix cache hit rate: 0.0%
+completed 1496/2500 in shard 0
+completed 1504/2500 in shard 0
+completed 1512/2500 in shard 0
+completed 1520/2500 in shard 0
+completed 1528/2500 in shard 0
+INFO 10-13 10:32:53 [loggers.py:315] Engine 000: Avg prompt throughput: 2190.6 tokens/s, Avg generation throughput: 96.0 tokens/s, Running: 8 reqs, Waiting: 0 reqs, GPU KV cache usage: 43.2%, Prefix cache hit rate: 0.0%
+completed 1536/2500 in shard 0
+completed 1544/2500 in shard 0
+completed 1552/2500 in shard 0
+completed 1560/2500 in shard 0
+INFO 10-13 10:33:03 [loggers.py:315] Engine 000: Avg prompt throughput: 1832.5 tokens/s, Avg generation throughput: 110.8 tokens/s, Running: 8 reqs, Waiting: 0 reqs, GPU KV cache usage: 43.2%, Prefix cache hit rate: 0.0%
+completed 1568/2500 in shard 0
+completed 1576/2500 in shard 0
+completed 1584/2500 in shard 0
+completed 1592/2500 in shard 0
+completed 1600/2500 in shard 0
+INFO 10-13 10:33:14 [loggers.py:315] Engine 000: Avg prompt throughput: 2170.2 tokens/s, Avg generation throughput: 97.4 tokens/s, Running: 8 reqs, Waiting: 0 reqs, GPU KV cache usage: 43.2%, Prefix cache hit rate: 0.0%
+completed 1608/2500 in shard 0
+completed 1616/2500 in shard 0
+completed 1624/2500 in shard 0
+completed 1632/2500 in shard 0
+INFO 10-13 10:33:24 [loggers.py:315] Engine 000: Avg prompt throughput: 1851.9 tokens/s, Avg generation throughput: 108.8 tokens/s, Running: 8 reqs, Waiting: 0 reqs, GPU KV cache usage: 43.2%, Prefix cache hit rate: 0.0%
+completed 1640/2500 in shard 0
+completed 1648/2500 in shard 0
+completed 1656/2500 in shard 0
+completed 1664/2500 in shard 0
+completed 1672/2500 in shard 0
+INFO 10-13 10:33:35 [loggers.py:315] Engine 000: Avg prompt throughput: 2195.9 tokens/s, Avg generation throughput: 96.6 tokens/s, Running: 8 reqs, Waiting: 0 reqs, GPU KV cache usage: 43.2%, Prefix cache hit rate: 0.0%
+completed 1680/2500 in shard 0
+completed 1688/2500 in shard 0
+completed 1696/2500 in shard 0
+completed 1704/2500 in shard 0
+INFO 10-13 10:33:45 [loggers.py:315] Engine 000: Avg prompt throughput: 1947.1 tokens/s, Avg generation throughput: 106.8 tokens/s, Running: 8 reqs, Waiting: 0 reqs, GPU KV cache usage: 43.2%, Prefix cache hit rate: 0.0%
+completed 1712/2500 in shard 0
+completed 1720/2500 in shard 0
+completed 1728/2500 in shard 0
+completed 1736/2500 in shard 0
+INFO 10-13 10:33:55 [loggers.py:315] Engine 000: Avg prompt throughput: 1959.8 tokens/s, Avg generation throughput: 105.7 tokens/s, Running: 5 reqs, Waiting: 0 reqs, GPU KV cache usage: 27.0%, Prefix cache hit rate: 0.0%
+completed 1744/2500 in shard 0
+completed 1752/2500 in shard 0
+completed 1760/2500 in shard 0
+completed 1768/2500 in shard 0
+INFO 10-13 10:34:05 [loggers.py:315] Engine 000: Avg prompt throughput: 2143.9 tokens/s, Avg generation throughput: 82.3 tokens/s, Running: 8 reqs, Waiting: 0 reqs, GPU KV cache usage: 44.6%, Prefix cache hit rate: 0.0%
+completed 1776/2500 in shard 0
+completed 1784/2500 in shard 0
+completed 1792/2500 in shard 0
+completed 1800/2500 in shard 0
+INFO 10-13 10:34:15 [loggers.py:315] Engine 000: Avg prompt throughput: 1877.6 tokens/s, Avg generation throughput: 101.2 tokens/s, Running: 8 reqs, Waiting: 0 reqs, GPU KV cache usage: 43.2%, Prefix cache hit rate: 0.0%
+completed 1808/2500 in shard 0
+completed 1816/2500 in shard 0
+completed 1824/2500 in shard 0
+completed 1832/2500 in shard 0
+completed 1840/2500 in shard 0
+INFO 10-13 10:34:26 [loggers.py:315] Engine 000: Avg prompt throughput: 2140.8 tokens/s, Avg generation throughput: 99.1 tokens/s, Running: 8 reqs, Waiting: 0 reqs, GPU KV cache usage: 43.2%, Prefix cache hit rate: 0.0%
+completed 1848/2500 in shard 0
+completed 1856/2500 in shard 0
+completed 1864/2500 in shard 0
+completed 1872/2500 in shard 0
+INFO 10-13 10:34:36 [loggers.py:315] Engine 000: Avg prompt throughput: 1849.2 tokens/s, Avg generation throughput: 108.4 tokens/s, Running: 8 reqs, Waiting: 0 reqs, GPU KV cache usage: 43.2%, Prefix cache hit rate: 0.0%
+completed 1880/2500 in shard 0
+completed 1888/2500 in shard 0
+completed 1896/2500 in shard 0
+completed 1904/2500 in shard 0
+completed 1912/2500 in shard 0
+INFO 10-13 10:34:46 [loggers.py:315] Engine 000: Avg prompt throughput: 2124.3 tokens/s, Avg generation throughput: 98.1 tokens/s, Running: 8 reqs, Waiting: 0 reqs, GPU KV cache usage: 43.2%, Prefix cache hit rate: 0.0%
+completed 1920/2500 in shard 0
+completed 1928/2500 in shard 0
+completed 1936/2500 in shard 0
+completed 1944/2500 in shard 0
+INFO 10-13 10:34:56 [loggers.py:315] Engine 000: Avg prompt throughput: 1872.8 tokens/s, Avg generation throughput: 106.5 tokens/s, Running: 8 reqs, Waiting: 0 reqs, GPU KV cache usage: 43.2%, Prefix cache hit rate: 0.0%
+completed 1952/2500 in shard 0
+completed 1960/2500 in shard 0
+completed 1968/2500 in shard 0
+completed 1976/2500 in shard 0
+completed 1984/2500 in shard 0
+INFO 10-13 10:35:07 [loggers.py:315] Engine 000: Avg prompt throughput: 2140.7 tokens/s, Avg generation throughput: 98.0 tokens/s, Running: 8 reqs, Waiting: 0 reqs, GPU KV cache usage: 43.2%, Prefix cache hit rate: 0.0%
+completed 1992/2500 in shard 0
+completed 2000/2500 in shard 0
+completed 2008/2500 in shard 0
+completed 2016/2500 in shard 0
+INFO 10-13 10:35:17 [loggers.py:315] Engine 000: Avg prompt throughput: 1799.5 tokens/s, Avg generation throughput: 111.6 tokens/s, Running: 0 reqs, Waiting: 0 reqs, GPU KV cache usage: 0.0%, Prefix cache hit rate: 0.0%
+completed 2024/2500 in shard 0
+completed 2032/2500 in shard 0
+completed 2040/2500 in shard 0
+completed 2048/2500 in shard 0
+completed 2056/2500 in shard 0
+INFO 10-13 10:35:27 [loggers.py:315] Engine 000: Avg prompt throughput: 2114.4 tokens/s, Avg generation throughput: 102.0 tokens/s, Running: 8 reqs, Waiting: 0 reqs, GPU KV cache usage: 43.2%, Prefix cache hit rate: 0.0%
+completed 2064/2500 in shard 0
+completed 2072/2500 in shard 0
+completed 2080/2500 in shard 0
+completed 2088/2500 in shard 0
+completed 2096/2500 in shard 0
+INFO 10-13 10:35:38 [loggers.py:315] Engine 000: Avg prompt throughput: 2050.4 tokens/s, Avg generation throughput: 92.9 tokens/s, Running: 8 reqs, Waiting: 0 reqs, GPU KV cache usage: 43.2%, Prefix cache hit rate: 0.0%
+completed 2104/2500 in shard 0
+completed 2112/2500 in shard 0
+completed 2120/2500 in shard 0
+completed 2128/2500 in shard 0
+completed 2136/2500 in shard 0
+INFO 10-13 10:35:48 [loggers.py:315] Engine 000: Avg prompt throughput: 2048.6 tokens/s, Avg generation throughput: 101.4 tokens/s, Running: 8 reqs, Waiting: 0 reqs, GPU KV cache usage: 43.2%, Prefix cache hit rate: 0.0%
+completed 2144/2500 in shard 0
+completed 2152/2500 in shard 0
+completed 2160/2500 in shard 0
+completed 2168/2500 in shard 0
+completed 2176/2500 in shard 0
+INFO 10-13 10:35:59 [loggers.py:315] Engine 000: Avg prompt throughput: 2040.1 tokens/s, Avg generation throughput: 103.8 tokens/s, Running: 8 reqs, Waiting: 0 reqs, GPU KV cache usage: 43.2%, Prefix cache hit rate: 0.0%
+completed 2184/2500 in shard 0
+completed 2192/2500 in shard 0
+completed 2200/2500 in shard 0
+completed 2208/2500 in shard 0
+INFO 10-13 10:36:09 [loggers.py:315] Engine 000: Avg prompt throughput: 1705.2 tokens/s, Avg generation throughput: 109.0 tokens/s, Running: 2 reqs, Waiting: 0 reqs, GPU KV cache usage: 10.8%, Prefix cache hit rate: 0.0%
+completed 2216/2500 in shard 0
+completed 2224/2500 in shard 0
+completed 2232/2500 in shard 0
+completed 2240/2500 in shard 0
+completed 2248/2500 in shard 0
+INFO 10-13 10:36:19 [loggers.py:315] Engine 000: Avg prompt throughput: 2107.5 tokens/s, Avg generation throughput: 101.8 tokens/s, Running: 8 reqs, Waiting: 0 reqs, GPU KV cache usage: 43.2%, Prefix cache hit rate: 0.0%
+completed 2256/2500 in shard 0
+completed 2264/2500 in shard 0
+completed 2272/2500 in shard 0
+completed 2280/2500 in shard 0
+completed 2288/2500 in shard 0
+INFO 10-13 10:36:29 [loggers.py:315] Engine 000: Avg prompt throughput: 2223.0 tokens/s, Avg generation throughput: 98.3 tokens/s, Running: 8 reqs, Waiting: 0 reqs, GPU KV cache usage: 43.2%, Prefix cache hit rate: 0.0%
+completed 2296/2500 in shard 0
+completed 2304/2500 in shard 0
+completed 2312/2500 in shard 0
+completed 2320/2500 in shard 0
+completed 2328/2500 in shard 0
+INFO 10-13 10:36:39 [loggers.py:315] Engine 000: Avg prompt throughput: 2053.3 tokens/s, Avg generation throughput: 102.7 tokens/s, Running: 8 reqs, Waiting: 0 reqs, GPU KV cache usage: 43.2%, Prefix cache hit rate: 0.0%
+completed 2336/2500 in shard 0
+completed 2344/2500 in shard 0
+completed 2352/2500 in shard 0
+completed 2360/2500 in shard 0
+completed 2368/2500 in shard 0
+INFO 10-13 10:36:50 [loggers.py:315] Engine 000: Avg prompt throughput: 2038.4 tokens/s, Avg generation throughput: 103.4 tokens/s, Running: 8 reqs, Waiting: 0 reqs, GPU KV cache usage: 43.2%, Prefix cache hit rate: 0.0%
+completed 2376/2500 in shard 0
+completed 2384/2500 in shard 0
+completed 2392/2500 in shard 0
+completed 2400/2500 in shard 0
+completed 2408/2500 in shard 0
+INFO 10-13 10:37:01 [loggers.py:315] Engine 000: Avg prompt throughput: 2013.6 tokens/s, Avg generation throughput: 103.1 tokens/s, Running: 8 reqs, Waiting: 0 reqs, GPU KV cache usage: 43.2%, Prefix cache hit rate: 0.0%
+completed 2416/2500 in shard 0
+completed 2424/2500 in shard 0
+completed 2432/2500 in shard 0
+completed 2440/2500 in shard 0
+INFO 10-13 10:37:11 [loggers.py:315] Engine 000: Avg prompt throughput: 1783.8 tokens/s, Avg generation throughput: 109.0 tokens/s, Running: 1 reqs, Waiting: 0 reqs, GPU KV cache usage: 5.4%, Prefix cache hit rate: 0.0%
+completed 2448/2500 in shard 0
+completed 2456/2500 in shard 0
+completed 2464/2500 in shard 0
+completed 2472/2500 in shard 0
+completed 2480/2500 in shard 0
+INFO 10-13 10:37:21 [loggers.py:315] Engine 000: Avg prompt throughput: 2170.7 tokens/s, Avg generation throughput: 96.3 tokens/s, Running: 8 reqs, Waiting: 0 reqs, GPU KV cache usage: 43.2%, Prefix cache hit rate: 0.0%
+completed 2488/2500 in shard 0
+completed 2496/2500 in shard 0
+completed 2500/2500 in shard 0
+{"output": "/leonardo/home/userexternal/rqian000/spinner-bot/MOPD-2026/research/main/Phase2/4.llm_rejudgment/raw/runs/full-v2/judge-shard-0.jsonl", "manifest": "/leonardo/home/userexternal/rqian000/spinner-bot/MOPD-2026/research/main/Phase2/4.llm_rejudgment/raw/runs/full-v2/judge-shard-0.manifest.json", "selected": 2500, "pending": 2500}
+INFO 10-13 10:37:25 [utils.py:632] [shutdown] Process manager: send sigterm to process EngineCore
+(EngineCore pid=2005420) INFO 10-13 10:37:25 [core.py:1342] [shutdown] EngineCore: trigger received signal=SIGTERM
+(EngineCore pid=2005420) INFO 10-13 10:37:25 [core.py:1493] [shutdown] EngineCore: start mode=abort timeout=0s
+(EngineCore pid=2005420) INFO 10-13 10:37:25 [core.py:1524] [shutdown] EngineCore: request processing complete; starting resource teardown
+(EngineCore pid=2005420) INFO 10-13 10:37:25 [core.py:1355] [shutdown] EngineCore: exiting busy loop
