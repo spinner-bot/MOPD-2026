@@ -76,11 +76,14 @@ def main() -> None:
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--batch-size", type=int, default=8)
     parser.add_argument("--max-model-len", type=int, default=8192)
+    parser.add_argument("--tensor-parallel-size", type=int, default=1)
     parser.add_argument("--max-tokens", type=int, default=384)
     parser.add_argument("--gpu-memory-utilization", type=float, default=0.90)
     args = parser.parse_args()
     if args.batch_size < 1:
         raise ValueError("batch size must be positive")
+    if args.tensor_parallel_size < 1:
+        raise ValueError("tensor parallel size must be positive")
 
     rows = read_jsonl(args.input)
     keys = [(row.get("sample_uid"), row.get("condition"), row.get("track")) for row in rows]
@@ -119,6 +122,7 @@ def main() -> None:
         "condition_or_sample_uid_sent_to_model": False,
         "batch_size": args.batch_size,
         "max_model_len": args.max_model_len,
+        "tensor_parallel_size": args.tensor_parallel_size,
         "max_tokens": args.max_tokens,
         "temperature": 0.0,
         "seed": 0,
@@ -168,7 +172,7 @@ def main() -> None:
     prompt_text = args.prompt.read_text(encoding="utf-8").strip()
     llm = LLM(
         model=str(model_path),
-        tensor_parallel_size=1,
+        tensor_parallel_size=args.tensor_parallel_size,
         dtype="bfloat16",
         max_model_len=args.max_model_len,
         max_num_seqs=args.batch_size,
