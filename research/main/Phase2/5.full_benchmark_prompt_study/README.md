@@ -2,6 +2,8 @@
 
 本工作在 Vision-OPD 论文主评测集上，对同一模型进行五种条件的全量配对评测：S0（无 system prompt）以及 SC、S1、S2、S3 四种 system-prompt 条件。评测将遵循 Vision-OPD 的数据转换、图像输入、模型推理和各 benchmark 原生评分路径；所有结果保留 benchmark、官方子类别、语言/题型等分层信息。
 
+服务器存储按项目约定分离：脚本/Git 工作树放 `/leonardo_scratch/fast/AIFAC_F02_774/rqian000/MOPD-2026-work5`；原始 benchmark 数据、图像、模型权重、完整推理输出和日志放 `/leonardo_scratch/large/userexternal/rqian000/MOPD-2026-work5-data`。`/leonardo_work/AIFAC_F02_774/rqian000` 当前所在 1 TB 挂载已满，不作为本工作写入位置。实际路径在节点启动前再次检查。
+
 ## 当前交付与目录约定
 
 - `report/2130-T-261014-0101-Phase2工作5全量五模式评测实施方案.md`：启动阶段方法报告及工作流程；后续所有关键进展、偏差、结果与交付在本工作报告序列中续记。
