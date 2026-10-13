@@ -38,6 +38,23 @@ if find "${DATA_ROOT}/pilot/runs" -mindepth 2 -maxdepth 2 -type f -name COMPLETE
   echo "A prior pilot already passed output verification; no duplicate pilot requests will be sent."
   exit 0
 fi
+VERIFIED_PILOT="$(find "${DATA_ROOT}/pilot/runs" -mindepth 2 -maxdepth 2 -type f -name output-verification.json -print -quit 2>/dev/null || true)"
+if [[ -n "${VERIFIED_PILOT}" ]]; then
+  if "${PYTHON}" - "${VERIFIED_PILOT}" <<'PY'
+import json, sys
+summary = json.load(open(sys.argv[1], encoding="utf-8"))
+assert summary.get("pilot") is True
+assert summary.get("total_records_per_condition") == 40
+assert summary.get("total_generation_outputs") == 200
+assert set(summary.get("conditions", {})) == {"S0", "SC", "S1", "S2", "S3"}
+assert len(summary.get("tracks", [])) == 6
+PY
+  then
+    printf 'reused_verified_pilot=%s\nend=%s\n' "${VERIFIED_PILOT}" "$(date -Is)" | tee "${RUN_ROOT}/logs/run.txt"
+    touch "${RUN_ROOT}/COMPLETE"
+    exit 0
+  fi
+fi
 printf 'job_id=%s\nstart=%s\ncommit=%s\ncondition_count=5\n' "${SLURM_JOB_ID}" "$(date -Is)" "$(git rev-parse HEAD)" | tee "${RUN_ROOT}/logs/run.txt"
 nvidia-smi | tee "${RUN_ROOT}/logs/gpu.txt"
 sha256sum "${MODEL_DIR}/config.json" "${MODEL_DIR}/model.safetensors" | tee "${RUN_ROOT}/logs/model-sha256.txt"
