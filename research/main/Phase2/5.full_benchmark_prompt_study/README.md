@@ -19,6 +19,7 @@
 - `report/2140-T-261014-0305-全量评测数组预提交与pilot状态.md`：记录五条件全量数组的依赖式预提交、资源试算和pilot实时进展。
 - `report/2141-T-261014-0322-图像完整性门禁通过与pilot时限续跑.md`：记录全量图像门禁结果、debug QoS超时、长时pilot续跑和全量数组的新依赖关系。
 - `report/2142-T-261014-0330-全量答案抽取与评分复核管线.md`：记录覆盖A–F、重复标签和数字短答的文本判别设计、断点续跑与自动化测试。
+- `report/2143-T-261014-0340-全量验证冻结与两条评分链预提交.md`：记录全量后处理队列链、Vision-OPD原生评分任务及当前Slurm依赖状态。
 - `protocol.md`：冻结前协议草案；数据版本、题数、提示词模板、模型/推理参数、评分器版本待核验后逐项冻结。
 - `dataset_sources.tsv`：固定数据源 repository、revision 和待核验题数。
 - `scripts/fetch_pinned_datasets.py`：在服务器直接从 Hugging Face 下载固定 revision 的 parquet，并输出行数、文件大小与 SHA-256 清单；不经 SSH 传输数据。
@@ -38,6 +39,7 @@
 - `prompts/answer_extraction_v1.txt`：工作5答案抽取指令，支持A–F选项及数字短答，并要求原文证据。
 - `scripts/run_answer_extraction.py`：用本地Qwen3.8-27B作单分片结构化文本答案抽取，记录证据和状态并支持断点续跑。
 - `scripts/run_answer_extraction_array.sbatch`：五条件×六track共30个单卡判别任务，最多8个并发。
+- `scripts/run_visionopd_native_scorer.sbatch`：在五条件×六track分片上调用未修改的Vision-OPD `judge_qwenlm.py` 与 `cal_acc.py`，保存原生评分作为独立对照。
 - `tests/test_answer_extraction_contract.py`：检查选项标签解析、重复D、标签白名单、数字短答证据和无答案状态。
 - `audits/`：由服务器生成并经 GitHub 中转的小型字段审计中间产物；原始图片和数据不入 Git。
 - `prompts/`：冻结后的条件提示词及按题型适配的模板；修改必须升版本并记录影响。
