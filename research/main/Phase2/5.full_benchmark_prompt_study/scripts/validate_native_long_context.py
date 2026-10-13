@@ -5,9 +5,13 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
-import re
 import sys
 from pathlib import Path
+
+
+def terminal_decision(text: str) -> str:
+    final_line = next((line.strip() for line in reversed(text.splitlines()) if line.strip()), "")
+    return final_line if final_line.casefold() in {"yes", "no"} else "other"
 
 
 def main() -> None:
@@ -43,7 +47,7 @@ def main() -> None:
         "condition": request["condition"],
         "track": request["track"],
         "judge_output": result[0],
-        "judge_response": "Yes" if re.search(r"\byes\b", result[0], re.I) else "No/other",
+        "judge_terminal_decision": terminal_decision(result[0]),
         "input_response_chars": len(response),
         "input_response_sha256": digest,
         "prompt_chars": len(prompt),
