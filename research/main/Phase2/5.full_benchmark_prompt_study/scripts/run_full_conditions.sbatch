@@ -9,8 +9,8 @@
 #SBATCH --gres=gpu:a100:1
 #SBATCH --cpus-per-task=32
 #SBATCH --mem=128G
-#SBATCH --time=1-00:00:00
-#SBATCH --array=0-4%4
+#SBATCH --time=02:00:00
+#SBATCH --array=0-4%5
 #SBATCH --output=/leonardo_scratch/large/userexternal/rqian000/MOPD-2026-work5-data/logs/full-%A_%a.out
 #SBATCH --error=/leonardo_scratch/large/userexternal/rqian000/MOPD-2026-work5-data/logs/full-%A_%a.err
 

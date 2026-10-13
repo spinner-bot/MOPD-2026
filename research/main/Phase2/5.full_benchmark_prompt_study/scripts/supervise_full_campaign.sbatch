@@ -24,7 +24,7 @@ CHECKER="${FAST_REPO}/research/main/Phase2/5.full_benchmark_prompt_study/scripts
 PYTHON="/leonardo_scratch/fast/AIFAC_F02_774/rqian000/envs/sc-vllm/bin/python"
 MANAGER_SCRIPT="${FAST_REPO}/research/main/Phase2/5.full_benchmark_prompt_study/scripts/supervise_full_campaign.sbatch"
 ATTEMPT="${WORK5_ATTEMPT:-0}"
-MAX_ATTEMPTS=12
+MAX_ATTEMPTS=80
 STAGE="${WORK5_STAGE:-campaign}"
 mkdir -p "${DATA_ROOT}/logs"
 cd "${FAST_REPO}"
@@ -132,7 +132,7 @@ if (( ATTEMPT >= MAX_ATTEMPTS )); then
 fi
 
 array_spec="$(IFS=,; printf '%s' "${MISSING[*]}")"
-retry_output="$(sbatch --array="${array_spec}%4" "${FULL_SCRIPT}")"
+retry_output="$(sbatch --time=02:00:00 --array="${array_spec}%5" "${FULL_SCRIPT}")"
 retry_job="${retry_output##* }"
 next_attempt=$((ATTEMPT + 1))
 manager_output="$(launch_manager campaign "${next_attempt}" "${retry_job}")"
