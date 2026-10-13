@@ -83,5 +83,13 @@ for condition in S0 SC S1 S2 S3; do
   done
 done
 
+"${PYTHON}" "${FAST_REPO}/research/main/Phase2/5.full_benchmark_prompt_study/scripts/verify_inference_outputs.py" \
+  --data-root "${DATA_ROOT}" \
+  --run-root "${RUN_ROOT}" \
+  --model-id "${MODEL_ID}" \
+  --pilot \
+  --prompt-registry "${FAST_REPO}/research/main/Phase2/5.full_benchmark_prompt_study/prompts/prompt_registry-v1.json" \
+  2>&1 | tee "${RUN_ROOT}/logs/output-verification.log"
+
 printf 'end=%s\n' "$(date -Is)" | tee -a "${RUN_ROOT}/logs/run.txt"
 touch "${RUN_ROOT}/COMPLETE"
