@@ -14,6 +14,7 @@
 - `report/2135-T-261014-0209-样本键与任务字段审计.md`：记录全样本主键唯一性、题型、类别与答案空间审计。
 - `report/2136-T-261014-0216-题型边界复核与五条件提示词冻结.md`：记录Zoom/MME题型边界逐项复核及v1提示词冻结。
 - `report/2137-T-261014-0229-转换调度与推理接口验证.md`：记录Slurm CPU账户限制、可用GPU分区替代、转换器与推理接口契约测试。
+- `report/2138-T-261014-0242-全量输入转换完成与题型元数据更正.md`：记录32,162条源记录转换及Zoom `blank` 类别语义更正。
 - `report/2136-T-261014-0222-题型边界复核与五条件提示词冻结.md`：记录Zoom数字短答和MME重复D选项边界核验，以及v1提示词文本。
 - `protocol.md`：冻结前协议草案；数据版本、题数、提示词模板、模型/推理参数、评分器版本待核验后逐项冻结。
 - `dataset_sources.tsv`：固定数据源 repository、revision 和待核验题数。
@@ -26,6 +27,7 @@
 - `scripts/test_infer_prompt_conditions.py`：以模拟API做无GPU契约测试，校验S0无system message且其余条件只增加注册表中的system文本。
 - `scripts/make_stratified_pilot.py`：确定性选择覆盖六个track、主类别、Zoom题型及MME六选项异常的小样本pilot。
 - `scripts/run_stratified_pilot.sbatch`：单A100启动vLLM，并通过官方infer接口跑五条件pilot。
+- `scripts/verify_prepared_benchmarks.py`：对转换后QA覆盖、UID、图片引用与全部媒体SHA-256执行独立完整性门禁。
 - `audits/`：由服务器生成并经 GitHub 中转的小型字段审计中间产物；原始图片和数据不入 Git。
 - `prompts/`：冻结后的条件提示词及按题型适配的模板；修改必须升版本并记录影响。
 - `prompts/prompt_registry-v1.json`：首版五条件完整提示词注册表；S0 的 `null` 表示不发送 system message。修改需升版本并重新记录SHA-256。
