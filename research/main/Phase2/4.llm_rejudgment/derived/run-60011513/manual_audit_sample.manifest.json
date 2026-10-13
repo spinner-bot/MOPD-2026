@@ -1,0 +1,77 @@
+{
+  "schema": "phase2-llm-judge-manual-audit-sample-v1",
+  "seed": 20261013,
+  "population_n": 10000,
+  "sample_n": 209,
+  "design": "Per condition, simple random sample without replacement from both-answer-same-option and both-answer-different-option strata; include every LLM NO_ANSWER/AMBIGUOUS row.",
+  "strata": {
+    "S0|both_answered_same_option": {
+      "population_n": 1306,
+      "sample_n": 20
+    },
+    "S0|both_answered_different_option": {
+      "population_n": 694,
+      "sample_n": 20
+    },
+    "S0|llm_nonanswered_all": {
+      "population_n": 0,
+      "sample_n": 0
+    },
+    "SC|both_answered_same_option": {
+      "population_n": 1305,
+      "sample_n": 20
+    },
+    "SC|both_answered_different_option": {
+      "population_n": 694,
+      "sample_n": 20
+    },
+    "SC|llm_nonanswered_all": {
+      "population_n": 1,
+      "sample_n": 1
+    },
+    "S1|both_answered_same_option": {
+      "population_n": 1617,
+      "sample_n": 20
+    },
+    "S1|both_answered_different_option": {
+      "population_n": 382,
+      "sample_n": 20
+    },
+    "S1|llm_nonanswered_all": {
+      "population_n": 1,
+      "sample_n": 1
+    },
+    "S2|both_answered_same_option": {
+      "population_n": 1285,
+      "sample_n": 20
+    },
+    "S2|both_answered_different_option": {
+      "population_n": 714,
+      "sample_n": 20
+    },
+    "S2|llm_nonanswered_all": {
+      "population_n": 1,
+      "sample_n": 1
+    },
+    "S3|both_answered_same_option": {
+      "population_n": 1550,
+      "sample_n": 20
+    },
+    "S3|both_answered_different_option": {
+      "population_n": 444,
+      "sample_n": 20
+    },
+    "S3|llm_nonanswered_all": {
+      "population_n": 6,
+      "sample_n": 6
+    }
+  },
+  "output_csv": "/leonardo/home/userexternal/rqian000/spinner-bot/MOPD-2026/research/main/Phase2/4.llm_rejudgment/derived/run-60011513/manual_audit_sample.csv",
+  "review_fields": [
+    "reviewer_status",
+    "reviewer_option",
+    "manual_extraction_correct",
+    "manual_correctness",
+    "reviewer_notes"
+  ]
+}
