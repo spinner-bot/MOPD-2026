@@ -63,6 +63,12 @@ if [[ "${STAGE}" == "verify" ]]; then
     exit 3
   fi
   for condition in S0 SC S1 S2 S3; do
+    for benchmark in vstar zoombench hrbench-4k hrbench-8k mme-realworld mme-realworld-cn; do
+      marker="${CAMPAIGN}/COMPLETE-${condition}-${benchmark}"
+      if [[ -f "${marker}" ]]; then
+        mv -- "${marker}" "${marker}.verification-failed-${verify_job}"
+      fi
+    done
     marker="${CAMPAIGN}/COMPLETE-${condition}"
     if [[ -f "${marker}" ]]; then
       mv -- "${marker}" "${marker}.verification-failed-${verify_job}"
@@ -108,11 +114,23 @@ if [[ "${STAGE}" != "campaign" ]]; then
 fi
 
 CONDITIONS=(S0 SC S1 S2 S3)
+BENCHMARKS=(vstar zoombench hrbench-4k hrbench-8k mme-realworld mme-realworld-cn)
 MISSING=()
-for index in "${!CONDITIONS[@]}"; do
-  condition="${CONDITIONS[$index]}"
-  if [[ ! -f "${CAMPAIGN}/COMPLETE-${condition}" ]]; then
-    MISSING+=("${index}")
+for ci in "${!CONDITIONS[@]}"; do
+  condition="${CONDITIONS[$ci]}"
+  complete_condition=1
+  for ti in "${!BENCHMARKS[@]}"; do
+    benchmark="${BENCHMARKS[$ti]}"
+    array_id=$((ci * ${#BENCHMARKS[@]} + ti))
+    if [[ ! -f "${CAMPAIGN}/COMPLETE-${condition}-${benchmark}" ]]; then
+      MISSING+=("${array_id}")
+      complete_condition=0
+    fi
+  done
+  if (( complete_condition )); then
+    touch "${CAMPAIGN}/COMPLETE-${condition}"
+  else
+    rm -f -- "${CAMPAIGN}/COMPLETE-${condition}"
   fi
 done
 
@@ -132,7 +150,7 @@ if (( ATTEMPT >= MAX_ATTEMPTS )); then
 fi
 
 array_spec="$(IFS=,; printf '%s' "${MISSING[*]}")"
-retry_output="$(sbatch --time=02:00:00 --array="${array_spec}%5" "${FULL_SCRIPT}")"
+retry_output="$(sbatch --time=02:00:00 --array="${array_spec}%8" "${FULL_SCRIPT}")"
 retry_job="${retry_output##* }"
 next_attempt=$((ATTEMPT + 1))
 manager_output="$(launch_manager campaign "${next_attempt}" "${retry_job}")"

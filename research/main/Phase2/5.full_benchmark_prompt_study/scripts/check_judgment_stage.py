@@ -6,16 +6,7 @@ import argparse
 import json
 from pathlib import Path
 
-CONDITIONS = ("S0", "SC", "S1", "S2", "S3")
-TRACKS = ("vstar", "zoombench", "hrbench-4k", "hrbench-8k", "mme-realworld", "mme-realworld-cn")
-TRACK_COUNTS = {
-    "vstar": 191,
-    "zoombench": 845,
-    "hrbench-4k": 800,
-    "hrbench-8k": 800,
-    "mme-realworld": 23609,
-    "mme-realworld-cn": 5917,
-}
+from full_campaign_layout import CONDITIONS, TRACKS, TRACK_COUNTS, task_id
 
 
 def missing_native(
@@ -26,7 +17,7 @@ def missing_native(
     result = []
     for ci, condition in enumerate(conditions):
         for ti, track in enumerate(tracks):
-            shard_id = ci * len(tracks) + ti
+            shard_id = task_id(condition, track) if conditions == CONDITIONS and tracks == TRACKS else ci * len(tracks) + ti
             task_root = data_root / "official-scoring" / "vision-opd-native-v1" / condition / track
             model_id = f"OPD-V-Qwen3.5-4B-{condition}"
             score = task_root / "judge" / track / f"{model_id}_answer.jsonl"
@@ -44,7 +35,7 @@ def missing_extraction(
     result = []
     for ci, condition in enumerate(conditions):
         for ti, track in enumerate(tracks):
-            shard_id = ci * len(tracks) + ti
+            shard_id = task_id(condition, track) if conditions == CONDITIONS and tracks == TRACKS else ci * len(tracks) + ti
             path = data_root / "judgment" / "runs" / "answer-extraction-v1" / track / f"{condition}.jsonl"
             latest: dict[str, str] = {}
             try:
