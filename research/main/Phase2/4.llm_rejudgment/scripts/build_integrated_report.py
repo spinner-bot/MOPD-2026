@@ -102,48 +102,65 @@ def main() -> None:
     for row in summary["summary"]:
         accuracy_rows.append([
             html.escape(row["condition"]), row["n"], p(row["accuracy"]),
+            f"[{p(row['accuracy_ci95'][0])}, {p(row['accuracy_ci95'][1])}]",
             p(row["valid_answer_rate"]), p(row["strict_format_rate"]), p(row["reasoning_marker_rate"]),
             f"{row['response_chars_mean']:.1f}", f"{row['response_chars_median']:.1f}", row["api_error_count"],
         ])
     summary_table = table(["模式 / Mode", "N", "准确率 / Accuracy", "有效选项 / Valid option", "严格格式 / Strict format", "推理词标记 / Lexical marker", "均值字符 / Mean chars", "中位字符 / Median chars", "API 错误 / Errors"], accuracy_rows)
 
-    paired_rows = []
+    paired_data = []
     for row in summary["paired_comparisons"]:
         comp = row["comparison"]
         p_raw = row.get("mcnemar_exact_p", row.get("mcnemar", {}).get("mcnemar_exact_p", row.get("mcnemar", {}).get("p_value", 1)))
         comp = comp.replace(" vs ", " − ")
         a_only = row.get("mcnemar", {}).get("rule_only_correct", row.get("mcnemar", {}).get("a_only", "—"))
         b_only = row.get("mcnemar", {}).get("llm_only_correct", row.get("mcnemar", {}).get("b_only", "—"))
-        paired_rows.append([html.escape(comp), f"{row['accuracy_difference'] * 100:+.2f} pp", a_only, b_only, f"{float(p_raw):.4g}"])
+        ci = row.get("accuracy_difference_ci95", [None, None])
+        paired_data.append((comp, row["accuracy_difference"], ci, a_only, b_only, float(p_raw)))
+    order = sorted(range(len(paired_data)), key=lambda i: paired_data[i][5])
+    adjusted = [0.0] * len(paired_data)
+    running = 0.0
+    for rank, index in enumerate(order):
+        running = max(running, min(1.0, (len(order) - rank) * paired_data[index][5]))
+        adjusted[index] = running
+    paired_rows = []
+    for (comp, difference, ci, s0_only, condition_only, p_raw), p_holm in zip(paired_data, adjusted):
+        ci_text = "—" if ci[0] is None else f"[{100*ci[0]:+.2f}, {100*ci[1]:+.2f}] pp"
+        paired_rows.append([html.escape(comp), f"{difference * 100:+.2f} pp", ci_text, s0_only, condition_only, f"{p_raw:.4g}", f"{p_holm:.4g}"])
 
     length_rows = []
     for x in lengths["conditions"]:
         length_rows.append([x["condition"], f"{x['n']:,}", f"{x['mean_chars']:.1f}", f"{x['median_chars']:.1f}",
-                            f"{x['skewness']:+.2f}", f"{x['pearson_r']:+.3f}", f"{x['spearman_rho']:+.3f}",
-                            f"{x['correct_mean_chars']:.1f}", f"{x['incorrect_mean_chars']:.1f}"])
-    length_table = table(["模式", "N", "均值字符", "中位字符", "偏度", "Pearson r", "Spearman ρ", "答对均值", "答错均值"], length_rows)
+                            f"{x['skewness']:+.2f}", f"{x['pearson_r']:+.3f} (p={x['pearson_p']:.2g})",
+                            f"{x['spearman_rho']:+.3f} (p={x['spearman_p']:.2g})",
+                            f"{x['correct_mean_chars']:.1f} (n={x['correct_n']})",
+                            f"{x['incorrect_mean_chars']:.1f} (n={x['incorrect_n']})",
+                            f"{x['correct_vs_incorrect_mann_whitney_p']:.2g}"])
+    length_table = table(["模式 / Mode", "样本数 / N", "均值字符 / Mean chars", "中位字符 / Median chars", "偏度 / Skewness", "Pearson r (p)", "Spearman ρ (p)", "答对均值 / Correct mean", "答错均值 / Incorrect mean", "MW p (length by correctness)"], length_rows)
     token_rows_html = []
     for x in tokens["conditions"]:
         token_rows_html.append([x["condition"], x["n"], f"{x['completion_tokens_mean']:.1f}", f"{x['completion_tokens_median']:.1f}",
-                                f"{x['completion_tokens_skewness']:+.2f}", f"{x['spearman_rho']:+.3f}",
-                                f"{x['correct_mean_tokens']:.1f}", f"{x['incorrect_mean_tokens']:.1f}",
-                                f"{x['p95_tail_accuracy']:.1%}"])
-    token_table = table(["Mode", "N", "平均 tokens", "中位数", "偏度", "Spearman ρ", "答对均值", "答错均值", "P95长尾准确率"], token_rows_html)
+                                f"{x['completion_tokens_skewness']:+.2f}", f"{x['spearman_rho']:+.3f} (p={x['spearman_p']:.2g})",
+                                f"{x['correct_mean_tokens']:.1f} (n={x['correct_n']})", f"{x['incorrect_mean_tokens']:.1f} (n={x['incorrect_n']})",
+                                f"{x['correct_vs_incorrect_mann_whitney_p']:.2g}", f"{x['p95_tail_n']} / {x['p95_tail_accuracy']:.1%}"])
+    token_table = table(["模式 / Mode", "样本数 / N", "平均 Token / Mean", "中位 Token / Median", "偏度 / Skewness", "Spearman ρ (p)", "答对均值 / Correct mean", "答错均值 / Incorrect mean", "MW p (tokens by correctness)", "P95 尾部 n / 准确率"], token_rows_html)
 
     det_rows = []
     for x in detector["per_condition"]:
         det_rows.append([x["condition"], f"{x['rule_accuracy']:.1%}", f"{x['llm_accuracy']:.1%}",
                          x["old_new_answer_letter_match_n"], f"{x['old_new_answer_letter_match_rate_among_both_answered']:.1%}",
                          x["rule_only_correct"], x["llm_only_correct"], f"{x['cohens_kappa_correctness']:.3f}"])
-    detector_table = table(["Mode", "规则正确率", "模型正确率", "选项相同数", "共同作答选项一致率", "仅规则正确", "仅模型正确", "正确性 κ"], det_rows)
+    detector_table = table(["模式 / Mode", "规则准确率 / Rule accuracy", "模型准确率 / LLM accuracy", "相同选项数 / Same option", "共同作答一致率 / Agreement", "仅规则正确 / Rule-only correct", "仅模型正确 / LLM-only correct", "正确性 κ / Correctness κ"], det_rows)
 
     work3_rows = []
     for x in transitions["target_flip_summaries"]:
+        if x["target"] not in {"S1", "S3"}:
+            continue
         work3_rows.append([x["target"], x["gain_n"], f"{x['gain_rate_of_all']:.2%}", x["loss_n"], f"{x['loss_rate_of_all']:.2%}",
                            x["net_gain"], f"{x['net_accuracy_difference'] * 100:+.2f} pp", f"{x['exact_mcnemar_p']:.4g}", f"{x['holm_adjusted_p']:.4g}"])
-    work3_table = table(["条件", "错→对 n", "占全部", "对→错 n", "占全部", "净变化", "准确率差", "McNemar p", "Holm p"], work3_rows)
+    work3_table = table(["条件 / Mode", "错→对 / Gain n", "占全部 / All", "对→错 / Loss n", "占全部 / All", "净变化 / Net", "准确率差 / Accuracy Δ", "McNemar p", "Holm 校正 p / Holm p"], work3_rows)
     states = transitions["state_summaries"]["states_S0_S1_S3"]["states"]
-    state_table = table(["S0–S1–S3 状态", "样本数", "总体比例"], [[f"<code>{x['state']}</code>", x["n"], p(x["rate"])] for x in states])
+    state_table = table(["S0–S1–S3 状态 / Correctness state", "样本数 / N", "总体比例 / Share"], [[f"<code>{x['state']}</code>", x["n"], p(x["rate"])] for x in states])
 
     task_df = pd.read_csv(derived / "transitions/task_flip_rates.csv", keep_default_na=False)
     task_rows = []
@@ -153,7 +170,7 @@ def main() -> None:
         sub = sub.sort_values(["flip_n", "task"], ascending=[False, True]).head(5)
         task_rows.extend([[mode, html.escape(str(x.task)), int(x.n_task), int(x.gain_n), int(x.loss_n),
                            f"{x.gain_rate:.1%}", f"{x.loss_rate:.1%}"] for x in sub.itertuples()])
-    task_table = table(["Mode", "任务 / Task", "该类样本", "错→对", "对→错", "恢复率", "损失率"], task_rows)
+    task_table = table(["模式 / Mode", "任务 / Task", "该类样本 / Task N", "错→对 / Gain", "对→错 / Loss", "恢复率 / Gain rate", "损失率 / Loss rate"], task_rows)
 
     per["correct_bool"] = per.llm_correct.astype(str).str.lower().eq("true")
     correctness = per.pivot(index="sample_id", columns="condition", values="correct_bool")
@@ -164,7 +181,7 @@ def main() -> None:
     for label, mask in [("S2-only recovery", s2_only_gain), ("S2-only loss", s2_only_loss)]:
         for task, n in task_lookup[mask].value_counts().head(8).items():
             s2_task_rows.append([label, html.escape(str(task)), int(n), p(n / int(mask.sum()))])
-    s2_task_table = table(["结构", "任务", "样本数", "该结构中的比例"], s2_task_rows)
+    s2_task_table = table(["结构 / Pattern", "任务 / Task", "样本数 / N", "该结构中的比例 / Within-pattern share"], s2_task_rows)
 
     figures = []
     figures += [image(figures2 / "accuracy_overview.png/accuracy.png", "Accuracy under the five prompting modes / 五种模式准确率")]
@@ -211,10 +228,10 @@ def main() -> None:
 <li><a href="#protocol">数据与判别方法 / Data and adjudication</a></li><li><a href="#inputs">输入对照 / Input comparison</a></li><li><a href="#w2-summary">五组总体结果 / Five-condition results</a></li><li><a href="#detector">判别器对比与核查 / Detector comparison and audit</a></li><li><a href="#length">字符长度与正确性 / Character length and correctness</a></li><li><a href="#tokens">Token 长度与长尾 / Token length and long tail</a></li><li><a href="#direction">研究方向评估 / Research assessment</a></li><li><a href="#w3">S0/S1/S3 配对翻转 / Paired flips</a></li><li><a href="#s2">S2 范围判断 / S2 scope decision</a></li><li><a href="#cases">典型案例 / Concrete cases</a></li><li><a href="#limits">解释边界 / Limitations</a></li></ul></nav>
 <h2 id="protocol">数据与判别方法 / Data and adjudication</h2><p>冻结样本共 2,000 题，每题在 S0、SC、S1、S2、S3 五种条件下各有一个原始输出，总计 10,000 条。原规则标签完整保留；本地 Qwen3.8-27B 对每条原始回答独立提取 ANSWERED/AMBIGUOUS/NO_ANSWER 状态及最终选项，正确性随后机械地与冻结 benchmark 答案比对。AMBIGUOUS 和 NO_ANSWER 在主准确率中计为不正确，并单独报告。</p><p>The frozen sample contains 2,000 questions, each with one raw response under S0, SC, S1, S2, and S3 (10,000 responses total). Original rule labels are preserved. Local Qwen3.8-27B independently extracts ANSWERED/AMBIGUOUS/NO_ANSWER and a final option from each response; correctness is then mechanically compared with the frozen benchmark answer. AMBIGUOUS and NO_ANSWER count as incorrect in primary accuracy and are reported separately.</p>
 <h2 id="inputs">输入对照 / Input comparison</h2>{input_html.replace('<h2>输入对照 / Input comparison</h2>','',1)}
-<h2 id="w2-summary">五组总体结果 / Five-condition results</h2><p>以下答案准确率采用模型复判标签；有效选项率、格式和推理标记按原始输出文本重算。每个条件 n=2,000。</p><p>Accuracy below uses LLM-adjudicated labels; valid-option, format, and lexical-reasoning indicators are recomputed from raw responses. Each condition has n=2,000.</p>{summary_table}
-<h3>相对 S0 的配对准确率差 / Paired accuracy differences versus S0</h3><p>McNemar 检验保留样本内配对结构；报告原始双侧 p 值。研究性解释同时考虑差值大小，不把 p 值单独当作实际重要性。</p><p>McNemar tests retain the within-sample pairing. Two-sided unadjusted p-values are shown; interpretation considers effect size and does not equate a p-value with practical importance.</p>{table(['比较 / Comparison','准确率差 / Difference','仅前者正确 / First only','仅后者正确 / Second only','McNemar p'],paired_rows)}
+<h2 id="w2-summary">五组总体结果 / Five-condition results</h2><p>以下答案准确率采用模型复判标签，括号列出 95% bootstrap CI；有效选项率、格式和推理标记按原始输出文本重算。每个条件 n=2,000。</p><p>Accuracy below uses LLM-adjudicated labels, with 95% bootstrap CIs; valid-option, format, and lexical-reasoning indicators are recomputed from raw responses. Each condition has n=2,000.</p>{table(['模式 / Mode','N','准确率 / Accuracy','准确率 95% CI','有效选项 / Valid option','严格格式 / Strict format','推理词标记 / Lexical marker','均值字符 / Mean chars','中位字符 / Median chars','API 错误 / Errors'],accuracy_rows)}
+<h3>相对 S0 的配对准确率差 / Paired accuracy differences versus S0</h3><p>差值定义为目标条件减 S0；表中分别列出 S0-only 与目标条件-only 答对数，并给出配对 bootstrap 95% CI、双侧精确 McNemar p 与四项比较的 Holm 校正 p。</p><p>Differences are target condition minus S0. The table reports S0-only and target-only correct counts, paired-bootstrap 95% CIs, two-sided exact McNemar p-values, and Holm-adjusted p-values across the four comparisons.</p>{table(['比较 / Comparison','准确率差 / Difference','95% CI','S0-only correct / S0 独有正确','目标-only correct / Target 独有正确','McNemar p','Holm p'],paired_rows)}
 <h2 id="detector">判别器对比与核查 / Detector comparison and audit</h2><p>规则与模型正确性标签在 10,000 条中有 {overall['discordant_correctness']:,} 条不一致；规则判别正确率为 {detector['rule_accuracy']:.2%}，模型复判对应为 {detector['llm_accuracy']:.2%}，正确性 Cohen’s κ={overall['cohens_kappa_correctness']:.3f}。在双方均给出选项的 {detector['old_new_answered_n']:,} 条中，选项字母完全一致 {detector['old_new_same_answer_n']:,} 条（{detector['old_new_same_answer_rate_among_both_answered']:.2%}）。这是显著的判别器差异，而非对模型复判准确性的独立证明。</p><p>Across 10,000 records, the rule and LLM correctness labels disagree on {overall['discordant_correctness']:,}. Rule accuracy is {detector['rule_accuracy']:.2%}, compared with {detector['llm_accuracy']:.2%} for LLM adjudication; correctness Cohen’s κ={overall['cohens_kappa_correctness']:.3f}. Among {detector['old_new_answered_n']:,} records where both supplied an option, exact option-letter agreement is {detector['old_new_same_answer_n']:,} ({detector['old_new_same_answer_rate_among_both_answered']:.2%}). This is a substantial detector difference, not independent proof that LLM adjudication is correct.</p>{detector_table}<div class="grid">{detector_figs}</div>
-<h3>分层人工核查 / Stratified manual audit</h3><p>人工逐条检查 209 个预先抽取样本：规则/模型答案一致与不一致各层在五个条件内均抽取 20 条，并纳入全部 {audit['n_nonanswer_census_audited']} 条 AMBIGUOUS/NO_ANSWER 输出。209 条中未观察到模型状态或选项提取错误（观察匹配率 {overall_manual_rate:.1%}）；9 条边界输出均被人工确认适当标为歧义/无答案。由于分层设计刻意过采规则/模型分歧，209 条简单合并比例不是总体误差率的无偏估计；零观察错误也不代表总体误差为零。</p><p>We manually inspected 209 preselected records: within each of the five conditions, 20 same-option and 20 different-option rule/LLM records were sampled, and all {audit['n_nonanswer_census_audited']} AMBIGUOUS/NO_ANSWER outputs were included. No state/option extraction error was observed (sample match rate {overall_manual_rate:.1%}); all nine boundary outputs were confirmed as appropriately ambiguous/unanswerable. Because the design deliberately oversamples detector disagreements, the unweighted 209-record rate is not an unbiased population error rate; zero observed errors does not imply zero population error.</p>{table(['条件 / Mode','分层','总体层 N','人工核查 n','观察到的提取错误'],[[x['condition'],html.escape(x['stratum']),x['population_n'],x['sample_n'],x['extraction_errors']] for x in audit['strata']])}
+<h3>分层人工核查 / Stratified manual audit</h3><p>人工逐条检查 209 个预先抽取样本：规则/模型答案一致与不一致各层在五个条件内均抽取 20 条，并纳入全部 {audit['n_nonanswer_census_audited']} 条 AMBIGUOUS/NO_ANSWER 输出（8 条歧义、1 条无答案）。209 条中未观察到模型状态或选项提取错误（观察匹配率 {overall_manual_rate:.1%}）；9 条边界输出均被人工确认适当标为歧义/无答案。由于分层设计刻意过采规则/模型分歧，209 条简单合并比例不是总体误差率的无偏估计；零观察错误也不代表总体误差为零。</p><p>We manually inspected 209 preselected records: within each of the five conditions, 20 same-option and 20 different-option rule/LLM records were sampled, and all {audit['n_nonanswer_census_audited']} AMBIGUOUS/NO_ANSWER outputs were included (eight ambiguous, one unanswered). No state/option extraction error was observed (sample match rate {overall_manual_rate:.1%}); all nine boundary outputs were confirmed as appropriately ambiguous/unanswerable. Because the design deliberately oversamples detector disagreements, the unweighted 209-record rate is not an unbiased population error rate; zero observed errors does not imply zero population error.</p>{table(['条件 / Mode','分层 / Stratum','总体层人数 / Population N','人工核查人数 / Audited n','提取错误 / Extraction errors'],[[x['condition'],html.escape(x['stratum']),x['population_n'],x['sample_n'],x['extraction_errors']] for x in audit['strata']])}
 <h2 id="length">字符长度与正确性 / Character length and correctness</h2><p>字符数是原始回答可见字符长度。相关只描述关联，按模型复判的正确/错误分组；图表分别展示分布、分位与正确性。</p><p>Character count is the visible length of each raw response. Correlations describe association only; correctness uses LLM adjudication. Figures show distributions, quantiles, and correctness strata.</p>{length_table}<div class="grid">{image(figures2/'length_distribution_shape.png','Character-length distribution / 字符长度分布')}{image(figures2/'length_by_correctness.png','Character length by correctness / 按正确性分组的字符长度')}{image(figures2/'accuracy_by_length_decile.png','Accuracy by character-length decile / 字符长度分位准确率')}{image(figures2/'accuracy_overview.png/accuracy.png','Accuracy overview / 准确率概览')}</div>
 <h2 id="tokens">Token 长度与长尾 / Token length and long tail</h2><p>Token 计数直接取原始 vLLM usage 字段，而不是由替代 tokenizer 估算。五种模式均呈明显右偏（均值高于中位数，偏度为正），P95 长尾组准确率低于各自总体准确率；长输出与错误相关，但该观察不说明因果方向。</p><p>Token counts come directly from original vLLM usage fields rather than a substitute tokenizer. All five modes are strongly right-skewed (mean above median, positive skew); P95-tail accuracy is lower than the corresponding overall accuracy. Long outputs are associated with errors, but this does not establish causal direction.</p>{token_table}<div class="grid">{image(figures2/'token_distribution_shape.png','Token-length distribution / Token 长度分布')}{image(figures2/'token_length_by_correctness.png','Token length by correctness / Token 长度与正确性')}{image(figures2/'token_accuracy_by_decile.png','Accuracy by token-length decile / Token 分位准确率')}{image(figures2/'token_p95_tail_task_accuracy.png','P95 tail accuracy by task / P95 长尾任务准确率')}</div>
 <h2 id="direction">研究方向评估 / Research-direction assessment</h2>{direction}

@@ -247,7 +247,9 @@ def main() -> None:
     plot_states(["S0", "S1", "S3"], "correctness_states_8.png", "Eight paired correctness states: S0–S1–S3")
     plot_states(["S0", "S1", "S2", "S3"], "correctness_states_16.png", "Sixteen paired correctness states: S0–S1–S2–S3")
 
-    targets = ["S1", "S2", "S3"]
+    # Primary Work 3 figures retain its selected S0/S1/S3 scope. S2 remains
+    # available in the separate inclusion diagnostic and machine-readable data.
+    targets = ["S1", "S3"]
     gains = [next(row["gain_n"] for row in target_summaries if row["target"] == target) for target in targets]
     losses = [next(row["loss_n"] for row in target_summaries if row["target"] == target) for target in targets]
     x = np.arange(len(targets))
@@ -263,7 +265,8 @@ def main() -> None:
     fig.savefig(args.figure_dir / "paired_flip_counts.png", dpi=190, bbox_inches="tight")
     plt.close(fig)
 
-    comp = flips[flips.category.isin(["gain", "loss"])].groupby(["target", "task", "category"]).size().rename("n").reset_index()
+    report_flips = flips[flips.target.isin(["S1", "S3"])]
+    comp = report_flips[report_flips.category.isin(["gain", "loss"])].groupby(["target", "task", "category"]).size().rename("n").reset_index()
     comp.to_csv(args.output_dir / "flip_task_composition.csv", index=False, encoding="utf-8-sig")
     pivot = comp.pivot_table(index=["target", "task"], columns="category", values="n", fill_value=0)
     if not pivot.empty:
@@ -284,7 +287,7 @@ def main() -> None:
 
     task_rate_df = pd.DataFrame(task_rate_records)
     task_rate_df.to_csv(args.output_dir / "task_flip_rates.csv", index=False, encoding="utf-8-sig")
-    heat = task_rate_df.pivot(index="task", columns="target", values="net_change_rate")
+    heat = task_rate_df[task_rate_df.target.isin(["S1", "S3"])].pivot(index="task", columns="target", values="net_change_rate")
     if not heat.empty:
         fig, ax = plt.subplots(figsize=(7.3, max(4.3, len(heat) * 0.37)))
         im = ax.imshow(heat.to_numpy(), aspect="auto", cmap="RdYlGn", vmin=-0.25, vmax=0.25)
@@ -299,7 +302,7 @@ def main() -> None:
 
     delta_groups = []
     labels, data, box_colors = [], [], []
-    for target in TARGETS:
+    for target in ["S1", "S3"]:
         for category in ["gain", "loss"]:
             vals = flips[(flips.target == target) & (flips.category == category)]["target_minus_s0_completion_tokens"].astype(float)
             if len(vals):
