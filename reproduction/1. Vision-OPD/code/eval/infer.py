@@ -238,6 +238,7 @@ def main():
         })
         model_answer = ""
         raw_model_answer = ""
+        api_usage = None
         client = get_client()
         for attempt in range(1, args.max_retries + 1):
             try:
@@ -255,6 +256,15 @@ def main():
                 )
                 raw_model_answer = (resp.choices[0].message.content or "").strip()
                 model_answer = raw_model_answer
+                usage = getattr(resp, "usage", None)
+                if usage is not None:
+                    api_usage = {}
+                    for key in ("prompt_tokens", "completion_tokens", "total_tokens"):
+                        value = getattr(usage, key, None)
+                        if value is not None:
+                            api_usage[key] = int(value)
+                    if not api_usage:
+                        api_usage = None
                 break
             except Exception as e:
                 if attempt == args.max_retries:
@@ -268,6 +278,7 @@ def main():
         record["system_prompt_sha256"] = system_prompt_sha256
         record["prompt_registry_sha256"] = prompt_registry_sha256
         record["model_answer"] = model_answer
+        record["api_usage"] = api_usage
         return record
 
     start = time.time()
@@ -285,6 +296,7 @@ def main():
                     record["system_prompt_sha256"] = system_prompt_sha256
                     record["prompt_registry_sha256"] = prompt_registry_sha256
                     record["model_answer"] = f"[FUTURE_ERROR] {e}"
+                    record["api_usage"] = None
                 f_out.write(json.dumps(record, ensure_ascii=False) + "\n")
                 f_out.flush()
                 pbar.update(1)

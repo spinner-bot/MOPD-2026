@@ -16,6 +16,8 @@ REGISTRY = WORK5 / "prompts/prompt_registry-v1.json"
 
 
 def main() -> None:
+    if "openai" not in sys.modules:
+        sys.modules["openai"] = SimpleNamespace(OpenAI=object)
     spec = importlib.util.spec_from_file_location("vision_opd_infer_work5_test", EVAL)
     module = importlib.util.module_from_spec(spec)
     assert spec.loader is not None
@@ -29,7 +31,10 @@ def main() -> None:
 
         def create(self, **kwargs):
             seen["messages"] = kwargs["messages"]
-            return SimpleNamespace(choices=[SimpleNamespace(message=SimpleNamespace(content="B"))])
+            return SimpleNamespace(
+                choices=[SimpleNamespace(message=SimpleNamespace(content="B"))],
+                usage=SimpleNamespace(prompt_tokens=17, completion_tokens=3, total_tokens=20),
+            )
 
     module.OpenAI = FakeClient
     registry = json.loads(REGISTRY.read_text(encoding="utf-8"))
@@ -62,6 +67,7 @@ def main() -> None:
             record = json.loads(output.read_text(encoding="utf-8").splitlines()[0])
             assert record["prompt_condition"] == condition
             assert record["model_answer"] == "B"
+            assert record["api_usage"] == {"prompt_tokens": 17, "completion_tokens": 3, "total_tokens": 20}
             assert record["system_prompt_sha256"] is None if condition == "S0" else len(record["system_prompt_sha256"]) == 64
     print("PASS: S0 has one user message; SC/S1/S2/S3 add only the registered system message.")
 
