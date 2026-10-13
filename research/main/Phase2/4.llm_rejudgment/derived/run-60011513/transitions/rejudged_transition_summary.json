@@ -1,0 +1,306 @@
+{
+  "schema": "phase2-rejudged-transition-analysis-v1",
+  "n_samples": 2000,
+  "correctness_label": "LLM answer extraction compared mechanically against frozen gold; NO_ANSWER and AMBIGUOUS count incorrect and are separately reported.",
+  "state_summaries": {
+    "states_S0_S1_S3": {
+      "conditions": [
+        "S0",
+        "S1",
+        "S3"
+      ],
+      "states": [
+        {
+          "state": "000",
+          "n": 168,
+          "rate": 0.084
+        },
+        {
+          "state": "001",
+          "n": 12,
+          "rate": 0.006
+        },
+        {
+          "state": "010",
+          "n": 11,
+          "rate": 0.0055
+        },
+        {
+          "state": "011",
+          "n": 34,
+          "rate": 0.017
+        },
+        {
+          "state": "100",
+          "n": 43,
+          "rate": 0.0215
+        },
+        {
+          "state": "101",
+          "n": 26,
+          "rate": 0.013
+        },
+        {
+          "state": "110",
+          "n": 18,
+          "rate": 0.009
+        },
+        {
+          "state": "111",
+          "n": 1688,
+          "rate": 0.844
+        }
+      ]
+    },
+    "states_S0_S1_S2_S3": {
+      "conditions": [
+        "S0",
+        "S1",
+        "S2",
+        "S3"
+      ],
+      "states": [
+        {
+          "state": "0000",
+          "n": 157,
+          "rate": 0.0785
+        },
+        {
+          "state": "0001",
+          "n": 8,
+          "rate": 0.004
+        },
+        {
+          "state": "0010",
+          "n": 11,
+          "rate": 0.0055
+        },
+        {
+          "state": "0011",
+          "n": 4,
+          "rate": 0.002
+        },
+        {
+          "state": "0100",
+          "n": 3,
+          "rate": 0.0015
+        },
+        {
+          "state": "0101",
+          "n": 12,
+          "rate": 0.006
+        },
+        {
+          "state": "0110",
+          "n": 8,
+          "rate": 0.004
+        },
+        {
+          "state": "0111",
+          "n": 22,
+          "rate": 0.011
+        },
+        {
+          "state": "1000",
+          "n": 22,
+          "rate": 0.011
+        },
+        {
+          "state": "1001",
+          "n": 9,
+          "rate": 0.0045
+        },
+        {
+          "state": "1010",
+          "n": 21,
+          "rate": 0.0105
+        },
+        {
+          "state": "1011",
+          "n": 17,
+          "rate": 0.0085
+        },
+        {
+          "state": "1100",
+          "n": 2,
+          "rate": 0.001
+        },
+        {
+          "state": "1101",
+          "n": 22,
+          "rate": 0.011
+        },
+        {
+          "state": "1110",
+          "n": 16,
+          "rate": 0.008
+        },
+        {
+          "state": "1111",
+          "n": 1666,
+          "rate": 0.833
+        }
+      ]
+    }
+  },
+  "target_flip_summaries": [
+    {
+      "target": "S1",
+      "n": 2000,
+      "gain_n": 45,
+      "loss_n": 69,
+      "stable_correct_n": 1706,
+      "stable_wrong_n": 180,
+      "gain_rate_of_all": 0.0225,
+      "loss_rate_of_all": 0.0345,
+      "net_gain": -24,
+      "net_accuracy_difference": -0.01200000000000001,
+      "exact_mcnemar_p": 0.030776323854403202,
+      "gain_mean_token_delta": -80.8,
+      "loss_mean_token_delta": -96.26086956521739,
+      "gain_median_token_delta": -53.0,
+      "loss_median_token_delta": -79.0,
+      "gain_vs_loss_mann_whitney_p": 0.48120197966350375,
+      "holm_adjusted_p": 0.0923289715632096
+    },
+    {
+      "target": "S2",
+      "n": 2000,
+      "gain_n": 45,
+      "loss_n": 55,
+      "stable_correct_n": 1720,
+      "stable_wrong_n": 180,
+      "gain_rate_of_all": 0.0225,
+      "loss_rate_of_all": 0.0275,
+      "net_gain": -10,
+      "net_accuracy_difference": -0.0050000000000000044,
+      "exact_mcnemar_p": 0.36820161732669615,
+      "gain_mean_token_delta": -20.533333333333335,
+      "loss_mean_token_delta": 31.6,
+      "gain_median_token_delta": -30.0,
+      "loss_median_token_delta": -30.0,
+      "gain_vs_loss_mann_whitney_p": 0.9337353793234294,
+      "holm_adjusted_p": 0.36820161732669615
+    },
+    {
+      "target": "S3",
+      "n": 2000,
+      "gain_n": 46,
+      "loss_n": 61,
+      "stable_correct_n": 1714,
+      "stable_wrong_n": 179,
+      "gain_rate_of_all": 0.023,
+      "loss_rate_of_all": 0.0305,
+      "net_gain": -15,
+      "net_accuracy_difference": -0.007499999999999951,
+      "exact_mcnemar_p": 0.17564027334487994,
+      "gain_mean_token_delta": -50.26086956521739,
+      "loss_mean_token_delta": -47.967213114754095,
+      "gain_median_token_delta": -65.5,
+      "loss_median_token_delta": -76.0,
+      "gain_vs_loss_mann_whitney_p": 0.9498230377235204,
+      "holm_adjusted_p": 0.3512805466897599
+    }
+  ],
+  "logical_groups": {
+    "s0_wrong_s1s3_both_wrong": 168,
+    "s0_wrong_any_s1s3_recovery": 57,
+    "s0_wrong_s1s3_both_recover": 34,
+    "s0_correct_s1s3_both_correct": 1688,
+    "s0_correct_any_s1s3_loss": 87,
+    "s0_correct_s1s3_both_loss": 43,
+    "s2_only_gain_vs_s0": 11,
+    "s2_only_loss_vs_s0": 22,
+    "s2_differs_from_both_s1_s3": 66,
+    "s2_disagrees_with_s1_or_s3": 133
+  },
+  "s2_inclusion_evidence": {
+    "old_rule_accuracy_s2": 0.605,
+    "llm_adjudicated_accuracy_s2": 0.8825,
+    "accuracy_change_pp": 27.749999999999996,
+    "old_rule_s2_gains_vs_s0": 88,
+    "old_rule_s2_losses_vs_s0": 110,
+    "llm_s2_gains_vs_s0": 45,
+    "llm_s2_losses_vs_s0": 55,
+    "s2_pairwise_tests": [
+      {
+        "comparison": "S2 vs S0",
+        "first_only_correct": 45,
+        "second_only_correct": 55,
+        "accuracy_difference": -0.0050000000000000044,
+        "exact_mcnemar_p": 0.36820161732669615,
+        "holm_adjusted_p": 0.7364032346533923
+      },
+      {
+        "comparison": "S2 vs S1",
+        "first_only_correct": 53,
+        "second_only_correct": 39,
+        "accuracy_difference": 0.007000000000000006,
+        "exact_mcnemar_p": 0.17498389846296175,
+        "holm_adjusted_p": 0.5249516953888853
+      },
+      {
+        "comparison": "S2 vs S3",
+        "first_only_correct": 56,
+        "second_only_correct": 51,
+        "accuracy_difference": 0.0024999999999999467,
+        "exact_mcnemar_p": 0.6991749840078744,
+        "holm_adjusted_p": 0.7364032346533923
+      }
+    ],
+    "logical_state_counts": {
+      "s0_wrong_s1s3_both_wrong": 168,
+      "s0_wrong_any_s1s3_recovery": 57,
+      "s0_wrong_s1s3_both_recover": 34,
+      "s0_correct_s1s3_both_correct": 1688,
+      "s0_correct_any_s1s3_loss": 87,
+      "s0_correct_s1s3_both_loss": 43,
+      "s2_only_gain_vs_s0": 11,
+      "s2_only_loss_vs_s0": 22,
+      "s2_differs_from_both_s1_s3": 66,
+      "s2_disagrees_with_s1_or_s3": 133
+    },
+    "decision_method": "Assess corrected S2 accuracy and paired exact tests against S0/S1/S3 together with the number and task distribution of S2-specific transitions; no single unadjusted p-value is used as the sole inclusion rule.",
+    "selected_scope": "S0-S1-S3",
+    "selected_scope_requires_reviewer_decision": true
+  },
+  "flip_token_delta": [
+    {
+      "target": "S1",
+      "category": "gain",
+      "n": 45,
+      "mean_delta": -80.8,
+      "median_delta": -53.0,
+      "q25": -147.0,
+      "q75": -24.0
+    },
+    {
+      "target": "S1",
+      "category": "loss",
+      "n": 69,
+      "mean_delta": -96.26086956521739,
+      "median_delta": -79.0,
+      "q25": -162.0,
+      "q75": -17.0
+    },
+    {
+      "target": "S3",
+      "category": "gain",
+      "n": 46,
+      "mean_delta": -50.26086956521739,
+      "median_delta": -65.5,
+      "q25": -125.0,
+      "q75": -38.25
+    },
+    {
+      "target": "S3",
+      "category": "loss",
+      "n": 61,
+      "mean_delta": -47.967213114754095,
+      "median_delta": -76.0,
+      "q25": -127.0,
+      "q75": -27.0
+    }
+  ],
+  "selected_report_scope": "S0-S1-S3"
+}

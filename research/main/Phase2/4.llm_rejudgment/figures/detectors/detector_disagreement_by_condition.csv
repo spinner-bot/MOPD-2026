@@ -1,0 +1,6 @@
+﻿condition,same_correctness,rule_only_correct,llm_only_correct,answer_letter_diff,n,correctness_disagreement_rate,answer_letter_disagreement_rate
+S0,1353,52,595,694,2000,0.3235,0.347
+S1,1658,38,304,383,2000,0.17100000000000004,0.1915
+S2,1327,59,614,715,2000,0.3365,0.3575
+S3,1595,39,366,450,2000,0.2025,0.225
+SC,1360,60,580,695,2000,0.31999999999999995,0.3475

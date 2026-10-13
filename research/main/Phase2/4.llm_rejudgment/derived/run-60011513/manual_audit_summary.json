@@ -1,0 +1,214 @@
+{
+  "schema": "phase2-stratified-manual-audit-v1",
+  "audit_purpose": "Check whether the LLM status/option faithfully represents the original response; correctness against gold is tracked separately.",
+  "n_audited": 209,
+  "n_answered_audited": 200,
+  "n_nonanswer_census_audited": 9,
+  "nonanswer_status_counts": {
+    "AMBIGUOUS": 8,
+    "NO_ANSWER": 1
+  },
+  "observed_extraction_errors": 0,
+  "observed_extraction_match_rate": 1.0,
+  "weighted_extraction_match_rate_point_estimate": 1.0,
+  "population_estimate_caution": "The sample is stratified and deliberately oversamples rule/model disagreements; the unweighted 209-row rate is descriptive only. Zero observed errors is not proof of zero population error.",
+  "strata": [
+    {
+      "condition": "S0",
+      "stratum": "both_answered_different_option",
+      "population_n": 694,
+      "sample_n": 20,
+      "design_weight": 34.7,
+      "extraction_errors": 0,
+      "observed_extraction_match_rate": 1.0,
+      "status_counts": {
+        "ANSWERED": 20
+      },
+      "manual_correct_n": 16,
+      "manual_incorrect_n": 4
+    },
+    {
+      "condition": "S0",
+      "stratum": "both_answered_same_option",
+      "population_n": 1306,
+      "sample_n": 20,
+      "design_weight": 65.3,
+      "extraction_errors": 0,
+      "observed_extraction_match_rate": 1.0,
+      "status_counts": {
+        "ANSWERED": 20
+      },
+      "manual_correct_n": 18,
+      "manual_incorrect_n": 2
+    },
+    {
+      "condition": "SC",
+      "stratum": "both_answered_different_option",
+      "population_n": 694,
+      "sample_n": 20,
+      "design_weight": 34.7,
+      "extraction_errors": 0,
+      "observed_extraction_match_rate": 1.0,
+      "status_counts": {
+        "ANSWERED": 20
+      },
+      "manual_correct_n": 16,
+      "manual_incorrect_n": 4
+    },
+    {
+      "condition": "SC",
+      "stratum": "both_answered_same_option",
+      "population_n": 1305,
+      "sample_n": 20,
+      "design_weight": 65.25,
+      "extraction_errors": 0,
+      "observed_extraction_match_rate": 1.0,
+      "status_counts": {
+        "ANSWERED": 20
+      },
+      "manual_correct_n": 16,
+      "manual_incorrect_n": 4
+    },
+    {
+      "condition": "SC",
+      "stratum": "llm_nonanswered_all",
+      "population_n": 1,
+      "sample_n": 1,
+      "design_weight": 1.0,
+      "extraction_errors": 0,
+      "observed_extraction_match_rate": 1.0,
+      "status_counts": {
+        "AMBIGUOUS": 1
+      },
+      "manual_correct_n": 0,
+      "manual_incorrect_n": 1
+    },
+    {
+      "condition": "S1",
+      "stratum": "both_answered_different_option",
+      "population_n": 382,
+      "sample_n": 20,
+      "design_weight": 19.1,
+      "extraction_errors": 0,
+      "observed_extraction_match_rate": 1.0,
+      "status_counts": {
+        "ANSWERED": 20
+      },
+      "manual_correct_n": 15,
+      "manual_incorrect_n": 5
+    },
+    {
+      "condition": "S1",
+      "stratum": "both_answered_same_option",
+      "population_n": 1617,
+      "sample_n": 20,
+      "design_weight": 80.85,
+      "extraction_errors": 0,
+      "observed_extraction_match_rate": 1.0,
+      "status_counts": {
+        "ANSWERED": 20
+      },
+      "manual_correct_n": 18,
+      "manual_incorrect_n": 2
+    },
+    {
+      "condition": "S1",
+      "stratum": "llm_nonanswered_all",
+      "population_n": 1,
+      "sample_n": 1,
+      "design_weight": 1.0,
+      "extraction_errors": 0,
+      "observed_extraction_match_rate": 1.0,
+      "status_counts": {
+        "AMBIGUOUS": 1
+      },
+      "manual_correct_n": 0,
+      "manual_incorrect_n": 1
+    },
+    {
+      "condition": "S2",
+      "stratum": "both_answered_different_option",
+      "population_n": 714,
+      "sample_n": 20,
+      "design_weight": 35.7,
+      "extraction_errors": 0,
+      "observed_extraction_match_rate": 1.0,
+      "status_counts": {
+        "ANSWERED": 20
+      },
+      "manual_correct_n": 17,
+      "manual_incorrect_n": 3
+    },
+    {
+      "condition": "S2",
+      "stratum": "both_answered_same_option",
+      "population_n": 1285,
+      "sample_n": 20,
+      "design_weight": 64.25,
+      "extraction_errors": 0,
+      "observed_extraction_match_rate": 1.0,
+      "status_counts": {
+        "ANSWERED": 20
+      },
+      "manual_correct_n": 20,
+      "manual_incorrect_n": 0
+    },
+    {
+      "condition": "S2",
+      "stratum": "llm_nonanswered_all",
+      "population_n": 1,
+      "sample_n": 1,
+      "design_weight": 1.0,
+      "extraction_errors": 0,
+      "observed_extraction_match_rate": 1.0,
+      "status_counts": {
+        "AMBIGUOUS": 1
+      },
+      "manual_correct_n": 0,
+      "manual_incorrect_n": 1
+    },
+    {
+      "condition": "S3",
+      "stratum": "both_answered_different_option",
+      "population_n": 444,
+      "sample_n": 20,
+      "design_weight": 22.2,
+      "extraction_errors": 0,
+      "observed_extraction_match_rate": 1.0,
+      "status_counts": {
+        "ANSWERED": 20
+      },
+      "manual_correct_n": 19,
+      "manual_incorrect_n": 1
+    },
+    {
+      "condition": "S3",
+      "stratum": "both_answered_same_option",
+      "population_n": 1550,
+      "sample_n": 20,
+      "design_weight": 77.5,
+      "extraction_errors": 0,
+      "observed_extraction_match_rate": 1.0,
+      "status_counts": {
+        "ANSWERED": 20
+      },
+      "manual_correct_n": 20,
+      "manual_incorrect_n": 0
+    },
+    {
+      "condition": "S3",
+      "stratum": "llm_nonanswered_all",
+      "population_n": 6,
+      "sample_n": 6,
+      "design_weight": 1.0,
+      "extraction_errors": 0,
+      "observed_extraction_match_rate": 1.0,
+      "status_counts": {
+        "AMBIGUOUS": 5,
+        "NO_ANSWER": 1
+      },
+      "manual_correct_n": 0,
+      "manual_incorrect_n": 6
+    }
+  ]
+}

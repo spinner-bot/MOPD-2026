@@ -1,0 +1,17 @@
+﻿target,task,category,n
+S1,Count,gain,15
+S1,Count,loss,20
+S1,Depth,gain,10
+S1,Depth,loss,4
+S1,Distance,gain,15
+S1,Distance,loss,38
+S1,Relation,gain,5
+S1,Relation,loss,7
+S3,Count,gain,13
+S3,Count,loss,21
+S3,Depth,gain,11
+S3,Depth,loss,6
+S3,Distance,gain,17
+S3,Distance,loss,29
+S3,Relation,gain,5
+S3,Relation,loss,5
