@@ -20,6 +20,7 @@
 - `report/2141-T-261014-0322-图像完整性门禁通过与pilot时限续跑.md`：记录全量图像门禁结果、debug QoS超时、长时pilot续跑和全量数组的新依赖关系。
 - `report/2142-T-261014-0330-全量答案抽取与评分复核管线.md`：记录覆盖A–F、重复标签和数字短答的文本判别设计、断点续跑与自动化测试。
 - `report/2143-T-261014-0340-全量验证冻结与两条评分链预提交.md`：记录全量后处理队列链、Vision-OPD原生评分任务及当前Slurm依赖状态。
+- `report/2144-T-261014-0345-原生评分队列提交与三链调度确认.md`：记录官方评分数组提交、远端语法校验及完整后处理依赖图。
 - `protocol.md`：冻结前协议草案；数据版本、题数、提示词模板、模型/推理参数、评分器版本待核验后逐项冻结。
 - `dataset_sources.tsv`：固定数据源 repository、revision 和待核验题数。
 - `scripts/fetch_pinned_datasets.py`：在服务器直接从 Hugging Face 下载固定 revision 的 parquet，并输出行数、文件大小与 SHA-256 清单；不经 SSH 传输数据。
