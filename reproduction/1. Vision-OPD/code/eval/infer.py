@@ -143,7 +143,34 @@ def main():
     parser.add_argument("--parallel_workers", default=32, type=int)
     parser.add_argument("--enable_thinking", type=str, default=None, choices=["True", "False"],
                         help="Set enable_thinking via chat_template_kwargs (True=on, False=off)")
+    parser.add_argument("--prompt_registry", type=str, default=None,
+                        help="Optional versioned Work5 prompt registry JSON; omitted preserves the original interface")
+    parser.add_argument("--condition", type=str, default="S0", choices=["S0", "SC", "S1", "S2", "S3"],
+                        help="Work5 condition; S0 sends no system message")
     args = parser.parse_args()
+
+    system_prompt = None
+    system_prompt_sha256 = None
+    prompt_registry_sha256 = None
+    if args.prompt_registry:
+        registry_path = Path(args.prompt_registry)
+        registry_bytes = registry_path.read_bytes()
+        prompt_registry_sha256 = hashlib.sha256(registry_bytes).hexdigest()
+        registry = json.loads(registry_bytes.decode("utf-8"))
+        if registry.get("schema") != "phase2-work5-prompt-registry-v1":
+            raise ValueError("Unsupported prompt registry schema")
+        try:
+            system_prompt = registry["conditions"][args.condition]["system_message"]
+        except (KeyError, TypeError) as exc:
+            raise ValueError(f"Prompt registry lacks condition {args.condition}") from exc
+        if args.condition == "S0" and system_prompt is not None:
+            raise ValueError("S0 must omit the system message entirely")
+        if args.condition != "S0" and not isinstance(system_prompt, str):
+            raise ValueError(f"Condition {args.condition} requires a system message")
+        if system_prompt is not None:
+            system_prompt_sha256 = hashlib.sha256(system_prompt.encode("utf-8")).hexdigest()
+    elif args.condition != "S0":
+        raise ValueError("Non-S0 conditions require --prompt_registry")
 
     benchmark = args.benchmark
     data_path = Path(args.benchmark_json)
@@ -199,15 +226,16 @@ def main():
         img_path = pick_image_path(item)
         query = item.get("query", "").replace("<image>", "").strip()
         data_uri = image_to_data_uri(img_path, benchmark)
-        messages = [
-            {
-                "role": "user",
-                "content": [
-                    {"type": "image_url", "image_url": {"url": data_uri}},
-                    {"type": "text", "text": query},
-                ],
-            },
-        ]
+        messages = []
+        if system_prompt is not None:
+            messages.append({"role": "system", "content": system_prompt})
+        messages.append({
+            "role": "user",
+            "content": [
+                {"type": "image_url", "image_url": {"url": data_uri}},
+                {"type": "text", "text": query},
+            ],
+        })
         model_answer = ""
         raw_model_answer = ""
         client = get_client()
@@ -236,6 +264,9 @@ def main():
                     time.sleep(1.0)
         record = dict(item)
         record["sample_uid"] = sample_uid
+        record["prompt_condition"] = args.condition
+        record["system_prompt_sha256"] = system_prompt_sha256
+        record["prompt_registry_sha256"] = prompt_registry_sha256
         record["model_answer"] = model_answer
         return record
 
@@ -250,6 +281,9 @@ def main():
                     item = future_to_item[future]
                     record = dict(item)
                     record["sample_uid"] = item.get("sample_uid") or make_sample_uid(item, benchmark)
+                    record["prompt_condition"] = args.condition
+                    record["system_prompt_sha256"] = system_prompt_sha256
+                    record["prompt_registry_sha256"] = prompt_registry_sha256
                     record["model_answer"] = f"[FUTURE_ERROR] {e}"
                 f_out.write(json.dumps(record, ensure_ascii=False) + "\n")
                 f_out.flush()
