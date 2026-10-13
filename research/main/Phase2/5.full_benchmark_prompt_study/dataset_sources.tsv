@@ -1,7 +1,7 @@
 benchmark	hub_repo	revision	config_or_split	expected_rows	count_status	loader_source
-vstar	lmms-lab/vstar-bench	b44023b4dca749ed8a76b85eb576627d05a1c174	default/test	191	metadata-confirmed; verify converted file	Vision-OPD prepare_data.py
-zoombench	inclusionAI/ZoomBench	b788097e57d30510c6877824833234a73bf80d25	default/test	845	metadata-confirmed; verify converted file	Vision-OPD prepare_data.py
-hrbench-4k	DreamMr/HR-Bench	83b9013d6293b85dc507e87199ca52517536939c	hrbench_version_split/hrbench_4k	800	metadata-confirmed; verify converted file	Vision-OPD prepare_data.py
-hrbench-8k	DreamMr/HR-Bench	83b9013d6293b85dc507e87199ca52517536939c	hrbench_version_split/hrbench_8k	800	metadata-confirmed; verify converted file	Vision-OPD prepare_data.py
-mme-realworld	yifanzhang114/MME-RealWorld-Lmms-eval	f157390129e8d2b60757eb68d340aade9446b52b	default/train	23089	estimated by Hub; full shard count pending	Vision-OPD prepare_data.py
-mme-realworld-cn	yifanzhang114/MME-RealWorld-CN-Lmms-eval	37ac6f4e57ef211b37d1ee04a8f1268f1411b3e0	default/train	5891	rows API confirmed; verify full shards	Vision-OPD prepare_data.py
+vstar	lmms-lab/vstar-bench	b44023b4dca749ed8a76b85eb576627d05a1c174	default/test	191	parquet verified; SHA-256 recorded	Vision-OPD prepare_data.py
+zoombench	inclusionAI/ZoomBench	b788097e57d30510c6877824833234a73bf80d25	default/test	845	parquet verified; SHA-256 recorded	Vision-OPD prepare_data.py
+hrbench-4k	DreamMr/HR-Bench	83b9013d6293b85dc507e87199ca52517536939c	hrbench_version_split/hrbench_4k	800	parquet verified; select hr_bench_4k.parquet only	Vision-OPD prepare_data.py
+hrbench-8k	DreamMr/HR-Bench	83b9013d6293b85dc507e87199ca52517536939c	hrbench_version_split/hrbench_8k	800	parquet verified; select hr_bench_8k.parquet only	Vision-OPD prepare_data.py
+mme-realworld	yifanzhang114/MME-RealWorld-Lmms-eval	f157390129e8d2b60757eb68d340aade9446b52b	default/train	23609	70 parquet shards fully scanned and hashed	Vision-OPD prepare_data.py
+mme-realworld-cn	yifanzhang114/MME-RealWorld-CN-Lmms-eval	37ac6f4e57ef211b37d1ee04a8f1268f1411b3e0	default/train	5917	13 parquet shards fully scanned and hashed	Vision-OPD prepare_data.py

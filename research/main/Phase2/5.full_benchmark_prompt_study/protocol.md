@@ -12,7 +12,7 @@
 
 首要范围为 Vision-OPD 论文报告和官方运行示例明确列出的六个主 benchmark track：V* Bench、ZoomBench、HR-Bench 4K、HR-Bench 8K、MME-RealWorld EN、MME-RealWorld CN。MME-RealWorld-Lite 是独立的加速子集，不与 EN/CN 全量集混算；CV-Bench、MMStar、MMVP、POPE、VisualProbe 等属于仓库支持的额外评测/泛化集合，不纳入本轮“论文主评测集”总数。每个集合均以冻结 revision 的完整可评测记录为全集。
 
-题数只在固定版本下载、转换并通过行数/唯一 ID/媒体字段/标签校验后最终确认。报告分清 QA 行数、图像数、官方子任务数及各类排除/无效记录；不以主页近似显示数替代实际运行数。2026-10-14 Hugging Face 公开元数据的核验结果为：V* 191、ZoomBench 845、HR-Bench 4K/8K 各800、MME-RealWorld EN 预计23,089（dataset viewer 仅可读取首3,718行，显示估算总数23,089）、CN 5,891（viewer rows API 精确返回）。据此目前预计六集合共31,616条QA，五条件共158,080次生成；其中 EN 数仍标记为预估，最终数必须以固定revision完整源 parquet 的行数复核。原始 MME benchmark 公布的29,429 EN QA/5,917 CN QA 属于原始版口径，不能代替 Vision-OPD 使用的 LMMs-Eval 转换数据行数。
+题数只在固定版本下载、转换并通过行数/唯一 ID/媒体字段/标签校验后最终确认。公开网页元数据曾给出近似数，但服务器直接下载固定 revision 后逐 parquet 分片读取的结果与其中部分估算不同。当前源文件级 QA 行数为：V* 191、ZoomBench 845、HR-Bench 4K 800、HR-Bench 8K 800、MME-RealWorld EN 23,609（70个 parquet shards）、CN 5,917（13个 parquet shards）。因此当前源数据合计为32,162 QA，五条件对应160,810次生成。这里的行数是 parquet 源记录数；官方转换、重复/无效记录、唯一 ID、图片引用、类别字段以及实际可评测 QA 数仍须逐 track 核验后才能冻结。HR-Bench 单个仓库同时包含4K和8K两个 parquet，统计时每个 track 只能计入对应文件，不能将两个文件都加到每个 track。原始 MME benchmark 与 LMMs-Eval 转换版可能使用不同口径，均需明确区分。
 
 ## 3. 官方流程核验原则
 

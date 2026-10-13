@@ -43,6 +43,13 @@ def main() -> None:
             repo, revision = row["hub_repo"], row["revision"]
             target = DATA_ROOT / "datasets" / row["benchmark"]
             target.mkdir(parents=True, exist_ok=True)
+            parquet_pattern = {
+                "hrbench-4k": "**/hr_bench_4k.parquet",
+                "hrbench-8k": "**/hr_bench_8k.parquet",
+            }.get(row["benchmark"], "*.parquet")
+            parquet_patterns = [parquet_pattern]
+            if parquet_pattern.startswith("**/"):
+                parquet_patterns.append(parquet_pattern.removeprefix("**/"))
             print(f"FETCH {repo}@{revision} -> {target}", flush=True)
             snapshot_download(
                 repo_id=repo,
@@ -50,9 +57,12 @@ def main() -> None:
                 revision=revision,
                 local_dir=str(target),
                 cache_dir=str(cache / "hub"),
-                allow_patterns=["*.parquet", "**/*.parquet", "README.md", "*.json", "**/*.json"],
+                allow_patterns=parquet_patterns + ["README.md", "*.json", "**/*.json"],
             )
-            for path in sorted(target.rglob("*.parquet")):
+            matching = sorted(target.glob(parquet_pattern))
+            if not matching and parquet_pattern.startswith("**/"):
+                matching = sorted(target.glob(parquet_pattern.removeprefix("**/")))
+            for path in matching:
                 metadata = pq.ParquetFile(path).metadata
                 manifest.append({
                     "benchmark": row["benchmark"],
