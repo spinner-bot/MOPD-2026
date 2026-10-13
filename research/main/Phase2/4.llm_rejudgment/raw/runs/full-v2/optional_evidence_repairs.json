@@ -1,0 +1,44 @@
+{
+  "schema": "optional-evidence-repair-v1",
+  "created_at_utc": "2026-10-13T08:45:03.943477+00:00",
+  "repair_count": 3,
+  "repairs": [
+    {
+      "sample_id": "cvbench-2D-ADE20K-ADE_val_00001378.jpg-20",
+      "condition": "S1",
+      "shard_file": "judge-shard-0.jsonl",
+      "prior_request_status": "INVALID_JUDGE_JSON",
+      "prior_validation_error": "ValueError: evidence is not an exact substring of the response",
+      "model_status_preserved": "AMBIGUOUS",
+      "model_selected_option_preserved": null,
+      "judge_raw_text_sha256": "86caeff5e31133ad7550f9d339685a2445defae688b8ce51ca54228a82281847",
+      "normalized_evidence": "",
+      "normalization": "discarded_nonverbatim_optional_evidence"
+    },
+    {
+      "sample_id": "cvbench-3D-Omni3D-nuScenes/samples/CAM_FRONT/n008-2018-08-01-15-16-36-0400__CAM_FRONT__1533151616412404.jpg-1191",
+      "condition": "S3",
+      "shard_file": "judge-shard-1.jsonl",
+      "prior_request_status": "INVALID_JUDGE_JSON",
+      "prior_validation_error": "ValueError: evidence is not an exact substring of the response",
+      "model_status_preserved": "AMBIGUOUS",
+      "model_selected_option_preserved": null,
+      "judge_raw_text_sha256": "c2551d376a3a2de38662701b276edd743815a108eced996fc81108c9cef04297",
+      "normalized_evidence": "",
+      "normalization": "discarded_nonverbatim_optional_evidence"
+    },
+    {
+      "sample_id": "cvbench-3D-Omni3D-nuScenes/samples/CAM_FRONT/n008-2018-08-01-15-16-36-0400__CAM_FRONT__1533151735512404.jpg-1148",
+      "condition": "S3",
+      "shard_file": "judge-shard-3.jsonl",
+      "prior_request_status": "INVALID_JUDGE_JSON",
+      "prior_validation_error": "ValueError: evidence is not an exact substring of the response",
+      "model_status_preserved": "AMBIGUOUS",
+      "model_selected_option_preserved": null,
+      "judge_raw_text_sha256": "34f9637d8865607c2b9cf9bec197ac6292492aae74d78d9989ef12f7536e370c",
+      "normalized_evidence": "",
+      "normalization": "discarded_nonverbatim_optional_evidence"
+    }
+  ],
+  "interpretation": "This is deterministic evidence-field normalization, not a new model judgment. The original raw judge output and failed validation attempt remain in each shard JSONL; only optional non-verbatim evidence on non-answer statuses was removed."
+}
