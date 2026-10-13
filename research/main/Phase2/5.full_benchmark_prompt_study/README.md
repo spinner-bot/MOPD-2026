@@ -18,7 +18,7 @@
 - `report/2139-T-261014-0252-五条件全量任务编排与试运行进度.md`：记录pilot真实模型作业的门禁执行状态及五条件单卡数组任务编排。
 - `report/2140-T-261014-0305-全量评测数组预提交与pilot状态.md`：记录五条件全量数组的依赖式预提交、资源试算和pilot实时进展。
 - `report/2141-T-261014-0322-图像完整性门禁通过与pilot时限续跑.md`：记录全量图像门禁结果、debug QoS超时、长时pilot续跑和全量数组的新依赖关系。
-- `report/2136-T-261014-0222-题型边界复核与五条件提示词冻结.md`：记录Zoom数字短答和MME重复D选项边界核验，以及v1提示词文本。
+- `report/2142-T-261014-0330-全量答案抽取与评分复核管线.md`：记录覆盖A–F、重复标签和数字短答的文本判别设计、断点续跑与自动化测试。
 - `protocol.md`：冻结前协议草案；数据版本、题数、提示词模板、模型/推理参数、评分器版本待核验后逐项冻结。
 - `dataset_sources.tsv`：固定数据源 repository、revision 和待核验题数。
 - `scripts/fetch_pinned_datasets.py`：在服务器直接从 Hugging Face 下载固定 revision 的 parquet，并输出行数、文件大小与 SHA-256 清单；不经 SSH 传输数据。
@@ -33,6 +33,12 @@
 - `scripts/run_full_conditions.sbatch`：五元素Slurm数组，每个任务独占一张A100运行一个提示条件；四任务并发，输出保存在large scratch并可利用官方推理脚本的逐题检查点恢复。
 - `scripts/verify_prepared_benchmarks.py`：对转换后QA覆盖、UID、图片引用与全部媒体SHA-256执行独立完整性门禁。
 - `scripts/verify_inference_outputs.py`：核验逐条件完整覆盖、无API失败、消息条件哈希及各条件输入完全配对。
+- `scripts/verify_and_freeze_full_outputs.sbatch`：五条件数组完成后执行全量输出门禁，并冻结30个条件×track答案抽取输入分片。
+- `scripts/prepare_answer_extraction.py`：生成文本判别输入；模型payload不含图像、gold、条件、UID或类别。
+- `prompts/answer_extraction_v1.txt`：工作5答案抽取指令，支持A–F选项及数字短答，并要求原文证据。
+- `scripts/run_answer_extraction.py`：用本地Qwen3.8-27B作单分片结构化文本答案抽取，记录证据和状态并支持断点续跑。
+- `scripts/run_answer_extraction_array.sbatch`：五条件×六track共30个单卡判别任务，最多8个并发。
+- `tests/test_answer_extraction_contract.py`：检查选项标签解析、重复D、标签白名单、数字短答证据和无答案状态。
 - `audits/`：由服务器生成并经 GitHub 中转的小型字段审计中间产物；原始图片和数据不入 Git。
 - `prompts/`：冻结后的条件提示词及按题型适配的模板；修改必须升版本并记录影响。
 - `prompts/prompt_registry-v1.json`：首版五条件完整提示词注册表；S0 的 `null` 表示不发送 system message。修改需升版本并重新记录SHA-256。
