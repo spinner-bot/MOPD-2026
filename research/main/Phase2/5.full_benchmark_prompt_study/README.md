@@ -21,6 +21,7 @@
 - `report/2142-T-261014-0330-全量答案抽取与评分复核管线.md`：记录覆盖A–F、重复标签和数字短答的文本判别设计、断点续跑与自动化测试。
 - `report/2143-T-261014-0340-全量验证冻结与两条评分链预提交.md`：记录全量后处理队列链、Vision-OPD原生评分任务及当前Slurm依赖状态。
 - `report/2144-T-261014-0345-原生评分队列提交与三链调度确认.md`：记录官方评分数组提交、远端语法校验及完整后处理依赖图。
+- `report/2145-T-261014-0342-推理Token用量留存与接口测试.md`：记录原始推理输出增加服务端token用量留存、接口测试与当前队列状态。
 - `protocol.md`：冻结前协议草案；数据版本、题数、提示词模板、模型/推理参数、评分器版本待核验后逐项冻结。
 - `dataset_sources.tsv`：固定数据源 repository、revision 和待核验题数。
 - `scripts/fetch_pinned_datasets.py`：在服务器直接从 Hugging Face 下载固定 revision 的 parquet，并输出行数、文件大小与 SHA-256 清单；不经 SSH 传输数据。
@@ -29,7 +30,7 @@
 - `scripts/audit_task_edge_cases.py`：交叉核对Zoom题型/答案格式并完整导出MME六选项边界题。
 - `scripts/prepare_pinned_benchmarks.py`：读取固定revision parquet，逐批提取图像并复现官方query构造；保留稳定UID和类别元数据。
 - `scripts/prepare_pinned_benchmarks.sbatch`：在账户允许的GPU分区运行CPU为主的固定版数据转换（1张卡用于满足分区准入）。
-- `scripts/test_infer_prompt_conditions.py`：以模拟API做无GPU契约测试，校验S0无system message且其余条件只增加注册表中的system文本。
+- `scripts/test_infer_prompt_conditions.py`：以模拟API做无GPU契约测试，校验五条件消息结构与服务端prompt/completion/total token用量的逐条留存。
 - `scripts/make_stratified_pilot.py`：确定性选择覆盖六个track、主类别、Zoom题型及MME六选项异常的小样本pilot。
 - `scripts/run_stratified_pilot.sbatch`：单A100启动vLLM，并通过官方infer接口跑五条件pilot。
 - `scripts/run_full_conditions.sbatch`：五元素Slurm数组，每个任务独占一张A100运行一个提示条件；四任务并发，输出保存在large scratch并可利用官方推理脚本的逐题检查点恢复。
