@@ -1,0 +1,12 @@
+60274811     CANCELLED+      0:0   00:12:08        lrdn0196 
+60274811.ba+  CANCELLED     0:15   00:12:11        lrdn0196 
+60274811.ex+  COMPLETED      0:0   00:12:13        lrdn0196 
+60275186     CANCELLED+      0:0   00:03:30        lrdn3325 
+60275186.ba+  CANCELLED     0:15   00:03:33        lrdn3325 
+60275186.ex+  COMPLETED      0:0   00:03:35        lrdn3325 
+60275188     CANCELLED+      0:0   00:03:30        lrdn3428 
+60275188.ba+  CANCELLED     0:15   00:03:33        lrdn3428 
+60275188.ex+  COMPLETED      0:0   00:03:35        lrdn3428 
+60275190     CANCELLED+      0:0   00:03:30        lrdn3435 
+60275190.ba+  CANCELLED     0:15   00:03:33        lrdn3435 
+60275190.ex+  COMPLETED      0:0   00:03:35        lrdn3435 
