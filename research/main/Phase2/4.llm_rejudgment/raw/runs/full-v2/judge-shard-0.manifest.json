@@ -34,5 +34,10 @@
   "image_sent_to_model": false,
   "condition_or_sample_id_sent_to_model": false,
   "finished_at_utc": "2026-10-13T08:37:25.941962+00:00",
-  "successful_records": 2499
+  "successful_records": 2500,
+  "optional_evidence_repairs": {
+    "count": 1,
+    "policy": "For NO_ANSWER/AMBIGUOUS only, non-verbatim optional evidence was blanked; status, option, reason code, and original judge_raw_text are unchanged.",
+    "repair_timestamp_utc": "2026-10-13T08:45:03.902889+00:00"
+  }
 }
