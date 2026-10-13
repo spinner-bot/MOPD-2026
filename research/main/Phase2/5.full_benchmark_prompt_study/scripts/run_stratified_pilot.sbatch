@@ -56,7 +56,7 @@ WORK5_DATA_ROOT="${DATA_ROOT}" "${PYTHON}" "${FAST_REPO}/research/main/Phase2/5.
   --served-model-name "${MODEL_ID}" \
   --tensor-parallel-size 1 \
   --gpu-memory-utilization 0.90 \
-  --max-model-len 32768 \
+  --max-model-len 65536 \
   --trust-remote-code \
   --port "${PORT}" >"${RUN_ROOT}/logs/vllm.log" 2>&1 &
 SERVER_PID=$!
