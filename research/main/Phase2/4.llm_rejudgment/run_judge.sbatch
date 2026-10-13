@@ -10,6 +10,8 @@
 #SBATCH --error=/leonardo_scratch/large/userexternal/rqian000/Phase2/llm_rejudgment/logs/%x-%j.err
 
 set -euo pipefail
+source /etc/profile
+module load cuda/12.6
 
 REPO="/leonardo/home/userexternal/rqian000/spinner-bot/MOPD-2026"
 WORK="${REPO}/research/main/Phase2/4.llm_rejudgment"
