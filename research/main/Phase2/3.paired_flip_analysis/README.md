@@ -23,3 +23,5 @@
 `../2.short_output_prompt_study/`
 
 本目录不覆盖或修改 2 号工作的 raw、derived 和 report 文件。
+
+当前成品报告为 `report/paired-flip-analysis-report.html`。报告围绕八种 S0/S1/S3 正确性状态组织，图表和解释相邻，包含任务内部条件率、12 个可展开的原始输出案例。完整题目级数据和复现脚本分别位于 `derived/run-60011513/` 与 `scripts/build_state_report.py`。
