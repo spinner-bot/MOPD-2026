@@ -31,6 +31,10 @@ export VLLM_WORKER_MULTIPROC_METHOD=spawn
 
 mkdir -p "${RUN_ROOT}/logs" "${RUN_ROOT}/outputs"
 cd "${FAST_REPO}"
+if find "${DATA_ROOT}/pilot/runs" -mindepth 3 -maxdepth 3 -type f -name COMPLETE -print -quit 2>/dev/null | grep -q .; then
+  echo "A prior pilot already passed output verification; no duplicate pilot requests will be sent."
+  exit 0
+fi
 printf 'job_id=%s\nstart=%s\ncommit=%s\ncondition_count=5\n' "${SLURM_JOB_ID}" "$(date -Is)" "$(git rev-parse HEAD)" | tee "${RUN_ROOT}/logs/run.txt"
 nvidia-smi | tee "${RUN_ROOT}/logs/gpu.txt"
 sha256sum "${MODEL_DIR}/config.json" "${MODEL_DIR}/model.safetensors" | tee "${RUN_ROOT}/logs/model-sha256.txt"
