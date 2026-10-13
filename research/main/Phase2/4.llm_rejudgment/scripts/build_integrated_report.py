@@ -199,8 +199,9 @@ def main() -> None:
         except json.JSONDecodeError:
             choices = ast.literal_eval(r.choices)
         choices_html = "".join(
-            f"<li>({html.escape(str(c.get('option', '')) )}) {html.escape(str(c.get('text', '')))}</li>"
-            for c in choices
+            f"<li>({html.escape(str(c.get('option', chr(65 + i)) if isinstance(c, dict) else chr(65 + i)) )}) "
+            f"{html.escape(str(c.get('text', '') if isinstance(c, dict) else c))}</li>"
+            for i, c in enumerate(choices)
         )
         s0_row, target_row = result_map[(sample_id, "S0")], result_map[(sample_id, target)]
         image_markup = image(w4 / "raw/rejudged_case_images" / image_record["file"], f"Flip case {case['case_index']} / 翻转案例 {case['case_index']}")
