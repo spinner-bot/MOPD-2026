@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import ast
 import base64
 import csv
 import html
@@ -55,6 +56,8 @@ def main() -> None:
     detector = read_json(derived / "detector_comparison.json")
     audit = read_json(derived / "manual_audit_summary.json")
     transitions = read_json(derived / "transitions/rejudged_transition_summary.json")
+    flip_cases = read_json(derived / "transitions/rejudged_case_manifest.json")
+    flip_images = read_json(w4 / "raw/rejudged_case_images/image_manifest.json")
     per = pd.read_csv(derived / "per_sample_rejudged.csv", keep_default_na=False)
     token_rows = pd.read_csv(derived / "token_per_sample_rejudged.csv", keep_default_na=False)
     token_map = {(r.sample_id, r.condition): r for r in token_rows.itertuples()}
@@ -183,6 +186,40 @@ def main() -> None:
             s2_task_rows.append([label, html.escape(str(task)), int(n), p(n / int(mask.sum()))])
     s2_task_table = table(["结构 / Pattern", "任务 / Task", "样本数 / N", "该结构中的比例 / Within-pattern share"], s2_task_rows)
 
+    flip_rows = pd.read_csv(derived / "transitions/pairwise_flip_cases.csv", keep_default_na=False)
+    flip_lookup = {(str(r.sample_id), str(r.target)): r for r in flip_rows.itertuples()}
+    image_by_index = {int(row["case_index"]): row for row in flip_images}
+    flip_case_cards = []
+    for case in flip_cases:
+        sample_id, target = case["sample_id"], case["target"]
+        r = flip_lookup[(sample_id, target)]
+        image_record = image_by_index[int(case["case_index"])]
+        try:
+            choices = json.loads(r.choices) if isinstance(r.choices, str) else r.choices
+        except json.JSONDecodeError:
+            choices = ast.literal_eval(r.choices)
+        choices_html = "".join(
+            f"<li>({html.escape(str(c.get('option', '')) )}) {html.escape(str(c.get('text', '')))}</li>"
+            for c in choices
+        )
+        s0_row, target_row = result_map[(sample_id, "S0")], result_map[(sample_id, target)]
+        image_markup = image(w4 / "raw/rejudged_case_images" / image_record["file"], f"Flip case {case['case_index']} / 翻转案例 {case['case_index']}")
+        category_label = "错转对 / recovery" if case["category"] == "gain" else "对转错 / loss"
+        raw_outputs = (
+            f"<div class='raw-pair'><div><h4>S0 · {html.escape(str(s0_row.llm_status))} · {html.escape(str(s0_row.llm_parsed_answer))} · "
+            f"{'正确 / Correct' if str(s0_row.llm_correct).lower() == 'true' else '错误 / Incorrect'}</h4><pre>{html.escape(str(r.S0_response))}</pre></div>"
+            f"<div><h4>{target} · {html.escape(str(target_row.llm_status))} · {html.escape(str(target_row.llm_parsed_answer))} · "
+            f"{'正确 / Correct' if str(target_row.llm_correct).lower() == 'true' else '错误 / Incorrect'}</h4><pre>{html.escape(str(r.target_response))}</pre></div></div>"
+        )
+        flip_case_cards.append(
+            f"<article class='flip-case'><h3>Flip {case['case_index']} / 翻转案例 {case['case_index']} · {target} · {category_label} · {html.escape(str(case['task']))}</h3>"
+            f"<small class='small'>sample key: {html.escape(sample_id)}</small><div class='flip-intro'>{image_markup}"
+            f"<div><p><b>问题 / Question</b></p><p>{html.escape(str(r.question))}</p><ol>{choices_html}</ol>"
+            f"<p>标准答案 / Gold: <b>{html.escape(str(r.gold_answer))}</b> · Token 差 / Δ ({target}−S0): <b>{int(r.target_minus_s0_completion_tokens):+d}</b></p></div></div>"
+            f"<details><summary>完整原始回答 / Full raw responses</summary>{raw_outputs}</details></article>"
+        )
+    flip_case_html = "".join(flip_case_cards)
+
     figures = []
     figures += [image(figures2 / "accuracy_overview.png/accuracy.png", "Accuracy under the five prompting modes / 五种模式准确率")]
     figures += [image(figures2 / "length_distribution_shape.png", "Visible response-length distributions / 可见输出长度分布")]
@@ -225,7 +262,7 @@ def main() -> None:
 <p class="author">作者 / Author: <a href="https://github.com/spinner-bot" target="_blank" rel="noopener">spinner-bot</a>（GitHub）</p>
 <p class="lead">本报告以本地大模型对 10,000 条原始输出的复判为正确性分析依据，同时保留规则判别结果以量化判别器差异。复判结果不是独立人工金标准；文中明确区分模型判别、人工抽样核查和对照 benchmark 答案。<br>This report uses local-LLM re-adjudication of all 10,000 raw outputs for correctness analyses, while retaining rule-based labels to quantify detector differences. LLM adjudication is not an independent human gold standard; model judgments, sampled manual audit, and benchmark answers are distinguished throughout.</p>
 <nav class="toc"><b>目录 / Contents</b><ul>
-<li><a href="#protocol">数据与判别方法 / Data and adjudication</a></li><li><a href="#inputs">输入对照 / Input comparison</a></li><li><a href="#w2-summary">五组总体结果 / Five-condition results</a></li><li><a href="#detector">判别器对比与核查 / Detector comparison and audit</a></li><li><a href="#length">字符长度与正确性 / Character length and correctness</a></li><li><a href="#tokens">Token 长度与长尾 / Token length and long tail</a></li><li><a href="#direction">研究方向评估 / Research assessment</a></li><li><a href="#w3">S0/S1/S3 配对翻转 / Paired flips</a></li><li><a href="#s2">S2 范围判断 / S2 scope decision</a></li><li><a href="#cases">典型案例 / Concrete cases</a></li><li><a href="#limits">解释边界 / Limitations</a></li></ul></nav>
+<li><a href="#protocol">数据与判别方法 / Data and adjudication</a></li><li><a href="#inputs">输入对照 / Input comparison</a></li><li><a href="#w2-summary">五组总体结果 / Five-condition results</a></li><li><a href="#detector">判别器对比与核查 / Detector comparison and audit</a></li><li><a href="#length">字符长度与正确性 / Character length and correctness</a></li><li><a href="#tokens">Token 长度与长尾 / Token length and long tail</a></li><li><a href="#direction">研究方向评估 / Research assessment</a></li><li><a href="#w3">S0/S1/S3 配对翻转 / Paired flips</a></li><li><a href="#flip-cases">翻转样本 / Flip examples</a></li><li><a href="#s2">S2 范围判断 / S2 scope decision</a></li><li><a href="#cases">典型案例 / Concrete cases</a></li><li><a href="#limits">解释边界 / Limitations</a></li></ul></nav>
 <h2 id="protocol">数据与判别方法 / Data and adjudication</h2><p>冻结样本共 2,000 题，每题在 S0、SC、S1、S2、S3 五种条件下各有一个原始输出，总计 10,000 条。原规则标签完整保留；本地 Qwen3.8-27B 对每条原始回答独立提取 ANSWERED/AMBIGUOUS/NO_ANSWER 状态及最终选项，正确性随后机械地与冻结 benchmark 答案比对。AMBIGUOUS 和 NO_ANSWER 在主准确率中计为不正确，并单独报告。</p><p>The frozen sample contains 2,000 questions, each with one raw response under S0, SC, S1, S2, and S3 (10,000 responses total). Original rule labels are preserved. Local Qwen3.8-27B independently extracts ANSWERED/AMBIGUOUS/NO_ANSWER and a final option from each response; correctness is then mechanically compared with the frozen benchmark answer. AMBIGUOUS and NO_ANSWER count as incorrect in primary accuracy and are reported separately.</p>
 <h2 id="inputs">输入对照 / Input comparison</h2>{input_html.replace('<h2>输入对照 / Input comparison</h2>','',1)}
 <h2 id="w2-summary">五组总体结果 / Five-condition results</h2><p>以下答案准确率采用模型复判标签，括号列出 95% bootstrap CI；有效选项率、格式和推理标记按原始输出文本重算。每个条件 n=2,000。</p><p>Accuracy below uses LLM-adjudicated labels, with 95% bootstrap CIs; valid-option, format, and lexical-reasoning indicators are recomputed from raw responses. Each condition has n=2,000.</p>{table(['模式 / Mode','N','准确率 / Accuracy','准确率 95% CI','有效选项 / Valid option','严格格式 / Strict format','推理词标记 / Lexical marker','均值字符 / Mean chars','中位字符 / Median chars','API 错误 / Errors'],accuracy_rows)}
@@ -240,6 +277,24 @@ def main() -> None:
 <h2 id="cases">典型案例 / Concrete cases</h2><p>保留原工作2的十个精选案例，按原图、问题/选项、五种模式的实际输入与完整原始回答展示。每个模式的长度、模型判别状态、提取选项与正确性均已依据修正数据更新；原始 benchmark 标识以弱化小字保留以便追溯。</p><p>The ten selected Work 2 cases are retained, showing the original image, question/options, actual input, and complete raw output for all five modes. Length, LLM status, extracted option, and correctness are refreshed from corrected data; original benchmark identifiers remain only as subdued traceability labels.</p>{case_html}
 <h2 id="limits">解释边界 / Interpretation limits</h2><ul><li>LLM 复判用于修正明显不可靠的规则选项提取，但仍可能出错；人工核查为分层样本审计，不能当作 10,000 条的完整人工金标准。<br>LLM adjudication replaces unreliable rule parsing but can still err; the stratified audit does not constitute full human gold labeling of all 10,000 records.</li><li>准确率依赖冻结 benchmark 答案的正确性；对回答的文字提取正确，不代表原回答视觉判断本身正确。<br>Accuracy depends on frozen benchmark answers; faithful extraction of a response does not mean the response’s visual judgment is itself correct.</li><li>统计显著性、差异大小、分层结构与原始回答需合并解释；相关不能推出因果。<br>Significance, effect size, pairing, and raw responses should be interpreted jointly; association is not causation.</li><li>开放选项题被模型标为歧义或无答案时，在主准确率中计错；边界状态另行展示，避免隐藏分母。<br>Model-labeled ambiguous/unanswered outputs count as incorrect in primary accuracy and are separately shown to keep denominators transparent.</li></ul>
 <footer>数据来源 / Data: frozen run 60011513; rejudgment model: Qwen3.8-27B (BF16); inference model: OPD-V-Qwen3.5-4B. Figures are embedded and clickable for full-size viewing. / 图表全部内嵌，点击可查看原尺寸。</footer></body></html>"""
+    dhtml = dhtml.replace(
+        '<li><a href="#s2">',
+        '<li><a href="#flip-cases">翻转样本 / Flip examples</a></li><li><a href="#s2">',
+        1,
+    )
+    flip_report_section = (
+        '<h3 id="flip-cases">翻转样本案例 / Paired-flip examples</h3>'
+        '<p>按 S1/S3 × 错转对/对转错四个分层，每层选取三个绝对 token 变化较大的案例，并尽可能覆盖不同任务。每个案例展示原图、问题、选项、benchmark 答案、正确性变化与 token 差；完整 S0 与目标模式原始回答可展开查看。<br>'
+        'Three cases with large absolute token changes are selected in each of four strata (S1/S3 × recovery/loss), with task diversity where available. Each shows the image, question, options, benchmark answer, correctness transition, and token difference; complete S0 and target-mode raw responses are expandable.</p>'
+        + flip_case_html
+    )
+    dhtml = dhtml.replace('<h2 id="s2">', flip_report_section + '<h2 id="s2">', 1)
+    dhtml = dhtml.replace(
+        '</style>',
+        '.flip-case{border:1px solid #ccd8e2;margin:1.5rem 0;padding:1rem;background:#fff}.flip-intro{display:grid;grid-template-columns:minmax(260px,42%) 1fr;gap:1rem;align-items:start}.flip-intro figure img{max-height:420px}.raw-pair{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:1rem}.raw-pair pre{white-space:pre-wrap;word-break:break-word;max-height:620px;overflow:auto;background:#f7f9fb;padding:.8rem;font-size:.82rem;border:1px solid #e5ebef}details{margin:1rem 0;padding:.7rem;border:1px solid #d8e1e8}summary{cursor:pointer;font-weight:600;color:#285878}@media(max-width:760px){.flip-intro,.raw-pair{grid-template-columns:1fr}}'
+        + '</style>',
+        1,
+    )
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(dhtml, encoding="utf-8")
     print(json.dumps({"output": str(args.output), "bytes": args.output.stat().st_size, "cases": len(cases), "figures_embedded": dhtml.count("data:image/")}, ensure_ascii=False))
