@@ -40,7 +40,9 @@ export VLLM_USE_FLASHINFER_SAMPLER=0
 export HF_HUB_OFFLINE=1
 export TRANSFORMERS_OFFLINE=1
 
+set +euo pipefail
 source /etc/profile
+set -euo pipefail
 module load cuda/12.6
 mkdir -p "$(dirname "${OUTPUT}")" "${RUN_LOG_DIR}" \
   "${VLLM_CACHE_ROOT}" "${XDG_CACHE_HOME}" "${TORCHINDUCTOR_CACHE_DIR}"
