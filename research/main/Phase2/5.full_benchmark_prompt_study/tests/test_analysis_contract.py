@@ -30,6 +30,32 @@ class AnalysisContractTests(unittest.TestCase):
         adjusted = analysis.holm_adjust([0.01, 0.04, 0.03])
         self.assertEqual(adjusted, [0.03, 0.06, 0.06])
 
+    def test_small_complete_paired_summary(self):
+        try:
+            import numpy  # noqa: F401
+        except Exception as exc:
+            self.skipTest(f"NumPy binary unavailable in this local test environment: {exc}")
+        rows = []
+        for track in analysis.TRACKS:
+            for i, condition in enumerate(analysis.CONDITIONS):
+                correct = int(i % 2 == 0)
+                rows.append({
+                    "track": track, "condition": condition, "sample_uid": f"{track}:u1",
+                    "cluster_uid": f"{track}:image1", "native_correct": correct,
+                    "extraction_correct": 1 - correct, "native_extraction_agree": 0,
+                    "response_chars": 5, "response_words": 1, "prompt_tokens": 10,
+                    "completion_tokens": 2, "total_api_tokens": 12,
+                    "category": "cat", "l2_category": "l2", "cycle_category": 0,
+                    "question_type": "mcq", "language": "en", "answer_format": "MCQ_OPTION",
+                    "native_judge_source": "llm", "native_judge_raw": "Yes",
+                    "native_judge_exact_binary": 1, "extraction_status": "ANSWERED",
+                    "extraction_reason": "explicit_final",
+                })
+        tables = analysis.summarize(rows, 42)
+        self.assertEqual(len(tables["condition_summary"]), 35)
+        self.assertEqual(len(tables["paired_comparisons"]), 140)
+        self.assertEqual(len(tables["response_length_by_score"]), 180)
+
 
 if __name__ == "__main__":
     unittest.main()
