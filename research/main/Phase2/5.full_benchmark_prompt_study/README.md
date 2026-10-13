@@ -15,6 +15,7 @@
 - `report/2136-T-261014-0216-题型边界复核与五条件提示词冻结.md`：记录Zoom/MME题型边界逐项复核及v1提示词冻结。
 - `report/2137-T-261014-0229-转换调度与推理接口验证.md`：记录Slurm CPU账户限制、可用GPU分区替代、转换器与推理接口契约测试。
 - `report/2138-T-261014-0242-全量输入转换完成与题型元数据更正.md`：记录32,162条源记录转换及Zoom `blank` 类别语义更正。
+- `report/2139-T-261014-0252-五条件全量任务编排与试运行进度.md`：记录pilot真实模型作业的门禁执行状态及五条件单卡数组任务编排。
 - `report/2136-T-261014-0222-题型边界复核与五条件提示词冻结.md`：记录Zoom数字短答和MME重复D选项边界核验，以及v1提示词文本。
 - `protocol.md`：冻结前协议草案；数据版本、题数、提示词模板、模型/推理参数、评分器版本待核验后逐项冻结。
 - `dataset_sources.tsv`：固定数据源 repository、revision 和待核验题数。
@@ -27,6 +28,7 @@
 - `scripts/test_infer_prompt_conditions.py`：以模拟API做无GPU契约测试，校验S0无system message且其余条件只增加注册表中的system文本。
 - `scripts/make_stratified_pilot.py`：确定性选择覆盖六个track、主类别、Zoom题型及MME六选项异常的小样本pilot。
 - `scripts/run_stratified_pilot.sbatch`：单A100启动vLLM，并通过官方infer接口跑五条件pilot。
+- `scripts/run_full_conditions.sbatch`：五元素Slurm数组，每个任务独占一张A100运行一个提示条件；四任务并发，输出保存在large scratch并可利用官方推理脚本的逐题检查点恢复。
 - `scripts/verify_prepared_benchmarks.py`：对转换后QA覆盖、UID、图片引用与全部媒体SHA-256执行独立完整性门禁。
 - `scripts/verify_inference_outputs.py`：核验逐条件完整覆盖、无API失败、消息条件哈希及各条件输入完全配对。
 - `audits/`：由服务器生成并经 GitHub 中转的小型字段审计中间产物；原始图片和数据不入 Git。
