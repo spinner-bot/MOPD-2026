@@ -41,7 +41,7 @@ def parse_and_validate(raw: str, response: str) -> dict:
             raise ValueError("ANSWERED must select A-D")
         if value["reason_code"] not in {"explicit_final", "semantic_final"}:
             raise ValueError("invalid ANSWERED reason_code")
-        if not value["evidence"] or value["evidence"] not in response:
+        if not isinstance(value["evidence"], str) or not value["evidence"] or value["evidence"] not in response:
             raise ValueError("evidence is not an exact substring of the response")
     else:
         if value["selected_option"] is not None:
@@ -49,10 +49,17 @@ def parse_and_validate(raw: str, response: str) -> dict:
         expected = {"NO_ANSWER": {"no_answer"}, "AMBIGUOUS": {"contradictory", "unclear"}}
         if value["reason_code"] not in expected[value["status"]]:
             raise ValueError("invalid reason_code for status")
-        if value["evidence"] and value["evidence"] not in response:
-            raise ValueError("evidence is not an exact substring of the response")
     if not isinstance(value["evidence"], str):
         raise ValueError("evidence must be text")
+    if value["status"] == "ANSWERED":
+        value["evidence_validation"] = "exact_substring"
+    elif value["evidence"] and value["evidence"] not in response:
+        # Evidence is optional for non-answers. Preserve raw model JSON, but never
+        # publish a paraphrase/ellipsis as if it were a verbatim quotation.
+        value["evidence"] = ""
+        value["evidence_validation"] = "nonverbatim_optional_evidence_discarded"
+    else:
+        value["evidence_validation"] = "exact_substring" if value["evidence"] else "empty_optional_evidence"
     return value
 
 

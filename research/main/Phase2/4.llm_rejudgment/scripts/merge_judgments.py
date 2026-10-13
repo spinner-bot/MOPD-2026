@@ -205,6 +205,14 @@ def main() -> None:
         old_correct = as_bool(old.get("correct"))
         llm_status = judge["status"]
         llm_answer = judge["selected_option"]
+        evidence = judge.get("evidence", "")
+        if llm_status == "ANSWERED" and (not evidence or evidence not in req["response"]):
+            raise ValueError(f"ANSWERED evidence is not an exact source substring: {key}")
+        if evidence and evidence not in req["response"]:
+            raise ValueError(f"non-verbatim evidence remains after validation: {key}")
+        evidence_validation = judge.get("evidence_validation") or (
+            "exact_substring" if evidence else "empty_optional_evidence"
+        )
         llm_correct = bool(llm_status == "ANSWERED" and llm_answer == req["gold_option"])
         old_answered = bool(old.get("answer_valid") and as_bool(old.get("answer_valid")))
         old_status_cross[("ANSWERED" if old_answered else "NO_PARSED_ANSWER", llm_status)] += 1
@@ -230,7 +238,8 @@ def main() -> None:
             "answer_valid": llm_status == "ANSWERED",
             "strict_format": as_bool(old.get("strict_format")),
             "reasoning_marker": as_bool(old.get("reasoning_marker")),
-            "llm_evidence": judge.get("evidence", ""),
+            "llm_evidence": evidence,
+            "llm_evidence_validation": evidence_validation,
             "llm_reason_code": judge.get("reason_code", ""),
             "llm_raw_text": judge.get("judge_raw_text", ""),
             "response_chars": req["response_chars"],
@@ -329,6 +338,7 @@ def main() -> None:
         "old_parse_status_by_llm_status": {
             f"{old_status}|{llm_status}": count for (old_status, llm_status), count in sorted(old_status_cross.items())
         },
+        "llm_evidence_validation_counts": dict(Counter(row["llm_evidence_validation"] for row in output_rows)),
         "per_condition": per_condition,
         "difference_records_n": len(delta_records),
         "technical_errors_encountered": technical_errors,
