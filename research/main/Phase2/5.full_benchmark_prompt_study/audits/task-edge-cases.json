@@ -1,0 +1,454 @@
+{
+  "zoombench_question_type_by_reference_format": {
+    "mcq": {
+      "letter": 621
+    },
+    "blank": {
+      "numeric": 224
+    }
+  },
+  "zoombench_examples_by_type": {
+    "mcq": [
+      {
+        "source_id": "941bf4b41adea8146e0969e5314e1d73",
+        "query_excerpt": "What is the number written on the side of the blue vehicle?\nA. C519\nB. C518\nC. C517\nD. C520",
+        "reference_answer": "B"
+      },
+      {
+        "source_id": "7c8b05bc1b2b17b373e48f45ea8e42d7",
+        "query_excerpt": "What is the color of the large patio umbrella behind the person?\nA. brown\nB. tan\nC. gray\nD. beige",
+        "reference_answer": "D"
+      },
+      {
+        "source_id": "a93f80862049811823526a552ad68381",
+        "query_excerpt": "What symbol is visible on the tram's front, to the left of the number 8275?\nA. European Union flag - blue background with yellow stars\nB. No Smoking symbol - red circle with diagonal line through cigarette\nC. International Symbol of Access …",
+        "reference_answer": "C"
+      }
+    ],
+    "blank": [
+      {
+        "source_id": "6fe34a55ecfcb678fcccc41aab7a7871",
+        "query_excerpt": "How many yellow windows are visible on the facade of the building?\n Please answer using Arabic numerals. ",
+        "reference_answer": "4"
+      },
+      {
+        "source_id": "8a27687edbd8d78233c1a98e58e56eda",
+        "query_excerpt": "How many small bolts are arranged in a vertical line on the lamppost's central bracket?\n Please answer using Arabic numerals. ",
+        "reference_answer": "7"
+      },
+      {
+        "source_id": "534d7fd91e8f9f281591386d82778fa4",
+        "query_excerpt": "How many white circular dials are visible on the stand?\n Please answer using Arabic numerals. ",
+        "reference_answer": "3"
+      }
+    ]
+  },
+  "mme_option_space_and_six_option_cases": {
+    "mme-realworld": {
+      "option_count": {
+        "n=5": 23587,
+        "n=6": 22
+      },
+      "six_option_examples": [
+        {
+          "index": 3662,
+          "answer": "E",
+          "question_excerpt": "This image shows the front view of the ego car. Predict the behavior of the ego vehicle.",
+          "options": [
+            "(A) The ego vehicle is steering to the right. The ego vehicle is driving slowly.",
+            "(B) The ego vehicle is going straight. The ego vehicle is driving fast.",
+            "(C) The ego vehicle is slightly steering to the left. The ego vehicle is driving slowly.",
+            "(D) The ego vehicle is slightly steering to the left. The ego vehicle is driving with normal speed.",
+            "(D) None of the above",
+            "(E) All the above answers are wrong."
+          ]
+        },
+        {
+          "index": 3687,
+          "answer": "E",
+          "question_excerpt": "This image shows the front view of the ego car. Predict the behavior of the ego vehicle.",
+          "options": [
+            "(A) The ego vehicle is steering to the left. The ego vehicle is driving fast.",
+            "(B) The ego vehicle is going straight. The ego vehicle is driving slowly.",
+            "(C) The ego vehicle is slightly steering to the right. The ego vehicle is driving with normal speed.",
+            "(D) The ego vehicle is steering to the right. The ego vehicle is driving slowly.",
+            "(D) None of the above",
+            "(E) All the above answers are wrong."
+          ]
+        },
+        {
+          "index": 3696,
+          "answer": "E",
+          "question_excerpt": "This image shows the front view of the ego car. Predict the behavior of the ego vehicle.",
+          "options": [
+            "(A) The ego vehicle is going straight. The ego vehicle is not moving.",
+            "(B) The ego vehicle is slightly steering to the right. The ego vehicle is driving with normal speed.",
+            "(C) The ego vehicle is going straight. The ego vehicle is driving fast.",
+            "(D) The ego vehicle is slightly steering to the left. The ego vehicle is driving fast.",
+            "(D) None of the above",
+            "(E) All the above answers are wrong."
+          ]
+        },
+        {
+          "index": 3699,
+          "answer": "E",
+          "question_excerpt": "This image shows the front view of the ego car. Predict the behavior of the ego vehicle.",
+          "options": [
+            "(A) The ego vehicle is slightly steering to the left. The ego vehicle is driving very fast.",
+            "(B) The ego vehicle is slightly steering to the left. The ego vehicle is driving with normal speed.",
+            "(C) The ego vehicle is slightly steering to the right. The ego vehicle is driving with normal speed.",
+            "(D) The ego vehicle is steering to the right. The ego vehicle is driving slowly.",
+            "(D) None of the above",
+            "(E) All the above answers are wrong."
+          ]
+        },
+        {
+          "index": 3705,
+          "answer": "E",
+          "question_excerpt": "This image shows the front view of the ego car. Predict the behavior of the ego vehicle.",
+          "options": [
+            "(A) The ego vehicle is going straight. The ego vehicle is driving very fast.",
+            "(B) The ego vehicle is steering to the right. The ego vehicle is driving fast.",
+            "(C) The ego vehicle is going straight. The ego vehicle is driving fast.",
+            "(D) The ego vehicle is going straight. The ego vehicle is not moving.",
+            "(D) None of the above",
+            "(E) All the above answers are wrong."
+          ]
+        },
+        {
+          "index": 3706,
+          "answer": "E",
+          "question_excerpt": "This image shows the front view of the ego car. Predict the behavior of the ego vehicle.",
+          "options": [
+            "(A) The ego vehicle is steering to the left. The ego vehicle is driving slowly.",
+            "(B) The ego vehicle is slightly steering to the right. The ego vehicle is driving slowly.",
+            "(C) The ego vehicle is steering to the left. The ego vehicle is driving very fast.",
+            "(D) The ego vehicle is steering to the left. The ego vehicle is driving fast.",
+            "(D) None of the above",
+            "(E) All the above answers are wrong."
+          ]
+        },
+        {
+          "index": 3725,
+          "answer": "E",
+          "question_excerpt": "This image shows the front view of the ego car. Predict the behavior of the ego vehicle.",
+          "options": [
+            "(A) The ego vehicle is slightly steering to the left. The ego vehicle is driving very fast.",
+            "(B) The ego vehicle is going straight. The ego vehicle is not moving.",
+            "(C) The ego vehicle is steering to the right. The ego vehicle is driving fast.",
+            "(D) The ego vehicle is steering to the right. The ego vehicle is driving very fast.",
+            "(D) None of the above",
+            "(E) All the above answers are wrong."
+          ]
+        },
+        {
+          "index": 3749,
+          "answer": "E",
+          "question_excerpt": "This image shows the front view of the ego car. Predict the behavior of the ego vehicle.",
+          "options": [
+            "(A) The ego vehicle is going straight. The ego vehicle is driving fast.",
+            "(B) The ego vehicle is slightly steering to the right. The ego vehicle is driving with normal speed.",
+            "(C) The ego vehicle is steering to the left. The ego vehicle is driving with normal speed.",
+            "(D) The ego vehicle is steering to the left. The ego vehicle is driving fast.",
+            "(D) None of the above",
+            "(E) All the above answers are wrong."
+          ]
+        },
+        {
+          "index": 3751,
+          "answer": "E",
+          "question_excerpt": "This image shows the front view of the ego car. Predict the behavior of the ego vehicle.",
+          "options": [
+            "(A) The ego vehicle is steering to the left. The ego vehicle is driving very fast.",
+            "(B) The ego vehicle is steering to the right. The ego vehicle is driving very fast.",
+            "(C) The ego vehicle is going straight. The ego vehicle is driving fast.",
+            "(D) The ego vehicle is slightly steering to the left. The ego vehicle is driving very fast.",
+            "(D) None of the above",
+            "(E) All the above answers are wrong."
+          ]
+        },
+        {
+          "index": 3764,
+          "answer": "E",
+          "question_excerpt": "This image shows the front view of the ego car. Predict the behavior of the ego vehicle.",
+          "options": [
+            "(A) The ego vehicle is slightly steering to the right. The ego vehicle is driving slowly.",
+            "(B) The ego vehicle is slightly steering to the right. The ego vehicle is driving with normal speed.",
+            "(C) The ego vehicle is slightly steering to the right. The ego vehicle is driving very fast.",
+            "(D) The ego vehicle is going straight. The ego vehicle is driving very fast.",
+            "(D) None of the above",
+            "(E) All the above answers are wrong."
+          ]
+        },
+        {
+          "index": 3788,
+          "answer": "E",
+          "question_excerpt": "This image shows the front view of the ego car. Predict the behavior of the ego vehicle.",
+          "options": [
+            "(A) The ego vehicle is going straight. The ego vehicle is driving slowly.",
+            "(B) The ego vehicle is steering to the left. The ego vehicle is driving very fast.",
+            "(C) The ego vehicle is steering to the right. The ego vehicle is driving very fast.",
+            "(D) The ego vehicle is going straight. The ego vehicle is driving very fast.",
+            "(D) None of the above",
+            "(E) All the above answers are wrong."
+          ]
+        },
+        {
+          "index": 3789,
+          "answer": "E",
+          "question_excerpt": "This image shows the front view of the ego car. Predict the behavior of the ego vehicle.",
+          "options": [
+            "(A) The ego vehicle is slightly steering to the left. The ego vehicle is driving with normal speed.",
+            "(B) The ego vehicle is slightly steering to the left. The ego vehicle is driving very fast.",
+            "(C) The ego vehicle is steering to the right. The ego vehicle is driving with normal speed.",
+            "(D) The ego vehicle is slightly steering to the left. The ego vehicle is driving slowly.",
+            "(D) None of the above",
+            "(E) All the above answers are wrong."
+          ]
+        },
+        {
+          "index": 3811,
+          "answer": "E",
+          "question_excerpt": "This image shows the front view of the ego car. Predict the behavior of the ego vehicle.",
+          "options": [
+            "(A) The ego vehicle is slightly steering to the left. The ego vehicle is driving very fast.",
+            "(B) The ego vehicle is steering to the right. The ego vehicle is driving very fast.",
+            "(C) The ego vehicle is slightly steering to the right. The ego vehicle is driving slowly.",
+            "(D) The ego vehicle is slightly steering to the right. The ego vehicle is driving with normal speed.",
+            "(D) None of the above",
+            "(E) All the above answers are wrong."
+          ]
+        },
+        {
+          "index": 3825,
+          "answer": "E",
+          "question_excerpt": "This image shows the front view of the ego car. Predict the behavior of the ego vehicle.",
+          "options": [
+            "(A) The ego vehicle is going straight. The ego vehicle is driving fast.",
+            "(B) The ego vehicle is steering to the left. The ego vehicle is driving slowly.",
+            "(C) The ego vehicle is slightly steering to the left. The ego vehicle is driving fast.",
+            "(D) The ego vehicle is going straight. The ego vehicle is driving very fast.",
+            "(D) None of the above",
+            "(E) All the above answers are wrong."
+          ]
+        },
+        {
+          "index": 3850,
+          "answer": "E",
+          "question_excerpt": "This image shows the front view of the ego car. Predict the behavior of the ego vehicle.",
+          "options": [
+            "(A) The ego vehicle is going straight. The ego vehicle is not moving.",
+            "(B) The ego vehicle is steering to the right. The ego vehicle is driving very fast.",
+            "(C) The ego vehicle is going straight. The ego vehicle is driving very fast.",
+            "(D) The ego vehicle is slightly steering to the right. The ego vehicle is driving with normal speed.",
+            "(D) None of the above",
+            "(E) All the above answers are wrong."
+          ]
+        },
+        {
+          "index": 3886,
+          "answer": "E",
+          "question_excerpt": "This image shows the front view of the ego car. Predict the behavior of the ego vehicle.",
+          "options": [
+            "(A) The ego vehicle is going straight. The ego vehicle is driving slowly.",
+            "(B) The ego vehicle is steering to the left. The ego vehicle is driving fast.",
+            "(C) The ego vehicle is steering to the left. The ego vehicle is driving very fast.",
+            "(D) The ego vehicle is slightly steering to the left. The ego vehicle is driving very fast.",
+            "(D) None of the above",
+            "(E) All the above answers are wrong."
+          ]
+        },
+        {
+          "index": 3928,
+          "answer": "E",
+          "question_excerpt": "This image shows the front view of the ego car. Predict the behavior of the ego vehicle.",
+          "options": [
+            "(A) The ego vehicle is steering to the left. The ego vehicle is driving fast.",
+            "(B) The ego vehicle is steering to the right. The ego vehicle is driving very fast.",
+            "(C) The ego vehicle is steering to the right. The ego vehicle is driving fast.",
+            "(D) The ego vehicle is slightly steering to the right. The ego vehicle is driving very fast.",
+            "(D) None of the above",
+            "(E) All the above answers are wrong."
+          ]
+        },
+        {
+          "index": 3933,
+          "answer": "E",
+          "question_excerpt": "This image shows the front view of the ego car. Predict the behavior of the ego vehicle.",
+          "options": [
+            "(A) The ego vehicle is slightly steering to the right. The ego vehicle is driving very fast.",
+            "(B) The ego vehicle is going straight. The ego vehicle is driving fast.",
+            "(C) The ego vehicle is steering to the left. The ego vehicle is driving very fast.",
+            "(D) The ego vehicle is steering to the right. The ego vehicle is driving slowly.",
+            "(D) None of the above",
+            "(E) All the above answers are wrong."
+          ]
+        },
+        {
+          "index": 3941,
+          "answer": "E",
+          "question_excerpt": "This image shows the front view of the ego car. Predict the behavior of the ego vehicle.",
+          "options": [
+            "(A) The ego vehicle is going straight. The ego vehicle is not moving.",
+            "(B) The ego vehicle is steering to the left. The ego vehicle is driving slowly.",
+            "(C) The ego vehicle is going straight. The ego vehicle is driving with normal speed.",
+            "(D) The ego vehicle is steering to the right. The ego vehicle is driving slowly.",
+            "(D) None of the above",
+            "(E) All the above answers are wrong."
+          ]
+        },
+        {
+          "index": 3947,
+          "answer": "E",
+          "question_excerpt": "This image shows the front view of the ego car. Predict the behavior of the ego vehicle.",
+          "options": [
+            "(A) The ego vehicle is steering to the right. The ego vehicle is driving with normal speed.",
+            "(B) The ego vehicle is slightly steering to the right. The ego vehicle is driving fast.",
+            "(C) The ego vehicle is steering to the left. The ego vehicle is driving slowly.",
+            "(D) The ego vehicle is steering to the right. The ego vehicle is driving fast.",
+            "(D) None of the above",
+            "(E) All the above answers are wrong."
+          ]
+        },
+        {
+          "index": 3950,
+          "answer": "E",
+          "question_excerpt": "This image shows the front view of the ego car. Predict the behavior of the ego vehicle.",
+          "options": [
+            "(A) The ego vehicle is steering to the left. The ego vehicle is driving slowly.",
+            "(B) The ego vehicle is steering to the right. The ego vehicle is driving with normal speed.",
+            "(C) The ego vehicle is going straight. The ego vehicle is driving very fast.",
+            "(D) The ego vehicle is going straight. The ego vehicle is driving with normal speed.",
+            "(D) None of the above",
+            "(E) All the above answers are wrong."
+          ]
+        },
+        {
+          "index": 3961,
+          "answer": "E",
+          "question_excerpt": "This image shows the front view of the ego car. Predict the behavior of the ego vehicle.",
+          "options": [
+            "(A) The ego vehicle is steering to the right. The ego vehicle is driving fast.",
+            "(B) The ego vehicle is slightly steering to the right. The ego vehicle is driving slowly.",
+            "(C) The ego vehicle is steering to the left. The ego vehicle is driving slowly.",
+            "(D) The ego vehicle is going straight. The ego vehicle is not moving.",
+            "(D) None of the above",
+            "(E) All the above answers are wrong."
+          ]
+        }
+      ]
+    },
+    "mme-realworld-cn": {
+      "option_count": {
+        "n=5": 5909,
+        "n=6": 8
+      },
+      "six_option_examples": [
+        {
+          "index": 4028,
+          "answer": "E",
+          "question_excerpt": "这张图片显示了自车的前视图。预测自车的行为。",
+          "options": [
+            "（A） 自车正在直行。自车没有移动。",
+            "（B） 自车稍微向右转向。自车以正常速度行驶。",
+            "（C） 自车正在直行。自车开得很快。",
+            "（D） 自车稍微向左转向。自车开得很快。",
+            "（D） 以上都没有",
+            "（E） 以上所有答案都是错误的。"
+          ]
+        },
+        {
+          "index": 4025,
+          "answer": "E",
+          "question_excerpt": "这张图片显示了自车的前视图。预测自车的行为。",
+          "options": [
+            "（A） 自车向左转向。自车开得很快。",
+            "（B） 自车正在直行。自车开得很慢。",
+            "（C） 自车稍微向右转向。自车以正常速度行驶。",
+            "（D） 自车向右转向。自车开得很慢。",
+            "（D） 以上都没有",
+            "（E） 以上所有答案都是错误的。"
+          ]
+        },
+        {
+          "index": 4030,
+          "answer": "E",
+          "question_excerpt": "这张图片显示了自车的前视图。预测自车的行为。",
+          "options": [
+            "（A） 自车稍微向左转向。自车开得很快。",
+            "（B） 自车稍微向左转向。自车以正常速度行驶。",
+            "（C） 自车稍微向右转向。自车以正常速度行驶。",
+            "（D） 自车向右转向。自车开得很慢。",
+            "（D） 以上都没有",
+            "（E） 以上所有答案都是错误的。"
+          ]
+        },
+        {
+          "index": 4032,
+          "answer": "E",
+          "question_excerpt": "这张图片显示了自车的前视图。预测自车的行为。",
+          "options": [
+            "（A） 自车正在直行。自车开得很快。",
+            "（B） 自车向右转向。自车开得很快。",
+            "（C） 自车正在直行。自车开得很快。",
+            "（D） 自车正在直行。自车没有移动。",
+            "（D） 以上都没有",
+            "（E） 以上所有答案都是错误的。"
+          ]
+        },
+        {
+          "index": 4035,
+          "answer": "E",
+          "question_excerpt": "这张图片显示了自车的前视图。预测自车的行为。",
+          "options": [
+            "（A） 自车稍微向左转向。自车开得很快。",
+            "（B） 自车正在直行。自车没有移动。",
+            "（C） 自车向右转向。自车开得很快。",
+            "（D） 自车向右转向。自车开得很快。",
+            "（D） 以上都没有",
+            "（E） 以上所有答案都是错误的。"
+          ]
+        },
+        {
+          "index": 4046,
+          "answer": "E",
+          "question_excerpt": "这张图片显示了自车的前视图。预测自车的行为。",
+          "options": [
+            "（A） 自车稍微向右转向。自车开得很慢。",
+            "（B） 自车稍微向右转向。自车以正常速度行驶。",
+            "（C） 自车稍微向右转向。自车开得很快。",
+            "（D） 自车正在直行。自车开得很快。",
+            "（D） 以上都没有",
+            "（E） 以上所有答案都是错误的。"
+          ]
+        },
+        {
+          "index": 4100,
+          "answer": "E",
+          "question_excerpt": "这张图片显示了自车的前视图。预测自车的行为。",
+          "options": [
+            "（A） 自车向左转向。自车开得很快。",
+            "（B） 自车向右转向。自车开得很快。",
+            "（C） 自车向右转向。自车开得很快。",
+            "（D） 自车稍微向右转向。自车开得很快。",
+            "（D） 以上都没有",
+            "（E） 以上所有答案都是错误的。"
+          ]
+        },
+        {
+          "index": 4112,
+          "answer": "E",
+          "question_excerpt": "这张图片显示了自车的前视图。预测自车的行为。",
+          "options": [
+            "（A） 自车向右转向。自车以正常速度行驶。",
+            "（B） 自车稍微向右转向。自车开得很快。",
+            "（C） 自车向左转向。自车开得很慢。",
+            "（D） 自车向右转向。自车开得很快。",
+            "（D） 以上都没有",
+            "（E） 以上所有答案都是错误的。"
+          ]
+        }
+      ]
+    }
+  }
+}
