@@ -12,7 +12,7 @@ import urllib.request
 from pathlib import Path
 
 
-REVISION = "bc284db50d036958861cb60cdd7b77612052ce0d"
+REVISION = "eb5a19ace092c73ff4e61da6ceda16e190bf32dc"
 BASE_URL = f"https://huggingface.co/datasets/nyu-visionx/CV-Bench/resolve/{REVISION}/"
 
 
