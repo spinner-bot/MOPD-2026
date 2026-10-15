@@ -16,7 +16,7 @@ class ReportRenderingContractTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
             (root / "analysis-manifest.json").write_text(
-                json.dumps({"schema": "phase2-work5-statistics-v1", "joined_records": 100}),
+                json.dumps({"schema": "phase2-work5-statistics-v2", "joined_records": 100}),
                 encoding="utf-8",
             )
             with self.assertRaisesRegex(ValueError, "160,810"):
@@ -24,11 +24,12 @@ class ReportRenderingContractTests(unittest.TestCase):
 
     def test_document_is_bilingual_and_embeds_figures_without_external_assets(self):
         manifest = {
-            "schema": "phase2-work5-statistics-v1", "joined_records": 160810,
+            "schema": "phase2-work5-statistics-v2", "joined_records": 160810,
             "conditions": list(report.CONDITIONS), "tracks": list(report.TRACKS),
             "seed": 20261014, "bootstrap_iterations": 2000,
             "paired_comparison_method": "exact McNemar; Holm-adjusted",
             "confidence_intervals": "cluster bootstrap 95 percent",
+            "native_judge_decision_rule": "Exact terminal Yes/No line only",
             "audit": {"source_files": [], "extraction_attempt_status_counts": [
                 {"condition": "S0", "track": "vstar", "request_status": "INVALID_JUDGE_JSON",
                  "error_class": "evidence_not_exact", "attempts": 1},
@@ -85,6 +86,8 @@ class ReportRenderingContractTests(unittest.TestCase):
         self.assertIn("Holm-adjusted p / Holm校正p值", document)
         self.assertIn("evidence_not_exact", document)
         self.assertIn("All answer-extraction attempts / 全部答案抽取尝试", document)
+        self.assertIn("preceding reasoning text is not parsed as a label", document)
+        self.assertIn("Native terminal decisions / 原生最终判定计数", document)
         self.assertEqual(document.count("data:image/png;base64,"), 12)
         self.assertNotIn('src="http', document)
         self.assertNotIn("href=\"http", document)

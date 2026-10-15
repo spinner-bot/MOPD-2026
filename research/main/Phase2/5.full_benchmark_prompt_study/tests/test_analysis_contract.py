@@ -1,14 +1,25 @@
 import importlib.util
+import sys
 import unittest
 from pathlib import Path
 
 SCRIPT = Path(__file__).resolve().parents[1] / "scripts" / "analyze_full_results.py"
+sys.path.insert(0, str(SCRIPT.parent))
 SPEC = importlib.util.spec_from_file_location("work5_analysis", SCRIPT)
 analysis = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(analysis)
 
 
 class AnalysisContractTests(unittest.TestCase):
+    def test_native_score_uses_exact_terminal_decision_only(self):
+        self.assertEqual(analysis.terminal_decision(
+            "The answer may be Yes.\n</think>\n\nNo\n"
+        ), "No")
+        self.assertEqual(analysis.terminal_decision(
+            "Reasoning says no, but the final choice is Yes\n\nYes\n"
+        ), "Yes")
+        self.assertEqual(analysis.terminal_decision("The answer is correct."), "other")
+
     def test_numeric_answers_compare_by_decimal_value(self):
         self.assertEqual(analysis.normalize_number("1,200.00."), analysis.normalize_number("1200"))
         self.assertIsNone(analysis.normalize_number("about 1200"))
@@ -79,6 +90,7 @@ class AnalysisContractTests(unittest.TestCase):
                     "completion_tokens": 2, "total_api_tokens": 12,
                     "category": "cat", "l2_category": "l2", "cycle_category": 0,
                     "question_type": "mcq", "language": "en", "answer_format": "MCQ_OPTION",
+                    "native_judge_decision": "yes" if correct else "no",
                     "native_judge_source": "llm", "native_judge_raw": "Yes",
                     "native_judge_exact_binary": 1, "extraction_status": "ANSWERED",
                     "extraction_reason": "explicit_final",
@@ -87,6 +99,7 @@ class AnalysisContractTests(unittest.TestCase):
         self.assertEqual(len(tables["condition_summary"]), 35)
         self.assertEqual(len(tables["paired_comparisons"]), 140)
         self.assertEqual(len(tables["response_length_by_score"]), 180)
+        self.assertEqual(len(tables["native_judge_decision_audit"]), 60)
 
 
 if __name__ == "__main__":

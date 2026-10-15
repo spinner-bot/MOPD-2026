@@ -19,6 +19,8 @@ from collections import Counter, defaultdict
 from decimal import Decimal, InvalidOperation
 from pathlib import Path
 
+from validate_native_long_context import terminal_decision
+
 CONDITIONS = ("S0", "SC", "S1", "S2", "S3")
 TRACKS = ("vstar", "zoombench", "hrbench-4k", "hrbench-8k", "mme-realworld", "mme-realworld-cn")
 CAMPAIGN = "full/runs/prompt-registry-v1"
@@ -267,7 +269,13 @@ def collect(data_root: Path) -> tuple[list[dict], dict]:
                 extraction = extracted[uid]
                 if output.get("prompt_condition") != condition:
                     raise ValueError(f"{condition}/{track}/{uid}: prompt condition mismatch")
-                judge = str(score.get("judge", "")).strip().casefold()
+                # The unmodified Vision-OPD judge returns chain-of-thought text;
+                # only its exact terminal Yes/No line is the binary decision.
+                judge = terminal_decision(str(score.get("judge", ""))).casefold()
+                if judge not in {"yes", "no"}:
+                    raise ValueError(
+                        f"{condition}/{track}/{uid}: native judge has no exact terminal Yes/No decision"
+                    )
                 if extraction.get("request_status") != "OK":
                     raise ValueError(f"{condition}/{track}/{uid}: answer-extraction status {extraction.get('request_status')}")
 
@@ -286,6 +294,7 @@ def collect(data_root: Path) -> tuple[list[dict], dict]:
                     "language": item.get("language") or "(missing)",
                     "answer_format": answer_format,
                     "native_correct": int(judge == "yes"),
+                    "native_judge_decision": judge,
                     "native_judge_source": score.get("judge_source"),
                     "native_judge_raw": score.get("judge"),
                     "native_judge_exact_binary": int(judge in {"yes", "no"}),
@@ -400,10 +409,10 @@ def summarize(rows: list[dict], seed: int) -> dict[str, list[dict]]:
         {"condition": c, "track": t, "judge_source": source, "n": count}
         for (c, t, source), count in sorted(Counter((r["condition"], r["track"], r["native_judge_source"]) for r in rows).items())
     ]
-    tables["native_judge_value_audit"] = [
-        {"condition": c, "track": t, "judge_value": value, "n": count}
-        for (c, t, value), count in sorted(Counter(
-            (r["condition"], r["track"], str(r["native_judge_raw"])) for r in rows
+    tables["native_judge_decision_audit"] = [
+        {"condition": c, "track": t, "terminal_decision": decision, "n": count}
+        for (c, t, decision), count in sorted(Counter(
+            (r["condition"], r["track"], r["native_judge_decision"]) for r in rows
         ).items())
     ]
     tables["extraction_status"] = [
@@ -447,7 +456,7 @@ def summarize(rows: list[dict], seed: int) -> dict[str, list[dict]]:
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--data-root", type=Path, required=True)
-    parser.add_argument("--output-version", default="full-statistics-v1")
+    parser.add_argument("--output-version", default="full-statistics-v2")
     parser.add_argument("--seed", type=int, default=20261014)
     args = parser.parse_args()
     output = args.data_root / "derived" / args.output_version
@@ -463,13 +472,14 @@ def main() -> None:
     for name, values in tables.items():
         write_csv(staging / f"{name}.csv", values)
     manifest = {
-        "schema": "phase2-work5-statistics-v1", "input_verification": CAMPAIGN,
+        "schema": "phase2-work5-statistics-v2", "input_verification": CAMPAIGN,
         "tracks": list(TRACKS), "conditions": list(CONDITIONS),
         "prompt_registry_sha256": audit["prompt_registry_sha256"],
         "joined_records": len(rows), "seed": args.seed, "bootstrap_iterations": N_BOOTSTRAP,
         "paired_comparison_method": "two-sided exact McNemar; Holm-adjusted within each score source and scope",
         "confidence_intervals": "paired cluster bootstrap by image; 95 percent percentile interval",
         "score_sources": ["unmodified Vision-OPD native judge", "Qwen structured text-only answer extraction"],
+        "native_judge_decision_rule": "Require and use only the exact final nonempty line of the unmodified Vision-OPD judge output when it is Yes or No; preserve full raw judge text in sample_level_merged.csv.",
         "audit": audit,
         "interpretation": "No pooled score should replace benchmark-stratified results; report micro and equal-track macro summaries separately.",
     }

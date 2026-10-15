@@ -28,7 +28,7 @@ TRACK_LABELS = {
     "mme-realworld-cn": "MME-RealWorld-CN", "all_tracks": "All benchmarks",
 }
 TABLES = ("condition_summary", "paired_comparisons", "strata_summary", "score_disagreement",
-          "judge_source", "native_judge_value_audit", "extraction_status",
+          "judge_source", "native_judge_decision_audit", "extraction_status",
           "length_accuracy_association", "response_length_by_score")
 COLORS = {"SC": "#8c8c8c", "S1": "#2474b5", "S2": "#e39c27", "S3": "#c94f58"}
 
@@ -41,7 +41,7 @@ def read_csv(path: Path) -> list[dict[str, str]]:
 def load_analysis(analysis_dir: Path) -> tuple[dict, dict[str, list[dict[str, str]]]]:
     manifest_path = analysis_dir / "analysis-manifest.json"
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-    if manifest.get("schema") != "phase2-work5-statistics-v1" or manifest.get("joined_records") != 160810:
+    if manifest.get("schema") != "phase2-work5-statistics-v2" or manifest.get("joined_records") != 160810:
         raise ValueError("Analysis manifest is missing or does not certify all 160,810 joined records")
     if tuple(manifest.get("conditions", ())) != CONDITIONS or tuple(manifest.get("tracks", ())) != TRACKS:
         raise ValueError("Analysis manifest conditions/tracks do not match the frozen Work5 design")
@@ -312,6 +312,7 @@ details{{border:1px solid var(--line);border-radius:8px;padding:10px 14px;margin
 <section id="scope"><h2>Scope and protocol / 范围与评测协议</h2>
 <p>This report covers S0, SC, S1, S2 and S3 across V*, ZoomBench, HRBench-4K, HRBench-8K, MME-RealWorld and MME-RealWorld-CN. The same benchmark samples are paired across conditions. / 本报告覆盖S0、SC、S1、S2、S3五种条件及V*、ZoomBench、HRBench-4K、HRBench-8K、MME-RealWorld和MME-RealWorld-CN六个评测集；同一评测集样本在各条件间配对比较。</p>
 <p>The report keeps two answer-scoring sources separate: the unmodified Vision-OPD native evaluator and a local Qwen structured, text-only answer extractor. Their agreement and disagreement are shown explicitly. Neither source is silently substituted for the other. / 报告分别保留Vision-OPD未修改的原生评测器与本地Qwen结构化纯文本答案抽取器两种评分来源，并显式展示一致与分歧，不将其中一方静默替代另一方。</p>
+<p>For the native evaluator, only the exact final nonempty line “Yes” or “No” is treated as its binary decision; the preceding reasoning text is not parsed as a label. Full raw judge text is preserved in the machine-readable merged audit table, while this report summarizes terminal decisions. / 对原生评测器，仅将最终一个非空行严格等于“Yes”或“No”的文本作为二元判定，不从前面的推理文本中抽取标签。完整原始裁判文本保留在机器可读的逐题合并审计表中，本报告仅汇总最终判定。</p>
 <div class="meta">Verified joined records / 已验证合并记录：<b>{int(manifest['joined_records']):,}</b> · Conditions / 条件：{', '.join(CONDITIONS)} · Tracks / 评测集：{', '.join(TRACK_LABELS[t] for t in TRACKS)}</div></section>
 <section id="overview"><h2>Condition overview / 条件总览</h2>
 <p>Micro accuracy weights every sample equally across the full pooled set; macro-track accuracy gives each benchmark equal weight. Both are reported because benchmark sizes differ substantially. / Micro准确率对合并后的每个样本等权；Macro-track准确率对每个评测集等权。由于评测集规模差异较大，两者并列报告。</p>
@@ -330,7 +331,7 @@ details{{border:1px solid var(--line);border-radius:8px;padding:10px 14px;margin
 <p>The embedded disagreement chart shows all four correctness states by condition. Detailed judge-source, raw native label, and extraction-status counts remain available below for audit. / 内嵌分歧图按条件展示四种正误组合；下方保留评分来源、原生标签值及答案抽取状态计数，供审计追溯。</p>
 <p>Attempt-level counts include invalid first attempts even when later retries succeeded; the table reports only status and error class, not raw model answers. / 尝试级计数保留后来重试成功的首次无效结果；表格仅汇总状态和错误类别，不展示模型原始回答。</p>
 <details><summary>All answer-extraction attempts / 全部答案抽取尝试（含已纠正尝试）</summary>{html_table(attempt_audit, ['condition','track','request_status','error_class','judge_prompt_sha256','attempts'], {'condition':'Condition / 条件','track':'Benchmark / 评测集','request_status':'Request status / 请求状态','error_class':'Error class / 错误类别','judge_prompt_sha256':'Judge prompt SHA-256 / 判别提示词哈希','attempts':'Attempt count / 次数'})}</details>
-<details><summary>Native label values / 原生评分标签计数</summary>{html_table(tables['native_judge_value_audit'], ['condition','track','judge_value','n'], {'condition':'Condition / 条件','track':'Benchmark / 评测集','judge_value':'Raw native label / 原生标签值','n':'Count / 数量'})}</details>
+<details><summary>Native terminal decisions / 原生最终判定计数</summary>{html_table(tables['native_judge_decision_audit'], ['condition','track','terminal_decision','n'], {'condition':'Condition / 条件','track':'Benchmark / 评测集','terminal_decision':'Terminal decision / 最终判定','n':'Count / 数量'})}</details>
 <details><summary>Judge source / 评分来源计数</summary>{html_table(tables['judge_source'], ['condition','track','judge_source','n'], {'condition':'Condition / 条件','track':'Benchmark / 评测集','judge_source':'Scorer source / 评分器来源','n':'Count / 数量'})}</details>
 <details><summary>Extraction status / 答案抽取状态计数</summary>{html_table(tables['extraction_status'], ['condition','track','status','reason_code','n'], {'condition':'Condition / 条件','track':'Benchmark / 评测集','status':'Status / 状态','reason_code':'Reason code / 原因码','n':'Count / 数量'})}</details>
 <details><summary>Four-state disagreement counts / 四状态分歧计数</summary>{html_table(tables['score_disagreement'], disagree_fields, {'condition':'Condition / 条件','track':'Benchmark / 评测集','native_correct':'Native correct / 原生判对','extraction_correct':'Extraction correct / 抽取判对','n':'Count / 数量'})}</details></section>
