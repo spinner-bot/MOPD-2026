@@ -20,6 +20,12 @@ class AnalysisContractTests(unittest.TestCase):
         ), ("yes", 1, 1))
         self.assertEqual(analysis.native_score_from_output("The answer is correct."), ("other", 0, 0))
 
+    def test_official_cal_acc_log_is_reproduced_exactly(self):
+        analysis.validate_official_accuracy_log("vstar", 1, 2, "vstar Acc: 50.00% (n=2)")
+        analysis.validate_official_accuracy_log("hrbench-4k", 1, 2, "hrbench-4k Acc: 1/2 = 50.00%")
+        with self.assertRaisesRegex(ValueError, "official cal_acc.py log"):
+            analysis.validate_official_accuracy_log("zoombench", 0, 2, "zoombench Acc: 1/2 = 50.00%")
+
     def test_numeric_answers_compare_by_decimal_value(self):
         self.assertEqual(analysis.normalize_number("1,200.00."), analysis.normalize_number("1200"))
         self.assertIsNone(analysis.normalize_number("about 1200"))
@@ -91,14 +97,16 @@ class AnalysisContractTests(unittest.TestCase):
                     "category": "cat", "l2_category": "l2", "cycle_category": 0,
                     "question_type": "mcq", "language": "en", "answer_format": "MCQ_OPTION",
                     "native_judge_decision": "yes" if correct else "no",
+                    "terminal_correct": correct,
                     "native_judge_source": "llm", "native_judge_raw": "Yes",
-                    "native_judge_exact_binary": 1, "extraction_status": "ANSWERED",
+                    "native_judge_exact_label": 1, "extraction_status": "ANSWERED",
+                    "native_terminal_agree": 1, "terminal_extraction_agree": 0,
                     "extraction_reason": "explicit_final",
                 })
         tables = analysis.summarize(rows, 42)
         self.assertEqual(len(tables["condition_summary"]), 35)
-        self.assertEqual(len(tables["paired_comparisons"]), 140)
-        self.assertEqual(len(tables["response_length_by_score"]), 180)
+        self.assertEqual(len(tables["paired_comparisons"]), 210)
+        self.assertEqual(len(tables["response_length_by_score"]), 270)
         self.assertEqual(len(tables["native_judge_decision_audit"]), 30)
 
 

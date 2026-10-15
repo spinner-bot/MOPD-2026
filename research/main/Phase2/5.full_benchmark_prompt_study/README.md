@@ -56,8 +56,8 @@
 
 ## 全量统计与裁判输出解析
 
-统计v2以 Vision-OPD 原生裁判 `judge` 字段的最终非空行作为判定，并且只接受精确的 `Yes` 或 `No`；裁判的前置推理文本不参与标签解析。其他终行归为 `other` 并记作未答对，同时在二元判定覆盖率中单独审计。逐题合并CSV保留原始裁判全文供审计，HTML只汇总解析后的最终判定。修正版派生数据位于服务器 `derived/full-statistics-v2/`，自包含中英双语报告为 `report/full-five-condition-benchmark-report-v2.html`；报告序列记录在项目级 `research/main/进展报告/`。
+统计v3区分三种评分：①按未修改的 Vision-OPD `cal_acc.py` 规则对完整 `judge` 字段执行 `strip().lower() == "yes"` 的官方分数；②仅从裁判输出最终非空行精确解析Yes/No的诊断分数，其他记为 `other` 且不算答对；③本地Qwen纯文本答案抽取分数。分析会逐一核对全部30个条件×评测集的官方 `cal_acc.py` 日志和原始裁判记录，任一不符即失败。完整裁判原文仍保存在逐题合并CSV；报告分别呈现三种评分，不用诊断分数替换官方分数。统计v3输出位于服务器 `derived/full-statistics-v3/`，最终自包含中英双语报告为 `report/full-five-condition-benchmark-report-v3.html`；项目级进展记录位于 `research/main/进展报告/`。
 
-`full-statistics-v1` 是发现上述终行解析缺陷前的审计快照，不可引用为统计结论；其文件保留在服务器派生数据目录中，不覆盖、不删除，以便追溯版本更正过程。
+`full-statistics-v1` 和 `full-statistics-v2` 是发现原生裁判字段包含推理文本、与官方精确标签规则不同后生成的历史审计快照，不可引用为最终官方统计结论；派生产物保留在服务器以追溯评分解释更正过程，不覆盖。
 
 未经确认的题数或准确率不作为正式结果。大体积原图/数据按项目既有外部数据管理方式记录获取来源、固定 revision、文件清单和哈希；不得未经检查将许可受限的原始 benchmark 资产复制进 Git。

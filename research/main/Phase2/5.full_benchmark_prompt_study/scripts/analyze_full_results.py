@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Reproducible paired analysis of verified Work5 outputs and two score sources.
+"""Reproducible paired analysis of verified Work5 outputs and three score views.
 
 This script is intentionally read-only with respect to raw inputs. It writes
 versioned aggregate CSV/JSON tables beneath DATA_ROOT/derived only.
@@ -25,12 +25,27 @@ CONDITIONS = ("S0", "SC", "S1", "S2", "S3")
 TRACKS = ("vstar", "zoombench", "hrbench-4k", "hrbench-8k", "mme-realworld", "mme-realworld-cn")
 CAMPAIGN = "full/runs/prompt-registry-v1"
 N_BOOTSTRAP = 2000
+SCORE_SOURCES = ("native", "terminal", "extraction")
 
 
 def native_score_from_output(text: str) -> tuple[str, int, int]:
     """Return terminal label, correctness, and whether it is an exact binary label."""
     decision = terminal_decision(text).casefold()
     return decision, int(decision == "yes"), int(decision in {"yes", "no"})
+
+
+def validate_official_accuracy_log(track: str, correct: int, total: int, text: str) -> None:
+    """Confirm aggregate counts exactly reproduce the unmodified cal_acc.py log."""
+    if track == "vstar":
+        pattern = rf"{re.escape(track)} Acc: ([0-9]+(?:\.[0-9]+)?)% \(n=([0-9]+)\)"
+        match = re.search(pattern, text)
+        if not match or int(match.group(2)) != total or f"{100 * correct / total:.2f}%" != f"{float(match.group(1)):.2f}%":
+            raise ValueError(f"{track}: raw judge labels do not match the official cal_acc.py log")
+    else:
+        pattern = rf"{re.escape(track)} Acc: ([0-9]+)/([0-9]+) = ([0-9]+(?:\.[0-9]+)?)%"
+        match = re.search(pattern, text)
+        if not match or (int(match.group(1)), int(match.group(2))) != (correct, total):
+            raise ValueError(f"{track}: raw judge labels do not match the official cal_acc.py log")
 
 
 def load_json(path: Path):
@@ -257,6 +272,18 @@ def collect(data_root: Path) -> tuple[list[dict], dict]:
             if set(native) != set(source):
                 raise ValueError(f"{condition}/{track}: native-score UID coverage mismatch")
             audits["native_rows"] += len(native)
+            official_logs = sorted((data_root / "official-scoring/vision-opd-native-v1/logs").glob(
+                f"{condition}-{track}-*-accuracy.log"
+            ))
+            if len(official_logs) != 1:
+                raise ValueError(f"{condition}/{track}: expected one official cal_acc.py log, found {len(official_logs)}")
+            official_correct = sum(str(record.get("judge", "")).strip().casefold() == "yes"
+                                   for record in native.values())
+            validate_official_accuracy_log(track, official_correct, len(native),
+                                           official_logs[0].read_text(encoding="utf-8"))
+            audits["source_files"].append({"role": "official_accuracy_log", "condition": condition,
+                                           "track": track, "path": str(official_logs[0]),
+                                           "sha256": sha256_file(official_logs[0])})
 
             extraction_path = data_root / "judgment/runs/answer-extraction-v1" / track / f"{condition}.jsonl"
             audits["source_files"].append({"role": "answer_extraction", "condition": condition, "track": track,
@@ -277,7 +304,10 @@ def collect(data_root: Path) -> tuple[list[dict], dict]:
                     raise ValueError(f"{condition}/{track}/{uid}: prompt condition mismatch")
                 # The unmodified Vision-OPD judge returns chain-of-thought text;
                 # only its exact terminal Yes/No line is the binary decision.
-                judge, native_correct, native_binary = native_score_from_output(str(score.get("judge", "")))
+                judge, terminal_correct, terminal_binary = native_score_from_output(str(score.get("judge", "")))
+                raw_judge = str(score.get("judge", "")).strip()
+                native_correct = int(raw_judge.casefold() == "yes")
+                native_exact_label = int(raw_judge.casefold() in {"yes", "no"})
                 if extraction.get("request_status") != "OK":
                     raise ValueError(f"{condition}/{track}/{uid}: answer-extraction status {extraction.get('request_status')}")
 
@@ -296,14 +326,17 @@ def collect(data_root: Path) -> tuple[list[dict], dict]:
                     "language": item.get("language") or "(missing)",
                     "answer_format": answer_format,
                     "native_correct": native_correct,
+                    "terminal_correct": terminal_correct,
                     "native_judge_decision": judge,
                     "native_judge_source": score.get("judge_source"),
                     "native_judge_raw": score.get("judge"),
-                    "native_judge_exact_binary": native_binary,
+                    "native_judge_exact_label": native_exact_label,
                     "extraction_correct": int(extracted_correct),
                     "extraction_status": extraction.get("status"),
                     "extraction_reason": extraction.get("reason_code"),
                     "native_extraction_agree": int(native_correct == int(extracted_correct)),
+                    "terminal_extraction_agree": int(terminal_correct == int(extracted_correct)),
+                    "native_terminal_agree": int(native_correct == terminal_correct),
                     "response_chars": len(str(output.get("model_answer") or "")),
                     "response_words": len(str(output.get("model_answer") or "").split()),
                     "prompt_tokens": usage.get("prompt_tokens"),
@@ -323,11 +356,13 @@ def summarize(rows: list[dict], seed: int) -> dict[str, list[dict]]:
 
     for (condition, track), group in by_condition_track.items():
         record = {"scope": "track", "stratum": track, "condition": condition, "n": len(group)}
-        for source in ("native", "extraction"):
+        for source in SCORE_SOURCES:
             record[f"{source}_correct"] = sum(row[f"{source}_correct"] for row in group)
             record[f"{source}_accuracy"] = record[f"{source}_correct"] / len(group)
         record["judge_extraction_agreement"] = statistics.mean(row["native_extraction_agree"] for row in group)
-        record["native_judge_exact_binary_rate"] = statistics.mean(row["native_judge_exact_binary"] for row in group)
+        record["terminal_extraction_agreement"] = statistics.mean(row["terminal_extraction_agree"] for row in group)
+        record["native_terminal_agreement"] = statistics.mean(row["native_terminal_agree"] for row in group)
+        record["native_judge_exact_label_rate"] = statistics.mean(row["native_judge_exact_label"] for row in group)
         record["mean_response_chars"] = statistics.mean(row["response_chars"] for row in group)
         record["median_response_chars"] = statistics.median(row["response_chars"] for row in group)
         for field in ("prompt_tokens", "completion_tokens", "total_api_tokens"):
@@ -344,21 +379,25 @@ def summarize(rows: list[dict], seed: int) -> dict[str, list[dict]]:
             groups[(row["track"], str(row[field]), row["condition"])].append(row)
         for (track, value, condition), group in groups.items():
             rec = {"stratum_type": field, "track": track, "stratum": value, "condition": condition, "n": len(group)}
-            for source in ("native", "extraction"):
+            for source in SCORE_SOURCES:
                 rec[f"{source}_correct"] = sum(row[f"{source}_correct"] for row in group)
                 rec[f"{source}_accuracy"] = rec[f"{source}_correct"] / len(group)
             tables["strata_summary"].append(rec)
 
     for condition in CONDITIONS:
         group = [row for row in rows if row["condition"] == condition]
-        rec = {"condition": condition, "n": len(group)}
-        rec["micro_native_accuracy"] = statistics.mean(row["native_correct"] for row in group)
-        rec["micro_extraction_accuracy"] = statistics.mean(row["extraction_correct"] for row in group)
+        rec = {"scope": "micro_all", "condition": condition, "n": len(group)}
+        rec["native_accuracy"] = statistics.mean(row["native_correct"] for row in group)
+        rec["terminal_accuracy"] = statistics.mean(row["terminal_correct"] for row in group)
+        rec["extraction_accuracy"] = statistics.mean(row["extraction_correct"] for row in group)
         per_track = [x for x in tables["condition_summary"] if x["condition"] == condition]
         rec["macro_track_native_accuracy"] = statistics.mean(x["native_accuracy"] for x in per_track)
+        rec["macro_track_terminal_accuracy"] = statistics.mean(x["terminal_accuracy"] for x in per_track)
         rec["macro_track_extraction_accuracy"] = statistics.mean(x["extraction_accuracy"] for x in per_track)
         rec["native_extraction_agreement"] = statistics.mean(row["native_extraction_agree"] for row in group)
-        rec["native_judge_exact_binary_rate"] = statistics.mean(row["native_judge_exact_binary"] for row in group)
+        rec["terminal_extraction_agreement"] = statistics.mean(row["terminal_extraction_agree"] for row in group)
+        rec["native_terminal_agreement"] = statistics.mean(row["native_terminal_agree"] for row in group)
+        rec["native_judge_exact_label_rate"] = statistics.mean(row["native_judge_exact_label"] for row in group)
         rec["mean_response_chars"] = statistics.mean(row["response_chars"] for row in group)
         rec["median_response_chars"] = statistics.median(row["response_chars"] for row in group)
         for field in ("prompt_tokens", "completion_tokens", "total_api_tokens"):
@@ -368,7 +407,7 @@ def summarize(rows: list[dict], seed: int) -> dict[str, list[dict]]:
             rec[f"{field}_median"] = statistics.median(vals) if vals else None
         tables["condition_summary"].append(rec)
 
-    score_sources = ("native", "extraction")
+    score_sources = SCORE_SOURCES
     scopes: list[tuple[str, str | None, list[dict]]] = [("micro_all", None, rows)]
     for track in TRACKS:
         scopes.append(("track", track, [row for row in rows if row["track"] == track]))
@@ -400,12 +439,19 @@ def summarize(rows: list[dict], seed: int) -> dict[str, list[dict]]:
                 tables["paired_comparisons"].append(rec)
 
     by_source: dict[tuple[str, str, int, int], int] = Counter()
+    by_terminal: dict[tuple[str, str, int, str], int] = Counter()
     for row in rows:
         by_source[(row["condition"], row["track"], row["native_correct"], row["extraction_correct"])] += 1
+        by_terminal[(row["condition"], row["track"], row["native_correct"], row["native_judge_decision"])] += 1
         tables["judge_source"].append({"condition": row["condition"], "track": row["track"], "judge_source": row["native_judge_source"]})
     tables["score_disagreement"] = [
         {"condition": c, "track": t, "native_correct": n, "extraction_correct": e, "n": count}
         for (c, t, n, e), count in sorted(by_source.items())
+    ]
+    tables["native_terminal_disagreement"] = [
+        {"condition": c, "track": t, "official_native_correct": n,
+         "terminal_decision": decision, "count": count}
+        for (c, t, n, decision), count in sorted(by_terminal.items())
     ]
     tables["judge_source"] = [
         {"condition": c, "track": t, "judge_source": source, "n": count}
@@ -429,7 +475,7 @@ def summarize(rows: list[dict], seed: int) -> dict[str, list[dict]]:
         for condition in CONDITIONS:
             group = [row for row in scope_rows if row["condition"] == condition]
             for metric in ("response_chars", "response_words", "completion_tokens", "total_api_tokens"):
-                for source in ("native", "extraction"):
+                for source in SCORE_SOURCES:
                     selected = [row for row in group if isinstance(row[metric], (int, float))]
                     tables["length_accuracy_association"].append({
                         "scope": scope_name, "stratum": scope_value or "all_tracks", "condition": condition,
@@ -439,7 +485,7 @@ def summarize(rows: list[dict], seed: int) -> dict[str, list[dict]]:
                             [row[f"{source}_correct"] for row in selected],
                         ),
                     })
-    for source in ("native", "extraction"):
+    for source in SCORE_SOURCES:
         for metric in ("response_chars", "response_words", "completion_tokens"):
             groups = defaultdict(list)
             for row in rows:
@@ -458,7 +504,7 @@ def summarize(rows: list[dict], seed: int) -> dict[str, list[dict]]:
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--data-root", type=Path, required=True)
-    parser.add_argument("--output-version", default="full-statistics-v2")
+    parser.add_argument("--output-version", default="full-statistics-v3")
     parser.add_argument("--seed", type=int, default=20261014)
     args = parser.parse_args()
     output = args.data_root / "derived" / args.output_version
@@ -474,14 +520,15 @@ def main() -> None:
     for name, values in tables.items():
         write_csv(staging / f"{name}.csv", values)
     manifest = {
-        "schema": "phase2-work5-statistics-v2", "input_verification": CAMPAIGN,
+        "schema": "phase2-work5-statistics-v3", "input_verification": CAMPAIGN,
         "tracks": list(TRACKS), "conditions": list(CONDITIONS),
         "prompt_registry_sha256": audit["prompt_registry_sha256"],
         "joined_records": len(rows), "seed": args.seed, "bootstrap_iterations": N_BOOTSTRAP,
         "paired_comparison_method": "two-sided exact McNemar; Holm-adjusted within each score source and scope",
         "confidence_intervals": "paired cluster bootstrap by image; 95 percent percentile interval",
-        "score_sources": ["unmodified Vision-OPD native judge", "Qwen structured text-only answer extraction"],
-        "native_judge_decision_rule": "Use only the exact final nonempty line of the Vision-OPD judge output: Yes is correct, No is incorrect, and any other terminal text is retained as other and scored not-correct; preserve full raw judge text in sample_level_merged.csv. This terminal-line normalization is audited by native_judge_exact_binary_rate.",
+        "score_sources": ["Vision-OPD official cal_acc.py exact-label score", "Vision-OPD judge exact terminal-line diagnostic", "Qwen structured text-only answer extraction"],
+        "official_native_rule": "Reproduce the unmodified Vision-OPD cal_acc.py rule: str(judge).strip().lower() == 'yes'. Each condition/track count is checked against its saved official accuracy.log.",
+        "terminal_diagnostic_rule": "Independently parse the exact final nonempty judge-output line as Yes/No/other; Yes is correct, No and other are not-correct. The raw judge text is preserved in sample_level_merged.csv.",
         "audit": audit,
         "interpretation": "No pooled score should replace benchmark-stratified results; report micro and equal-track macro summaries separately.",
     }

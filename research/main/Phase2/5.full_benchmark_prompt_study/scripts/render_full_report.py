@@ -19,8 +19,9 @@ import numpy as np
 CONDITIONS = ("S0", "SC", "S1", "S2", "S3")
 PROMPTS = ("SC", "S1", "S2", "S3")
 TRACKS = ("vstar", "zoombench", "hrbench-4k", "hrbench-8k", "mme-realworld", "mme-realworld-cn")
-SOURCES = ("native", "extraction")
-SOURCE_LABELS = {"native": "Vision-OPD native scorer",
+SOURCES = ("native", "terminal", "extraction")
+SOURCE_LABELS = {"native": "Official Vision-OPD cal_acc.py",
+                 "terminal": "Native judge terminal-line diagnostic",
                  "extraction": "Qwen text-only extraction"}
 TRACK_LABELS = {
     "vstar": "V*", "zoombench": "ZoomBench", "hrbench-4k": "HRBench-4K",
@@ -28,7 +29,7 @@ TRACK_LABELS = {
     "mme-realworld-cn": "MME-RealWorld-CN", "all_tracks": "All benchmarks",
 }
 TABLES = ("condition_summary", "paired_comparisons", "strata_summary", "score_disagreement",
-          "judge_source", "native_judge_decision_audit", "extraction_status",
+          "native_terminal_disagreement", "judge_source", "native_judge_decision_audit", "extraction_status",
           "length_accuracy_association", "response_length_by_score")
 COLORS = {"SC": "#8c8c8c", "S1": "#2474b5", "S2": "#e39c27", "S3": "#c94f58"}
 
@@ -41,7 +42,7 @@ def read_csv(path: Path) -> list[dict[str, str]]:
 def load_analysis(analysis_dir: Path) -> tuple[dict, dict[str, list[dict[str, str]]]]:
     manifest_path = analysis_dir / "analysis-manifest.json"
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-    if manifest.get("schema") != "phase2-work5-statistics-v2" or manifest.get("joined_records") != 160810:
+    if manifest.get("schema") != "phase2-work5-statistics-v3" or manifest.get("joined_records") != 160810:
         raise ValueError("Analysis manifest is missing or does not certify all 160,810 joined records")
     if tuple(manifest.get("conditions", ())) != CONDITIONS or tuple(manifest.get("tracks", ())) != TRACKS:
         raise ValueError("Analysis manifest conditions/tracks do not match the frozen Work5 design")
@@ -59,7 +60,7 @@ def load_analysis(analysis_dir: Path) -> tuple[dict, dict[str, list[dict[str, st
                            and r.get("stratum") == track and r.get(f"{source}_accuracy", "") != ""
                            for r in summaries):
                     raise ValueError(f"Missing {source} summary for {condition}/{track}")
-    expected_pairs = 2 * 7 * 10
+    expected_pairs = len(SOURCES) * 7 * 10
     if len(tables["paired_comparisons"]) != expected_pairs:
         raise ValueError(f"Expected {expected_pairs} paired comparison rows, got {len(tables['paired_comparisons'])}")
     return manifest, tables
@@ -73,7 +74,7 @@ def _png(fig) -> str:
 
 
 def accuracy_heatmaps(summaries: list[dict[str, str]]) -> str:
-    fig, axes = plt.subplots(1, 2, figsize=(13, 5.6), sharey=True)
+    fig, axes = plt.subplots(1, len(SOURCES), figsize=(17, 5.6), sharey=True)
     for ax, source in zip(axes, SOURCES):
         matrix = np.asarray([[float(next(r[f"{source}_accuracy"] for r in summaries
                                           if r.get("scope") == "track" and r.get("condition") == c
@@ -97,7 +98,7 @@ def accuracy_heatmaps(summaries: list[dict[str, str]]) -> str:
 
 def paired_effect_forest(rows: list[dict[str, str]]) -> str:
     scopes = [("micro_all", "all_tracks")] + [("track", t) for t in TRACKS]
-    fig, axes = plt.subplots(len(scopes), 2, figsize=(13, 17), sharex=True)
+    fig, axes = plt.subplots(len(scopes), len(SOURCES), figsize=(18, 18), sharex=True)
     for row_index, (scope, track) in enumerate(scopes):
         for col_index, source in enumerate(SOURCES):
             ax = axes[row_index, col_index]
@@ -142,7 +143,7 @@ def disagreement_heatmap(rows: list[dict[str, str]]) -> str:
         for x in range(4):
             ax.text(x, y, f"{shares[y, x]:.1%}\n(n={matrix[y, x]:,})", ha="center", va="center",
                     fontsize=8, color="white" if shares[y, x] > 0.55 else "#20242a")
-    ax.set_title("Agreement and disagreement between two score sources")
+    ax.set_title("Official native score vs answer extraction")
     fig.colorbar(image, ax=ax, label="Within-condition share")
     fig.tight_layout()
     return _png(fig)
@@ -151,7 +152,7 @@ def disagreement_heatmap(rows: list[dict[str, str]]) -> str:
 def association_heatmaps(rows: list[dict[str, str]]) -> str:
     metrics = ("response_chars", "response_words", "completion_tokens", "total_api_tokens")
     titles = ("Response characters", "Response words", "Completion tokens", "Total API tokens")
-    fig, axes = plt.subplots(2, 4, figsize=(16, 7), sharex=True, sharey=True)
+    fig, axes = plt.subplots(len(SOURCES), 4, figsize=(16, 10), sharex=True, sharey=True)
     for r, source in enumerate(SOURCES):
         for col, (metric, title) in enumerate(zip(metrics, titles)):
             ax = axes[r, col]
@@ -211,8 +212,7 @@ def format_value(value: str, key: str = "") -> str:
         number = float(value)
     except (TypeError, ValueError):
         return esc(value)
-    if key.endswith("_accuracy") or key in {"native_accuracy", "extraction_accuracy", "judge_extraction_agreement",
-                                             "native_extraction_agreement", "native_judge_exact_binary_rate"}:
+    if key.endswith("_accuracy") or key.endswith("_agreement") or key.endswith("_rate"):
         return f"{number:.1%}"
     if "percentage_points" in key or key.endswith("_pp"):
         return f"{number:+.2f}"
@@ -249,15 +249,17 @@ def build_html(manifest: dict, tables: dict[str, list[dict[str, str]]], charts: 
         ("paired", "Paired effects / 配对效应", "Each estimate compares the same samples under S0 and the named condition. Intervals use image-cluster bootstrap; tests are paired exact McNemar with Holm adjustment. / 每个估计比较S0与相应条件下的同一批样本；区间采用图像聚类Bootstrap，检验为精确配对McNemar并进行Holm校正。"),
         ("disagreement", "Score-source disagreement / 评分来源分歧", "Cell values are within-condition proportions and counts; disagreement is descriptive and is not resolved by treating either source as ground truth. / 单元格展示条件内占比与数量；该分歧分析为描述性结果，不预设任何一方为真值。"),
         ("association", "Length–accuracy association / 长度与准确率关联", "Spearman ρ is descriptive; it is not a causal estimate. / Spearman ρ为描述性关联，不作因果解释。"),
-        ("tokens_native", "Output length by native score / 按原生评分分组的输出长度", "Bars show medians only; group differences are descriptive. / 柱形仅表示中位数，组间差异仅作描述。"),
+        ("tokens_native", "Output length by official score / 按官方评分分组的输出长度", "Bars show medians only; group differences are descriptive. / 柱形仅表示中位数，组间差异仅作描述。"),
+        ("tokens_terminal", "Output length by terminal decision / 按裁判终行判定分组的输出长度", "This is a diagnostic parse, distinct from the official cal_acc.py score. / 此为诊断性终行解析，与官方cal_acc.py评分不同。"),
         ("tokens_extraction", "Output length by extracted answer / 按抽取答案分组的输出长度", "Bars show medians only; group differences are descriptive. / 柱形仅表示中位数，组间差异仅作描述。"),
     ]
     figures = "".join(
         f'<figure id="fig-{esc(key)}"><a class="zoom" href="data:image/png;base64,{charts[key]}" target="_blank" rel="noopener"><img alt="{esc(title)}" src="data:image/png;base64,{charts[key]}"></a><figcaption><b>{esc(title)}</b><br>{esc(caption)}</figcaption></figure>'
         for key, title, caption in figure_specs
     )
-    summary_fields = ["condition", "n", "native_accuracy", "extraction_accuracy", "macro_track_native_accuracy",
-                      "macro_track_extraction_accuracy", "native_extraction_agreement", "native_judge_exact_binary_rate",
+    summary_fields = ["condition", "n", "native_accuracy", "terminal_accuracy", "extraction_accuracy", "macro_track_native_accuracy",
+                      "macro_track_terminal_accuracy", "macro_track_extraction_accuracy", "native_extraction_agreement",
+                      "terminal_extraction_agreement", "native_terminal_agreement", "native_judge_exact_label_rate",
                       "completion_tokens_mean", "completion_tokens_median", "completion_tokens_coverage"]
     primary_fields = ["score_source", "condition_b", "n_paired", "b_correct_a_wrong", "a_correct_b_wrong",
                       "paired_delta_percentage_points", "cluster_bootstrap_95ci_low_pp", "cluster_bootstrap_95ci_high_pp",
@@ -276,7 +278,7 @@ def build_html(manifest: dict, tables: dict[str, list[dict[str, str]]], charts: 
                      "mcnemar_holm_p":"Holm-adjusted p / Holm校正p值"}
     strata = tables["strata_summary"]
     strata_fields = ["stratum_type", "track", "stratum", "condition", "n", "native_correct", "native_accuracy",
-                     "extraction_correct", "extraction_accuracy"]
+                     "terminal_correct", "terminal_accuracy", "extraction_correct", "extraction_accuracy"]
     disagree_fields = ["condition", "track", "native_correct", "extraction_correct", "n"]
     source_rows = [{"role": x.get("role"), "condition": x.get("condition", ""), "track": x.get("track", ""),
                     "path": x.get("path"), "sha256": x.get("sha256")} for x in source_files]
@@ -311,12 +313,12 @@ details{{border:1px solid var(--line);border-radius:8px;padding:10px 14px;margin
 <li><a href="#methods">Methods and reproducibility / 方法与复现</a></li></ol></nav>
 <section id="scope"><h2>Scope and protocol / 范围与评测协议</h2>
 <p>This report covers S0, SC, S1, S2 and S3 across V*, ZoomBench, HRBench-4K, HRBench-8K, MME-RealWorld and MME-RealWorld-CN. The same benchmark samples are paired across conditions. / 本报告覆盖S0、SC、S1、S2、S3五种条件及V*、ZoomBench、HRBench-4K、HRBench-8K、MME-RealWorld和MME-RealWorld-CN六个评测集；同一评测集样本在各条件间配对比较。</p>
-<p>The report keeps two answer-scoring sources separate: the unmodified Vision-OPD native evaluator and a local Qwen structured, text-only answer extractor. Their agreement and disagreement are shown explicitly. Neither source is silently substituted for the other. / 报告分别保留Vision-OPD未修改的原生评测器与本地Qwen结构化纯文本答案抽取器两种评分来源，并显式展示一致与分歧，不将其中一方静默替代另一方。</p>
-<p>For the native evaluator, only the exact final nonempty line “Yes” or “No” is treated as its binary decision; the preceding reasoning text is not parsed as a label. Full raw judge text is preserved in the machine-readable merged audit table, while this report summarizes terminal decisions. / 对原生评测器，仅将最终一个非空行严格等于“Yes”或“No”的文本作为二元判定，不从前面的推理文本中抽取标签。完整原始裁判文本保留在机器可读的逐题合并审计表中，本报告仅汇总最终判定。</p>
+<p>Three score views are kept distinct: (1) the official Vision-OPD <code>cal_acc.py</code> exact-label result, (2) a diagnostic decision parsed from the exact final nonempty line of the same raw judge output, and (3) local Qwen structured text-only answer extraction. The official result reproduces <code>str(judge).strip().lower() == "yes"</code> and is cross-checked against all saved official accuracy logs. Terminal-line results are not substituted for official scores. / 分别保留三种评分视角：(1) Vision-OPD官方<code>cal_acc.py</code>精确标签结果，(2)从同一裁判原始输出最终非空行解析的诊断判定，(3)本地Qwen结构化纯文本答案抽取。官方结果严格复现<code>str(judge).strip().lower() == "yes"</code>，并与30份官方准确率日志逐项核对；终行结果不替代官方分数。</p>
+<p>The terminal-line diagnostic accepts only exact “Yes” or “No”; other text is counted as not-correct and reported separately. Full raw judge text remains in the machine-readable merged table. / 终行诊断仅接受精确的“Yes”或“No”；其他终行按未答对处理并单独报告。机器可读合并表保留完整裁判原始文本。</p>
 <div class="meta">Verified joined records / 已验证合并记录：<b>{int(manifest['joined_records']):,}</b> · Conditions / 条件：{', '.join(CONDITIONS)} · Tracks / 评测集：{', '.join(TRACK_LABELS[t] for t in TRACKS)}</div></section>
 <section id="overview"><h2>Condition overview / 条件总览</h2>
 <p>Micro accuracy weights every sample equally across the full pooled set; macro-track accuracy gives each benchmark equal weight. Both are reported because benchmark sizes differ substantially. / Micro准确率对合并后的每个样本等权；Macro-track准确率对每个评测集等权。由于评测集规模差异较大，两者并列报告。</p>
-{html_table(overall, summary_fields, {"condition":"Condition / 条件","n":"N","native_accuracy":"Native accuracy / 原生准确率","extraction_accuracy":"Extraction accuracy / 抽取准确率","macro_track_native_accuracy":"Macro-track native / 原生宏平均","macro_track_extraction_accuracy":"Macro-track extraction / 抽取宏平均","native_extraction_agreement":"Judge agreement / 评分一致率","native_judge_exact_binary_rate":"Native exact-binary rate / 原生二分类率","completion_tokens_mean":"Mean output tokens / 输出Token均值","completion_tokens_median":"Median output tokens / 输出Token中位数","completion_tokens_coverage":"Token coverage / Token覆盖率"})}</section>
+{html_table(overall, summary_fields, {"condition":"Condition / 条件","n":"N","native_accuracy":"Official native accuracy / 官方原生准确率","terminal_accuracy":"Terminal diagnostic accuracy / 终行诊断准确率","extraction_accuracy":"Answer-extraction accuracy / 答案抽取准确率","macro_track_native_accuracy":"Macro-track official / 官方原生宏平均","macro_track_terminal_accuracy":"Macro-track terminal / 终行诊断宏平均","macro_track_extraction_accuracy":"Macro-track extraction / 抽取宏平均","native_extraction_agreement":"Official–extraction agreement / 官方与抽取一致率","terminal_extraction_agreement":"Terminal–extraction agreement / 终行与抽取一致率","native_terminal_agreement":"Official–terminal agreement / 官方与终行一致率","native_judge_exact_label_rate":"Raw judge exact-label rate / 原始裁判精确标签率","completion_tokens_mean":"Mean output tokens / 输出Token均值","completion_tokens_median":"Median output tokens / 输出Token中位数","completion_tokens_coverage":"Token coverage / Token覆盖率"})}</section>
 <section id="figures"><h2>Visual analyses / 可视化分析</h2>{figures}</section>
 <section id="paired"><h2>Paired comparisons / 配对比较</h2>
 <p>Primary contrast: each prompted condition versus S0, using the same sample keys. “B correct, A wrong” and “A correct, B wrong” are discordant pairs for the exact McNemar test. Confidence intervals resample image clusters. / 主要对比为每种提示条件与S0在相同样本键上的配对差异。“B答对、A答错”与“A答对、B答错”构成精确McNemar检验的非一致配对；置信区间按图像簇重抽样。</p>
@@ -326,21 +328,22 @@ details{{border:1px solid var(--line);border-radius:8px;padding:10px 14px;margin
 <section id="strata"><h2>Stratified results / 分层结果</h2>
 <p>Strata retain benchmark-specific categories, subcategories, question type, language and answer format. Small strata should be read as descriptive estimates; the table reports their denominators. / 分层保留评测集内类别、子类别、题型、语言和答案格式；小样本分层应视为描述性估计，并结合分母解读。</p>
 <details><summary>Complete stratified summary / 展开完整分层汇总（{len(strata):,} rows / 行）</summary>
-{html_table(strata, strata_fields, {"stratum_type":"Dimension / 维度","track":"Benchmark / 评测集","stratum":"Category / 类别","condition":"Condition / 条件","n":"N","native_correct":"Native correct / 原生答对数","native_accuracy":"Native accuracy / 原生准确率","extraction_correct":"Extraction correct / 抽取答对数","extraction_accuracy":"Extraction accuracy / 抽取准确率"})}</details></section>
+{html_table(strata, strata_fields, {"stratum_type":"Dimension / 维度","track":"Benchmark / 评测集","stratum":"Category / 类别","condition":"Condition / 条件","n":"N","native_correct":"Official native correct / 官方原生答对数","native_accuracy":"Official native accuracy / 官方原生准确率","terminal_correct":"Terminal diagnostic correct / 终行诊断答对数","terminal_accuracy":"Terminal diagnostic accuracy / 终行诊断准确率","extraction_correct":"Extraction correct / 抽取答对数","extraction_accuracy":"Extraction accuracy / 抽取准确率"})}</details></section>
 <section id="judge"><h2>Scorer audit / 评分器审计</h2>
-<p>The embedded disagreement chart shows all four correctness states by condition. Detailed judge-source, raw native label, and extraction-status counts remain available below for audit. / 内嵌分歧图按条件展示四种正误组合；下方保留评分来源、原生标签值及答案抽取状态计数，供审计追溯。</p>
+<p>The embedded disagreement chart compares official native scoring with answer extraction. The tables also expose terminal-parser disagreements and raw-label format compliance. / 内嵌分歧图比较官方原生评分与答案抽取；表格另列终行解析分歧和原始标签格式合规情况。</p>
 <p>Attempt-level counts include invalid first attempts even when later retries succeeded; the table reports only status and error class, not raw model answers. / 尝试级计数保留后来重试成功的首次无效结果；表格仅汇总状态和错误类别，不展示模型原始回答。</p>
 <details><summary>All answer-extraction attempts / 全部答案抽取尝试（含已纠正尝试）</summary>{html_table(attempt_audit, ['condition','track','request_status','error_class','judge_prompt_sha256','attempts'], {'condition':'Condition / 条件','track':'Benchmark / 评测集','request_status':'Request status / 请求状态','error_class':'Error class / 错误类别','judge_prompt_sha256':'Judge prompt SHA-256 / 判别提示词哈希','attempts':'Attempt count / 次数'})}</details>
 <details><summary>Native terminal decisions / 原生最终判定计数</summary>{html_table(tables['native_judge_decision_audit'], ['condition','track','terminal_decision','n'], {'condition':'Condition / 条件','track':'Benchmark / 评测集','terminal_decision':'Terminal decision / 最终判定','n':'Count / 数量'})}</details>
+<details><summary>Official score vs terminal parse / 官方评分与终行解析对照</summary>{html_table(tables['native_terminal_disagreement'], ['condition','track','official_native_correct','terminal_decision','count'], {'condition':'Condition / 条件','track':'Benchmark / 评测集','official_native_correct':'Official native correct / 官方原生判对','terminal_decision':'Terminal decision / 终行判定','count':'Count / 数量'})}</details>
 <details><summary>Judge source / 评分来源计数</summary>{html_table(tables['judge_source'], ['condition','track','judge_source','n'], {'condition':'Condition / 条件','track':'Benchmark / 评测集','judge_source':'Scorer source / 评分器来源','n':'Count / 数量'})}</details>
 <details><summary>Extraction status / 答案抽取状态计数</summary>{html_table(tables['extraction_status'], ['condition','track','status','reason_code','n'], {'condition':'Condition / 条件','track':'Benchmark / 评测集','status':'Status / 状态','reason_code':'Reason code / 原因码','n':'Count / 数量'})}</details>
-<details><summary>Four-state disagreement counts / 四状态分歧计数</summary>{html_table(tables['score_disagreement'], disagree_fields, {'condition':'Condition / 条件','track':'Benchmark / 评测集','native_correct':'Native correct / 原生判对','extraction_correct':'Extraction correct / 抽取判对','n':'Count / 数量'})}</details></section>
+<details><summary>Official-score vs extraction disagreement / 官方评分与答案抽取分歧</summary>{html_table(tables['score_disagreement'], disagree_fields, {'condition':'Condition / 条件','track':'Benchmark / 评测集','native_correct':'Official native correct / 官方原生判对','extraction_correct':'Extraction correct / 抽取判对','n':'Count / 数量'})}</details></section>
 <section id="methods"><h2>Methods and reproducibility / 方法与可复现性</h2>
 <div class="callout"><b>Paired tests / 配对检验：</b>{esc(manifest.get('paired_comparison_method'))}<br><b>Confidence intervals / 置信区间：</b>{esc(manifest.get('confidence_intervals'))}<br><b>Bootstrap iterations / Bootstrap迭代：</b>{int(manifest.get('bootstrap_iterations', 0)):,} · <b>Seed / 随机种子：</b>{int(manifest.get('seed', 0))}</div>
 <p>All raw model outputs and score files remain unchanged. The report is generated from the verified output manifest and versioned aggregate tables; exact source paths and SHA-256 hashes are recorded here. / 原始模型输出和评分文件均未修改。本报告由已验证的输出清单及版本化统计表生成，并记录来源路径与SHA-256哈希。</p>
 <details><summary>Input file audit / 展开输入文件审计（{len(source_files):,} files / 个文件）</summary>{html_table(source_rows, source_fields, source_titles)}</details>
 <details><summary>Analysis manifest / 展开统计清单</summary><pre>{esc(audit_json)}</pre></details>
-<p><span class="badge">No causal interpretation / 不作因果解释</span><span class="badge">Benchmark-stratified results retained / 保留评测集分层结果</span><span class="badge">Both scoring sources retained / 保留两种评分来源</span></p></section>
+<p><span class="badge">No causal interpretation / 不作因果解释</span><span class="badge">Benchmark-stratified results retained / 保留评测集分层结果</span><span class="badge">Official, terminal and extraction scores separated / 官方、终行与抽取评分分列</span></p></section>
 <footer>Versioned Work5 analysis · Self-contained HTML with embedded charts · Generated from verified full-set records / Work5版本化分析 · 图表内嵌的独立HTML · 基于通过验证的全量记录生成</footer>
 </main></body></html>'''
 
@@ -355,6 +358,7 @@ def render(analysis_dir: Path, output: Path) -> None:
         "disagreement": disagreement_heatmap(tables["score_disagreement"]),
         "association": association_heatmaps(tables["length_accuracy_association"]),
         "tokens_native": token_medians(tables["response_length_by_score"], "native"),
+        "tokens_terminal": token_medians(tables["response_length_by_score"], "terminal"),
         "tokens_extraction": token_medians(tables["response_length_by_score"], "extraction"),
     }
     document = build_html(manifest, tables, charts)
