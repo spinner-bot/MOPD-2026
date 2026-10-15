@@ -1,9 +1,12 @@
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 
+from PIL import Image
+
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
-from build_manual_audit_packet import render_document
+from build_manual_audit_packet import encode_review_image, render_document
 from full_campaign_layout import CONDITIONS
 
 
@@ -30,6 +33,16 @@ def sample_case():
 
 
 class ManualAuditPacketTests(unittest.TestCase):
+    def test_embedded_image_is_high_quality_display_size_and_retains_original_hash(self):
+        with tempfile.TemporaryDirectory() as temp:
+            path = Path(temp) / "test.png"
+            Image.new("RGB", (3000, 1500), "navy").save(path)
+            uri, digest, original_size, embedded_size = encode_review_image(path)
+            self.assertTrue(uri.startswith("data:image/jpeg;base64,"))
+            self.assertEqual(original_size, (3000, 1500))
+            self.assertEqual(embedded_size, (1920, 960))
+            self.assertEqual(len(digest), 64)
+
     def test_document_is_offline_bilingual_and_contains_all_paired_reviews(self):
         document = render_document(
             [sample_case()],

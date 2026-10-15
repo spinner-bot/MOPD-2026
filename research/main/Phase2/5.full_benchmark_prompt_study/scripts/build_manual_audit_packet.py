@@ -8,9 +8,11 @@ import csv
 import hashlib
 import html
 import json
-import mimetypes
+from io import BytesIO
 from pathlib import Path
 from typing import Any
+
+from PIL import Image
 
 from full_campaign_layout import CONDITIONS, TRACKS
 from verify_analysis_sources import verify_analysis_sources
@@ -19,6 +21,8 @@ from verify_analysis_sources import verify_analysis_sources
 CAMPAIGN = Path("full/runs/prompt-registry-v1")
 NATIVE_ROOT = Path("official-scoring/vision-opd-native-v1")
 EXTRACTION_ROOT = Path("judgment/runs/answer-extraction-v1")
+EMBED_MAX_EDGE = 1920
+EMBED_JPEG_QUALITY = 90
 
 
 def read_json(path: Path) -> Any:
@@ -51,6 +55,25 @@ def read_jsonl_selected(path: Path, wanted: set[str], allow_retries: bool = Fals
 def terminal_decision(text: str) -> str:
     final_line = next((line.strip() for line in reversed(text.splitlines()) if line.strip()), "")
     return final_line.casefold() if final_line.casefold() in {"yes", "no"} else "other"
+
+
+def encode_review_image(path: Path) -> tuple[str, str, tuple[int, int], tuple[int, int]]:
+    original = path.read_bytes()
+    digest = hashlib.sha256(original).hexdigest()
+    with Image.open(BytesIO(original)) as source:
+        original_size = source.size
+        if "A" in source.getbands():
+            rgba = source.convert("RGBA")
+            image = Image.new("RGB", rgba.size, "white")
+            image.paste(rgba, mask=rgba.getchannel("A"))
+        else:
+            image = source.convert("RGB")
+        image.thumbnail((EMBED_MAX_EDGE, EMBED_MAX_EDGE), Image.Resampling.LANCZOS)
+        embedded_size = image.size
+        buffer = BytesIO()
+        image.save(buffer, format="JPEG", quality=EMBED_JPEG_QUALITY, optimize=True, progressive=True)
+    uri = "data:image/jpeg;base64," + base64.b64encode(buffer.getvalue()).decode("ascii")
+    return uri, digest, original_size, embedded_size
 
 
 def render_case(case: dict[str, Any]) -> str:
@@ -168,18 +191,18 @@ def build_cases(sample_manifest: dict, data_root: Path, analysis_dir: Path) -> t
             raise ValueError(f"{track}/{uid}: no model-input image reference")
         image_path = Path(images[0]).resolve()
         image_path.relative_to(data_root.resolve())
-        image_bytes = image_path.read_bytes()
-        media_type = mimetypes.guess_type(str(image_path))[0] or "image/jpeg"
-        image_data_uri = f"data:{media_type};base64,{base64.b64encode(image_bytes).decode('ascii')}"
+        image_data_uri, image_digest, original_size, embedded_size = encode_review_image(image_path)
         ordered_conditions = [data["conditions"][condition] for condition in CONDITIONS]
         cases.append({
             "case_index": index, "track": track, "sample_uid": uid,
             "primary_stratum": data["sample"]["primary_stratum"],
             "all_flags": data["sample"]["all_flags"], "query": prepared.get("query", ""),
             "gold_answer": prepared.get("response", ""), "image_data_uri": image_data_uri,
+            "image_original_sha256": image_digest, "image_original_size": original_size,
+            "image_embedded_size": embedded_size,
             "conditions": ordered_conditions,
         })
-        used_sources[str(image_path)] = hashlib.sha256(image_bytes).hexdigest()
+        used_sources[str(image_path)] = image_digest
     return cases, [{"path": path, "sha256": digest} for path, digest in sorted(used_sources.items())]
 
 
@@ -188,6 +211,8 @@ def render_document(cases: list[dict], sample_manifest: dict, sources: list[dict
         "sample_schema": sample_manifest["schema"], "seed": sample_manifest["seed"],
         "samples": len(cases), "condition_views": len(cases) * len(CONDITIONS),
         "sample_manifest_source": sample_manifest["source"], "verified_v4_source_count": verification["verified_count"],
+        "embedded_image_policy": {"format": "JPEG", "max_edge_px": EMBED_MAX_EDGE,
+                                  "quality": EMBED_JPEG_QUALITY, "original_bytes_hashed": True},
         "embedded_image_sha256": sources,
     }
     audit_json = html.escape(json.dumps(audit, ensure_ascii=False, indent=2))
@@ -273,7 +298,8 @@ def main() -> None:
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(document, encoding="utf-8")
     print(f"PASS: wrote self-contained audit packet for {len(cases)} cases / {len(cases) * 5} condition views")
-    print(f"embedded_images={len(images)} output_bytes={args.output.stat().st_size} output={args.output}")
+    print(f"embedded_images={len(images)} max_edge={EMBED_MAX_EDGE}px quality={EMBED_JPEG_QUALITY} "
+          f"output_bytes={args.output.stat().st_size} output={args.output}")
 
 
 if __name__ == "__main__":
