@@ -232,7 +232,7 @@ def html_table(rows: list[dict], fields: list[str], titles: dict[str, str] | Non
     header = "".join(f"<th>{esc(titles.get(field, field))}</th>" for field in fields)
     body = []
     for row in rows:
-        cells = "".join(f"<td>{format_value(row.get(field, ""), field)}</td>" for field in fields)
+        cells = "".join(f"<td>{format_value(row.get(field, ''), field)}</td>" for field in fields)
         body.append(f"<tr>{cells}</tr>")
     return f'<div class="table-wrap"><table><thead><tr>{header}</tr></thead><tbody>{"".join(body)}</tbody></table></div>'
 
