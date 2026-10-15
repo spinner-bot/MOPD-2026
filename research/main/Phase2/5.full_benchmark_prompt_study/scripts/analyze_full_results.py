@@ -450,7 +450,7 @@ def main() -> None:
     parser.add_argument("--output-version", default="full-statistics-v1")
     parser.add_argument("--seed", type=int, default=20261014)
     args = parser.parse_args()
-    output = args.data_root / "derived" / args.output-version
+    output = args.data_root / "derived" / args.output_version
     if output.exists():
         raise FileExistsError(f"Refusing to overwrite derived analysis: {output}")
     staging = output.parent / f".building-{args.output_version}-{os.environ.get('SLURM_JOB_ID', os.getpid())}"
