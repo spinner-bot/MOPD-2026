@@ -44,6 +44,7 @@ set +euo pipefail
 source /etc/profile
 set -euo pipefail
 module load cuda/12.6
+module load python/3.11.7
 mkdir -p "$(dirname "${OUTPUT}")" "${RUN_LOG_DIR}" \
   "${VLLM_CACHE_ROOT}" "${XDG_CACHE_HOME}" "${TORCHINDUCTOR_CACHE_DIR}"
 cd "${FAST_REPO}"
