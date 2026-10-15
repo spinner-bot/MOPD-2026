@@ -7,10 +7,17 @@ papers/awsome-OPD/AwesomeOPD-source/
 /reproduction/nzp395A.tmp
 
 # API keys - NEVER commit
+# 用通配覆盖任意深度的 API-key 目录：历史上曾有归档副本位于
+# archive/previous-research/... 下，因路径不匹配而漏提交（见 2197）
+**/API-key/
 research/main/idea2/一期研究/API-key/
 
 # 服务器凭据 - 严禁提交
 research/CINECA Leonardo/双认证连接.txt
+
+# 根目录误落的作业日志 / 临时产物（历史上 Slurm 日志曾被落到仓库根目录）
+/*.out
+/*.err
 
 # Python 缓存
 __pycache__/
