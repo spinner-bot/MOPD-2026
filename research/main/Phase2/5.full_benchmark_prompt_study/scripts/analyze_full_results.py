@@ -41,6 +41,19 @@ def validate_official_accuracy_log(track: str, correct: int, total: int, text: s
         match = re.search(pattern, text)
         if not match or int(match.group(2)) != total or f"{100 * correct / total:.2f}%" != f"{float(match.group(1)):.2f}%":
             raise ValueError(f"{track}: raw judge labels do not match the official cal_acc.py log")
+
+
+def find_official_accuracy_log(data_root: Path, condition: str, track: str) -> Path:
+    log_dir = data_root / "official-scoring/vision-opd-native-v1/logs"
+    prefix, suffix = f"{condition}-{track}-", "-accuracy.log"
+    candidates = sorted(log_dir.glob(f"{prefix}*{suffix}"))
+    matches = [path for path in candidates
+               if path.name.startswith(prefix)
+               and path.name.endswith(suffix)
+               and path.name[len(prefix):-len(suffix)].isdigit()]
+    if len(matches) != 1:
+        raise ValueError(f"{condition}/{track}: expected one official cal_acc.py log, found {len(matches)}")
+    return matches[0]
     else:
         pattern = rf"{re.escape(track)} Acc: ([0-9]+)/([0-9]+) = ([0-9]+(?:\.[0-9]+)?)%"
         match = re.search(pattern, text)
@@ -272,18 +285,14 @@ def collect(data_root: Path) -> tuple[list[dict], dict]:
             if set(native) != set(source):
                 raise ValueError(f"{condition}/{track}: native-score UID coverage mismatch")
             audits["native_rows"] += len(native)
-            official_logs = sorted((data_root / "official-scoring/vision-opd-native-v1/logs").glob(
-                f"{condition}-{track}-*-accuracy.log"
-            ))
-            if len(official_logs) != 1:
-                raise ValueError(f"{condition}/{track}: expected one official cal_acc.py log, found {len(official_logs)}")
+            official_log = find_official_accuracy_log(data_root, condition, track)
             official_correct = sum(str(record.get("judge", "")).strip().casefold() == "yes"
                                    for record in native.values())
             validate_official_accuracy_log(track, official_correct, len(native),
-                                           official_logs[0].read_text(encoding="utf-8"))
+                                           official_log.read_text(encoding="utf-8"))
             audits["source_files"].append({"role": "official_accuracy_log", "condition": condition,
-                                           "track": track, "path": str(official_logs[0]),
-                                           "sha256": sha256_file(official_logs[0])})
+                                           "track": track, "path": str(official_log),
+                                           "sha256": sha256_file(official_log)})
 
             extraction_path = data_root / "judgment/runs/answer-extraction-v1" / track / f"{condition}.jsonl"
             audits["source_files"].append({"role": "answer_extraction", "condition": condition, "track": track,
