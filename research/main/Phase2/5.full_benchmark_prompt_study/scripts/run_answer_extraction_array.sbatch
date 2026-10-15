@@ -9,7 +9,7 @@
 #SBATCH --cpus-per-task=12
 #SBATCH --mem=160G
 #SBATCH --time=1-00:00:00
-#SBATCH --array=0-29%8
+#SBATCH --array=0-29%16
 #SBATCH --output=/leonardo_scratch/large/userexternal/rqian000/MOPD-2026-work5-data/logs/extract-%A_%a.out
 #SBATCH --error=/leonardo_scratch/large/userexternal/rqian000/MOPD-2026-work5-data/logs/extract-%A_%a.err
 

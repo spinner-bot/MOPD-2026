@@ -104,11 +104,11 @@ if [[ "${STAGE}" == "judges" ]]; then
   fi
   retry_jobs=()
   if [[ "${native_missing}" != "NONE" ]]; then
-    output="$(sbatch --array="${native_missing}%8" "${NATIVE_SCRIPT}")"
+    output="$(sbatch --array="${native_missing}%16" "${NATIVE_SCRIPT}")"
     retry_jobs+=("${output##* }")
   fi
   if [[ "${extract_missing}" != "NONE" ]]; then
-    output="$(sbatch --array="${extract_missing}%8" "${EXTRACT_SCRIPT}")"
+    output="$(sbatch --array="${extract_missing}%16" "${EXTRACT_SCRIPT}")"
     retry_jobs+=("${output##* }")
   fi
   child_dependencies="$(IFS=:; printf '%s' "${retry_jobs[*]}")"
