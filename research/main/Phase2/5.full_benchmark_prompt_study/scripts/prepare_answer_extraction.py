@@ -11,7 +11,7 @@ from pathlib import Path
 
 CONDITIONS = ("S0", "SC", "S1", "S2", "S3")
 TRACKS = ("vstar", "zoombench", "hrbench-4k", "hrbench-8k", "mme-realworld", "mme-realworld-cn")
-OPTION_LINE = re.compile(r"(?m)^\s*(?:[\(（]([A-F])[\)）]|([A-F])[.)])\s+")
+OPTION_LINE = re.compile(r"(?m)^\s*(?:[\(（]([A-F])[\)）]|([A-F])[.)])\s*")
 
 
 def extract_option_labels(query: str) -> list[str]:
