@@ -24,3 +24,8 @@ def test_extract_fullwidth_chinese_parentheses():
 def test_does_not_treat_answer_instruction_as_an_option():
     query = "请从 A、B、C 中选择。\n最佳答案为："
     assert extract_option_labels(query) == []
+
+
+def test_extract_compact_options_without_space_before_cjk_text():
+    query = "问题\n(A)蓝色\n(B)红色\n(C)白色\n(D)黑色\n(E)没有目标"
+    assert extract_option_labels(query) == ["A", "B", "C", "D", "E"]
