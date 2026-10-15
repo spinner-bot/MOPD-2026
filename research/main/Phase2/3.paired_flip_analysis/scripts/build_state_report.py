@@ -5,8 +5,10 @@ from __future__ import annotations
 
 import argparse
 import base64
+import hashlib
 import html
 import json
+import mimetypes
 from pathlib import Path
 
 import matplotlib
@@ -230,6 +232,10 @@ def main() -> None:
     old = pd.read_csv(derived / "flip_cases.csv")
     old = old[old.target == "S1"].set_index("sample_id").sort_index()
     assert old.index.equals(ids)
+    case_image_root = work / "raw/case_images"
+    image_records = json.loads((case_image_root / "case_image_manifest.json").read_text(encoding="utf-8"))
+    image_by_case = {int(record["case_index"]): record for record in image_records}
+    assert len(image_by_case) == 12
     cases=[]
     selected=[]
     flip_states=["001","010","011","100","101","110"]
@@ -241,6 +247,14 @@ def main() -> None:
         selected.extend([(code, top,"large_reduction"),(code,typical,"typical")])
     assert len({sample_id for _,sample_id,_ in selected})==len(selected)
     for i,(code,sample_id,selection) in enumerate(selected,1):
+        image_record = image_by_case[i]
+        assert image_record["sample_id"] == sample_id
+        image_path = case_image_root / image_record["file"]
+        image_bytes = image_path.read_bytes()
+        assert hashlib.sha256(image_bytes).hexdigest() == image_record["sha256"]
+        image_mime = mimetypes.guess_type(image_path.name)[0]
+        assert image_mime in {"image/png", "image/jpeg"}
+        image_uri = f"data:{image_mime};base64,{base64.b64encode(image_bytes).decode('ascii')}"
         row=old.loc[sample_id]
         source_rows={c:by_condition[c].loc[sample_id] for c in ["S0","S1","S3"]}
         statuses=" / ".join("✓" if correct.loc[sample_id,c] else "✗" for c in ["S0","S1","S3"])
@@ -258,7 +272,10 @@ def main() -> None:
                       f'<pre>{html.escape(str(rr.response)).replace(chr(10), "&#10;")}</pre></div>')
         cases.append(f'<details class="case"><summary>案例 {i:02d} / Case {i:02d} · {code} {STATE_ZH[code]} / {STATE_EN[code]} · '
                      f'{html.escape(str(row["task"]))} · S0/S1/S3 {statuses} · tokens {token_line}</summary>'
-                     f'<div class="casebody"><p><b>问题 / Question:</b> {html.escape(str(row["question"]))}</p>'
+                     f'<div class="casebody"><img class="case-image" src="{image_uri}" '
+                     f'alt="案例 {i:02d} 的原始图像 / Original image for case {i:02d}" '
+                     f'onclick="window.open(this.src, \'_blank\')">'
+                     f'<p><b>问题 / Question:</b> {html.escape(str(row["question"]))}</p>'
                      f'<ol>{choice_items}</ol><p><b>标准答案 / Gold:</b> {html.escape(str(row["gold_answer"]))}</p>'
                      f'<p><b>长度变化 / Token change:</b> S1−S0 {int(lengths.loc[sample_id,"S1_minus_S0"]):+d}; '
                      f'S3−S0 {int(lengths.loc[sample_id,"S3_minus_S0"]):+d}. '
@@ -296,6 +313,7 @@ def main() -> None:
     style="""
 *{box-sizing:border-box}html{scroll-behavior:smooth}body{max-width:1150px;margin:0 auto;padding:30px 30px 80px;background:#fff;color:#233648;font:16px/1.72 Arial,"Microsoft YaHei",sans-serif}h1{margin:0;padding:26px 30px;background:linear-gradient(135deg,#18324b,#2f6f9f);border-radius:12px;color:white;font-size:30px}h2{margin:56px 0 20px;padding:10px 14px;border-left:5px solid #2f6f9f;border-bottom:1px solid #dce4eb;color:#18324b;background:#f8fafc;font-size:23px}h3{color:#244d6d;margin-top:30px}.author{color:#647689;font-size:14px;margin:10px 2px 18px}.lead{font-size:18px;max-width:940px}.en{display:block;color:#586b7b;font-size:.92em;margin-top:4px;line-height:1.6}.toc{border:1px solid #d7e1ea;padding:18px 22px;border-radius:10px;margin:26px 0;background:#fff}.toc ol{columns:2;margin:8px 0;padding-left:22px}.toc a{color:#246b9d;text-decoration:none}.toc a:hover{text-decoration:underline}.key{font-weight:700;color:#18324b}.callout{border-left:4px solid #4c78a8;background:#f7fafc;padding:16px 20px;margin:24px 0}.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:26px 0}.metric{border:1px solid #d6e0e8;border-radius:9px;padding:16px 18px;background:#fff}.metric strong{font-size:26px;color:#1e567c}.metric .en{margin-top:0}.case{margin:13px 0;border:1px solid #d7e1ea;border-radius:8px;background:#fff}.case summary{cursor:pointer;padding:14px 16px;font-weight:700;color:#244d6d}.casebody{padding:0 18px 18px}.casebody ol{padding-left:24px}.case small{display:block;color:#8793a0;font-size:12px;margin-top:10px;word-break:break-all}.responses{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.response{border:1px solid #dce4eb;border-radius:7px;padding:10px;background:#fff;min-width:0}.response h4{margin:0;color:#244d6d}.response p{margin:4px 0;font-size:13px}.response pre{white-space:pre-wrap;word-break:break-word;background:#f7f9fb;padding:10px;font:13px/1.55 Consolas,monospace;max-height:420px;overflow:auto}.state-list{columns:2}.state-list li{break-inside:avoid;margin:5px 0}.task-list li{margin:8px 0}.source-note{color:#5a6c7e;font-size:14px}@media(max-width:800px){body{padding:15px}.metrics{grid-template-columns:1fr}.toc ol,.state-list{columns:1}.responses{grid-template-columns:1fr}h1{font-size:23px;padding:20px}}
 figure{width:100%;max-width:1000px;margin:26px auto 34px;overflow:hidden}figure img{display:block;width:100%;max-width:100%;height:auto;object-fit:contain}figure figcaption{padding:12px 16px;text-align:left;color:#38556b;font-weight:600}figure figcaption .en{font-weight:400}
+.case-image{display:block;max-width:100%;max-height:620px;width:auto;height:auto;object-fit:contain;margin:14px auto 20px;border:1px solid #dce4eb;border-radius:6px;cursor:zoom-in}
 """
     doc=f'''<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>S0/S1/S3 题目级配对翻转分析 / Paired flip analysis</title><style>{style}</style></head><body>
 <h1>S0 / S1 / S3 题目级配对翻转分析<br><span style="font-size:.62em;font-weight:400">Question-level paired flip analysis</span></h1>
@@ -330,7 +348,7 @@ figure{width:100%;max-width:1000px;margin:26px auto 34px;overflow:hidden}figure 
 {section_e}
 {para('在 S1 的修正题与损失题中，相对 S0 的平均长度变化分别约为 −77.4 与 −77.1 tokens；两类几乎相同。S3 的对应变化约为 −85.5 与 −57.3 tokens。后者提示值得继续检查输出内容与题目属性，但仍不能作为因果结论。','For S1, mean changes from S0 are about −77.4 tokens for gains and −77.1 for losses, nearly identical. For S3, the corresponding changes are about −85.5 and −57.3 tokens. The latter invites closer inspection of responses and task properties, but remains an association.')}</section>
 <section id="cases"><h2>六、典型案例 / VI. Representative cases</h2>
-{para('每个翻转状态选取一个大幅缩短输出的案例和一个接近该状态典型长度变化的案例，共 12 个。每个案例给出题目、选项、标准答案、三条件正确性、token 数及完整原始输出。点击条目展开。','Each flip state contributes one large-reduction case and one case near its median length change, for 12 cases total. Each includes the question, choices, gold answer, correctness, token counts, and complete raw responses under all three conditions. Open a case to inspect it.')}
+{para('每个翻转状态选取一个大幅缩短输出的案例和一个接近该状态典型长度变化的案例，共 12 个。每个案例给出原图、题目、选项、标准答案、三条件正确性、token 数及完整原始输出。点击条目展开，点击原图可单独查看。','Each flip state contributes one large-reduction case and one case near its median length change, for 12 cases total. Each includes the original image, question, choices, gold answer, correctness, token counts, and complete raw responses under all three conditions. Open a case to inspect it; click its image to view it separately.')}
 {''.join(cases)}
 {para('上述案例按预定的长度规则选出，用于展示行为差异；不能把这些个例的语言模式直接当作整个状态组的典型机制。','Cases are selected by a fixed length-based rule to illustrate behavior. Their wording alone does not establish a mechanism for an entire state group.')}</section>
 <section id="limits"><h2>七、研究判断与边界 / VII. Interpretation and next questions</h2>
@@ -338,6 +356,9 @@ figure{width:100%;max-width:1000px;margin:26px auto 34px;overflow:hidden}figure 
 {para('正确性依据既有解析结果；本报告不重新判题。输出 token 数来自正式 vLLM usage。任务组成、长度关联及所选案例都属于描述性或探索性证据，不能证明模型内部推理机制。','Correctness uses the existing parsed results; this report does not regrade answers. Output token counts come from the formal vLLM usage records. Task composition, length associations, and selected cases provide descriptive or exploratory evidence, not proof of an internal reasoning mechanism.')}
 <p class="source-note">数据与复现 / Data and reproduction: <code>derived/run-60011513/</code>, <code>figures/run-60011513/</code>, <code>scripts/build_state_report.py</code>. 分析条件 / Conditions: S0, S1, S3.</p></section></body></html>'''
     report.write_text(doc,encoding="utf-8")
+    final_copy = report.with_name("paired-flip-analysis-report-final-version.html")
+    if final_copy.exists():
+        final_copy.write_text(doc, encoding="utf-8")
     print(json.dumps({"states":result["state_counts"],"cases":len(selected),"report":str(report)},ensure_ascii=False))
 
 

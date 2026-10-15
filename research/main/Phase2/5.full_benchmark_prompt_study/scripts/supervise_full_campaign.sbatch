@@ -58,6 +58,16 @@ if [[ "${STAGE}" == "verify" ]]; then
       "${native_job}" "${extract_job}" "${next_manager}"
     exit 0
   fi
+  verification_log="${DATA_ROOT}/logs/full-output-verification-${verify_job}.log"
+  if [[ -f "${verification_log}" ]] && grep -q '^PASS ALL; WROTE ' "${verification_log}"; then
+    echo "Output verification passed but a downstream freeze step failed; preserving all generation markers and retrying verification/freeze only." >&2
+    retry_verify_output="$(sbatch "${VERIFY_SCRIPT}")"
+    retry_verify_job="${retry_verify_output##* }"
+    next_manager="$(WORK5_VERIFY_JOB="${retry_verify_job}" launch_manager verify "$((ATTEMPT + 1))" "${retry_verify_job}")"
+    printf 'output_verification_passed=1\nretry_verify_job=%s\nverification_manager=%s\n' \
+      "${retry_verify_job}" "${next_manager}"
+    exit 0
+  fi
   if (( ATTEMPT >= MAX_ATTEMPTS )); then
     echo "Verification failed after ${ATTEMPT} continuation rounds; preserving logs and stopping retries." >&2
     exit 3

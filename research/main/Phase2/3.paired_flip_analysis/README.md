@@ -14,6 +14,7 @@
 - `protocol.md`：本工作的固定分析口径和门禁；
 - `scripts/`：可复现分析脚本；
 - `derived/`：题目级翻转明细和统计结果；
+- `raw/case_images/`：由 `scripts/fetch_case_images.py` 获取的本地复现材料，不纳入版本控制；
 - `figures/`：翻转数量、题目属性、长度差和长尾图表；
 - `report/`：题目级可读分析报告；
 - `runs/`：本工作每次分析的运行记录。
@@ -24,4 +25,6 @@
 
 本目录不覆盖或修改 2 号工作的 raw、derived 和 report 文件。
 
-当前成品报告为 `report/paired-flip-analysis-report.html`。报告围绕八种 S0/S1/S3 正确性状态组织，图表和解释相邻，包含任务内部条件率、12 个可展开的原始输出案例。完整题目级数据和复现脚本分别位于 `derived/run-60011513/` 与 `scripts/build_state_report.py`。
+当前成品报告为 `report/paired-flip-analysis-report-final-version.html`。报告围绕八种 S0/S1/S3 正确性状态组织，图表和解释相邻，包含任务内部条件率、12 个可展开的原图与原始输出案例；图片已嵌入 HTML，报告可独立打开。图像来源于 CV-Bench 历史图像归档，并由 `scripts/fetch_case_images.py` 按 2 号工作的冻结清单核验。完整题目级数据和复现脚本分别位于 `derived/run-60011513/`、`scripts/fetch_case_images.py` 与 `scripts/build_state_report.py`。
+
+构建脚本以 `report/paired-flip-analysis-report.html` 为标准输出；若最终版副本存在，也会同步更新该副本。

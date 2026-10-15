@@ -11,7 +11,12 @@ from pathlib import Path
 
 CONDITIONS = ("S0", "SC", "S1", "S2", "S3")
 TRACKS = ("vstar", "zoombench", "hrbench-4k", "hrbench-8k", "mme-realworld", "mme-realworld-cn")
-OPTION_LINE = re.compile(r"(?m)^\s*(?:\(([A-F])\)|([A-F])[.)])\s+")
+OPTION_LINE = re.compile(r"(?m)^\s*(?:[\(（]([A-F])[\)）]|([A-F])[.)])\s+")
+
+
+def extract_option_labels(query: str) -> list[str]:
+    """Read option labels from benchmark prompts using ASCII or CJK brackets."""
+    return [left or right for left, right in OPTION_LINE.findall(query)]
 
 
 def sha256_file(path: Path) -> str:
@@ -96,7 +101,7 @@ def main() -> None:
                     answer = str(output.get("model_answer") or "")
                     question_type = str(source.get("question_type") or "").strip().casefold()
                     answer_format = "NUMERIC_SHORT_ANSWER" if track == "zoombench" and question_type == "blank" else "MCQ_OPTION"
-                    labels = [left or right for left, right in OPTION_LINE.findall(query)] if answer_format == "MCQ_OPTION" else []
+                    labels = extract_option_labels(query) if answer_format == "MCQ_OPTION" else []
                     if answer_format == "MCQ_OPTION" and len(labels) < 2:
                         raise ValueError(f"{track}/{uid}: expected visible option lines in query")
                     request = {
