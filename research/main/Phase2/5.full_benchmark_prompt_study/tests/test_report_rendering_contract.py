@@ -16,7 +16,7 @@ class ReportRenderingContractTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
             (root / "analysis-manifest.json").write_text(
-                json.dumps({"schema": "phase2-work5-statistics-v2", "joined_records": 100}),
+                json.dumps({"schema": "phase2-work5-statistics-v3", "joined_records": 100}),
                 encoding="utf-8",
             )
             with self.assertRaisesRegex(ValueError, "160,810"):
@@ -24,24 +24,27 @@ class ReportRenderingContractTests(unittest.TestCase):
 
     def test_document_is_bilingual_and_embeds_figures_without_external_assets(self):
         manifest = {
-            "schema": "phase2-work5-statistics-v2", "joined_records": 160810,
+            "schema": "phase2-work5-statistics-v3", "joined_records": 160810,
             "conditions": list(report.CONDITIONS), "tracks": list(report.TRACKS),
             "seed": 20261014, "bootstrap_iterations": 2000,
             "paired_comparison_method": "exact McNemar; Holm-adjusted",
             "confidence_intervals": "cluster bootstrap 95 percent",
-            "native_judge_decision_rule": "Exact terminal Yes/No line only",
+            "official_native_rule": "Exact original Yes label only",
+            "terminal_diagnostic_rule": "Exact terminal Yes/No line only",
             "audit": {"source_files": [], "extraction_attempt_status_counts": [
                 {"condition": "S0", "track": "vstar", "request_status": "INVALID_JUDGE_JSON",
                  "error_class": "evidence_not_exact", "attempts": 1},
             ]},
         }
         summaries = [{"scope": "track", "condition": c, "stratum": t, "n": "5000",
-                      "native_accuracy": "0.5", "extraction_accuracy": "0.51"}
+                      "native_accuracy": "0.5", "terminal_accuracy": "0.52", "extraction_accuracy": "0.51"}
                      for c in report.CONDITIONS for t in report.TRACKS]
-        summaries += [{"condition": c, "n": "32162", "native_accuracy": "0.5",
+        summaries += [{"condition": c, "n": "32162", "native_accuracy": "0.5", "terminal_accuracy": "0.52",
                        "extraction_accuracy": "0.51", "macro_track_native_accuracy": "0.5",
-                       "macro_track_extraction_accuracy": "0.51", "native_extraction_agreement": "0.9",
-                       "native_judge_exact_binary_rate": "1", "completion_tokens_mean": "20",
+                       "macro_track_terminal_accuracy": "0.52", "macro_track_extraction_accuracy": "0.51",
+                       "native_extraction_agreement": "0.9", "terminal_extraction_agreement": "0.9",
+                       "native_terminal_agreement": "0.9", "native_judge_exact_label_rate": "0.8",
+                       "completion_tokens_mean": "20",
                        "completion_tokens_median": "15", "completion_tokens_coverage": "1"}
                       for c in report.CONDITIONS]
         paired = []
@@ -61,6 +64,10 @@ class ReportRenderingContractTests(unittest.TestCase):
         tables["score_disagreement"] = [
             {"condition": c, "native_correct": str(n), "extraction_correct": str(e), "n": "10"}
             for c in report.CONDITIONS for n, e in ((1, 1), (1, 0), (0, 1), (0, 0))]
+        tables["native_terminal_disagreement"] = [
+            {"condition": c, "track": t, "official_native_correct": "1",
+             "terminal_decision": "yes", "count": "2"}
+            for c in report.CONDITIONS for t in report.TRACKS]
         tables["length_accuracy_association"] = [
             {"scope": "micro_all", "score_source": source, "length_metric": metric,
              "condition": condition, "spearman_rho": "0.12"}
@@ -78,6 +85,7 @@ class ReportRenderingContractTests(unittest.TestCase):
             "disagreement": report.disagreement_heatmap(tables["score_disagreement"]),
             "association": report.association_heatmaps(tables["length_accuracy_association"]),
             "tokens_native": report.token_medians(tables["response_length_by_score"], "native"),
+            "tokens_terminal": report.token_medians(tables["response_length_by_score"], "terminal"),
             "tokens_extraction": report.token_medians(tables["response_length_by_score"], "extraction"),
         }
         document = report.build_html(manifest, tables, charts)
@@ -86,9 +94,10 @@ class ReportRenderingContractTests(unittest.TestCase):
         self.assertIn("Holm-adjusted p / Holm校正p值", document)
         self.assertIn("evidence_not_exact", document)
         self.assertIn("All answer-extraction attempts / 全部答案抽取尝试", document)
-        self.assertIn("preceding reasoning text is not parsed as a label", document)
-        self.assertIn("Native terminal decisions / 原生最终判定计数", document)
-        self.assertEqual(document.count("data:image/png;base64,"), 12)
+        self.assertIn("official Vision-OPD", document)
+        self.assertIn("Official score vs terminal parse / 官方评分与终行解析对照", document)
+        self.assertIn("Official, terminal and extraction scores separated / 官方、终行与抽取评分分列", document)
+        self.assertEqual(document.count("data:image/png;base64,"), 14)
         self.assertNotIn('src="http', document)
         self.assertNotIn("href=\"http", document)
 
