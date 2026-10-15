@@ -1,5 +1,6 @@
 import importlib.util
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -25,6 +26,15 @@ class AnalysisContractTests(unittest.TestCase):
         analysis.validate_official_accuracy_log("hrbench-4k", 1, 2, "hrbench-4k Acc: 1/2 = 50.00%")
         with self.assertRaisesRegex(ValueError, "official cal_acc.py log"):
             analysis.validate_official_accuracy_log("zoombench", 0, 2, "zoombench Acc: 1/2 = 50.00%")
+
+    def test_official_log_lookup_does_not_confuse_prefix_tracks(self):
+        with tempfile.TemporaryDirectory() as temp:
+            log_dir = Path(temp) / "official-scoring/vision-opd-native-v1/logs"
+            log_dir.mkdir(parents=True)
+            exact = log_dir / "S0-mme-realworld-12345-accuracy.log"
+            exact.touch()
+            (log_dir / "S0-mme-realworld-cn-12346-accuracy.log").touch()
+            self.assertEqual(analysis.find_official_accuracy_log(Path(temp), "S0", "mme-realworld"), exact)
 
     def test_numeric_answers_compare_by_decimal_value(self):
         self.assertEqual(analysis.normalize_number("1,200.00."), analysis.normalize_number("1200"))
