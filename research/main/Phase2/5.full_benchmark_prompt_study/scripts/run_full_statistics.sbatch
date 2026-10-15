@@ -15,7 +15,7 @@ set -euo pipefail
 
 FAST_REPO="/leonardo_scratch/fast/AIFAC_F02_774/rqian000/MOPD-2026-work5"
 DATA_ROOT="/leonardo_scratch/large/userexternal/rqian000/MOPD-2026-work5-data"
-PYTHON="/leonardo_work/AIFAC_F02_774/chentian/envs/VisAlloc/bin/python"
+PYTHON="/leonardo_scratch/fast/AIFAC_F02_774/rqian000/envs/sc-vllm/bin/python"
 ANALYZER="${FAST_REPO}/research/main/Phase2/5.full_benchmark_prompt_study/scripts/analyze_full_results.py"
 
 export PYTHONUNBUFFERED=1
