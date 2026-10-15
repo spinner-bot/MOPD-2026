@@ -28,12 +28,17 @@ class AnalysisContractTests(unittest.TestCase):
         attempts = [
             {"sample_uid": "u1", "condition": "S0", "track": "vstar",
              "request_status": "INVALID_JUDGE_JSON",
+             "judge_prompt_sha256": "prompt-v1",
              "validation_error": "ValueError: evidence is not a nonempty exact response substring"},
-            {"sample_uid": "u1", "condition": "S0", "track": "vstar", "request_status": "OK"},
+            {"sample_uid": "u1", "condition": "S0", "track": "vstar",
+             "request_status": "OK", "judge_prompt_sha256": "prompt-v2"},
             {"sample_uid": "u2", "condition": "S0", "track": "vstar",
              "request_status": "INVALID_JUDGE_JSON",
              "validation_error": "ValueError: MCQ answer must be one listed literal label and have empty answer_text"},
             {"sample_uid": "u3", "condition": "S0", "track": "vstar", "request_status": "TECHNICAL_ERROR"},
+            {"sample_uid": "u4", "condition": "S0", "track": "vstar",
+             "request_status": "INVALID_JUDGE_JSON",
+             "validation_error": "JSONDecodeError: Unterminated string"},
         ]
         latest, duplicate_count, audit = analysis.summarize_extraction_attempts(attempts)
         self.assertEqual(duplicate_count, 1)
@@ -42,7 +47,10 @@ class AnalysisContractTests(unittest.TestCase):
         self.assertEqual(classes["evidence_not_exact"], 1)
         self.assertEqual(classes["mcq_option_contract"], 1)
         self.assertEqual(classes["technical_error"], 1)
+        self.assertEqual(classes["malformed_judge_json"], 1)
         self.assertEqual(classes["none"], 1)
+        self.assertIn("prompt-v1", {row["judge_prompt_sha256"] for row in audit})
+        self.assertIn("prompt-v2", {row["judge_prompt_sha256"] for row in audit})
 
     def test_exact_mcnemar_and_holm(self):
         self.assertEqual(analysis.exact_mcnemar_p(0, 0), 1.0)
