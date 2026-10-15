@@ -53,7 +53,9 @@ cd "${FAST_REPO}"
 printf 'job=%s\narray_task=%s\ncondition=%s\ntrack=%s\nstart=%s\ncommit=%s\n' \
   "${SLURM_JOB_ID}" "${SLURM_ARRAY_TASK_ID}" "${CONDITION}" "${TRACK}" "$(date -Is)" "$(git rev-parse HEAD)"
 nvidia-smi
-sha256sum "${INPUT}" "${PROMPT}" "${MODEL}/config.json" "${MODEL}/model.safetensors"
+# This checkpoint is sharded; identify it via its config and shard index.
+[[ -s "${MODEL}/model.safetensors.index.json" ]] || { echo "Missing sharded checkpoint index: ${MODEL}/model.safetensors.index.json"; exit 2; }
+sha256sum "${INPUT}" "${PROMPT}" "${MODEL}/config.json" "${MODEL}/model.safetensors.index.json"
 
 "${PYTHON}" "${FAST_REPO}/research/main/Phase2/5.full_benchmark_prompt_study/scripts/run_answer_extraction.py" \
   --input "${INPUT}" \
