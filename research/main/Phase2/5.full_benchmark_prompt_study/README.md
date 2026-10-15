@@ -56,7 +56,7 @@
 
 ## 全量统计与裁判输出解析
 
-统计v2以 Vision-OPD 原生裁判 `judge` 字段的最终非空行作为判定，并且只接受精确的 `Yes` 或 `No`；裁判的前置推理文本不参与标签解析。遇到缺失或非二元终行时，分析立即失败。逐题合并CSV保留原始裁判全文供审计，HTML只汇总解析后的最终判定。修正版派生数据位于服务器 `derived/full-statistics-v2/`，自包含中英双语报告为 `report/full-five-condition-benchmark-report-v2.html`；报告序列记录在项目级 `research/main/进展报告/`。
+统计v2以 Vision-OPD 原生裁判 `judge` 字段的最终非空行作为判定，并且只接受精确的 `Yes` 或 `No`；裁判的前置推理文本不参与标签解析。其他终行归为 `other` 并记作未答对，同时在二元判定覆盖率中单独审计。逐题合并CSV保留原始裁判全文供审计，HTML只汇总解析后的最终判定。修正版派生数据位于服务器 `derived/full-statistics-v2/`，自包含中英双语报告为 `report/full-five-condition-benchmark-report-v2.html`；报告序列记录在项目级 `research/main/进展报告/`。
 
 `full-statistics-v1` 是发现上述终行解析缺陷前的审计快照，不可引用为统计结论；其文件保留在服务器派生数据目录中，不覆盖、不删除，以便追溯版本更正过程。
 

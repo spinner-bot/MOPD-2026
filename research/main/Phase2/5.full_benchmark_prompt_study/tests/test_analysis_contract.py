@@ -12,13 +12,13 @@ SPEC.loader.exec_module(analysis)
 
 class AnalysisContractTests(unittest.TestCase):
     def test_native_score_uses_exact_terminal_decision_only(self):
-        self.assertEqual(analysis.terminal_decision(
+        self.assertEqual(analysis.native_score_from_output(
             "The answer may be Yes.\n</think>\n\nNo\n"
-        ), "No")
-        self.assertEqual(analysis.terminal_decision(
+        ), ("no", 0, 1))
+        self.assertEqual(analysis.native_score_from_output(
             "Reasoning says no, but the final choice is Yes\n\nYes\n"
-        ), "Yes")
-        self.assertEqual(analysis.terminal_decision("The answer is correct."), "other")
+        ), ("yes", 1, 1))
+        self.assertEqual(analysis.native_score_from_output("The answer is correct."), ("other", 0, 0))
 
     def test_numeric_answers_compare_by_decimal_value(self):
         self.assertEqual(analysis.normalize_number("1,200.00."), analysis.normalize_number("1200"))

@@ -27,6 +27,12 @@ CAMPAIGN = "full/runs/prompt-registry-v1"
 N_BOOTSTRAP = 2000
 
 
+def native_score_from_output(text: str) -> tuple[str, int, int]:
+    """Return terminal label, correctness, and whether it is an exact binary label."""
+    decision = terminal_decision(text).casefold()
+    return decision, int(decision == "yes"), int(decision in {"yes", "no"})
+
+
 def load_json(path: Path):
     with path.open(encoding="utf-8") as handle:
         return json.load(handle)
@@ -271,11 +277,7 @@ def collect(data_root: Path) -> tuple[list[dict], dict]:
                     raise ValueError(f"{condition}/{track}/{uid}: prompt condition mismatch")
                 # The unmodified Vision-OPD judge returns chain-of-thought text;
                 # only its exact terminal Yes/No line is the binary decision.
-                judge = terminal_decision(str(score.get("judge", ""))).casefold()
-                if judge not in {"yes", "no"}:
-                    raise ValueError(
-                        f"{condition}/{track}/{uid}: native judge has no exact terminal Yes/No decision"
-                    )
+                judge, native_correct, native_binary = native_score_from_output(str(score.get("judge", "")))
                 if extraction.get("request_status") != "OK":
                     raise ValueError(f"{condition}/{track}/{uid}: answer-extraction status {extraction.get('request_status')}")
 
@@ -293,15 +295,15 @@ def collect(data_root: Path) -> tuple[list[dict], dict]:
                     "question_type": question_type or "(missing)",
                     "language": item.get("language") or "(missing)",
                     "answer_format": answer_format,
-                    "native_correct": int(judge == "yes"),
+                    "native_correct": native_correct,
                     "native_judge_decision": judge,
                     "native_judge_source": score.get("judge_source"),
                     "native_judge_raw": score.get("judge"),
-                    "native_judge_exact_binary": int(judge in {"yes", "no"}),
+                    "native_judge_exact_binary": native_binary,
                     "extraction_correct": int(extracted_correct),
                     "extraction_status": extraction.get("status"),
                     "extraction_reason": extraction.get("reason_code"),
-                    "native_extraction_agree": int(int(judge == "yes") == int(extracted_correct)),
+                    "native_extraction_agree": int(native_correct == int(extracted_correct)),
                     "response_chars": len(str(output.get("model_answer") or "")),
                     "response_words": len(str(output.get("model_answer") or "").split()),
                     "prompt_tokens": usage.get("prompt_tokens"),
@@ -479,7 +481,7 @@ def main() -> None:
         "paired_comparison_method": "two-sided exact McNemar; Holm-adjusted within each score source and scope",
         "confidence_intervals": "paired cluster bootstrap by image; 95 percent percentile interval",
         "score_sources": ["unmodified Vision-OPD native judge", "Qwen structured text-only answer extraction"],
-        "native_judge_decision_rule": "Require and use only the exact final nonempty line of the unmodified Vision-OPD judge output when it is Yes or No; preserve full raw judge text in sample_level_merged.csv.",
+        "native_judge_decision_rule": "Use only the exact final nonempty line of the Vision-OPD judge output: Yes is correct, No is incorrect, and any other terminal text is retained as other and scored not-correct; preserve full raw judge text in sample_level_merged.csv. This terminal-line normalization is audited by native_judge_exact_binary_rate.",
         "audit": audit,
         "interpretation": "No pooled score should replace benchmark-stratified results; report micro and equal-track macro summaries separately.",
     }
