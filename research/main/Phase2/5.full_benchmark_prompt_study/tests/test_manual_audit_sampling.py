@@ -33,6 +33,7 @@ class ManualAuditSamplingTests(unittest.TestCase):
         first = select_audit_sample(groups, seed=12, per_track=10)
         second = select_audit_sample(groups, seed=12, per_track=10)
         self.assertEqual(first, second)
+        self.assertEqual(first["schema"], "phase2-work5-manual-audit-sample-v2")
         self.assertEqual(first["paired_condition_rows"], 300)
         for track in TRACKS:
             selected = first["tracks_selection"][track]["selected"]
@@ -50,7 +51,7 @@ class ManualAuditSamplingTests(unittest.TestCase):
                                    ("long_tail_output", 1),
                                    ("three_score_agreement", 2)):
                 self.assertGreaterEqual(entry["strata_available"][stratum], quota)
-                self.assertEqual(entry["strata_selected"][stratum], quota)
+                self.assertGreaterEqual(entry["strata_selected"][stratum], quota)
             self.assertEqual(len({row["sample_uid"] for row in selected}), len(selected))
 
     def test_rejects_wrong_tracks_and_too_small_quota(self):

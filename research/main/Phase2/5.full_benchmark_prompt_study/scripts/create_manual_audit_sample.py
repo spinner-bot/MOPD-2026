@@ -85,21 +85,21 @@ def select_audit_sample(groups: dict[str, dict[str, list[dict[str, str]]]], seed
         chosen: list[dict[str, Any]] = []
         chosen_uids: set[str] = set()
         availability = {}
-        selected_by_stratum = {}
+        candidate_uids_by_stratum = {}
         for stratum, quota in QUOTAS:
             candidates = [uid for uid in ranked_uids if stratum in flags_by_uid[uid]]
             availability[stratum] = len(candidates)
-            picked = []
+            candidate_uids_by_stratum[stratum] = set(candidates)
+            covered = sum(uid in chosen_uids for uid in candidates)
             for uid in candidates:
+                if covered >= quota:
+                    break
                 if uid in chosen_uids:
                     continue
                 chosen_uids.add(uid)
                 chosen.append({"sample_uid": uid, "primary_stratum": stratum,
                                "all_flags": sorted(flags_by_uid[uid]), "max_completion_tokens": max_tokens[uid]})
-                picked.append(uid)
-                if len(picked) == quota:
-                    break
-            selected_by_stratum[stratum] = len(picked)
+                covered += 1
 
         for uid in ranked_uids:
             if len(chosen) >= per_track:
@@ -110,6 +110,10 @@ def select_audit_sample(groups: dict[str, dict[str, list[dict[str, str]]]], seed
                                "all_flags": sorted(flags_by_uid[uid]), "max_completion_tokens": max_tokens[uid]})
         if len(chosen) != per_track:
             raise ValueError(f"{track}: requested {per_track} samples but only {len(chosen)} unique samples available")
+        selected_by_stratum = {
+            stratum: sum(uid in chosen_uids for uid in candidates)
+            for stratum, candidates in candidate_uids_by_stratum.items()
+        }
         selected_tracks[track] = {
             "population_n": len(track_groups), "long_tail_p95_max_completion_tokens": p95,
             "strata_available": availability, "strata_selected": selected_by_stratum,
@@ -117,8 +121,9 @@ def select_audit_sample(groups: dict[str, dict[str, list[dict[str, str]]]], seed
         }
 
     return {
-        "schema": "phase2-work5-manual-audit-sample-v1",
+        "schema": "phase2-work5-manual-audit-sample-v2",
         "purpose": "Qualitative, paired audit of score parsing and disagreement; not a prevalence estimator.",
+        "selection_policy": "A selected sample may satisfy multiple strata; selected counts reflect all matched strata, not only the primary selection reason.",
         "seed": seed, "conditions": list(CONDITIONS), "tracks": list(TRACKS),
         "samples_per_track": per_track, "paired_condition_rows": per_track * len(TRACKS) * len(CONDITIONS),
         "quota_priority": [{"stratum": name, "quota_per_track": quota} for name, quota in QUOTAS],
