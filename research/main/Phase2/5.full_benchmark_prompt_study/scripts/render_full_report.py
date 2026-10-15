@@ -264,6 +264,15 @@ def build_html(manifest: dict, tables: dict[str, list[dict[str, str]]], charts: 
     paired_fields = ["score_source", "scope", "stratum", "condition_a", "condition_b", "n_paired",
                      "b_correct_a_wrong", "a_correct_b_wrong", "paired_delta_percentage_points",
                      "cluster_bootstrap_95ci_low_pp", "cluster_bootstrap_95ci_high_pp", "mcnemar_exact_p", "mcnemar_holm_p"]
+    paired_titles = {"score_source":"Score source / 评分来源", "scope":"Analysis scope / 分析范围",
+                     "stratum":"Benchmark stratum / 评测集分层", "condition_a":"Reference condition / 对照条件",
+                     "condition_b":"Comparison condition / 比较条件", "n_paired":"Paired N / 配对样本数",
+                     "b_correct_a_wrong":"B correct, A wrong / B对A错", "a_correct_b_wrong":"A correct, B wrong / A对B错",
+                     "paired_delta_percentage_points":"Accuracy delta (pp) / 准确率差（百分点）",
+                     "cluster_bootstrap_95ci_low_pp":"Cluster-bootstrap 95% CI low / 聚类Bootstrap区间下限",
+                     "cluster_bootstrap_95ci_high_pp":"Cluster-bootstrap 95% CI high / 聚类Bootstrap区间上限",
+                     "mcnemar_exact_p":"Exact McNemar p / 精确McNemar p值",
+                     "mcnemar_holm_p":"Holm-adjusted p / Holm校正p值"}
     strata = tables["strata_summary"]
     strata_fields = ["stratum_type", "track", "stratum", "condition", "n", "native_correct", "native_accuracy",
                      "extraction_correct", "extraction_accuracy"]
@@ -271,6 +280,8 @@ def build_html(manifest: dict, tables: dict[str, list[dict[str, str]]], charts: 
     source_rows = [{"role": x.get("role"), "condition": x.get("condition", ""), "track": x.get("track", ""),
                     "path": x.get("path"), "sha256": x.get("sha256")} for x in source_files]
     source_fields = ["role", "condition", "track", "path", "sha256"]
+    source_titles = {"role":"Input role / 输入用途", "condition":"Condition / 条件",
+                     "track":"Benchmark / 评测集", "path":"Source path / 来源路径", "sha256":"SHA-256"}
     audit_json = json.dumps(manifest, ensure_ascii=False, indent=2)
     return f'''<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
@@ -309,21 +320,21 @@ details{{border:1px solid var(--line);border-radius:8px;padding:10px 14px;margin
 <p>Primary contrast: each prompted condition versus S0, using the same sample keys. “B correct, A wrong” and “A correct, B wrong” are discordant pairs for the exact McNemar test. Confidence intervals resample image clusters. / 主要对比为每种提示条件与S0在相同样本键上的配对差异。“B答对、A答错”与“A答对、B答错”构成精确McNemar检验的非一致配对；置信区间按图像簇重抽样。</p>
 {html_table(primary, primary_fields, {"score_source":"Score source / 评分来源","condition_b":"Prompt condition / 提示条件","n_paired":"Paired N / 配对样本数","b_correct_a_wrong":"Prompt correct, S0 wrong / 提示对、S0错","a_correct_b_wrong":"S0 correct, prompt wrong / S0对、提示错","paired_delta_percentage_points":"Accuracy delta (pp) / 准确率差（百分点）","cluster_bootstrap_95ci_low_pp":"95% CI low / 区间下限","cluster_bootstrap_95ci_high_pp":"95% CI high / 区间上限","mcnemar_exact_p":"Exact p / 精确p值","mcnemar_holm_p":"Holm-adjusted p / Holm校正p值"})}
 <details><summary>All paired comparisons (all tracks and contrasts) / 展开全部配对检验（所有评测集与对比）</summary>
-{html_table(paired, paired_fields)}</details></section>
+{html_table(paired, paired_fields, paired_titles)}</details></section>
 <section id="strata"><h2>Stratified results / 分层结果</h2>
 <p>Strata retain benchmark-specific categories, subcategories, question type, language and answer format. Small strata should be read as descriptive estimates; the table reports their denominators. / 分层保留评测集内类别、子类别、题型、语言和答案格式；小样本分层应视为描述性估计，并结合分母解读。</p>
 <details><summary>Complete stratified summary / 展开完整分层汇总（{len(strata):,} rows / 行）</summary>
 {html_table(strata, strata_fields, {"stratum_type":"Dimension / 维度","track":"Benchmark / 评测集","stratum":"Category / 类别","condition":"Condition / 条件","n":"N","native_correct":"Native correct / 原生答对数","native_accuracy":"Native accuracy / 原生准确率","extraction_correct":"Extraction correct / 抽取答对数","extraction_accuracy":"Extraction accuracy / 抽取准确率"})}</details></section>
 <section id="judge"><h2>Scorer audit / 评分器审计</h2>
 <p>The embedded disagreement chart shows all four correctness states by condition. Detailed judge-source, raw native label, and extraction-status counts remain available below for audit. / 内嵌分歧图按条件展示四种正误组合；下方保留评分来源、原生标签值及答案抽取状态计数，供审计追溯。</p>
-<details><summary>Native label values / 原生评分标签计数</summary>{html_table(tables['native_judge_value_audit'], ['condition','track','judge_value','n'])}</details>
-<details><summary>Judge source / 评分来源计数</summary>{html_table(tables['judge_source'], ['condition','track','judge_source','n'])}</details>
-<details><summary>Extraction status / 答案抽取状态计数</summary>{html_table(tables['extraction_status'], ['condition','track','status','reason_code','n'])}</details>
-<details><summary>Four-state disagreement counts / 四状态分歧计数</summary>{html_table(tables['score_disagreement'], disagree_fields)}</details></section>
+<details><summary>Native label values / 原生评分标签计数</summary>{html_table(tables['native_judge_value_audit'], ['condition','track','judge_value','n'], {'condition':'Condition / 条件','track':'Benchmark / 评测集','judge_value':'Raw native label / 原生标签值','n':'Count / 数量'})}</details>
+<details><summary>Judge source / 评分来源计数</summary>{html_table(tables['judge_source'], ['condition','track','judge_source','n'], {'condition':'Condition / 条件','track':'Benchmark / 评测集','judge_source':'Scorer source / 评分器来源','n':'Count / 数量'})}</details>
+<details><summary>Extraction status / 答案抽取状态计数</summary>{html_table(tables['extraction_status'], ['condition','track','status','reason_code','n'], {'condition':'Condition / 条件','track':'Benchmark / 评测集','status':'Status / 状态','reason_code':'Reason code / 原因码','n':'Count / 数量'})}</details>
+<details><summary>Four-state disagreement counts / 四状态分歧计数</summary>{html_table(tables['score_disagreement'], disagree_fields, {'condition':'Condition / 条件','track':'Benchmark / 评测集','native_correct':'Native correct / 原生判对','extraction_correct':'Extraction correct / 抽取判对','n':'Count / 数量'})}</details></section>
 <section id="methods"><h2>Methods and reproducibility / 方法与可复现性</h2>
 <div class="callout"><b>Paired tests / 配对检验：</b>{esc(manifest.get('paired_comparison_method'))}<br><b>Confidence intervals / 置信区间：</b>{esc(manifest.get('confidence_intervals'))}<br><b>Bootstrap iterations / Bootstrap迭代：</b>{int(manifest.get('bootstrap_iterations', 0)):,} · <b>Seed / 随机种子：</b>{int(manifest.get('seed', 0))}</div>
 <p>All raw model outputs and score files remain unchanged. The report is generated from the verified output manifest and versioned aggregate tables; exact source paths and SHA-256 hashes are recorded here. / 原始模型输出和评分文件均未修改。本报告由已验证的输出清单及版本化统计表生成，并记录来源路径与SHA-256哈希。</p>
-<details><summary>Input file audit / 展开输入文件审计（{len(source_files):,} files / 个文件）</summary>{html_table(source_rows, source_fields)}</details>
+<details><summary>Input file audit / 展开输入文件审计（{len(source_files):,} files / 个文件）</summary>{html_table(source_rows, source_fields, source_titles)}</details>
 <details><summary>Analysis manifest / 展开统计清单</summary><pre>{esc(audit_json)}</pre></details>
 <p><span class="badge">No causal interpretation / 不作因果解释</span><span class="badge">Benchmark-stratified results retained / 保留评测集分层结果</span><span class="badge">Both scoring sources retained / 保留两种评分来源</span></p></section>
 <footer>Versioned Work5 analysis · Self-contained HTML with embedded charts · Generated from verified full-set records / Work5版本化分析 · 图表内嵌的独立HTML · 基于通过验证的全量记录生成</footer>

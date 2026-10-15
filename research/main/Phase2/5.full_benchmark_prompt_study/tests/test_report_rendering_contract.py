@@ -79,6 +79,7 @@ class ReportRenderingContractTests(unittest.TestCase):
         document = report.build_html(manifest, tables, charts)
         self.assertIn("五条件全量评测与分层分析", document)
         self.assertIn("Score-source disagreement", document)
+        self.assertIn("Holm-adjusted p / Holm校正p值", document)
         self.assertEqual(document.count("data:image/png;base64,"), 12)
         self.assertNotIn('src="http', document)
         self.assertNotIn("href=\"http", document)
