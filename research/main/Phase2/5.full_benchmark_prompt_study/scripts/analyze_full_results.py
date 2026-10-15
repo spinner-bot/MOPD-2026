@@ -81,7 +81,7 @@ def summarize_extraction_attempts(attempts: list[dict]) -> tuple[dict[str, dict]
     """Keep the last attempt per sample while auditing all attempts by safe error class."""
     latest: dict[str, dict] = {}
     duplicates = 0
-    counts: Counter[tuple[str, str, str, str]] = Counter()
+    counts: Counter[tuple[str, str, str, str, str]] = Counter()
     for attempt in attempts:
         uid = attempt.get("sample_uid")
         condition = str(attempt.get("condition") or "(missing)")
@@ -91,7 +91,9 @@ def summarize_extraction_attempts(attempts: list[dict]) -> tuple[dict[str, dict]
             error_class = "none"
         elif status == "INVALID_JUDGE_JSON":
             validation_error = str(attempt.get("validation_error") or "")
-            if "evidence is not a nonempty exact response substring" in validation_error:
+            if "JSONDecodeError" in validation_error:
+                error_class = "malformed_judge_json"
+            elif "evidence is not a nonempty exact response substring" in validation_error:
                 error_class = "evidence_not_exact"
             elif "MCQ answer must be one listed literal label and have empty answer_text" in validation_error:
                 error_class = "mcq_option_contract"
@@ -101,14 +103,15 @@ def summarize_extraction_attempts(attempts: list[dict]) -> tuple[dict[str, dict]
             error_class = "technical_error"
         else:
             error_class = "other_status"
-        counts[(condition, track, status, error_class)] += 1
+        prompt_sha256 = str(attempt.get("judge_prompt_sha256") or "(not recorded)")
+        counts[(condition, track, status, error_class, prompt_sha256)] += 1
         if uid in latest:
             duplicates += 1
         latest[uid] = attempt
     audit_rows = [
         {"condition": condition, "track": track, "request_status": status,
-         "error_class": error_class, "attempts": count}
-        for (condition, track, status, error_class), count in sorted(counts.items())
+         "error_class": error_class, "judge_prompt_sha256": prompt_sha256, "attempts": count}
+        for (condition, track, status, error_class, prompt_sha256), count in sorted(counts.items())
     ]
     return latest, duplicates, audit_rows
 

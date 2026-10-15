@@ -26,7 +26,7 @@ TRACK="${TRACKS[$((SLURM_ARRAY_TASK_ID % 6))]}"
 VERSION="answer-extraction-v1"
 INPUT="${DATA_ROOT}/judgment/${VERSION}/${TRACK}/${CONDITION}.jsonl"
 OUTPUT="${DATA_ROOT}/judgment/runs/${VERSION}/${TRACK}/${CONDITION}.jsonl"
-PROMPT="${FAST_REPO}/research/main/Phase2/5.full_benchmark_prompt_study/prompts/answer_extraction_v1.txt"
+PROMPT="${FAST_REPO}/research/main/Phase2/5.full_benchmark_prompt_study/prompts/answer_extraction_v2.txt"
 RUN_LOG_DIR="${DATA_ROOT}/judgment/runs/${VERSION}/${TRACK}/logs"
 
 export HF_HOME="${DATA_ROOT}/hf-cache"

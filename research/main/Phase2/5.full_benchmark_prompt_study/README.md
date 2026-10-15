@@ -38,7 +38,8 @@
 - `scripts/verify_inference_outputs.py`：核验逐条件完整覆盖、无API失败、消息条件哈希及各条件输入完全配对。
 - `scripts/verify_and_freeze_full_outputs.sbatch`：五条件数组完成后执行全量输出门禁，并冻结30个条件×track答案抽取输入分片。
 - `scripts/prepare_answer_extraction.py`：生成文本判别输入；模型payload不含图像、gold、条件、UID或类别。
-- `prompts/answer_extraction_v1.txt`：工作5答案抽取指令，支持A–F选项及数字短答，并要求原文证据。
+- `prompts/answer_extraction_v1.txt`：初版工作5答案抽取指令，支持A–F选项及数字短答；保留用于历史判别尝试的版本追溯。
+- `prompts/answer_extraction_v2.txt`：针对残留无效记录的严格短证据判别指令，要求非答案状态证据为空；补跑结果逐条记录提示词SHA-256、模型配置SHA-256与抽取代码提交。
 - `scripts/run_answer_extraction.py`：用本地Qwen3.8-27B作单分片结构化文本答案抽取，记录证据和状态并支持断点续跑。
 - `scripts/run_answer_extraction_array.sbatch`：五条件×六track共30个单卡判别任务，最多8个并发。
 - `scripts/run_visionopd_native_scorer.sbatch`：在五条件×六track分片上调用未修改的Vision-OPD `judge_qwenlm.py` 与 `cal_acc.py`，保存原生评分作为独立对照。
