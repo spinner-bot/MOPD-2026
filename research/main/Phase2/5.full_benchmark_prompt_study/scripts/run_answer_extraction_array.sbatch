@@ -45,6 +45,7 @@ source /etc/profile
 set -euo pipefail
 module load cuda/12.6
 module load python/3.11.7
+export CPATH=/leonardo/prod/spack/06/install/0.22/linux-rhel8-icelake/gcc-8.5.0/python-3.11.7-ziwh63aulhhzxksf42k5u3gnim2rbpmp/include/python3.11:${CPATH:-}
 mkdir -p "$(dirname "${OUTPUT}")" "${RUN_LOG_DIR}" \
   "${VLLM_CACHE_ROOT}" "${XDG_CACHE_HOME}" "${TORCHINDUCTOR_CACHE_DIR}"
 cd "${FAST_REPO}"
