@@ -16,7 +16,7 @@ class ReportRenderingContractTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
             (root / "analysis-manifest.json").write_text(
-                json.dumps({"schema": "phase2-work5-statistics-v3", "joined_records": 100}),
+                json.dumps({"schema": "phase2-work5-statistics-v4", "joined_records": 100}),
                 encoding="utf-8",
             )
             with self.assertRaisesRegex(ValueError, "160,810"):
@@ -24,11 +24,12 @@ class ReportRenderingContractTests(unittest.TestCase):
 
     def test_document_is_bilingual_and_embeds_figures_without_external_assets(self):
         manifest = {
-            "schema": "phase2-work5-statistics-v3", "joined_records": 160810,
+            "schema": "phase2-work5-statistics-v4", "joined_records": 160810,
             "conditions": list(report.CONDITIONS), "tracks": list(report.TRACKS),
             "seed": 20261014, "bootstrap_iterations": 2000,
             "paired_comparison_method": "exact McNemar; Holm-adjusted",
             "confidence_intervals": "cluster bootstrap 95 percent",
+            "p_value_underflow_floor": 1e-300,
             "official_native_rule": "Exact original Yes label only",
             "terminal_diagnostic_rule": "Exact terminal Yes/No line only",
             "audit": {"source_files": [], "extraction_attempt_status_counts": [
@@ -68,6 +69,9 @@ class ReportRenderingContractTests(unittest.TestCase):
             {"condition": c, "track": t, "official_native_correct": "1",
              "terminal_decision": "yes", "count": "2"}
             for c in report.CONDITIONS for t in report.TRACKS]
+        tables["native_judge_format_audit"] = [
+            {"condition": c, "track": t, "raw_label_format": "non_binary", "n": "3"}
+            for c in report.CONDITIONS for t in report.TRACKS]
         tables["length_accuracy_association"] = [
             {"scope": "micro_all", "score_source": source, "length_metric": metric,
              "condition": condition, "spearman_rho": "0.12"}
@@ -96,7 +100,10 @@ class ReportRenderingContractTests(unittest.TestCase):
         self.assertIn("All answer-extraction attempts / 全部答案抽取尝试", document)
         self.assertIn("official Vision-OPD", document)
         self.assertIn("Official score vs terminal parse / 官方评分与终行解析对照", document)
+        self.assertIn("Raw native label format / 原生裁判原始标签格式", document)
         self.assertIn("Official, terminal and extraction scores separated / 官方、终行与抽取评分分列", document)
+        self.assertIn("Key findings and interpretation / 核心发现与解读", document)
+        self.assertIn("Official-score format caveat / 官方分数的格式解释边界", document)
         self.assertEqual(document.count("data:image/png;base64,"), 14)
         self.assertNotIn('src="http', document)
         self.assertNotIn("href=\"http", document)

@@ -29,7 +29,8 @@ TRACK_LABELS = {
     "mme-realworld-cn": "MME-RealWorld-CN", "all_tracks": "All benchmarks",
 }
 TABLES = ("condition_summary", "paired_comparisons", "strata_summary", "score_disagreement",
-          "native_terminal_disagreement", "judge_source", "native_judge_decision_audit", "extraction_status",
+          "native_terminal_disagreement", "judge_source", "native_judge_decision_audit",
+          "native_judge_format_audit", "extraction_status",
           "length_accuracy_association", "response_length_by_score")
 COLORS = {"SC": "#8c8c8c", "S1": "#2474b5", "S2": "#e39c27", "S3": "#c94f58"}
 
@@ -42,7 +43,7 @@ def read_csv(path: Path) -> list[dict[str, str]]:
 def load_analysis(analysis_dir: Path) -> tuple[dict, dict[str, list[dict[str, str]]]]:
     manifest_path = analysis_dir / "analysis-manifest.json"
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-    if manifest.get("schema") != "phase2-work5-statistics-v3" or manifest.get("joined_records") != 160810:
+    if manifest.get("schema") != "phase2-work5-statistics-v4" or manifest.get("joined_records") != 160810:
         raise ValueError("Analysis manifest is missing or does not certify all 160,810 joined records")
     if tuple(manifest.get("conditions", ())) != CONDITIONS or tuple(manifest.get("tracks", ())) != TRACKS:
         raise ValueError("Analysis manifest conditions/tracks do not match the frozen Work5 design")
@@ -244,6 +245,30 @@ def build_html(manifest: dict, tables: dict[str, list[dict[str, str]]], charts: 
     primary = [r for r in paired if r["scope"] == "micro_all" and r["condition_a"] == "S0"]
     source_files = manifest.get("audit", {}).get("source_files", [])
     attempt_audit = manifest.get("audit", {}).get("extraction_attempt_status_counts", [])
+    overall_by_condition = {row["condition"]: row for row in overall}
+
+    def primary_pair(source: str, condition: str) -> dict[str, str]:
+        return next(row for row in primary
+                    if row["score_source"] == source and row["condition_b"] == condition)
+
+    format_counts = Counter()
+    for row in tables["native_judge_format_audit"]:
+        format_counts[(row["condition"], row["raw_label_format"])] += int(row["n"])
+    native_s3 = primary_pair("native", "S3")
+    terminal_s3 = primary_pair("terminal", "S3")
+    extraction_s3 = primary_pair("extraction", "S3")
+    s0_tokens = float(overall_by_condition["S0"]["completion_tokens_mean"])
+    s3_tokens = float(overall_by_condition["S3"]["completion_tokens_mean"])
+    token_change = 100 * (s3_tokens - s0_tokens) / s0_tokens
+    non_binary_raw = sum(n for (condition, label_format), n in format_counts.items()
+                         if label_format == "non_binary")
+    other_terminal = sum(int(row["n"]) for row in tables["native_judge_decision_audit"]
+                         if row["terminal_decision"] == "other")
+    interpretation = f'''<section id="interpretation"><h2>Key findings and interpretation / 核心发现与解读</h2>
+<p><b>Official-score format caveat / 官方分数的格式解释边界：</b> Vision-OPD's original rule counts a record correct only when the entire raw <code>judge</code> field is exactly “Yes” after trimming. The per-condition format audit therefore matters: non-binary raw text—including reasoning followed by an answer—cannot count as correct under that rule. The official metric is reproduced faithfully, but a change in it must not automatically be interpreted as a change in semantic answer accuracy. / Vision-OPD原规则只有在完整原始<code>judge</code>字段去除首尾空白后严格等于“Yes”时才计为正确，因此必须同时查看各条件的原始格式审计：非二元原文（包括“推理+答案”）按原规则不会被计为正确。这里忠实复现官方指标，但不能把它的变化自动解释为语义答题准确率变化。</p>
+<p><b>Paired S0→S3 contrast / S0→S3配对对比：</b> The official score changes by {float(native_s3['paired_delta_percentage_points']):+.2f} percentage points (95% image-cluster CI {float(native_s3['cluster_bootstrap_95ci_low_pp']):+.2f} to {float(native_s3['cluster_bootstrap_95ci_high_pp']):+.2f}); the terminal-line diagnostic changes by {float(terminal_s3['paired_delta_percentage_points']):+.2f} pp (95% CI {float(terminal_s3['cluster_bootstrap_95ci_low_pp']):+.2f} to {float(terminal_s3['cluster_bootstrap_95ci_high_pp']):+.2f}); independent text-only extraction changes by {float(extraction_s3['paired_delta_percentage_points']):+.2f} pp (95% CI {float(extraction_s3['cluster_bootstrap_95ci_low_pp']):+.2f} to {float(extraction_s3['cluster_bootstrap_95ci_high_pp']):+.2f}). The three estimates point in different directions; report the score source explicitly and avoid presenting the official-score increase alone as evidence of improved answer correctness. / 官方分数变化{float(native_s3['paired_delta_percentage_points']):+.2f}个百分点（图像聚类95%置信区间{float(native_s3['cluster_bootstrap_95ci_low_pp']):+.2f}至{float(native_s3['cluster_bootstrap_95ci_high_pp']):+.2f}）；终行诊断变化{float(terminal_s3['paired_delta_percentage_points']):+.2f}个百分点（95%区间{float(terminal_s3['cluster_bootstrap_95ci_low_pp']):+.2f}至{float(terminal_s3['cluster_bootstrap_95ci_high_pp']):+.2f}）；独立纯文本答案抽取变化{float(extraction_s3['paired_delta_percentage_points']):+.2f}个百分点（95%区间{float(extraction_s3['cluster_bootstrap_95ci_low_pp']):+.2f}至{float(extraction_s3['cluster_bootstrap_95ci_high_pp']):+.2f}）。三种估计方向不一致；报告结果时须明确评分来源，不能只凭官方分数上升就断言答题正确率提高。</p>
+<p><b>Output length / 输出长度：</b> Mean completion tokens change from {s0_tokens:.1f} (S0) to {s3_tokens:.1f} (S3), a {token_change:+.1f}% change. This is a generation-length result, separate from whether the answer is correct. / 平均输出Token数从S0的{s0_tokens:.1f}变为S3的{s3_tokens:.1f}，变化幅度{token_change:+.1f}%。这是生成长度结果，与答案是否正确是不同维度。</p>
+<p><b>Non-binary labels / 非二元标签：</b> Across the five conditions, {non_binary_raw:,} raw native-judge records do not match an exact Yes/No label; {other_terminal:,} terminal outputs are neither exact Yes nor exact No. These records remain visible in the audit tables. / 五种条件合计有{non_binary_raw:,}条原生裁判原文不符合精确Yes/No标签格式；其中{other_terminal:,}条终行也不是精确Yes或No。这些记录均保留在审计表中。</p></section>'''
     figure_specs = [
         ("absolute", "Absolute accuracy / 各条件准确率", "Accuracy is shown separately by benchmark and score source; the heatmap does not imply cross-benchmark equivalence. / 分评测集与评分来源展示准确率；热图不表示不同评测集可直接等价比较。"),
         ("paired", "Paired effects / 配对效应", "Each estimate compares the same samples under S0 and the named condition. Intervals use image-cluster bootstrap; tests are paired exact McNemar with Holm adjustment. / 每个估计比较S0与相应条件下的同一批样本；区间采用图像聚类Bootstrap，检验为精确配对McNemar并进行Holm校正。"),
@@ -308,6 +333,7 @@ details{{border:1px solid var(--line);border-radius:8px;padding:10px 14px;margin
 <p>Version {esc(manifest.get('schema'))} · {int(manifest.get('joined_records', 0)):,} paired condition–sample records / 配对条件—样本记录</p></header>
 <main><nav><b>Contents / 目录</b><ol>
 <li><a href="#scope">Scope and protocol / 范围与协议</a></li><li><a href="#overview">Condition overview / 条件总览</a></li>
+<li><a href="#interpretation">Key findings / 核心发现</a></li>
 <li><a href="#figures">Visual analyses / 可视化分析</a></li><li><a href="#paired">Paired tests / 配对检验</a></li>
 <li><a href="#strata">Stratified results / 分层结果</a></li><li><a href="#judge">Scorer audit / 评分器审计</a></li>
 <li><a href="#methods">Methods and reproducibility / 方法与复现</a></li></ol></nav>
@@ -316,6 +342,7 @@ details{{border:1px solid var(--line);border-radius:8px;padding:10px 14px;margin
 <p>Three score views are kept distinct: (1) the official Vision-OPD <code>cal_acc.py</code> exact-label result, (2) a diagnostic decision parsed from the exact final nonempty line of the same raw judge output, and (3) local Qwen structured text-only answer extraction. The official result reproduces <code>str(judge).strip().lower() == "yes"</code> and is cross-checked against all saved official accuracy logs. Terminal-line results are not substituted for official scores. / 分别保留三种评分视角：(1) Vision-OPD官方<code>cal_acc.py</code>精确标签结果，(2)从同一裁判原始输出最终非空行解析的诊断判定，(3)本地Qwen结构化纯文本答案抽取。官方结果严格复现<code>str(judge).strip().lower() == "yes"</code>，并与30份官方准确率日志逐项核对；终行结果不替代官方分数。</p>
 <p>The terminal-line diagnostic accepts only exact “Yes” or “No”; other text is counted as not-correct and reported separately. Full raw judge text remains in the machine-readable merged table. / 终行诊断仅接受精确的“Yes”或“No”；其他终行按未答对处理并单独报告。机器可读合并表保留完整裁判原始文本。</p>
 <div class="meta">Verified joined records / 已验证合并记录：<b>{int(manifest['joined_records']):,}</b> · Conditions / 条件：{', '.join(CONDITIONS)} · Tracks / 评测集：{', '.join(TRACK_LABELS[t] for t in TRACKS)}</div></section>
+{interpretation}
 <section id="overview"><h2>Condition overview / 条件总览</h2>
 <p>Micro accuracy weights every sample equally across the full pooled set; macro-track accuracy gives each benchmark equal weight. Both are reported because benchmark sizes differ substantially. / Micro准确率对合并后的每个样本等权；Macro-track准确率对每个评测集等权。由于评测集规模差异较大，两者并列报告。</p>
 {html_table(overall, summary_fields, {"condition":"Condition / 条件","n":"N","native_accuracy":"Official native accuracy / 官方原生准确率","terminal_accuracy":"Terminal diagnostic accuracy / 终行诊断准确率","extraction_accuracy":"Answer-extraction accuracy / 答案抽取准确率","macro_track_native_accuracy":"Macro-track official / 官方原生宏平均","macro_track_terminal_accuracy":"Macro-track terminal / 终行诊断宏平均","macro_track_extraction_accuracy":"Macro-track extraction / 抽取宏平均","native_extraction_agreement":"Official–extraction agreement / 官方与抽取一致率","terminal_extraction_agreement":"Terminal–extraction agreement / 终行与抽取一致率","native_terminal_agreement":"Official–terminal agreement / 官方与终行一致率","native_judge_exact_label_rate":"Raw judge exact-label rate / 原始裁判精确标签率","completion_tokens_mean":"Mean output tokens / 输出Token均值","completion_tokens_median":"Median output tokens / 输出Token中位数","completion_tokens_coverage":"Token coverage / Token覆盖率"})}</section>
@@ -334,12 +361,13 @@ details{{border:1px solid var(--line);border-radius:8px;padding:10px 14px;margin
 <p>Attempt-level counts include invalid first attempts even when later retries succeeded; the table reports only status and error class, not raw model answers. / 尝试级计数保留后来重试成功的首次无效结果；表格仅汇总状态和错误类别，不展示模型原始回答。</p>
 <details><summary>All answer-extraction attempts / 全部答案抽取尝试（含已纠正尝试）</summary>{html_table(attempt_audit, ['condition','track','request_status','error_class','judge_prompt_sha256','attempts'], {'condition':'Condition / 条件','track':'Benchmark / 评测集','request_status':'Request status / 请求状态','error_class':'Error class / 错误类别','judge_prompt_sha256':'Judge prompt SHA-256 / 判别提示词哈希','attempts':'Attempt count / 次数'})}</details>
 <details><summary>Native terminal decisions / 原生最终判定计数</summary>{html_table(tables['native_judge_decision_audit'], ['condition','track','terminal_decision','n'], {'condition':'Condition / 条件','track':'Benchmark / 评测集','terminal_decision':'Terminal decision / 最终判定','n':'Count / 数量'})}</details>
+<details><summary>Raw native label format / 原生裁判原始标签格式</summary>{html_table(tables['native_judge_format_audit'], ['condition','track','raw_label_format','n'], {'condition':'Condition / 条件','track':'Benchmark / 评测集','raw_label_format':'Exact raw label / 原始标签格式','n':'Count / 数量'})}</details>
 <details><summary>Official score vs terminal parse / 官方评分与终行解析对照</summary>{html_table(tables['native_terminal_disagreement'], ['condition','track','official_native_correct','terminal_decision','count'], {'condition':'Condition / 条件','track':'Benchmark / 评测集','official_native_correct':'Official native correct / 官方原生判对','terminal_decision':'Terminal decision / 终行判定','count':'Count / 数量'})}</details>
 <details><summary>Judge source / 评分来源计数</summary>{html_table(tables['judge_source'], ['condition','track','judge_source','n'], {'condition':'Condition / 条件','track':'Benchmark / 评测集','judge_source':'Scorer source / 评分器来源','n':'Count / 数量'})}</details>
 <details><summary>Extraction status / 答案抽取状态计数</summary>{html_table(tables['extraction_status'], ['condition','track','status','reason_code','n'], {'condition':'Condition / 条件','track':'Benchmark / 评测集','status':'Status / 状态','reason_code':'Reason code / 原因码','n':'Count / 数量'})}</details>
 <details><summary>Official-score vs extraction disagreement / 官方评分与答案抽取分歧</summary>{html_table(tables['score_disagreement'], disagree_fields, {'condition':'Condition / 条件','track':'Benchmark / 评测集','native_correct':'Official native correct / 官方原生判对','extraction_correct':'Extraction correct / 抽取判对','n':'Count / 数量'})}</details></section>
 <section id="methods"><h2>Methods and reproducibility / 方法与可复现性</h2>
-<div class="callout"><b>Paired tests / 配对检验：</b>{esc(manifest.get('paired_comparison_method'))}<br><b>Confidence intervals / 置信区间：</b>{esc(manifest.get('confidence_intervals'))}<br><b>Bootstrap iterations / Bootstrap迭代：</b>{int(manifest.get('bootstrap_iterations', 0)):,} · <b>Seed / 随机种子：</b>{int(manifest.get('seed', 0))}</div>
+<div class="callout"><b>Paired tests / 配对检验：</b>{esc(manifest.get('paired_comparison_method'))}<br><b>Confidence intervals / 置信区间：</b>{esc(manifest.get('confidence_intervals'))}<br><b>Bootstrap iterations / Bootstrap迭代：</b>{int(manifest.get('bootstrap_iterations', 0)):,} · <b>Seed / 随机种子：</b>{int(manifest.get('seed', 0))}<br><b>Numerical p-value floor / p值数值下限：</b>{esc(manifest.get('p_value_underflow_floor'))} (smaller values are conservatively reported at this floor / 更小值保守地按此下限报告)</div>
 <p>All raw model outputs and score files remain unchanged. The report is generated from the verified output manifest and versioned aggregate tables; exact source paths and SHA-256 hashes are recorded here. / 原始模型输出和评分文件均未修改。本报告由已验证的输出清单及版本化统计表生成，并记录来源路径与SHA-256哈希。</p>
 <details><summary>Input file audit / 展开输入文件审计（{len(source_files):,} files / 个文件）</summary>{html_table(source_rows, source_fields, source_titles)}</details>
 <details><summary>Analysis manifest / 展开统计清单</summary><pre>{esc(audit_json)}</pre></details>

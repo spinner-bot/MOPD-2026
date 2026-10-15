@@ -166,7 +166,9 @@ def exact_mcnemar_p(better: int, worse: int) -> float:
         log_pmf += math.log(n - k) - math.log(k + 1)
         peak = max(log_tail, log_pmf)
         log_tail = peak + math.log1p(math.exp(min(log_tail, log_pmf) - peak))
-    return min(1.0, 2.0 * math.exp(log_tail))
+    # Avoid reporting floating-point underflow as an exact p=0. This floor is
+    # conservative for Holm adjustment and is recorded in the manifest.
+    return max(1e-300, min(1.0, 2.0 * math.exp(log_tail)))
 
 
 def holm_adjust(p_values: list[float]) -> list[float]:
@@ -315,8 +317,10 @@ def collect(data_root: Path) -> tuple[list[dict], dict]:
                 # only its exact terminal Yes/No line is the binary decision.
                 judge, terminal_correct, terminal_binary = native_score_from_output(str(score.get("judge", "")))
                 raw_judge = str(score.get("judge", "")).strip()
-                native_correct = int(raw_judge.casefold() == "yes")
-                native_exact_label = int(raw_judge.casefold() in {"yes", "no"})
+                raw_label = raw_judge.casefold()
+                native_correct = int(raw_label == "yes")
+                native_format = raw_label if raw_label in {"yes", "no"} else "non_binary"
+                native_exact_label = int(native_format != "non_binary")
                 if extraction.get("request_status") != "OK":
                     raise ValueError(f"{condition}/{track}/{uid}: answer-extraction status {extraction.get('request_status')}")
 
@@ -339,6 +343,7 @@ def collect(data_root: Path) -> tuple[list[dict], dict]:
                     "native_judge_decision": judge,
                     "native_judge_source": score.get("judge_source"),
                     "native_judge_raw": score.get("judge"),
+                    "native_judge_format": native_format,
                     "native_judge_exact_label": native_exact_label,
                     "extraction_correct": int(extracted_correct),
                     "extraction_status": extraction.get("status"),
@@ -472,6 +477,12 @@ def summarize(rows: list[dict], seed: int) -> dict[str, list[dict]]:
             (r["condition"], r["track"], r["native_judge_decision"]) for r in rows
         ).items())
     ]
+    tables["native_judge_format_audit"] = [
+        {"condition": c, "track": t, "raw_label_format": label_format, "n": count}
+        for (c, t, label_format), count in sorted(Counter(
+            (r["condition"], r["track"], r["native_judge_format"]) for r in rows
+        ).items())
+    ]
     tables["extraction_status"] = [
         {"condition": c, "track": t, "status": status, "reason_code": reason, "n": count}
         for (c, t, status, reason), count in sorted(Counter(
@@ -513,7 +524,7 @@ def summarize(rows: list[dict], seed: int) -> dict[str, list[dict]]:
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--data-root", type=Path, required=True)
-    parser.add_argument("--output-version", default="full-statistics-v3")
+    parser.add_argument("--output-version", default="full-statistics-v4")
     parser.add_argument("--seed", type=int, default=20261014)
     args = parser.parse_args()
     output = args.data_root / "derived" / args.output_version
@@ -529,10 +540,11 @@ def main() -> None:
     for name, values in tables.items():
         write_csv(staging / f"{name}.csv", values)
     manifest = {
-        "schema": "phase2-work5-statistics-v3", "input_verification": CAMPAIGN,
+        "schema": "phase2-work5-statistics-v4", "input_verification": CAMPAIGN,
         "tracks": list(TRACKS), "conditions": list(CONDITIONS),
         "prompt_registry_sha256": audit["prompt_registry_sha256"],
         "joined_records": len(rows), "seed": args.seed, "bootstrap_iterations": N_BOOTSTRAP,
+        "p_value_underflow_floor": 1e-300,
         "paired_comparison_method": "two-sided exact McNemar; Holm-adjusted within each score source and scope",
         "confidence_intervals": "paired cluster bootstrap by image; 95 percent percentile interval",
         "score_sources": ["Vision-OPD official cal_acc.py exact-label score", "Vision-OPD judge exact terminal-line diagnostic", "Qwen structured text-only answer extraction"],
