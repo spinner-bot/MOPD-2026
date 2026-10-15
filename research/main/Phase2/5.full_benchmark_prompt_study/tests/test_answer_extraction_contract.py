@@ -67,6 +67,23 @@ class AnswerExtractionContractTests(unittest.TestCase):
         self.assertEqual(result["evidence"], "This matches option **(C)**.")
         self.assertEqual(result["evidence_validation"], "exact_substring_markdown_normalized")
 
+    def test_whitespace_and_markdown_only_difference_recovers_verbatim_span(self):
+        row = {
+            "answer_format": "MCQ_OPTION",
+            "available_option_labels_in_order": ["A", "B", "C", "D"],
+            "model_response": "Explanation.\n\nFinal Answer:  \n**D**",
+        }
+        answer = {
+            "status": "ANSWERED", "selected_option": "D", "answer_text": "",
+            "evidence": "Final Answer: \n**D**", "reason_code": "explicit_final",
+        }
+        result = validate(__import__("json").dumps(answer), row)
+        self.assertEqual(result["evidence"], "Final Answer:  \n**D")
+        self.assertEqual(
+            result["evidence_validation"],
+            "exact_substring_whitespace_markdown_normalized",
+        )
+
     def test_semantically_similar_but_nonmatching_evidence_is_still_rejected(self):
         row = {
             "answer_format": "MCQ_OPTION",
