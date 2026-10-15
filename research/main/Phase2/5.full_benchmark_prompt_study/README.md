@@ -62,6 +62,6 @@
 
 正式解释 v4 评分前，需完成分层人工复核。可运行 `scripts/create_manual_audit_sample.py --merged-csv "$DATA_ROOT/derived/full-statistics-v4/sample_level_merged.csv" --output audits/manual-review-sample-v2.json`，按固定种子为每个track选10个不同样本（共60个样本、300个配对条件视图）。每track目标覆盖：官方分与文本抽取分歧3例、官方分与终行诊断分歧2例、抽取状态为歧义/无答案2例、每track输出长度第95百分位及以上1例、三种评分在五条件均一致2例；同一样本可同时满足多个目标层，候选不足时由确定性哈希排序的未选样本补足，实际候选及覆盖目标数写入JSON。初版 v1 采用互斥名额计数；真实数据检查发现部分风险层重叠导致名额虚短，因此保留 v1 作为历史中间结果，v2改为按已选样本的全部风险标记累计层覆盖数。该样本用于定性审计，不用于估计总体错误率。JSON记录种子、样本键、各入选层、候选数和源合并表哈希。
 
-要生成可离线审阅的五条件配对样本页，在源文件哈希复核通过后运行 `scripts/build_manual_audit_packet.py --sample-manifest audits/manual-review-sample-v2.json --analysis-dir "$DATA_ROOT/derived/full-statistics-v4" --data-root "$DATA_ROOT" --output report/manual-score-audit-sample-v1.html`。输出页将60张样本原图内嵌，并展示原题、参考答案、五条件模型原始回答、原生裁判原文、终行诊断和答案抽取证据；页面不引用外部图像文件。人工复核项保存在浏览器本地，可下载为JSON；复核者需结合原问题/参考答案逐条检查转录忠实度、答案语义及裁判判定，并记录不确定性。该样本审计是定性复核，不用于估计总体错误率。
+要生成可离线审阅的五条件配对样本页，在源文件哈希复核通过后运行 `scripts/build_manual_audit_packet.py --sample-manifest audits/manual-review-sample-v2.json --analysis-dir "$DATA_ROOT/derived/full-statistics-v4" --data-root "$DATA_ROOT" --output report/manual-score-audit-sample-v1.html`。输出页将60张样本图像以内嵌JPEG展示（最长边不超过1920px、质量90；源图不更改，审计记录保存每张原图SHA-256），并展示原题、参考答案、五条件模型原始回答、原生裁判原文、终行诊断和答案抽取证据；页面不引用外部图像文件。人工复核项保存在浏览器本地，可下载为JSON；复核者需结合原问题/参考答案逐条检查转录忠实度、答案语义及裁判判定，并记录不确定性。该样本审计是定性复核，不用于估计总体错误率。
 
 未经确认的题数或准确率不作为正式结果。大体积原图/数据按项目既有外部数据管理方式记录获取来源、固定 revision、文件清单和哈希；不得未经检查将许可受限的原始 benchmark 资产复制进 Git。
