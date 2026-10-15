@@ -18,7 +18,7 @@ DATA_ROOT="/leonardo_scratch/large/userexternal/rqian000/MOPD-2026-work5-data"
 PYTHON="/leonardo_scratch/fast/AIFAC_F02_774/rqian000/envs/sc-vllm/bin/python"
 ANALYZER="${FAST_REPO}/research/main/Phase2/5.full_benchmark_prompt_study/scripts/analyze_full_results.py"
 REPORT_RENDERER="${FAST_REPO}/research/main/Phase2/5.full_benchmark_prompt_study/scripts/render_full_report.py"
-REPORT_OUTPUT="${FAST_REPO}/research/main/Phase2/5.full_benchmark_prompt_study/report/full-five-condition-benchmark-report-v3.html"
+REPORT_OUTPUT="${FAST_REPO}/research/main/Phase2/5.full_benchmark_prompt_study/report/full-five-condition-benchmark-report-v4.html"
 
 export PYTHONUNBUFFERED=1
 export MPLBACKEND=Agg
@@ -31,10 +31,10 @@ sha256sum "${ANALYZER}" \
   "${FAST_REPO}/research/main/Phase2/5.full_benchmark_prompt_study/prompts/prompt_registry-v1.json"
 "${PYTHON}" -m unittest discover \
   -s "${FAST_REPO}/research/main/Phase2/5.full_benchmark_prompt_study/tests" -v
-"${PYTHON}" "${ANALYZER}" --data-root "${DATA_ROOT}" --output-version full-statistics-v3 \
-  2>&1 | tee "${DATA_ROOT}/derived/full-statistics-v3-run-${SLURM_JOB_ID}.log"
+"${PYTHON}" "${ANALYZER}" --data-root "${DATA_ROOT}" --output-version full-statistics-v4 \
+  2>&1 | tee "${DATA_ROOT}/derived/full-statistics-v4-run-${SLURM_JOB_ID}.log"
 "${PYTHON}" "${REPORT_RENDERER}" \
-  --analysis-dir "${DATA_ROOT}/derived/full-statistics-v3" \
+  --analysis-dir "${DATA_ROOT}/derived/full-statistics-v4" \
   --output "${REPORT_OUTPUT}" \
-  2>&1 | tee "${DATA_ROOT}/derived/full-statistics-v3-report-${SLURM_JOB_ID}.log"
+  2>&1 | tee "${DATA_ROOT}/derived/full-statistics-v4-report-${SLURM_JOB_ID}.log"
 printf 'end=%s\n' "$(date -Is)"

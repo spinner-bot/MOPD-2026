@@ -56,8 +56,8 @@
 
 ## 全量统计与裁判输出解析
 
-统计v3区分三种评分：①按未修改的 Vision-OPD `cal_acc.py` 规则对完整 `judge` 字段执行 `strip().lower() == "yes"` 的官方分数；②仅从裁判输出最终非空行精确解析Yes/No的诊断分数，其他记为 `other` 且不算答对；③本地Qwen纯文本答案抽取分数。分析会逐一核对全部30个条件×评测集的官方 `cal_acc.py` 日志和原始裁判记录，任一不符即失败。完整裁判原文仍保存在逐题合并CSV；报告分别呈现三种评分，不用诊断分数替换官方分数。统计v3输出位于服务器 `derived/full-statistics-v3/`，最终自包含中英双语报告为 `report/full-five-condition-benchmark-report-v3.html`；项目级进展记录位于 `research/main/进展报告/`。
+统计v4区分三种评分：①按未修改的 Vision-OPD `cal_acc.py` 规则对完整 `judge` 字段执行 `strip().lower() == "yes"` 的官方分数；②仅从裁判输出最终非空行精确解析Yes/No的诊断分数，其他记为 `other` 且不算答对；③本地Qwen纯文本答案抽取分数。分析会逐一核对全部30个条件×评测集的官方 `cal_acc.py` 日志和原始裁判记录，任一不符即失败；并列审计完整原始标签格式、非二元终判及三种评分的差异。极小McNemar p值以 `1e-300` 为保守数值下限，避免浮点下溢被误写为0。完整裁判原文仍保存在逐题合并CSV；报告分别呈现三种评分，不用诊断分数替换官方分数。统计v4输出位于服务器 `derived/full-statistics-v4/`，最终自包含中英双语报告为 `report/full-five-condition-benchmark-report-v4.html`；项目级进展记录位于 `research/main/进展报告/`。
 
-`full-statistics-v1` 和 `full-statistics-v2` 是发现原生裁判字段包含推理文本、与官方精确标签规则不同后生成的历史审计快照，不可引用为最终官方统计结论；派生产物保留在服务器以追溯评分解释更正过程，不覆盖。
+`full-statistics-v1` 至 `full-statistics-v3` 是逐步发现原生裁判字段包含推理文本、评分口径须分为官方精确标签与终行诊断、以及进一步补入日志交叉验证和格式审计前生成的历史快照，不可引用为最终综合结论；派生产物保留在服务器以追溯评分解释更正过程，不覆盖。
 
 未经确认的题数或准确率不作为正式结果。大体积原图/数据按项目既有外部数据管理方式记录获取来源、固定 revision、文件清单和哈希；不得未经检查将许可受限的原始 benchmark 资产复制进 Git。
