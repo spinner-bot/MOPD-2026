@@ -11,12 +11,14 @@ from pathlib import Path
 
 CONDITIONS = ("S0", "SC", "S1", "S2", "S3")
 TRACKS = ("vstar", "zoombench", "hrbench-4k", "hrbench-8k", "mme-realworld", "mme-realworld-cn")
-OPTION_LINE = re.compile(r"(?m)^\s*(?:[\(（]([A-F])[\)）]|([A-F])[.)])\s*")
+OPTION_LINE = re.compile(r"(?m)^\s*(?:[\(（]([A-F一二三四五六])[\)）]|([A-F])[.)])\s*")
 
 
 def extract_option_labels(query: str) -> list[str]:
     """Read option labels from benchmark prompts using ASCII or CJK brackets."""
-    return [left or right for left, right in OPTION_LINE.findall(query)]
+    cjk_labels = dict(zip("一二三四五六", "ABCDEF"))
+    return [cjk_labels.get(label, label) for left, right in OPTION_LINE.findall(query)
+            for label in [left or right]]
 
 
 def sha256_file(path: Path) -> str:
