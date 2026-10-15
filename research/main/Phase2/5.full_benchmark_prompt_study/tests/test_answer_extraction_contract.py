@@ -17,6 +17,11 @@ class AnswerExtractionContractTests(unittest.TestCase):
         labels = [a or b for a, b in OPTION_LINE.findall(query)]
         self.assertEqual(labels, ["A", "B", "D", "D", "E"])
 
+    def test_option_parser_maps_cjk_ordinal_first_choice_to_ascii_label(self):
+        query = "Question?\n（一） first\n(B) second\n(C) third\n(D) fourth"
+        from prepare_answer_extraction import extract_option_labels
+        self.assertEqual(extract_option_labels(query), ["A", "B", "C", "D"])
+
     def test_mcq_allows_repeated_label_but_not_unlisted_label(self):
         row = {
             "answer_format": "MCQ_OPTION",
@@ -74,6 +79,19 @@ class AnswerExtractionContractTests(unittest.TestCase):
         }
         with self.assertRaisesRegex(ValueError, "exact response substring"):
             validate(__import__("json").dumps(answer), row)
+
+    def test_cjk_first_option_is_validated_as_canonical_a(self):
+        row = {
+            "answer_format": "MCQ_OPTION",
+            "available_option_labels_in_order": ["B", "C", "D", "E"],
+            "query": "（一）右中心\n(B)左上角\n(C)左下角\n(D)右上角\n(E)没有",
+            "model_response": "最佳答案为：A",
+        }
+        answer = {
+            "status": "ANSWERED", "selected_option": "A", "answer_text": "",
+            "evidence": "最佳答案为：A", "reason_code": "explicit_final",
+        }
+        self.assertEqual(validate(__import__("json").dumps(answer), row)["selected_option"], "A")
 
     def test_no_answer_is_kept_as_a_nonanswer(self):
         row = {

@@ -12,6 +12,8 @@ from collections import Counter
 from datetime import datetime, timezone
 from pathlib import Path
 
+from prepare_answer_extraction import extract_option_labels
+
 
 def sha256(path: Path) -> str:
     digest = hashlib.sha256()
@@ -78,6 +80,7 @@ def validate(raw: str, row: dict) -> dict:
             raise ValueError("ANSWERED evidence is not a nonempty exact response substring")
         if fmt == "MCQ_OPTION":
             valid_labels = set(row.get("available_option_labels_in_order") or [])
+            valid_labels.update(extract_option_labels(str(row.get("query") or "")))
             if value["selected_option"] not in valid_labels or value["answer_text"]:
                 raise ValueError("MCQ answer must be one listed literal label and have empty answer_text")
         else:
