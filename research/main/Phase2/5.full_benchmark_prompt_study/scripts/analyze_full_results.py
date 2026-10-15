@@ -77,6 +77,42 @@ def answer_matches(extracted: dict, gold: str, answer_format: str) -> bool:
     return predicted is not None and target is not None and predicted == target
 
 
+def summarize_extraction_attempts(attempts: list[dict]) -> tuple[dict[str, dict], int, list[dict]]:
+    """Keep the last attempt per sample while auditing all attempts by safe error class."""
+    latest: dict[str, dict] = {}
+    duplicates = 0
+    counts: Counter[tuple[str, str, str, str]] = Counter()
+    for attempt in attempts:
+        uid = attempt.get("sample_uid")
+        condition = str(attempt.get("condition") or "(missing)")
+        track = str(attempt.get("track") or "(missing)")
+        status = str(attempt.get("request_status") or "(missing)")
+        if status == "OK":
+            error_class = "none"
+        elif status == "INVALID_JUDGE_JSON":
+            validation_error = str(attempt.get("validation_error") or "")
+            if "evidence is not a nonempty exact response substring" in validation_error:
+                error_class = "evidence_not_exact"
+            elif "MCQ answer must be one listed literal label and have empty answer_text" in validation_error:
+                error_class = "mcq_option_contract"
+            else:
+                error_class = "other_validation_error"
+        elif status == "TECHNICAL_ERROR":
+            error_class = "technical_error"
+        else:
+            error_class = "other_status"
+        counts[(condition, track, status, error_class)] += 1
+        if uid in latest:
+            duplicates += 1
+        latest[uid] = attempt
+    audit_rows = [
+        {"condition": condition, "track": track, "request_status": status,
+         "error_class": error_class, "attempts": count}
+        for (condition, track, status, error_class), count in sorted(counts.items())
+    ]
+    return latest, duplicates, audit_rows
+
+
 def exact_mcnemar_p(better: int, worse: int) -> float:
     """Two-sided exact binomial test on discordant paired outcomes."""
     n = better + worse
@@ -172,6 +208,7 @@ def collect(data_root: Path) -> tuple[list[dict], dict]:
         raise FileNotFoundError("Successful full-output verification marker is required")
     verification = load_json(campaign / "output-verification.json")
     audits = {"duplicate_extraction_attempts": 0, "native_rows": 0, "extraction_rows": 0,
+              "extraction_attempt_status_counts": [],
               "source_files": [], "prompt_registry_sha256": verification.get("prompt_registry_sha256")}
     if verification.get("total_generation_outputs") != 160810:
         raise ValueError("Verified output manifest does not describe 160,810 full requests")
@@ -215,12 +252,9 @@ def collect(data_root: Path) -> tuple[list[dict], dict]:
                                             "path": str(extraction_path), "sha256": sha256_file(extraction_path)})
             extraction_attempts = load_jsonl(extraction_path)
             audits["extraction_rows"] += len(extraction_attempts)
-            extracted = {}
-            for attempt in extraction_attempts:
-                key = attempt.get("sample_uid")
-                if key in extracted:
-                    audits["duplicate_extraction_attempts"] += 1
-                extracted[key] = attempt  # Last attempt is the final retry result.
+            extracted, duplicate_attempts, attempt_audit = summarize_extraction_attempts(extraction_attempts)
+            audits["duplicate_extraction_attempts"] += duplicate_attempts
+            audits["extraction_attempt_status_counts"].extend(attempt_audit)
             if set(extracted) != set(source):
                 raise ValueError(f"{condition}/{track}: answer-extraction UID coverage mismatch")
 

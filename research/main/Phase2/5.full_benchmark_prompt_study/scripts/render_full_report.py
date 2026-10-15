@@ -243,6 +243,7 @@ def build_html(manifest: dict, tables: dict[str, list[dict[str, str]]], charts: 
     paired = tables["paired_comparisons"]
     primary = [r for r in paired if r["scope"] == "micro_all" and r["condition_a"] == "S0"]
     source_files = manifest.get("audit", {}).get("source_files", [])
+    attempt_audit = manifest.get("audit", {}).get("extraction_attempt_status_counts", [])
     figure_specs = [
         ("absolute", "Absolute accuracy / 各条件准确率", "Accuracy is shown separately by benchmark and score source; the heatmap does not imply cross-benchmark equivalence. / 分评测集与评分来源展示准确率；热图不表示不同评测集可直接等价比较。"),
         ("paired", "Paired effects / 配对效应", "Each estimate compares the same samples under S0 and the named condition. Intervals use image-cluster bootstrap; tests are paired exact McNemar with Holm adjustment. / 每个估计比较S0与相应条件下的同一批样本；区间采用图像聚类Bootstrap，检验为精确配对McNemar并进行Holm校正。"),
@@ -327,6 +328,8 @@ details{{border:1px solid var(--line);border-radius:8px;padding:10px 14px;margin
 {html_table(strata, strata_fields, {"stratum_type":"Dimension / 维度","track":"Benchmark / 评测集","stratum":"Category / 类别","condition":"Condition / 条件","n":"N","native_correct":"Native correct / 原生答对数","native_accuracy":"Native accuracy / 原生准确率","extraction_correct":"Extraction correct / 抽取答对数","extraction_accuracy":"Extraction accuracy / 抽取准确率"})}</details></section>
 <section id="judge"><h2>Scorer audit / 评分器审计</h2>
 <p>The embedded disagreement chart shows all four correctness states by condition. Detailed judge-source, raw native label, and extraction-status counts remain available below for audit. / 内嵌分歧图按条件展示四种正误组合；下方保留评分来源、原生标签值及答案抽取状态计数，供审计追溯。</p>
+<p>Attempt-level counts include invalid first attempts even when later retries succeeded; the table reports only status and error class, not raw model answers. / 尝试级计数保留后来重试成功的首次无效结果；表格仅汇总状态和错误类别，不展示模型原始回答。</p>
+<details><summary>All answer-extraction attempts / 全部答案抽取尝试（含已纠正尝试）</summary>{html_table(attempt_audit, ['condition','track','request_status','error_class','attempts'], {'condition':'Condition / 条件','track':'Benchmark / 评测集','request_status':'Request status / 请求状态','error_class':'Error class / 错误类别','attempts':'Attempt count / 尝试次数'})}</details>
 <details><summary>Native label values / 原生评分标签计数</summary>{html_table(tables['native_judge_value_audit'], ['condition','track','judge_value','n'], {'condition':'Condition / 条件','track':'Benchmark / 评测集','judge_value':'Raw native label / 原生标签值','n':'Count / 数量'})}</details>
 <details><summary>Judge source / 评分来源计数</summary>{html_table(tables['judge_source'], ['condition','track','judge_source','n'], {'condition':'Condition / 条件','track':'Benchmark / 评测集','judge_source':'Scorer source / 评分器来源','n':'Count / 数量'})}</details>
 <details><summary>Extraction status / 答案抽取状态计数</summary>{html_table(tables['extraction_status'], ['condition','track','status','reason_code','n'], {'condition':'Condition / 条件','track':'Benchmark / 评测集','status':'Status / 状态','reason_code':'Reason code / 原因码','n':'Count / 数量'})}</details>

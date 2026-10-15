@@ -24,6 +24,26 @@ class AnalysisContractTests(unittest.TestCase):
             {"status": "AMBIGUOUS", "selected_option": None}, "E", "MCQ_OPTION"
         ))
 
+    def test_extraction_retry_audit_preserves_error_class_and_latest_attempt(self):
+        attempts = [
+            {"sample_uid": "u1", "condition": "S0", "track": "vstar",
+             "request_status": "INVALID_JUDGE_JSON",
+             "validation_error": "ValueError: evidence is not a nonempty exact response substring"},
+            {"sample_uid": "u1", "condition": "S0", "track": "vstar", "request_status": "OK"},
+            {"sample_uid": "u2", "condition": "S0", "track": "vstar",
+             "request_status": "INVALID_JUDGE_JSON",
+             "validation_error": "ValueError: MCQ answer must be one listed literal label and have empty answer_text"},
+            {"sample_uid": "u3", "condition": "S0", "track": "vstar", "request_status": "TECHNICAL_ERROR"},
+        ]
+        latest, duplicate_count, audit = analysis.summarize_extraction_attempts(attempts)
+        self.assertEqual(duplicate_count, 1)
+        self.assertEqual(latest["u1"]["request_status"], "OK")
+        classes = {row["error_class"]: row["attempts"] for row in audit}
+        self.assertEqual(classes["evidence_not_exact"], 1)
+        self.assertEqual(classes["mcq_option_contract"], 1)
+        self.assertEqual(classes["technical_error"], 1)
+        self.assertEqual(classes["none"], 1)
+
     def test_exact_mcnemar_and_holm(self):
         self.assertEqual(analysis.exact_mcnemar_p(0, 0), 1.0)
         self.assertAlmostEqual(analysis.exact_mcnemar_p(3, 0), 0.25)

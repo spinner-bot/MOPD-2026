@@ -29,7 +29,10 @@ class ReportRenderingContractTests(unittest.TestCase):
             "seed": 20261014, "bootstrap_iterations": 2000,
             "paired_comparison_method": "exact McNemar; Holm-adjusted",
             "confidence_intervals": "cluster bootstrap 95 percent",
-            "audit": {"source_files": []},
+            "audit": {"source_files": [], "extraction_attempt_status_counts": [
+                {"condition": "S0", "track": "vstar", "request_status": "INVALID_JUDGE_JSON",
+                 "error_class": "evidence_not_exact", "attempts": 1},
+            ]},
         }
         summaries = [{"scope": "track", "condition": c, "stratum": t, "n": "5000",
                       "native_accuracy": "0.5", "extraction_accuracy": "0.51"}
@@ -80,6 +83,8 @@ class ReportRenderingContractTests(unittest.TestCase):
         self.assertIn("五条件全量评测与分层分析", document)
         self.assertIn("Score-source disagreement", document)
         self.assertIn("Holm-adjusted p / Holm校正p值", document)
+        self.assertIn("evidence_not_exact", document)
+        self.assertIn("All answer-extraction attempts / 全部答案抽取尝试", document)
         self.assertEqual(document.count("data:image/png;base64,"), 12)
         self.assertNotIn('src="http', document)
         self.assertNotIn("href=\"http", document)
