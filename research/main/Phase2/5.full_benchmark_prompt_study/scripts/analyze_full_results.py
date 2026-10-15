@@ -41,6 +41,11 @@ def validate_official_accuracy_log(track: str, correct: int, total: int, text: s
         match = re.search(pattern, text)
         if not match or int(match.group(2)) != total or f"{100 * correct / total:.2f}%" != f"{float(match.group(1)):.2f}%":
             raise ValueError(f"{track}: raw judge labels do not match the official cal_acc.py log")
+    else:
+        pattern = rf"{re.escape(track)} Acc: ([0-9]+)/([0-9]+) = ([0-9]+(?:\.[0-9]+)?)%"
+        match = re.search(pattern, text)
+        if not match or (int(match.group(1)), int(match.group(2))) != (correct, total):
+            raise ValueError(f"{track}: raw judge labels do not match the official cal_acc.py log")
 
 
 def find_official_accuracy_log(data_root: Path, condition: str, track: str) -> Path:
@@ -54,11 +59,6 @@ def find_official_accuracy_log(data_root: Path, condition: str, track: str) -> P
     if len(matches) != 1:
         raise ValueError(f"{condition}/{track}: expected one official cal_acc.py log, found {len(matches)}")
     return matches[0]
-    else:
-        pattern = rf"{re.escape(track)} Acc: ([0-9]+)/([0-9]+) = ([0-9]+(?:\.[0-9]+)?)%"
-        match = re.search(pattern, text)
-        if not match or (int(match.group(1)), int(match.group(2))) != (correct, total):
-            raise ValueError(f"{track}: raw judge labels do not match the official cal_acc.py log")
 
 
 def load_json(path: Path):
