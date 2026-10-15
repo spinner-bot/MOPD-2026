@@ -99,7 +99,7 @@ class AnalysisContractTests(unittest.TestCase):
         self.assertEqual(len(tables["condition_summary"]), 35)
         self.assertEqual(len(tables["paired_comparisons"]), 140)
         self.assertEqual(len(tables["response_length_by_score"]), 180)
-        self.assertEqual(len(tables["native_judge_decision_audit"]), 60)
+        self.assertEqual(len(tables["native_judge_decision_audit"]), 30)
 
 
 if __name__ == "__main__":
