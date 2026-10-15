@@ -7,6 +7,7 @@ import hashlib
 import json
 import platform
 import re
+import subprocess
 import sys
 from collections import Counter
 from datetime import datetime, timezone
@@ -180,8 +181,14 @@ def main() -> None:
 
     manifest_path = args.output.with_suffix(".manifest.json")
     model_path = args.model.resolve()
+    prompt_digest = sha256(args.prompt)
+    model_config_digest = sha256(model_path / "config.json")
+    repo_root = next(parent for parent in Path(__file__).resolve().parents if (parent / ".git").exists())
+    extractor_commit = subprocess.run(
+        ["git", "rev-parse", "HEAD"], cwd=repo_root, check=True, capture_output=True, text=True
+    ).stdout.strip()
     manifest = {
-        "schema": "phase2-work5-answer-extraction-run-v1",
+        "schema": "phase2-work5-answer-extraction-run-v2",
         "started_at_utc": datetime.now(timezone.utc).isoformat(),
         "input_path": str(args.input.resolve()),
         "input_sha256": sha256(args.input),
@@ -189,9 +196,10 @@ def main() -> None:
         "condition": rows[0]["condition"],
         "track": rows[0]["track"],
         "prompt_path": str(args.prompt.resolve()),
-        "prompt_sha256": sha256(args.prompt),
+        "prompt_sha256": prompt_digest,
         "model_path": str(model_path),
-        "model_config_sha256": sha256(model_path / "config.json"),
+        "model_config_sha256": model_config_digest,
+        "extractor_commit": extractor_commit,
         "answer_gold_sent_to_model": False,
         "image_sent_to_model": False,
         "condition_or_sample_uid_sent_to_model": False,
@@ -300,6 +308,10 @@ def main() -> None:
                     "condition": row["condition"],
                     "track": row["track"],
                     "model_response_sha256": row["model_response_sha256"],
+                    "judge_prompt_sha256": prompt_digest,
+                    "judge_model_config_sha256": model_config_digest,
+                    "judge_extractor_commit": extractor_commit,
+                    "judge_max_tokens": args.max_tokens,
                     "request_status": "TECHNICAL_ERROR" if error else "OK",
                     "judge_raw_text": raw,
                     "judge_error": error,
