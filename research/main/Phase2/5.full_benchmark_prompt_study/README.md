@@ -60,4 +60,6 @@
 
 `full-statistics-v1` 至 `full-statistics-v3` 是逐步发现原生裁判字段包含推理文本、评分口径须分为官方精确标签与终行诊断、以及进一步补入日志交叉验证和格式审计前生成的历史快照，不可引用为最终综合结论；派生产物保留在服务器以追溯评分解释更正过程，不覆盖。复核既有 v4 统计输入时，可运行 `scripts/verify_analysis_sources.py --analysis-dir "$DATA_ROOT/derived/full-statistics-v4"`；该只读校验器逐一重算 v4 manifest 登记的源文件 SHA-256，发现缺失或哈希不一致即返回非零状态。
 
+正式解释 v4 评分前，需完成分层人工复核。可运行 `scripts/create_manual_audit_sample.py --merged-csv "$DATA_ROOT/derived/full-statistics-v4/sample_level_merged.csv" --output audits/manual-review-sample-v1.json`，按固定种子为每个track选10个不同样本（共60个样本、300个配对条件视图）。每track目标名额依次覆盖：官方分与文本抽取分歧3例、官方分与终行诊断分歧2例、抽取状态为歧义/无答案2例、每track输出长度第95百分位及以上1例、三种评分在五条件均一致2例；类别重叠时按所列顺序分配，候选不足或名额因重叠未能满足时由确定性哈希排序的未选样本补足，实际可用及入选数写入JSON。该样本用于定性审计，不用于估计总体错误率。JSON记录种子、样本键、入选层、候选数和源合并表哈希；完整复核需结合原问题/参考答案、五条件模型原始回答、原生裁判原文和抽取证据逐条登记结论。
+
 未经确认的题数或准确率不作为正式结果。大体积原图/数据按项目既有外部数据管理方式记录获取来源、固定 revision、文件清单和哈希；不得未经检查将许可受限的原始 benchmark 资产复制进 Git。
