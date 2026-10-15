@@ -6,10 +6,13 @@ import argparse
 import hashlib
 import json
 import platform
+import re
 import sys
 from collections import Counter
 from datetime import datetime, timezone
 from pathlib import Path
+
+from prepare_answer_extraction import extract_option_labels
 
 
 def sha256(path: Path) -> str:
@@ -23,6 +26,32 @@ def sha256(path: Path) -> str:
 def read_jsonl(path: Path) -> list[dict]:
     with path.open(encoding="utf-8") as handle:
         return [json.loads(line) for line in handle if line.strip()]
+
+
+def _strip_markdown_formatting(text: str) -> tuple[str, list[int]]:
+    """Remove only common paired Markdown emphasis/code markers and retain offsets."""
+    pattern = re.compile(r"(\*\*|__|`)(.+?)\1", flags=re.DOTALL)
+    removed: set[int] = set()
+    for match in pattern.finditer(text):
+        marker = match.group(1)
+        removed.update(range(match.start(), match.start() + len(marker)))
+        removed.update(range(match.end() - len(marker), match.end()))
+    offsets = [index for index in range(len(text)) if index not in removed]
+    return "".join(text[index] for index in offsets), offsets
+
+
+def _recover_markdown_exact_span(response: str, evidence: str) -> str | None:
+    """Map a quote differing only by Markdown markers back to exact source text."""
+    normalized_response, offsets = _strip_markdown_formatting(response)
+    normalized_evidence, _ = _strip_markdown_formatting(evidence)
+    if not normalized_evidence:
+        return None
+    start = normalized_response.find(normalized_evidence)
+    if start < 0:
+        return None
+    first = offsets[start]
+    last = offsets[start + len(normalized_evidence) - 1]
+    return response[first : last + 1]
 
 
 def validate(raw: str, row: dict) -> dict:
@@ -42,10 +71,16 @@ def validate(raw: str, row: dict) -> dict:
     if status == "ANSWERED":
         if reason not in {"explicit_final", "semantic_final"}:
             raise ValueError("invalid ANSWERED reason")
+        if value["evidence"] and value["evidence"] not in response:
+            recovered = _recover_markdown_exact_span(response, value["evidence"])
+            if recovered is not None:
+                value["evidence"] = recovered
+                value["evidence_validation"] = "exact_substring_markdown_normalized"
         if not value["evidence"] or value["evidence"] not in response:
             raise ValueError("ANSWERED evidence is not a nonempty exact response substring")
         if fmt == "MCQ_OPTION":
             valid_labels = set(row.get("available_option_labels_in_order") or [])
+            valid_labels.update(extract_option_labels(str(row.get("query") or "")))
             if value["selected_option"] not in valid_labels or value["answer_text"]:
                 raise ValueError("MCQ answer must be one listed literal label and have empty answer_text")
         else:
