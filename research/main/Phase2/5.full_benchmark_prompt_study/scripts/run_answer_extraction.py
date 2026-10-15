@@ -54,6 +54,41 @@ def _recover_markdown_exact_span(response: str, evidence: str) -> str | None:
     return response[first : last + 1]
 
 
+def _collapse_whitespace(text: str) -> tuple[str, list[int]]:
+    """Collapse whitespace runs while preserving an index into the source text."""
+    characters: list[str] = []
+    offsets: list[int] = []
+    in_whitespace = False
+    for index, character in enumerate(text):
+        if character.isspace():
+            if not in_whitespace:
+                characters.append(" ")
+                offsets.append(index)
+            in_whitespace = True
+        else:
+            characters.append(character)
+            offsets.append(index)
+            in_whitespace = False
+    return "".join(characters), offsets
+
+
+def _recover_whitespace_markdown_exact_span(response: str, evidence: str) -> str | None:
+    """Recover a verbatim source span when only whitespace/Markdown differs."""
+    markdown_response, markdown_offsets = _strip_markdown_formatting(response)
+    collapsed_response, collapsed_offsets = _collapse_whitespace(markdown_response)
+    normalized_evidence, _ = _strip_markdown_formatting(evidence)
+    collapsed_evidence, _ = _collapse_whitespace(normalized_evidence)
+    if not collapsed_evidence:
+        return None
+    start = collapsed_response.find(collapsed_evidence)
+    if start < 0:
+        return None
+    first = markdown_offsets[collapsed_offsets[start]]
+    last_index = collapsed_offsets[start + len(collapsed_evidence) - 1]
+    last = markdown_offsets[last_index]
+    return response[first : last + 1]
+
+
 def validate(raw: str, row: dict) -> dict:
     value = json.loads(raw)
     required = {"status", "selected_option", "answer_text", "evidence", "reason_code"}
@@ -76,6 +111,11 @@ def validate(raw: str, row: dict) -> dict:
             if recovered is not None:
                 value["evidence"] = recovered
                 value["evidence_validation"] = "exact_substring_markdown_normalized"
+            else:
+                recovered = _recover_whitespace_markdown_exact_span(response, value["evidence"])
+                if recovered is not None:
+                    value["evidence"] = recovered
+                    value["evidence_validation"] = "exact_substring_whitespace_markdown_normalized"
         if not value["evidence"] or value["evidence"] not in response:
             raise ValueError("ANSWERED evidence is not a nonempty exact response substring")
         if fmt == "MCQ_OPTION":
