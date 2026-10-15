@@ -48,6 +48,33 @@ class AnswerExtractionContractTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             validate(__import__("json").dumps(answer), row)
 
+    def test_markdown_only_evidence_difference_recovers_exact_source_span(self):
+        row = {
+            "answer_format": "MCQ_OPTION",
+            "available_option_labels_in_order": ["A", "B", "C", "D"],
+            "model_response": "This matches option **(C)**. Final answer: **C**",
+        }
+        answer = {
+            "status": "ANSWERED", "selected_option": "C", "answer_text": "",
+            "evidence": "This matches option (C).", "reason_code": "explicit_final",
+        }
+        result = validate(__import__("json").dumps(answer), row)
+        self.assertEqual(result["evidence"], "This matches option **(C)**.")
+        self.assertEqual(result["evidence_validation"], "exact_substring_markdown_normalized")
+
+    def test_semantically_similar_but_nonmatching_evidence_is_still_rejected(self):
+        row = {
+            "answer_format": "MCQ_OPTION",
+            "available_option_labels_in_order": ["A", "B", "C", "D"],
+            "model_response": "The answer is **C**.",
+        }
+        answer = {
+            "status": "ANSWERED", "selected_option": "C", "answer_text": "",
+            "evidence": "This matches option C.", "reason_code": "explicit_final",
+        }
+        with self.assertRaisesRegex(ValueError, "exact response substring"):
+            validate(__import__("json").dumps(answer), row)
+
     def test_no_answer_is_kept_as_a_nonanswer(self):
         row = {
             "answer_format": "MCQ_OPTION",
