@@ -1,0 +1,44 @@
+{
+  "case_index": 6,
+  "question": "椅子是什么颜色？\n(A) 绿色\n(B) 黄色\n(C) 白色\n(D) 黑色\n请直接用所给选项中的字母作答。",
+  "stratum": "确定性随机剩余样本",
+  "flags": "三项评分一致。UID：vstar:question_id:91",
+  "reference_answer": "B",
+  "conditions": [
+    {
+      "condition": "S0",
+      "scores": "官方精确标签：判对\n终行诊断：是（判对）\n抽取：已回答 · 判对\n原生裁判来源：首字母",
+      "extraction_evidence": "抽取答案：B\n证据：答案：(B) 黄色",
+      "model_response": "图中的椅子明显是黄色的。\n\n答案：(B) 黄色",
+      "judge_output": "是"
+    },
+    {
+      "condition": "SC",
+      "scores": "官方精确标签：判对\n终行诊断：是（判对）\n抽取：已回答 · 判对\n原生裁判来源：首字母",
+      "extraction_evidence": "抽取答案：B\n证据：答案：(B) 黄色",
+      "model_response": "图中的椅子明显是黄色的。\n\n答案：(B) 黄色",
+      "judge_output": "是"
+    },
+    {
+      "condition": "S1",
+      "scores": "官方精确标签：判对\n终行诊断：是（判对）\n抽取：已回答 · 判对\n原生裁判来源：首字母",
+      "extraction_evidence": "抽取答案：B\n证据：答案：(B) 黄色",
+      "model_response": "图中的椅子明显是黄色的。\n\n答案：(B) 黄色",
+      "judge_output": "是"
+    },
+    {
+      "condition": "S2",
+      "scores": "官方精确标签：判对\n终行诊断：是（判对）\n抽取：已回答 · 判对\n原生裁判来源：首字母",
+      "extraction_evidence": "抽取答案：B\n证据：答案：(B)",
+      "model_response": "图中的椅子明显是黄色的。\n\n答案：(B)",
+      "judge_output": "是"
+    },
+    {
+      "condition": "S3",
+      "scores": "官方精确标签：判对\n终行诊断：是（判对）\n抽取：已回答 · 判对\n原生裁判来源：首字母",
+      "extraction_evidence": "抽取答案：B\n证据：答案：(B)",
+      "model_response": "图中的椅子明显是黄色的。\n\n答案：(B)",
+      "judge_output": "是"
+    }
+  ]
+}

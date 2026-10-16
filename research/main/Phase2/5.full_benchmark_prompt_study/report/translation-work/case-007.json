@@ -1,0 +1,44 @@
+{
+  "case_index": 7,
+  "question": "围巾是什么颜色？\n(A) 红色\n(B) 绿色\n(C) 白色\n(D) 黄色\n请直接用所给选项中的字母作答。",
+  "stratum": "确定性随机剩余样本",
+  "flags": "三项评分一致。UID：vstar:question_id:67",
+  "reference_answer": "B",
+  "conditions": [
+    {
+      "condition": "S0",
+      "scores": "官方精确标签：判对\n终行诊断：是（判对）\n抽取：已回答 · 判对\n原生裁判来源：首字母",
+      "extraction_evidence": "抽取答案：B\n证据：正确答案：**(B) 绿色**",
+      "model_response": "图中的围巾主要是绿色，带有格纹图案，其中包括白色，也可能还有其他颜色，但主色是绿色。\n\n正确答案：**(B) 绿色**",
+      "judge_output": "是"
+    },
+    {
+      "condition": "SC",
+      "scores": "官方精确标签：判对\n终行诊断：是（判对）\n抽取：已回答 · 判对\n原生裁判来源：首字母",
+      "extraction_evidence": "抽取答案：B\n证据：正确答案：**(B) 绿色**",
+      "model_response": "图中的围巾主要是绿色，带有格纹图案，其中包括不同深浅的绿色，也可能还有其他颜色，但主色是绿色。\n\n正确答案：**(B) 绿色**",
+      "judge_output": "是"
+    },
+    {
+      "condition": "S1",
+      "scores": "官方精确标签：判对\n终行诊断：是（判对）\n抽取：已回答 · 判对\n原生裁判来源：首字母",
+      "extraction_evidence": "抽取答案：B\n证据：正确答案：**(B) 绿色**",
+      "model_response": "图中的围巾主要是绿色，带有黄色和白色的格纹图案。不过，围巾本身的主色是绿色。\n\n正确答案：**(B) 绿色**",
+      "judge_output": "是"
+    },
+    {
+      "condition": "S2",
+      "scores": "官方精确标签：判对\n终行诊断：是（判对）\n抽取：已回答 · 判对\n原生裁判来源：首字母",
+      "extraction_evidence": "抽取答案：B\n证据：(B) 绿色",
+      "model_response": "图中的围巾主要是绿色，带有格纹图案，其中包括不同深浅的绿色，也可能还有其他颜色，但主色是绿色。\n\n(B) 绿色",
+      "judge_output": "是"
+    },
+    {
+      "condition": "S3",
+      "scores": "官方精确标签：判对\n终行诊断：是（判对）\n抽取：已回答 · 判对\n原生裁判来源：首字母",
+      "extraction_evidence": "抽取答案：B\n证据：正确答案：**(B) 绿色**",
+      "model_response": "图中的围巾主要是绿色，带有黄色和白色的格纹图案。不过，围巾本身的主色是绿色。\n\n正确答案：**(B) 绿色**",
+      "judge_output": "是"
+    }
+  ]
+}
