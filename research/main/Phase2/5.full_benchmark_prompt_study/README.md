@@ -64,6 +64,10 @@
 
 要生成可离线审阅的五条件配对样本页，在源文件哈希复核通过后运行 `scripts/build_manual_audit_packet.py --sample-manifest audits/manual-review-sample-v2.json --analysis-dir "$DATA_ROOT/derived/full-statistics-v4" --data-root "$DATA_ROOT" --output report/manual-score-audit-sample-v1.html`。输出页将60张样本图像以内嵌JPEG展示（最长边不超过1920px、质量90；源图不更改，审计记录保存每张原图SHA-256），并展示原题、参考答案、五条件模型原始回答、原生裁判原文、终行诊断和答案抽取证据；页面不引用外部图像文件。人工复核项保存在浏览器本地，可下载为JSON；复核者需结合原问题/参考答案逐条检查转录忠实度、答案语义及裁判判定，并记录不确定性。该样本审计是定性复核，不用于估计总体错误率。
 
+下载复核JSON后，使用 `scripts/validate_manual_review.py --decisions report/manual-review-decisions-v1.json --sample-manifest audits/manual-review-sample-v2.json --packet report/manual-score-audit-sample-v1.html --reviewer "<reviewer-id>" --output "$DATA_ROOT/judgment/manual-score-audit-validation-v1.json"` 核验。验证器要求完整60×5共300条配对记录、每行三项决定均完成、无重复/缺失；若任一项为“No/否”或“Unclear/不确定”，必须附证据说明。输出保留各条决定、样本UID、审阅者、HTML清单哈希和导出文件哈希；验证不会自动改写分数或报告结论。
+
+After downloading the review JSON, run `scripts/validate_manual_review.py` with the decisions export, frozen sample manifest, exact HTML packet, reviewer identifier, and an output path. The validator requires all 300 paired rows (60 cases × five conditions), completed values for all three review fields, and no duplicate or missing pairs. Any “No” or “Unclear” entry requires an evidence note. The output records decisions, sample UIDs, reviewer, packet-manifest hash, and export hash; validation never changes scores or conclusions automatically.
+
 另可运行 `scripts/run_visual_audit.sbatch`，由本地 Qwen3.8-27B 对同一60例的300个条件视图执行**多模态辅助审计**。审计器接收原评测全图、原题、参考答案及单个候选回答，不接收条件名、样本UID或其他条件回答；输入图像与模型回答均记录 SHA-256，完整checkpoint分片也逐个哈希。注意，该Qwen3.8-27B此前已用于文本答案抽取；本审计增加图像证据，是不同输入条件下的补充判读，不能宣称为不同模型的独立复现。产物不等同于人工审阅，不覆盖原生评分或v4统计；三者须分开报告。输出存放于 `$DATA_ROOT/judgment/visual-audit-v1/`，原始JSON输出及结构化判定均保留。
 
 视觉辅助审计的候选回答如超过12,000字符，为避免超过模型上下文上限，送审文本确定性保留前4,000字符及后8,000字符，中间段以明确标记表示省略。冻结输入仍保存完整原始回答；结果逐条保留实际送审摘录、原文和摘录哈希、字符数及省略量。提示审计模型：不可推断省略部分；若其可能改变最终答案解释，须判为UNCERTAIN。此过程不修改原始回答，也不改变全量评分及统计。新策略或代码版本须使用新 `RUN_VERSION`（例如 `sbatch --export=ALL,RUN_VERSION=v2 scripts/run_visual_audit.sbatch`）及独立输出目录；历史运行及失败记录不得覆盖。
