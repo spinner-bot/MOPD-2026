@@ -15,6 +15,7 @@ import math
 import pathlib
 
 import matplotlib
+import matplotlib.font_manager
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
@@ -28,9 +29,19 @@ plt.rcParams.update({
     "xtick.labelsize": 8, "ytick.labelsize": 8,
     "axes.spines.top": False, "axes.spines.right": False,
 })
-CJK = "Noto Sans CJK SC"
-plt.rcParams["font.sans-serif"] = [CJK, "DejaVu Sans", "sans-serif"]
 plt.rcParams["axes.unicode_minus"] = False
+
+
+def register_cjk_font(font_path: pathlib.Path | None) -> None:
+    """Register an explicit CJK font file so Chinese labels do not render as boxes."""
+    if font_path and font_path.is_file():
+        matplotlib.font_manager.fontManager.addfont(str(font_path))
+        family = matplotlib.font_manager.FontProperties(fname=str(font_path)).get_name()
+        plt.rcParams["font.sans-serif"] = [family, "DejaVu Sans"]
+        print(f"中文字体: {family}  ({font_path})")
+    else:
+        plt.rcParams["font.sans-serif"] = ["DejaVu Sans"]
+        print("警告: 未提供中文字体，图内中文将显示为方框")
 
 
 def load(path: pathlib.Path) -> list[dict]:
@@ -79,7 +90,7 @@ def fig1(rows, out):
     ax.axvline(0, color="#888", lw=0.9, ls="--")
     ax.set_yticks(range(len(ys)))
     ax.set_yticklabels(ys)
-    ax.set_xlabel("S3 − S0 准确率差（百分点，95% CI）")
+    ax.set_xlabel("S3 - S0 准确率差（百分点，95% CI）")
     ax.set_title("图1 只有官方口径上升；两条独立口径均下降\n(S0→S3，n=32,162×2 配对)", fontsize=10)
     ax.set_xlim(-6, 14)
     fig.tight_layout()
@@ -111,10 +122,10 @@ def fig2(rows, out):
         ax.axvline(pooled, color=colour, lw=0.8, alpha=0.45)
         ax.set_yticks(range(len(TRACKS)))
         ax.set_yticklabels(TRACKS, fontsize=7.5)
-        ax.set_title(f"{label}\nI² = {i2:.1f}%", fontsize=9.5)
-        ax.set_xlabel("S3 − S0 (pp)")
+        ax.set_title(f"{label}\nI2 = {i2:.1f}%", fontsize=9.5)
+        ax.set_xlabel("S3 - S0 (pp)")
         ax.set_xlim(-8, 20)
-    fig.suptitle("图2 官方效应的跨评测集异质性达 I²=95.3%，不可合并；另两条口径方向一致", y=1.02, fontsize=10.5)
+    fig.suptitle("图2 官方效应的跨评测集异质性达 I2=95.3%，不可合并；另两条口径方向一致", y=1.02, fontsize=10.5)
     fig.tight_layout()
     fig.savefig(out / "f2_forest.png", bbox_inches="tight")
     plt.close(fig)
@@ -135,7 +146,7 @@ def fig3(rows, out):
     ax.set_yticklabels([d[0] for d in data])
     ax.set_xlabel("判对的记录数（全量 n = 160,810）")
     ax.set_xlim(0, 145000)
-    ax.set_title("图3 三条口径构成严格嵌套：官方 ⊂ 判定 ⊂ 抽取\n官方判对的记录，判定必然也判对（仅左对=0）", fontsize=10)
+    ax.set_title("图3 三条口径构成严格嵌套：官方 是 判定 的子集，判定 是 抽取 的子集\n官方判对的记录，判定必然也判对（仅左对=0）", fontsize=10)
     fig.tight_layout()
     fig.savefig(out / "f3_nesting.png", bbox_inches="tight")
     plt.close(fig)
@@ -160,7 +171,7 @@ def fig4(rows, out):
     ax.axhline(0, color="#333", lw=0.8)
     ax.set_xticks(list(xs))
     ax.set_xticklabels(TRACKS, rotation=18, ha="right", fontsize=7.5)
-    ax.set_ylabel("条数变化（S3 − S0）")
+    ax.set_ylabel("条数变化（S3 - S0）")
     ax.legend(loc="upper left", bbox_to_anchor=(1.01, 1.0), frameon=False)
     ax.set_title("图4 官方的每一点上升，都对应被丢弃条数的等量下降\n恒等式 Δ官方 + Δ丢弃 = Δ判定 在六个评测集精确成立", fontsize=10)
     fig.tight_layout()
@@ -215,7 +226,7 @@ def fig6(rows, out):
                     va="center", fontsize=7.5)
     ax.set_yticks(range(len(items)))
     ax.set_yticklabels(labels, fontsize=7.5)
-    ax.set_xlabel("判定判对率 − 官方判对率（百分点）")
+    ax.set_xlabel("判定判对率 - 官方判对率（百分点）")
     ax.set_xlim(0, max(gaps) * 1.32)
     ax.set_title("图6 格式规则的惩罚由类别主导，从 0.9pp 到 59.1pp\n(官方相对真实判定的少计幅度)", fontsize=10)
     fig.tight_layout()
@@ -249,7 +260,10 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--data-dir", type=pathlib.Path, required=True)
     ap.add_argument("--out-dir", type=pathlib.Path, required=True)
+    ap.add_argument("--font", type=pathlib.Path, default=None,
+                    help="CJK font file (e.g. simhei.ttf) so Chinese labels render")
     args = ap.parse_args()
+    register_cjk_font(args.font)
     args.out_dir.mkdir(parents=True, exist_ok=True)
     rows = load(args.data_dir / "sample_level_merged.csv")
     print(f"载入 {len(rows):,} 行")
