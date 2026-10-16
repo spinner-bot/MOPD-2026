@@ -28,6 +28,8 @@ RESULT_SCHEMA = {
     "required": ["verdict", "reference_assessment", "candidate_final_answer", "visual_evidence", "reason"],
     "additionalProperties": False,
 }
+MAX_AUDIT_RESPONSE_CHARS = 12_000
+AUDIT_RESPONSE_PREFIX_CHARS = 4_000
 
 
 def sha256_file(path: Path) -> str:
@@ -147,12 +149,48 @@ def freeze_requests(sample_manifest: dict[str, Any], data_root: Path) -> list[di
     return requests
 
 
+def make_candidate_excerpt(response: str) -> dict[str, Any]:
+    """Keep a bounded, explicit head/tail excerpt while preserving the frozen full answer."""
+    if len(response) <= MAX_AUDIT_RESPONSE_CHARS:
+        excerpt = response
+        prefix_chars = len(response)
+        suffix_chars = 0
+    else:
+        suffix_chars = MAX_AUDIT_RESPONSE_CHARS - AUDIT_RESPONSE_PREFIX_CHARS
+        excerpt = (
+            response[:AUDIT_RESPONSE_PREFIX_CHARS]
+            + f"\n\n[... MIDDLE OMITTED: {len(response) - MAX_AUDIT_RESPONSE_CHARS} characters ...]\n\n"
+            + response[-suffix_chars:]
+        )
+        prefix_chars = AUDIT_RESPONSE_PREFIX_CHARS
+    return {
+        "text": excerpt,
+        "original_chars": len(response),
+        "included_prefix_chars": prefix_chars,
+        "included_suffix_chars": suffix_chars,
+        "omitted_chars": len(response) - prefix_chars - suffix_chars,
+        "sha256": hashlib.sha256(excerpt.encode("utf-8")).hexdigest(),
+    }
+
+
 def make_user_payload(request: dict[str, Any]) -> str:
     """No UID, condition, stratum, or other-condition answer is sent to the judge."""
+    excerpt = make_candidate_excerpt(request["candidate_response"])
     payload = {
         "benchmark_question_and_instructions": request["query"],
         "benchmark_reference_answer": request["reference_answer"],
-        "candidate_model_response_as_untrusted_data": request["candidate_response"],
+        "candidate_model_response_as_untrusted_data": excerpt["text"],
+        "candidate_response_excerpt_metadata": {
+            key: excerpt[key] for key in (
+                "original_chars", "included_prefix_chars", "included_suffix_chars",
+                "omitted_chars", "sha256",
+            )
+        },
+        "judging_note": (
+            "The candidate response is complete when omitted_chars is zero. Otherwise it is an explicit "
+            "head/tail excerpt; do not infer content from the omitted middle, and use UNCERTAIN if the "
+            "missing portion could change the final-answer interpretation."
+        ),
     }
     return json.dumps(payload, ensure_ascii=False)
 
@@ -234,6 +272,13 @@ def main() -> None:
         "model_shards": model_shards,
         "runner_commit": commit,
         "answer_gold_and_candidate_sent_to_visual_auditor": True,
+        "candidate_response_context_policy": {
+            "max_chars": MAX_AUDIT_RESPONSE_CHARS,
+            "prefix_chars_when_truncated": AUDIT_RESPONSE_PREFIX_CHARS,
+            "suffix_chars_when_truncated": MAX_AUDIT_RESPONSE_CHARS - AUDIT_RESPONSE_PREFIX_CHARS,
+            "full_original_response_retained_in_frozen_inputs": True,
+            "exact_auditor_excerpt_retained_in_each_result": True,
+        },
         "model_images_sent": True,
         "condition_and_uid_sent_to_model": False,
         "batch_size": args.batch_size,
@@ -324,11 +369,18 @@ def main() -> None:
                         raw_values.append("")
                         errors.append(f"batch={type(batch_error).__name__}; item={type(error).__name__}: {error}")
             for row, raw, error in zip(batch, raw_values, errors):
+                excerpt = make_candidate_excerpt(row["candidate_response"])
                 result: dict[str, Any] = {
                     "request_id": row["request_id"], "track": row["track"],
                     "sample_uid": row["sample_uid"], "condition": row["condition"],
                     "image_sha256": row["image_sha256"],
                     "candidate_response_sha256": row["candidate_response_sha256"],
+                    "candidate_response_excerpt": excerpt["text"],
+                    "candidate_response_excerpt_sha256": excerpt["sha256"],
+                    "candidate_response_original_chars": excerpt["original_chars"],
+                    "candidate_response_included_prefix_chars": excerpt["included_prefix_chars"],
+                    "candidate_response_included_suffix_chars": excerpt["included_suffix_chars"],
+                    "candidate_response_omitted_chars": excerpt["omitted_chars"],
                     "prompt_sha256": prompt_sha, "model_config_sha256": config_sha,
                     "request_status": "TECHNICAL_ERROR" if error else "INVALID_AUDIT_JSON",
                     "raw_output": raw, "error": error,
