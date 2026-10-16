@@ -67,6 +67,21 @@ def resolve_translation_files(manifest: dict[str, Any], base_dir: Path) -> dict[
         for condition in case.get("conditions", []):
             for field in fields:
                 file_key = field + "_file"
+                files_key = field + "_files"
+                if files_key in condition:
+                    relative_paths = condition.pop(files_key)
+                    if not isinstance(relative_paths, list) or not relative_paths:
+                        raise ValueError(f"{files_key} must be a non-empty ordered list")
+                    chunks = []
+                    for relative_path in relative_paths:
+                        path = (base / relative_path).resolve()
+                        try:
+                            path.relative_to(base)
+                        except ValueError as exc:
+                            raise ValueError(f"translation file escapes manifest directory: {path}") from exc
+                        with path.open(encoding="utf-8", newline="") as handle:
+                            chunks.append(handle.read())
+                    condition[field] = "".join(chunks)
                 if file_key not in condition:
                     continue
                 path = (base / condition.pop(file_key)).resolve()

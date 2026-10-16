@@ -92,6 +92,10 @@ class ManualReviewBilingualLayerTests(unittest.TestCase):
             root = Path(temp)
             with (root / "long-zh.txt").open("w", encoding="utf-8", newline="") as handle:
                 handle.write("第1行\n第2行")
+            with (root / "part-1.txt").open("w", encoding="utf-8", newline="") as handle:
+                handle.write("第一段\n")
+            with (root / "part-2.txt").open("w", encoding="utf-8", newline="") as handle:
+                handle.write("第二段")
             manifest = complete_manifest()
             row = manifest["cases"][0]["conditions"][0]
             row.pop("model_response")
@@ -99,6 +103,14 @@ class ManualReviewBilingualLayerTests(unittest.TestCase):
             expanded = resolve_translation_files(manifest, root)
             self.assertEqual(expanded["cases"][0]["conditions"][0]["model_response"], "第1行\n第2行")
 
+            manifest = complete_manifest()
+            row = manifest["cases"][0]["conditions"][0]
+            row.pop("model_response")
+            row["model_response_files"] = ["part-1.txt", "part-2.txt"]
+            expanded = resolve_translation_files(manifest, root)
+            self.assertEqual(expanded["cases"][0]["conditions"][0]["model_response"], "第一段\n第二段")
+
+            manifest = complete_manifest()
             row = manifest["cases"][0]["conditions"][0]
             row["model_response_file"] = "../outside.txt"
             with self.assertRaisesRegex(ValueError, "escapes manifest directory"):
