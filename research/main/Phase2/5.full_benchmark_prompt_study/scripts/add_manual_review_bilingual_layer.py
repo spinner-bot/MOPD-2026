@@ -106,6 +106,7 @@ def resolve_translation_files(manifest: dict[str, Any], base_dir: Path) -> dict[
                     condition[field + "_source_sha256"] = hashlib.sha256(
                         source_text.encode("utf-8")
                     ).hexdigest()
+                    condition[field + "_source_pattern"] = source_text
                 if files_key in condition:
                     relative_paths = condition.pop(files_key)
                     if not isinstance(relative_paths, list) or not relative_paths:
@@ -212,10 +213,11 @@ def render_bilingual(source: str, manifest: dict[str, Any]) -> str:
             if not model_match:
                 raise ValueError(f"missing model-response summary in case {i}")
             source_hash = condition.get("model_response_source_sha256")
-            if source_hash:
+            source_pattern = condition.get("model_response_source_pattern")
+            if source_hash and source_pattern:
                 source_response = html.unescape(model_match.group(2))
-                actual_hash = hashlib.sha256(source_response.encode("utf-8")).hexdigest()
-                if actual_hash != source_hash:
+                pattern_hash = hashlib.sha256(source_pattern.encode("utf-8")).hexdigest()
+                if pattern_hash != source_hash or source_pattern not in source_response:
                     raise ValueError(f"source text does not match repetition recipe in case {i}")
             model_translation = model_length_zh(model_match.group(1)) + "\n\n" + condition["model_response"]
             article = add_after(model_pattern, article, model_translation,
