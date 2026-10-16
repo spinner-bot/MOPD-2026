@@ -58,6 +58,12 @@
 
 统计v4区分三种评分：①按未修改的 Vision-OPD `cal_acc.py` 规则对完整 `judge` 字段执行 `strip().lower() == "yes"` 的官方分数；②仅从裁判输出最终非空行精确解析Yes/No的诊断分数，其他记为 `other` 且不算答对；③本地Qwen纯文本答案抽取分数。分析会逐一核对全部30个条件×评测集的官方 `cal_acc.py` 日志和原始裁判记录，任一不符即失败；并列审计完整原始标签格式、非二元终判及三种评分的差异。极小McNemar p值以 `1e-300` 为保守数值下限，避免浮点下溢被误写为0。完整裁判原文仍保存在逐题合并CSV；报告分别呈现三种评分，不用诊断分数替换官方分数。统计v4输出位于服务器 `derived/full-statistics-v4/`，最终自包含中英双语报告为 `report/full-five-condition-benchmark-report-v4.html`；项目级进展记录位于 `research/main/进展报告/`。
 
-`full-statistics-v1` 至 `full-statistics-v3` 是逐步发现原生裁判字段包含推理文本、评分口径须分为官方精确标签与终行诊断、以及进一步补入日志交叉验证和格式审计前生成的历史快照，不可引用为最终综合结论；派生产物保留在服务器以追溯评分解释更正过程，不覆盖。
+`full-statistics-v1` 至 `full-statistics-v3` 是逐步发现原生裁判字段包含推理文本、评分口径须分为官方精确标签与终行诊断、以及进一步补入日志交叉验证和格式审计前生成的历史快照，不可引用为最终综合结论；派生产物保留在服务器以追溯评分解释更正过程，不覆盖。复核既有 v4 统计输入时，可运行 `scripts/verify_analysis_sources.py --analysis-dir "$DATA_ROOT/derived/full-statistics-v4"`；该只读校验器逐一重算 v4 manifest 登记的源文件 SHA-256，发现缺失或哈希不一致即返回非零状态。
+
+正式解释 v4 评分前，需完成分层人工复核。可运行 `scripts/create_manual_audit_sample.py --merged-csv "$DATA_ROOT/derived/full-statistics-v4/sample_level_merged.csv" --output audits/manual-review-sample-v2.json`，按固定种子为每个track选10个不同样本（共60个样本、300个配对条件视图）。每track目标覆盖：官方分与文本抽取分歧3例、官方分与终行诊断分歧2例、抽取状态为歧义/无答案2例、每track输出长度第95百分位及以上1例、三种评分在五条件均一致2例；同一样本可同时满足多个目标层，候选不足时由确定性哈希排序的未选样本补足，实际候选及覆盖目标数写入JSON。初版 v1 采用互斥名额计数；真实数据检查发现部分风险层重叠导致名额虚短，因此保留 v1 作为历史中间结果，v2改为按已选样本的全部风险标记累计层覆盖数。该样本用于定性审计，不用于估计总体错误率。JSON记录种子、样本键、各入选层、候选数和源合并表哈希。
+
+要生成可离线审阅的五条件配对样本页，在源文件哈希复核通过后运行 `scripts/build_manual_audit_packet.py --sample-manifest audits/manual-review-sample-v2.json --analysis-dir "$DATA_ROOT/derived/full-statistics-v4" --data-root "$DATA_ROOT" --output report/manual-score-audit-sample-v1.html`。输出页将60张样本图像以内嵌JPEG展示（最长边不超过1920px、质量90；源图不更改，审计记录保存每张原图SHA-256），并展示原题、参考答案、五条件模型原始回答、原生裁判原文、终行诊断和答案抽取证据；页面不引用外部图像文件。人工复核项保存在浏览器本地，可下载为JSON；复核者需结合原问题/参考答案逐条检查转录忠实度、答案语义及裁判判定，并记录不确定性。该样本审计是定性复核，不用于估计总体错误率。
+
+另可运行 `scripts/run_visual_audit.sbatch`，由本地 Qwen3.8-27B 对同一60例的300个条件视图执行**多模态辅助审计**。审计器接收原评测全图、原题、参考答案及单个候选回答，不接收条件名、样本UID或其他条件回答；输入图像与模型回答均记录 SHA-256，完整checkpoint分片也逐个哈希。注意，该Qwen3.8-27B此前已用于文本答案抽取；本审计增加图像证据，是不同输入条件下的补充判读，不能宣称为不同模型的独立复现。产物不等同于人工审阅，不覆盖原生评分或v4统计；三者须分开报告。输出存放于 `$DATA_ROOT/judgment/visual-audit-v1/`，原始JSON输出及结构化判定均保留。
 
 未经确认的题数或准确率不作为正式结果。大体积原图/数据按项目既有外部数据管理方式记录获取来源、固定 revision、文件清单和哈希；不得未经检查将许可受限的原始 benchmark 资产复制进 Git。
