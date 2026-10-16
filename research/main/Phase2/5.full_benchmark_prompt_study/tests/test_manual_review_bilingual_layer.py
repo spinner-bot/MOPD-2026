@@ -1,5 +1,7 @@
 import sys
 import re
+import hashlib
+import json
 import tempfile
 import unittest
 from pathlib import Path
@@ -115,6 +117,70 @@ class ManualReviewBilingualLayerTests(unittest.TestCase):
             row["model_response_file"] = "../outside.txt"
             with self.assertRaisesRegex(ValueError, "escapes manifest directory"):
                 resolve_translation_files(manifest, root)
+
+    def test_repetition_recipe_expands_every_unit_and_records_source_fingerprint(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            recipe = {
+                "schema": "verbatim-repetition-translation-v1",
+                "source_prefix": "前文：",
+                "source_unit": "repeat",
+                "source_separator": ", ",
+                "repetitions": 3,
+                "source_suffix": " tail",
+                "translated_prefix": "译文：",
+                "translated_unit": "重复",
+                "translated_separator": "，",
+                "translated_suffix": " 末尾",
+            }
+            (root / "recipe.json").write_text(json.dumps(recipe, ensure_ascii=False), encoding="utf-8")
+            manifest = complete_manifest()
+            row = manifest["cases"][0]["conditions"][0]
+            row.pop("model_response")
+            row["model_response_repetition_file"] = "recipe.json"
+            expanded = resolve_translation_files(manifest, root)
+            resolved = expanded["cases"][0]["conditions"][0]
+            self.assertEqual(resolved["model_response"], "译文：重复，重复，重复 末尾")
+            expected_source = "前文：repeat, repeat, repeat tail"
+            self.assertEqual(
+                resolved["model_response_source_sha256"],
+                hashlib.sha256(expected_source.encode("utf-8")).hexdigest(),
+            )
+
+    def test_repetition_recipe_must_match_frozen_source_text(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            recipe = {
+                "schema": "verbatim-repetition-translation-v1",
+                "source_prefix": "Model ",
+                "source_unit": "source 1 S0",
+                "source_separator": "",
+                "repetitions": 1,
+                "source_suffix": "",
+                "translated_prefix": "",
+                "translated_unit": "模型原文译文",
+                "translated_separator": "",
+                "translated_suffix": "",
+            }
+            recipe_path = root / "recipe.json"
+            recipe_path.write_text(json.dumps(recipe, ensure_ascii=False), encoding="utf-8")
+            manifest = complete_manifest()
+            row = manifest["cases"][0]["conditions"][0]
+            row.pop("model_response")
+            row["model_response_repetition_file"] = "recipe.json"
+            resolved = resolve_translation_files(manifest, root)
+            result = render_bilingual(source_packet(), resolved)
+            self.assertIn("\n\n模型原文译文</pre>", result)
+
+            recipe["source_prefix"] = "different frozen source "
+            recipe_path.write_text(json.dumps(recipe, ensure_ascii=False), encoding="utf-8")
+            manifest = complete_manifest()
+            row = manifest["cases"][0]["conditions"][0]
+            row.pop("model_response")
+            row["model_response_repetition_file"] = "recipe.json"
+            resolved = resolve_translation_files(manifest, root)
+            with self.assertRaisesRegex(ValueError, "does not match repetition recipe"):
+                render_bilingual(source_packet(), resolved)
 
     def test_one_uniform_panel_is_added_for_every_required_translation(self):
         source = source_packet()

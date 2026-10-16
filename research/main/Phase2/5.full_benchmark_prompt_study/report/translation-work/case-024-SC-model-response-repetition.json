@@ -1,0 +1,12 @@
+{
+  "schema": "verbatim-repetition-translation-v1",
+  "source_prefix": "I think I need to consider that the number above the bar for \"Item 10\" is 10, and for \"Item 15\" is 15, but that doesn't make sense because in the image, for \"Item 10\", the number above is 10, and for \"Item 15\", the number above is 15, ",
+  "source_unit": "but in the image, for \"Item 10\", the number above is 10, and for \"Item 15\", the number above is 15",
+  "source_separator": ", ",
+  "repetitions": 711,
+  "source_suffix": ", but in the image, for \"Item 10\", the number above is 10, and for \"Item 15\", the number above is",
+  "translated_prefix": "我想我需要考虑一下，商品10柱形上方的数字是10，商品15柱形上方的数字是15，但这说不通，因为图中，",
+  "translated_unit": "但在图中，商品10柱形上方的数字是10，商品15柱形上方的数字是15",
+  "translated_separator": "，",
+  "translated_suffix": "，但在图中，商品10柱形上方的数字是10，商品15柱形上方的数字是"
+}

@@ -32,6 +32,12 @@ def require_text(value: Any, path: str) -> str:
     return value
 
 
+def require_string(value: Any, path: str) -> str:
+    if not isinstance(value, str):
+        raise ValueError(f"expected string at {path}")
+    return value
+
+
 def validate_manifest(manifest: dict[str, Any]) -> list[dict[str, Any]]:
     """Require a uniform, complete 60 × 5 translation structure."""
     if manifest.get("schema") != "manual-review-bilingual-translations-v1":
@@ -68,6 +74,38 @@ def resolve_translation_files(manifest: dict[str, Any], base_dir: Path) -> dict[
             for field in fields:
                 file_key = field + "_file"
                 files_key = field + "_files"
+                repetition_key = field + "_repetition_file"
+                if repetition_key in condition:
+                    recipe_path = (base / condition.pop(repetition_key)).resolve()
+                    try:
+                        recipe_path.relative_to(base)
+                    except ValueError as exc:
+                        raise ValueError(f"translation file escapes manifest directory: {recipe_path}") from exc
+                    recipe = json.loads(recipe_path.read_text(encoding="utf-8"))
+                    if recipe.get("schema") != "verbatim-repetition-translation-v1":
+                        raise ValueError(f"unsupported repetition-translation recipe at {recipe_path}")
+                    source_prefix = require_string(recipe.get("source_prefix"), "source_prefix")
+                    source_unit = require_text(recipe.get("source_unit"), "source_unit")
+                    source_suffix = require_string(recipe.get("source_suffix"), "source_suffix")
+                    source_separator = recipe.get("source_separator")
+                    translated_prefix = require_string(recipe.get("translated_prefix"), "translated_prefix")
+                    translated_unit = require_text(recipe.get("translated_unit"), "translated_unit")
+                    translated_suffix = require_string(recipe.get("translated_suffix"), "translated_suffix")
+                    translated_separator = recipe.get("translated_separator")
+                    repetitions = recipe.get("repetitions")
+                    if not isinstance(source_separator, str) or not isinstance(translated_separator, str):
+                        raise ValueError("repetition separators must be strings")
+                    if not isinstance(repetitions, int) or repetitions < 1:
+                        raise ValueError("repetitions must be a positive integer")
+                    source_text = source_prefix + source_separator.join([source_unit] * repetitions) + source_suffix
+                    condition[field] = (
+                        translated_prefix
+                        + translated_separator.join([translated_unit] * repetitions)
+                        + translated_suffix
+                    )
+                    condition[field + "_source_sha256"] = hashlib.sha256(
+                        source_text.encode("utf-8")
+                    ).hexdigest()
                 if files_key in condition:
                     relative_paths = condition.pop(files_key)
                     if not isinstance(relative_paths, list) or not relative_paths:
@@ -169,10 +207,16 @@ def render_bilingual(source: str, manifest: dict[str, Any]) -> str:
                 r'<div class="scores">.*?</div>\s*<p>.*?</p>', article,
                 "评分与来源：\n" + condition["scores"] + "\n\n抽取答案与证据：\n" + condition["extraction_evidence"],
                 f"case {i} {condition['condition']} scores/evidence")
-            model_pattern = r'<details><summary>(Model response[^<]*)</summary><pre>.*?</pre></details>'
+            model_pattern = r'<details><summary>(Model response[^<]*)</summary><pre>(.*?)</pre></details>'
             model_match = re.search(model_pattern, article, re.DOTALL)
             if not model_match:
                 raise ValueError(f"missing model-response summary in case {i}")
+            source_hash = condition.get("model_response_source_sha256")
+            if source_hash:
+                source_response = html.unescape(model_match.group(2))
+                actual_hash = hashlib.sha256(source_response.encode("utf-8")).hexdigest()
+                if actual_hash != source_hash:
+                    raise ValueError(f"source text does not match repetition recipe in case {i}")
             model_translation = model_length_zh(model_match.group(1)) + "\n\n" + condition["model_response"]
             article = add_after(model_pattern, article, model_translation,
                                 f"case {i} {condition['condition']} model response")
