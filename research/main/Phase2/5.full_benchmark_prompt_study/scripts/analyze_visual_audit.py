@@ -124,6 +124,9 @@ def analyze_records(
             "candidate_final_answer": result["audit"]["candidate_final_answer"],
             "visual_evidence": result["audit"]["visual_evidence"],
             "visual_reason": result["audit"]["reason"],
+            "postprocessing_action": result.get("postprocessing", {}).get("action", "not_recorded"),
+            "model_reported_verdict": result.get("postprocessing", {}).get(
+                "model_reported_verdict", result["audit"]["verdict"]),
             "image_sha256": input_row["image_sha256"],
             "candidate_response_sha256": input_row["candidate_response_sha256"],
         }
@@ -209,6 +212,9 @@ def analyze_records(
         "uncertain_rows": overall["UNCERTAIN"],
         "truncated_candidate_responses": sum(row["candidate_response_was_truncated"] for row in per_request),
         "total_candidate_response_chars_omitted": sum(row["candidate_response_omitted_chars"] for row in per_request),
+        "conservatively_normalized_rows": sum(
+            row["postprocessing_action"] == "conservative_verdict_normalization" for row in per_request
+        ),
         "disagreement_examples": disagreement_cases[:15],
     }
     return summary, per_request
@@ -268,6 +274,7 @@ table{{border-collapse:collapse;width:100%;margin:14px 0}}th,td{{border-bottom:1
 <p>60 samples · 300 paired condition views · six tracks · five conditions / 60个样本、300个配对条件视图、六个评测集、五种条件。</p>
 <div class="note"><b>Interpretation boundary / 解释边界：</b>This is a purposive risk-stratified qualitative sample, not a population prevalence estimate. The auditor is Qwen3.8-27B, also used for the text-only extraction path; image-grounded results are supplementary model judgments, not human adjudication or Vision-OPD official scores. Candidate responses over 12,000 characters are presented as a recorded 4,000-character prefix and 8,000-character suffix; full responses remain in frozen inputs, exact excerpts and hashes are saved, and the auditor is instructed to use UNCERTAIN if omitted content could change interpretation. This run excerpted {summary['truncated_candidate_responses']}/300 responses ({summary['total_candidate_response_chars_omitted']:,} characters omitted). / 本材料为风险分层定性样本，不代表总体比例。审计器Qwen3.8-27B也用于文本答案抽取；图像判读是补充模型判断，不是人工裁定或Vision-OPD官方评分。超过12,000字符的回答以有记录的前4,000字符与后8,000字符送审；冻结输入保留完整回答，逐条保存实际截取文本及哈希，并要求在省略内容可能影响判断时标记UNCERTAIN。本次截取{summary['truncated_candidate_responses']}/300条回答，共省略{summary['total_candidate_response_chars_omitted']:,}字符。</div>
 <h2>Verdict distribution / 判读分布</h2><p class="legend"><span style="color:{colors['CORRECT']}">■ CORRECT / 正确</span><span style="color:{colors['INCORRECT']}">■ INCORRECT / 错误</span><span style="color:{colors['UNCERTAIN']}">■ UNCERTAIN / 不确定</span></p>
+<p>Conservative consistency normalizations / 保守一致性校正：{summary['conservatively_normalized_rows']}. If the model marks the reference as contradicted or unverifiable while returning a definite candidate verdict, the derived verdict is UNCERTAIN; original raw output and model-reported verdict remain preserved. / 若模型将参考答案判为相矛盾或不可核验、却仍给出确定性候选判定，则派生判定保守设为UNCERTAIN；原始输出及模型原判均保留。</p>
 {"".join(bars)}
 <table><thead><tr><th>Condition / 条件</th><th>CORRECT</th><th>INCORRECT</th><th>UNCERTAIN</th></tr></thead><tbody>{"".join(rows)}</tbody></table>
 <h2>Visual audit × existing scoring / 视觉审计与既有评分交叉</h2>

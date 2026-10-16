@@ -75,6 +75,18 @@ class VisualAuditAnalysisTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "excerpt differs"):
             analyze_records(inputs, results, scores, manifest)
 
+    def test_reports_conservative_verdict_normalizations(self):
+        manifest, inputs, results, scores = fixture_data()
+        results[0]["audit"]["verdict"] = "UNCERTAIN"
+        results[0]["postprocessing"] = {
+            "action": "conservative_verdict_normalization",
+            "model_reported_verdict": "INCORRECT",
+        }
+        summary, rows = analyze_records(inputs, results, scores, manifest)
+        self.assertEqual(summary["conservatively_normalized_rows"], 1)
+        self.assertEqual(rows[0]["visual_verdict"], "UNCERTAIN")
+        self.assertEqual(rows[0]["model_reported_verdict"], "INCORRECT")
+
 
 if __name__ == "__main__":
     unittest.main()
