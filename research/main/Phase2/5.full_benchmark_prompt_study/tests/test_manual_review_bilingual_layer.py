@@ -108,7 +108,7 @@ class ManualReviewBilingualLayerTests(unittest.TestCase):
             row.pop("model_response")
             row["model_response_files"] = ["part-1.txt", "part-2.txt"]
             expanded = resolve_translation_files(manifest, root)
-            self.assertEqual(expanded["cases"][0]["conditions"][0]["model_response"], "第一段\n第二段")
+            self.assertEqual(expanded["cases"][0]["conditions"][0]["model_response"], "第一段\n\n第二段")
 
             manifest = complete_manifest()
             row = manifest["cases"][0]["conditions"][0]

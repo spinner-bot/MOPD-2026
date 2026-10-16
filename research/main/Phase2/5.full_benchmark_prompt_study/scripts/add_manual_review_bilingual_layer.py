@@ -81,7 +81,10 @@ def resolve_translation_files(manifest: dict[str, Any], base_dir: Path) -> dict[
                             raise ValueError(f"translation file escapes manifest directory: {path}") from exc
                         with path.open(encoding="utf-8", newline="") as handle:
                             chunks.append(handle.read())
-                    condition[field] = "".join(chunks)
+                    # Chunk files split only at paragraph boundaries; each
+                    # file ends with one newline, so this separator restores
+                    # the blank line between adjacent translated paragraphs.
+                    condition[field] = "\n".join(chunks)
                 if file_key not in condition:
                     continue
                 path = (base / condition.pop(file_key)).resolve()
