@@ -294,13 +294,16 @@ def main() -> None:
     parser.add_argument("--run-dir", type=Path, required=True)
     parser.add_argument("--analysis-dir", type=Path, required=True)
     parser.add_argument("--sample-manifest", type=Path, required=True)
+    parser.add_argument("--results", type=Path,
+                        help="Result JSONL to analyze; defaults to the untouched raw model output")
     args = parser.parse_args()
     output_dir = args.run_dir / "analysis"
     if output_dir.exists() and any(output_dir.iterdir()):
         raise FileExistsError(f"Refusing to overwrite nonempty analysis directory: {output_dir}")
     output_dir.mkdir(parents=True, exist_ok=True)
     inputs = read_jsonl(args.run_dir / "inputs.jsonl")
-    results = read_jsonl(args.run_dir / "results.jsonl")
+    results_path = args.results or (args.run_dir / "results.jsonl")
+    results = read_jsonl(results_path)
     with (args.analysis_dir / "sample_level_merged.csv").open(encoding="utf-8-sig", newline="") as handle:
         merged = list(csv.DictReader(handle))
     sample_manifest = json.loads(args.sample_manifest.read_text(encoding="utf-8"))
@@ -320,7 +323,16 @@ def main() -> None:
         "started_at_utc": run_manifest.get("started_at_utc"),
         "finished_at_utc": run_manifest.get("finished_at_utc"),
         "vllm_version": run_manifest.get("vllm_version"),
+        "analysis_results_path": str(results_path.resolve()),
+        "analysis_results_sha256": hashlib.sha256(results_path.read_bytes()).hexdigest(),
     }
+    normalization_manifest_path = args.run_dir / "normalization-manifest.json"
+    if results_path.name == "results-normalized.jsonl" and normalization_manifest_path.is_file():
+        normalization_manifest = json.loads(normalization_manifest_path.read_text(encoding="utf-8"))
+        provenance["normalization_manifest_sha256"] = hashlib.sha256(
+            normalization_manifest_path.read_bytes()
+        ).hexdigest()
+        provenance["normalized_results_sha256"] = normalization_manifest.get("normalized_results_sha256")
     summary["provenance"] = provenance
     (output_dir / "summary.json").write_text(json.dumps(summary, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     with (output_dir / "per-request.csv").open("w", encoding="utf-8-sig", newline="") as handle:
