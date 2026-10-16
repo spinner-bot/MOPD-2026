@@ -1,6 +1,6 @@
-# 工作 5：全量评测集五种提示模式协议（冻结前草案）
+# 工作 5：全量评测集五种提示模式执行协议与门禁记录
 
-状态：实施方案已建立；数据 revision、实际题数、提示词最终文本、模型及服务参数、评分器行为尚待逐项核验和冻结。任何运行结果在完成相应门禁前均为试运行结果。
+状态：本文件为执行协议及可追溯的方法基线。数据revision、题数、提示词、模型/服务参数、原生评分与文本抽取链已实施并经相应门禁；全量推理与v4统计已完成。人工分层审阅仍未完成，因此需要人工审阅的解释性结论应保持审慎。当前证据状态见第9节及项目进展报告。
 
 ## 1. 研究问题与实验设计
 
@@ -12,7 +12,7 @@
 
 首要范围为 Vision-OPD 论文报告和官方运行示例明确列出的六个主 benchmark track：V* Bench、ZoomBench、HR-Bench 4K、HR-Bench 8K、MME-RealWorld EN、MME-RealWorld CN。MME-RealWorld-Lite 是独立的加速子集，不与 EN/CN 全量集混算；CV-Bench、MMStar、MMVP、POPE、VisualProbe 等属于仓库支持的额外评测/泛化集合，不纳入本轮“论文主评测集”总数。每个集合均以冻结 revision 的完整可评测记录为全集。
 
-题数只在固定版本下载、转换并通过行数/唯一 ID/媒体字段/标签校验后最终确认。公开网页元数据曾给出近似数，但服务器直接下载固定 revision 后逐 parquet 分片读取的结果与其中部分估算不同。当前源文件级 QA 行数为：V* 191、ZoomBench 845、HR-Bench 4K 800、HR-Bench 8K 800、MME-RealWorld EN 23,609（70个 parquet shards）、CN 5,917（13个 parquet shards）。因此当前源数据合计为32,162 QA，五条件对应160,810次生成。这里的行数是 parquet 源记录数；官方转换、重复/无效记录、唯一 ID、图片引用、类别字段以及实际可评测 QA 数仍须逐 track 核验后才能冻结。HR-Bench 单个仓库同时包含4K和8K两个 parquet，统计时每个 track 只能计入对应文件，不能将两个文件都加到每个 track。原始 MME benchmark 与 LMMs-Eval 转换版可能使用不同口径，均需明确区分。
+题数以固定版本下载、转换及完整数据门禁为准。服务器逐分片读取固定 revision 的源文件，六个track源行数为：V* 191、ZoomBench 845、HR-Bench 4K 800、HR-Bench 8K 800、MME-RealWorld EN 23,609（70个parquet shards）、CN 5,917（13个parquet shards），合计32,162 QA。已转换数据均通过唯一ID与媒体引用校验；全量完整性门禁重新核验32,162条唯一记录、32,162张全图与ZoomBench 845张crop图的媒体哈希。五条件对应160,810次生成。以上为本项目固定revision及本次prepared输入的口径，不应与其他数据转换版本混算。HR-Bench同一仓库的4K、8K分别计数；MME原始版与LMMs-Eval转换版的口径须区分。
 
 ## 3. 官方流程核验原则
 
@@ -66,3 +66,11 @@
 ## 8. 记录与版本管理
 
 所有中间产物按阶段保存，不覆盖原始输出。dataset/model/code/prompt/judge 每次变化均生成新版本并记录差异。Git 按文件/模块频繁提交，只暂存本工作明确生成的路径；保留已有工作区变更，不将其混入工作5提交。任何需要拉取或合并的操作遵循项目规范，必须使用 `--no-ff`；服务器文件仍通过 GitHub 中转，不通过 SSH 传输。报告及日志记录实际发生时间、来源、作者、触发原因和对应提交/作业编号。
+
+## 9. 执行状态与已知边界（2026-10-16）
+
+- **数据集与媒体 / Datasets and media：** 固定revision和文件清单见 `dataset_sources.tsv` 及服务器 `source-audit/`。六个prepared track共32,162条、32,162张full image、845张Zoom crop；完整媒体完整性复核通过。各track行数、prepared清单哈希保存在 `source-audit/prepared-integrity-verification.json`。
+- **五条件推理 / Five-condition inference：** 全量输出门禁记录30个 condition×track 分片全部通过，每条件32,162条、总计160,810条；配对输入字段与prompt注册表哈希通过。机器可读结果为 `$DATA_ROOT/full/runs/prompt-registry-v1/output-verification.json`。
+- **评分与全量统计 / Scoring and full statistics：** 原生评分、终行诊断及Qwen文本抽取在v4中分列；127个v4源输入哈希复核全部通过。派生CSV、分类统计、配对比较和报告位置见 `README.md` 与 `$DATA_ROOT/derived/full-statistics-v4/`。报告不是对视觉辅助审计或人工审核的替代。
+- **分层复核 / Stratified review：** 固定风险样本清单包含六个track各10例、每例五条件共300条视图；60个原图均留存哈希。补充Qwen多模态审计已对v2的300条请求生成结果，2条模型原判与参考答案支持状态不一致，被显式保留原文并在派生集保守记为UNCERTAIN；详情见进展报告2221–2225及 `$DATA_ROOT/judgment/visual-audit-v2/`。该模型与Qwen文本抽取为同一权重，不能视为独立模型复现。研究者人工复核尚未完成，定向样本计数不得外推为总体错误率。
+- **操作与仓库 / Operations and repositories：** home路径 `/leonardo/home/userexternal/rqian000/spinner-bot/MOPD-2026` 是服务器端主仓库；`MOPD-2026-work5` 是计算克隆。此次新增记录均按 `--no-ff` 同步，home中的外部数据、模型、Work4运行文件和历史报告保持原样。大体积benchmark原始数据、图片、完整模型结果均存于large scratch，不入Git。
