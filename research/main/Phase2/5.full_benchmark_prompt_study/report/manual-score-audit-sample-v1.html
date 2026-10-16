@@ -17,7 +17,7 @@ details{margin:.6rem 0}summary{cursor:pointer;color:#315b7d}.review{display:grid
 <div class="notice"><b>Scoring views / 评分视角：</b>Official exact-label follows Vision-OPD <code>cal_acc.py</code>; terminal diagnostic reads only the final exact Yes/No line; text extraction transcribes the model response with verbatim evidence. These views are not interchangeable. / 官方精确标签遵循 Vision-OPD <code>cal_acc.py</code>；终行诊断只读取末尾精确Yes/No；文本抽取根据逐字证据转录模型回答。三者不可互换。<br>
 <b>Review task / 审阅任务：</b>Check transcription fidelity, benchmark answer interpretation and native judge rationale; record uncertainty rather than inferring. / 核查答案转录、基准答案理解及原生裁判理由；不确定时应标记不确定，不作推断。</div>
 <p>Cases: 60 · paired condition views: 300 · tracks: six · seed: 20261016</p>
-<p><button onclick="downloadReview()">Download review decisions / 下载复核记录</button> <span class="muted">Answers are saved in this browser until exported. / 答案暂存在本浏览器，需导出保存。</span></p>
+<p><button onclick="pickArchive('open')">打开存档 / Open archive</button> <button onclick="pickArchive('new')">新建存档 / New archive</button> <button onclick="saveToArchive()">全部保存 / Save all</button> <button onclick="downloadReview()">下载复核记录 / Download</button> <span class="muted">先连接存档 JSON（建议放在本 HTML 同目录）；此后每张卡片有独立「保存」按钮，点击即写入该 JSON。未连接时仍暂存于本浏览器。 / Connect an archive JSON first; each card then has its own Save button.</span></p><p><span id="archive-status" style="font-weight:600;color:#036">未连接存档</span></p>
 <nav><b>Tracks / 评测集：</b><a href="#track-vstar">vstar</a> · <a href="#track-zoombench">zoombench</a> · <a href="#track-hrbench-4k">hrbench-4k</a> · <a href="#track-hrbench-8k">hrbench-8k</a> · <a href="#track-mme-realworld">mme-realworld</a> · <a href="#track-mme-realworld-cn">mme-realworld-cn</a></nav><details><summary>Audit provenance / 审计来源</summary><pre>{
   &quot;sample_schema&quot;: &quot;phase2-work5-manual-audit-sample-v2&quot;,
   &quot;seed&quot;: 20261016,
@@ -44513,6 +44513,141 @@ No</pre></details>
 <textarea data-review="note" placeholder="Evidence, uncertainty, or correction / 证据、不确定性或更正意见"></textarea></div>
 </article></div></section><script>
 const storageKey = "work5-manual-audit-v1";
+const DB_NAME = "work5-manual-audit", STORE = "handles", HANDLE_KEY = "archive";
+let archiveHandle = null;
+
+function setStatus(msg) {
+  const el = document.getElementById("archive-status");
+  if (el) el.textContent = msg;
+}
+
+function idb() {
+  return new Promise((res, rej) => {
+    const r = indexedDB.open(DB_NAME, 1);
+    r.onupgradeneeded = () => r.result.createObjectStore(STORE);
+    r.onsuccess = () => res(r.result);
+    r.onerror = () => rej(r.error);
+  });
+}
+async function idbSet(k, v) {
+  const db = await idb();
+  return new Promise((res, rej) => {
+    const tx = db.transaction(STORE, "readwrite");
+    tx.objectStore(STORE).put(v, k);
+    tx.oncomplete = () => res();
+    tx.onerror = () => rej(tx.error);
+  });
+}
+async function idbGet(k) {
+  const db = await idb();
+  return new Promise((res, rej) => {
+    const tx = db.transaction(STORE, "readonly");
+    const q = tx.objectStore(STORE).get(k);
+    q.onsuccess = () => res(q.result);
+    q.onerror = () => rej(q.error);
+  });
+}
+
+function cardKey(card) {
+  return card.closest(".case").querySelector("h3").innerText + "||" + card.querySelector("h4").innerText;
+}
+
+function buildPayload() {
+  const rows = [...document.querySelectorAll(".condition")].map(card => ({
+    case_title: card.closest(".case").querySelector("h3").innerText,
+    condition: card.querySelector("h4").innerText,
+    decisions: Object.fromEntries([...card.querySelectorAll("[data-review]")].map(f => [f.dataset.review, f.value]))
+  }));
+  return {schema: "work5-manual-review-decisions-v1", rows};
+}
+
+function applyPayload(payload) {
+  if (!payload || payload.schema !== "work5-manual-review-decisions-v1" || !Array.isArray(payload.rows)) {
+    throw new Error("unexpected archive schema");
+  }
+  const map = new Map();
+  payload.rows.forEach(r => map.set(r.case_title + "||" + r.condition, r.decisions || {}));
+  let applied = 0;
+  document.querySelectorAll(".condition").forEach(card => {
+    const dec = map.get(cardKey(card));
+    if (!dec) return;
+    card.querySelectorAll("[data-review]").forEach(f => {
+      const v = dec[f.dataset.review];
+      if (typeof v === "string") f.value = v;
+    });
+    applied++;
+  });
+  return applied;
+}
+
+function pendingCount() {
+  return buildPayload().rows.filter(r => String(r.decisions.extraction_faithful).indexOf("Pending") === 0).length;
+}
+
+async function pickArchive(mode) {
+  try {
+    if (mode === "open") {
+      const picked = await window.showOpenFilePicker({
+        types: [{description: "Review archive", accept: {"application/json": [".json"]}}]
+      });
+      archiveHandle = picked[0];
+    } else {
+      archiveHandle = await window.showSaveFilePicker({
+        suggestedName: "work5-manual-review-decisions-v1.json",
+        types: [{description: "Review archive", accept: {"application/json": [".json"]}}]
+      });
+    }
+    const perm = await archiveHandle.requestPermission({mode: "readwrite"});
+    if (perm !== "granted") { archiveHandle = null; setStatus("未获得读写权限 / permission denied"); return; }
+    await idbSet(HANDLE_KEY, archiveHandle);
+    const text = (await (await archiveHandle.getFile()).text()).trim();
+    if (text) {
+      const n = applyPayload(JSON.parse(text));
+      setStatus("已载入 " + archiveHandle.name + " · 回填 " + n + "/300 张卡片");
+    } else {
+      await saveToArchive(true);
+      setStatus("已新建存档 " + archiveHandle.name + " · 剩余待审 " + pendingCount() + " 张");
+    }
+  } catch (e) {
+    setStatus("操作取消 / " + (e && e.name ? e.name : String(e)));
+  }
+}
+
+async function saveToArchive(silent) {
+  if (!archiveHandle) { setStatus("尚未连接存档文件，请先「打开存档」或「新建存档」"); return; }
+  try {
+    let perm = await archiveHandle.queryPermission({mode: "readwrite"});
+    if (perm !== "granted") perm = await archiveHandle.requestPermission({mode: "readwrite"});
+    if (perm !== "granted") { setStatus("重新授权被拒 / permission denied"); return; }
+    const w = await archiveHandle.createWritable();
+    await w.write(JSON.stringify(buildPayload(), null, 2));
+    await w.close();
+    if (!silent) setStatus("已保存 · 剩余待审 " + pendingCount() + " 张 · " + new Date().toLocaleTimeString());
+  } catch (e) {
+    setStatus("保存失败 / " + (e && e.name ? e.name : String(e)));
+  }
+}
+
+async function tryRestoreHandle() {
+  try {
+    const h = await idbGet(HANDLE_KEY);
+    if (!h) { setStatus("未连接存档 — 请先「打开存档」或「新建存档」"); return; }
+    archiveHandle = h;
+    const perm = await h.queryPermission({mode: "readwrite"});
+    if (perm === "granted") {
+      const text = (await (await h.getFile()).text()).trim();
+      if (text) {
+        const n = applyPayload(JSON.parse(text));
+        setStatus("已自动载入 " + h.name + " · 回填 " + n + "/300 张卡片");
+      } else {
+        setStatus("存档为空 — " + h.name);
+      }
+    } else {
+      setStatus("存档 " + h.name + " 需重新授权 — 点一次「打开存档」");
+    }
+  } catch (e) { /* silently keep localStorage state */ }
+}
+
 document.querySelectorAll(".condition").forEach((card, index) => {
   card.id = "review-" + index;
   card.querySelectorAll("[data-review]").forEach(field => {
@@ -44522,14 +44657,31 @@ document.querySelectorAll(".condition").forEach((card, index) => {
     field.addEventListener("input", () => localStorage.setItem(storageKey + ":" + key, field.value));
     field.addEventListener("change", () => localStorage.setItem(storageKey + ":" + key, field.value));
   });
+  const bar = document.createElement("div");
+  bar.style.cssText = "margin-top:6px;display:flex;align-items:center;gap:8px";
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.textContent = "保存 / Save";
+  const flag = document.createElement("span");
+  flag.style.cssText = "font-size:12px;color:#2a7";
+  btn.addEventListener("click", async () => {
+    await saveToArchive(true);
+    flag.textContent = "已写入存档";
+    setTimeout(() => { flag.textContent = ""; }, 2500);
+  });
+  bar.appendChild(btn);
+  bar.appendChild(flag);
+  card.appendChild(bar);
 });
+
 function downloadReview() {
-  const rows = [...document.querySelectorAll(".condition")].map(card => ({
-    case_title: card.closest(".case").querySelector("h3").innerText,
-    condition: card.querySelector("h4").innerText,
-    decisions: Object.fromEntries([...card.querySelectorAll("[data-review]")].map(field => [field.dataset.review, field.value]))
-  }));
-  const blob = new Blob([JSON.stringify({schema:"work5-manual-review-decisions-v1", rows}, null, 2)], {type:"application/json"});
-  const link = document.createElement("a"); link.href = URL.createObjectURL(blob); link.download = "work5-manual-review-decisions-v1.json"; link.click(); URL.revokeObjectURL(link.href);
+  const blob = new Blob([JSON.stringify(buildPayload(), null, 2)], {type: "application/json"});
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = "work5-manual-review-decisions-v1.json";
+  link.click();
+  URL.revokeObjectURL(link.href);
 }
+
+tryRestoreHandle();
 </script></body></html>
