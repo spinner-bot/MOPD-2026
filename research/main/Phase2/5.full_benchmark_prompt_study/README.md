@@ -64,4 +64,6 @@
 
 要生成可离线审阅的五条件配对样本页，在源文件哈希复核通过后运行 `scripts/build_manual_audit_packet.py --sample-manifest audits/manual-review-sample-v2.json --analysis-dir "$DATA_ROOT/derived/full-statistics-v4" --data-root "$DATA_ROOT" --output report/manual-score-audit-sample-v1.html`。输出页将60张样本图像以内嵌JPEG展示（最长边不超过1920px、质量90；源图不更改，审计记录保存每张原图SHA-256），并展示原题、参考答案、五条件模型原始回答、原生裁判原文、终行诊断和答案抽取证据；页面不引用外部图像文件。人工复核项保存在浏览器本地，可下载为JSON；复核者需结合原问题/参考答案逐条检查转录忠实度、答案语义及裁判判定，并记录不确定性。该样本审计是定性复核，不用于估计总体错误率。
 
+另可运行 `scripts/run_visual_audit.sbatch`，由本地 Qwen3.8-27B 对同一60例的300个条件视图执行**多模态辅助审计**。审计器接收原评测全图、原题、参考答案及单个候选回答，不接收条件名、样本UID或其他条件回答；输入图像与模型回答均记录 SHA-256，完整checkpoint分片也逐个哈希。注意，该Qwen3.8-27B此前已用于文本答案抽取；本审计增加图像证据，是不同输入条件下的补充判读，不能宣称为不同模型的独立复现。产物不等同于人工审阅，不覆盖原生评分或v4统计；三者须分开报告。输出存放于 `$DATA_ROOT/judgment/visual-audit-v1/`，原始JSON输出及结构化判定均保留。
+
 未经确认的题数或准确率不作为正式结果。大体积原图/数据按项目既有外部数据管理方式记录获取来源、固定 revision、文件清单和哈希；不得未经检查将许可受限的原始 benchmark 资产复制进 Git。
