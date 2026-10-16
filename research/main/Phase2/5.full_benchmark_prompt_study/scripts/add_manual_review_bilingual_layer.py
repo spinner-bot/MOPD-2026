@@ -123,7 +123,14 @@ def resolve_translation_files(manifest: dict[str, Any], base_dir: Path) -> dict[
                     # Chunk files split only at paragraph boundaries; each
                     # file ends with one newline, so this separator restores
                     # the blank line between adjacent translated paragraphs.
-                    condition[field] = "\n".join(chunks)
+                    file_text = "\n".join(chunks)
+                    # A field may combine ordered paragraph files followed by
+                    # a lossless repetition recipe for its final paragraph.
+                    condition[field] = (
+                        "\n".join((file_text, condition[field]))
+                        if field in condition
+                        else file_text
+                    )
                 if file_key not in condition:
                     continue
                 path = (base / condition.pop(file_key)).resolve()

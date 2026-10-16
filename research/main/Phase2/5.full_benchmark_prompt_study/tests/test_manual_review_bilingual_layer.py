@@ -147,6 +147,35 @@ class ManualReviewBilingualLayerTests(unittest.TestCase):
                 hashlib.sha256(expected_source.encode("utf-8")).hexdigest(),
             )
 
+    def test_ordered_files_precede_repetition_recipe_in_same_field(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            (root / "first.txt").write_text("第一段\n", encoding="utf-8")
+            recipe = {
+                "schema": "verbatim-repetition-translation-v1",
+                "source_prefix": "",
+                "source_unit": "repeat",
+                "source_separator": ", ",
+                "repetitions": 2,
+                "source_suffix": "",
+                "translated_prefix": "",
+                "translated_unit": "重复",
+                "translated_separator": "，",
+                "translated_suffix": "",
+            }
+            (root / "recipe.json").write_text(json.dumps(recipe, ensure_ascii=False), encoding="utf-8")
+            manifest = complete_manifest()
+            row = manifest["cases"][0]["conditions"][0]
+            row.pop("model_response")
+            row["model_response_files"] = ["first.txt"]
+            row["model_response_repetition_file"] = "recipe.json"
+
+            expanded = resolve_translation_files(manifest, root)
+            self.assertEqual(
+                expanded["cases"][0]["conditions"][0]["model_response"],
+                "第一段\r\n\n重复，重复",
+            )
+
     def test_repetition_recipe_must_match_frozen_source_text(self):
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
