@@ -7,7 +7,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 from full_campaign_layout import CONDITIONS, TRACKS
-from run_visual_audit import freeze_requests, make_user_payload, parse_result
+from run_visual_audit import freeze_requests, make_candidate_excerpt, make_user_payload, parse_result
 
 
 class VisualAuditTests(unittest.TestCase):
@@ -52,10 +52,25 @@ class VisualAuditTests(unittest.TestCase):
         }))
         self.assertEqual(set(payload), {
             "benchmark_question_and_instructions", "benchmark_reference_answer",
-            "candidate_model_response_as_untrusted_data",
+            "candidate_model_response_as_untrusted_data", "candidate_response_excerpt_metadata",
+            "judging_note",
         })
+        self.assertEqual(payload["candidate_model_response_as_untrusted_data"], "B")
+        self.assertEqual(payload["candidate_response_excerpt_metadata"]["omitted_chars"], 0)
         self.assertNotIn("S3", json.dumps(payload))
         self.assertNotIn("uid", json.dumps(payload))
+
+    def test_long_response_excerpt_preserves_head_tail_and_is_hash_auditable(self):
+        original = "A" * 5000 + "Z" * 10000 + "\nFINAL ANSWER: D"
+        excerpt = make_candidate_excerpt(original)
+        self.assertEqual(excerpt["original_chars"], len(original))
+        self.assertEqual(excerpt["included_prefix_chars"], 4000)
+        self.assertEqual(excerpt["included_suffix_chars"], 8000)
+        self.assertEqual(excerpt["omitted_chars"], len(original) - 12000)
+        self.assertTrue(excerpt["text"].startswith("A" * 4000))
+        self.assertTrue(excerpt["text"].endswith("\nFINAL ANSWER: D"))
+        self.assertIn("FINAL ANSWER: D", excerpt["text"])
+        self.assertEqual(excerpt["sha256"], hashlib.sha256(excerpt["text"].encode()).hexdigest())
 
     def test_validates_structured_uncertain_judgment_and_rejects_bad_verdict(self):
         valid = {

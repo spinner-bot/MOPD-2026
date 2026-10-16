@@ -21,7 +21,8 @@ PYTHON="/leonardo_scratch/fast/AIFAC_F02_774/rqian000/envs/sc-vllm/bin/python"
 SCRIPT="${FAST_REPO}/research/main/Phase2/5.full_benchmark_prompt_study/scripts/run_visual_audit.py"
 SAMPLE="${FAST_REPO}/research/main/Phase2/5.full_benchmark_prompt_study/audits/manual-review-sample-v2.json"
 PROMPT="${FAST_REPO}/research/main/Phase2/5.full_benchmark_prompt_study/prompts/visual_audit_v1.txt"
-RUN_DIR="${DATA_ROOT}/judgment/visual-audit-v1"
+RUN_VERSION="${RUN_VERSION:-v1}"
+RUN_DIR="${DATA_ROOT}/judgment/visual-audit-${RUN_VERSION}"
 
 export HF_HOME="${DATA_ROOT}/hf-cache"
 export VLLM_CACHE_ROOT="${DATA_ROOT}/cache/${SLURM_JOB_ID}/vllm"
@@ -37,7 +38,7 @@ module load python/3.11.7
 export CPATH="/leonardo/prod/spack/06/install/0.22/linux-rhel8-icelake/gcc-8.5.0/python-3.11.7-ziwh63aulhhzxksf42k5u3gnim2rbpmp/include/python3.11:${CPATH:-}"
 mkdir -p "${DATA_ROOT}/logs" "${RUN_DIR}" "${VLLM_CACHE_ROOT}" "${XDG_CACHE_HOME}" "${TORCHINDUCTOR_CACHE_DIR}"
 cd "${FAST_REPO}"
-printf 'job=%s\nstart=%s\ncommit=%s\n' "${SLURM_JOB_ID}" "$(date -Is)" "$(git rev-parse HEAD)"
+printf 'job=%s\nrun_version=%s\nrun_dir=%s\nstart=%s\ncommit=%s\n' "${SLURM_JOB_ID}" "${RUN_VERSION}" "${RUN_DIR}" "$(date -Is)" "$(git rev-parse HEAD)"
 [[ -s "${MODEL}/config.json" && -s "${MODEL}/model.safetensors.index.json" ]] || { echo "Model checkpoint is missing or not sharded"; exit 2; }
 sha256sum "${MODEL}/config.json" "${MODEL}/model.safetensors.index.json" "${PROMPT}" "${SAMPLE}"
 "${PYTHON}" "${SCRIPT}" \
