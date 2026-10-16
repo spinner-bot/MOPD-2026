@@ -5,7 +5,12 @@ import unittest
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
-from translate_ordinal_bullet_list import english_number_value, translate_ordinal_bullet_list
+from translate_ordinal_bullet_list import (
+    english_number_value,
+    extract_response,
+    translate_balcony_counting_response,
+    translate_ordinal_bullet_list,
+)
 
 
 class OrdinalListTranslationTests(unittest.TestCase):
@@ -44,6 +49,23 @@ class OrdinalListTranslationTests(unittest.TestCase):
         self.assertIn("Let’s count them:", original_lines[2])
         self.assertEqual(translated_lines[0], original_lines[0])
         self.assertEqual(translated_lines[2], original_lines[2])
+
+    def test_full_source_response_is_translated_without_omissions(self):
+        path = (Path(__file__).resolve().parents[1] / "report" /
+                "manual-score-audit-sample-v1.html")
+        source = path.read_text(encoding="utf-8")
+        original = extract_response(source, case_index=14, condition_index=1)
+        translated = translate_balcony_counting_response(original)
+        original_lines = original.splitlines()
+        translated_lines = translated.splitlines()
+        self.assertEqual(len(original_lines), len(translated_lines))
+        self.assertEqual(len(original_lines), 3624)
+        self.assertEqual(translated_lines[0], "观察图像，可以辨认出一栋外立面上有红色文字的建筑。在这栋建筑右侧，可以看到多个带黑色栏杆的阳台。")
+        self.assertEqual(translated_lines[2], "我们来数一数：")
+        self.assertEqual(translated_lines[4], "- 第1个阳台（最上方，带绿色窗户和黑色栏杆）")
+        self.assertEqual(translated_lines[5], "- 第2个阳台（从上往下，样式相同）")
+        self.assertEqual(translated_lines[-1], "- 第27020个阳台（从上往下）")
+        self.assertTrue(all("balcony" not in line.casefold() for line in translated_lines))
 
 
 if __name__ == "__main__":

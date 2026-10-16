@@ -8,6 +8,9 @@ number, order, blank line, and non-list sentence.
 from __future__ import annotations
 
 import re
+import argparse
+import html
+from pathlib import Path
 
 
 CARDINAL = {
@@ -72,9 +75,68 @@ def translate_ordinal_bullet_list(text: str) -> str:
             }.get(parenthetical)
             if translated_parenthetical is None:
                 raise ValueError(f"untranslated parenthetical {parenthetical!r}")
-            suffix = f"（{translated_parenthetical}）"
+            suffix = f"（从上往下，{translated_parenthetical}）"
         translated.append(f"- 第{number}个阳台{suffix}")
         rows += 1
     if rows == 0:
         raise ValueError("no ordinal-list rows found")
     return "\n".join(translated)
+
+
+def translate_balcony_counting_response(text: str) -> str:
+    """Translate all prose and every row in the complete balcony-counting answer."""
+    lines = text.splitlines()
+    expected_intro = [
+        "Looking at the image, we can identify a building with red text on its facade. On the right side of this building, there are multiple balconies with black railings.",
+        "",
+        "Let’s count them:",
+    ]
+    if lines[:3] != expected_intro:
+        raise ValueError("unexpected introductory text; refuse partial/ambiguous translation")
+    translated = [
+        "观察图像，可以辨认出一栋外立面上有红色文字的建筑。在这栋建筑右侧，可以看到多个带黑色栏杆的阳台。",
+        "",
+        "我们来数一数：",
+    ]
+    translated.extend(translate_ordinal_bullet_list("\n".join(lines[3:])).splitlines())
+    if len(translated) != len(lines):
+        raise AssertionError("translation changed the source line count")
+    return "\n".join(translated)
+
+
+def extract_response(source: str, case_index: int, condition_index: int) -> str:
+    case_match = re.search(
+        rf'<section class="case" id="case-{case_index}">(.*?)</section>', source, re.S
+    )
+    if not case_match:
+        raise ValueError(f"case {case_index} not found")
+    articles = re.findall(r'<article class="condition">(.*?)</article>', case_match.group(1), re.S)
+    if not 0 <= condition_index < len(articles):
+        raise ValueError(f"condition index {condition_index} out of range")
+    response = re.search(
+        r'<details><summary>Model response[^<]*</summary><pre>(.*?)</pre></details>',
+        articles[condition_index], re.S,
+    )
+    if not response:
+        raise ValueError("model response block not found")
+    return html.unescape(response.group(1))
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--source-html", type=Path, required=True)
+    parser.add_argument("--case-index", type=int, required=True)
+    parser.add_argument("--condition-index", type=int, required=True,
+                        help="zero-based index in S0, SC, S1, S2, S3 order")
+    parser.add_argument("--output", type=Path, required=True)
+    args = parser.parse_args()
+    source = args.source_html.read_text(encoding="utf-8")
+    original = extract_response(source, args.case_index, args.condition_index)
+    translation = translate_balcony_counting_response(original)
+    with args.output.open("w", encoding="utf-8", newline="") as handle:
+        handle.write(translation)
+    print(f"PASS: translated {len(original.splitlines())} source lines without omission")
+
+
+if __name__ == "__main__":
+    main()

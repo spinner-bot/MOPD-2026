@@ -1,9 +1,14 @@
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
-from add_manual_review_bilingual_layer import render_bilingual, validate_manifest
+from add_manual_review_bilingual_layer import (
+    render_bilingual,
+    resolve_translation_files,
+    validate_manifest,
+)
 
 
 def complete_manifest():
@@ -74,6 +79,23 @@ class ManualReviewBilingualLayerTests(unittest.TestCase):
         manifest["cases"][17]["conditions"][3]["judge_output"] = ""
         with self.assertRaisesRegex(ValueError, "cases\\[17\\].conditions\\[3\\].judge_output"):
             validate_manifest(manifest)
+
+    def test_long_translation_file_is_resolved_verbatim_and_cannot_escape(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            with (root / "long-zh.txt").open("w", encoding="utf-8", newline="") as handle:
+                handle.write("第1行\n第2行")
+            manifest = complete_manifest()
+            row = manifest["cases"][0]["conditions"][0]
+            row.pop("model_response")
+            row["model_response_file"] = "long-zh.txt"
+            expanded = resolve_translation_files(manifest, root)
+            self.assertEqual(expanded["cases"][0]["conditions"][0]["model_response"], "第1行\n第2行")
+
+            row = manifest["cases"][0]["conditions"][0]
+            row["model_response_file"] = "../outside.txt"
+            with self.assertRaisesRegex(ValueError, "escapes manifest directory"):
+                resolve_translation_files(manifest, root)
 
     def test_one_uniform_panel_is_added_for_every_required_translation(self):
         source = source_packet()

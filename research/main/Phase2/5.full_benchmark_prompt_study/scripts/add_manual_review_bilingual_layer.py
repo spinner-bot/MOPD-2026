@@ -59,6 +59,26 @@ def validate_manifest(manifest: dict[str, Any]) -> list[dict[str, Any]]:
     return cases
 
 
+def resolve_translation_files(manifest: dict[str, Any], base_dir: Path) -> dict[str, Any]:
+    """Expand retained long-translation text files before complete validation."""
+    base = base_dir.resolve()
+    fields = ("scores", "extraction_evidence", "model_response", "judge_output")
+    for case in manifest.get("cases", []):
+        for condition in case.get("conditions", []):
+            for field in fields:
+                file_key = field + "_file"
+                if file_key not in condition:
+                    continue
+                path = (base / condition.pop(file_key)).resolve()
+                try:
+                    path.relative_to(base)
+                except ValueError as exc:
+                    raise ValueError(f"translation file escapes manifest directory: {path}") from exc
+                with path.open(encoding="utf-8", newline="") as handle:
+                    condition[field] = handle.read()
+    return manifest
+
+
 def translation_detail(text: str) -> str:
     return DETAIL.format(html.escape(text, quote=False))
 
@@ -149,6 +169,7 @@ def main() -> None:
     with args.source.open(encoding="utf-8", newline="") as handle:
         source = handle.read()
     manifest = json.loads(args.translations.read_text(encoding="utf-8"))
+    manifest = resolve_translation_files(manifest, args.translations.parent)
     result = render_bilingual(source, manifest)
     args.output.parent.mkdir(parents=True, exist_ok=True)
     with args.output.open("w", encoding="utf-8", newline="") as handle:
