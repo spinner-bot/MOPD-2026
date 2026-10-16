@@ -104,6 +104,43 @@ def translate_balcony_counting_response(text: str) -> str:
     return "\n".join(translated)
 
 
+def translate_numbered_color_response(text: str) -> str:
+    """Translate every numbered yellow/white item while retaining malformed tails."""
+    lines = text.splitlines()
+    intros = {
+        ("The painted curb in the image shows alternating color blocks: yellow and white.",
+         "", "Counting them from left to right:"):
+            ("图中的涂漆路缘石呈现出黄色和白色交替的色块。", "", "从左向右数："),
+        ("The image shows a painted curb with alternating color blocks. From left to right, we can identify:",):
+            ("图中是一段涂漆路缘石，上面有交替排列的色块。从左向右可以辨认出：",),
+        ("The image shows a painted curb with alternating color blocks. From left to right, the visible blocks are:",):
+            ("图中是一段涂漆路缘石，上面有交替排列的色块。从左向右可见的色块为：",),
+    }
+    for original_intro, translated_intro in intros.items():
+        if tuple(lines[:len(original_intro)]) == original_intro:
+            translated = list(translated_intro) + lines[len(original_intro):]
+            break
+    else:
+        raise ValueError("unrecognized introduction; refuse partial/ambiguous translation")
+
+    for index in range(len(translated_intro), len(translated)):
+        line = translated[index]
+        match = re.fullmatch(r"(\d+)\. (Yellow|White)( block)?", line)
+        if match:
+            number, color, block = match.groups()
+            zh_color = "黄色" if color == "Yellow" else "白色"
+            translated[index] = f"{number}. {zh_color}{'色块' if block else ''}"
+        elif re.fullmatch(r"\d+\.?", line) or not line:
+            # Preserve numeric-only entries, malformed numeric tails, and blanks.
+            continue
+        else:
+            raise ValueError(f"untranslated or unexpected list content at line {index + 1}: {line!r}")
+
+    if len(translated) != len(lines):
+        raise AssertionError("translation changed the source line count")
+    return "\n".join(translated)
+
+
 def extract_response(source: str, case_index: int, condition_index: int) -> str:
     case_match = re.search(
         rf'<section class="case" id="case-{case_index}">(.*?)</section>', source, re.S
@@ -128,11 +165,14 @@ def main() -> None:
     parser.add_argument("--case-index", type=int, required=True)
     parser.add_argument("--condition-index", type=int, required=True,
                         help="zero-based index in S0, SC, S1, S2, S3 order")
+    parser.add_argument("--kind", choices=("balcony", "color"), default="balcony")
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
     source = args.source_html.read_text(encoding="utf-8")
     original = extract_response(source, args.case_index, args.condition_index)
-    translation = translate_balcony_counting_response(original)
+    translator = (translate_balcony_counting_response if args.kind == "balcony"
+                  else translate_numbered_color_response)
+    translation = translator(original)
     with args.output.open("w", encoding="utf-8", newline="") as handle:
         handle.write(translation)
     print(f"PASS: translated {len(original.splitlines())} source lines without omission")

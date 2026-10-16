@@ -1,4 +1,5 @@
 import sys
+import re
 import tempfile
 import unittest
 from pathlib import Path
@@ -54,8 +55,8 @@ def source_packet():
             parts.append(
                 '<article class="condition"><div class="scores">scores source</div>'
                 '<p><b>Extracted answer / source</b> A<br><b>Evidence / source</b> evidence source</p>'
-                f'<details><summary>Model response / source ({condition})</summary><pre>Model source {index} {condition}</pre></details>'
-                f'<details><summary>Full native judge output / source ({condition})</summary><pre>Judge source {index} {condition}</pre></details>'
+                f'<details><summary>Model response / source (16 chars, 8 tokens)</summary><pre>Model source {index} {condition}</pre></details>'
+                f'<details><summary>Full native judge output / source (yes)</summary><pre>Judge source {index} {condition}</pre></details>'
                 '</article>'
             )
         parts.append("</section>")
@@ -73,6 +74,12 @@ class ManualReviewBilingualLayerTests(unittest.TestCase):
         self.assertEqual(source.count("<select data-review="), 900)
         self.assertEqual(source.count("<textarea data-review="), 300)
         self.assertEqual(source.count('src="data:image/'), 60)
+        self.assertEqual(len(re.findall(
+            r'<summary>Model response[^<]*\((\d+) chars, (\d+) tokens\)</summary>', source)), 300)
+        formats = re.findall(
+            r'<summary>Full native judge output[^<]*\(([^()]*)\)</summary>', source)
+        self.assertEqual(len(formats), 300)
+        self.assertEqual(set(formats), {"yes", "non_binary"})
 
     def test_manifest_rejects_any_missing_translation(self):
         manifest = complete_manifest()
@@ -105,6 +112,8 @@ class ManualReviewBilingualLayerTests(unittest.TestCase):
         self.assertEqual(result.count("Model source "), 300)
         self.assertEqual(result.count("Judge source "), 300)
         self.assertIn("<pre>Model source 1 S0</pre>", result)
+        self.assertEqual(result.count("输出长度：16个字符，8个词元"), 300)
+        self.assertEqual(result.count("原生输出类型：单一肯定标签（是）"), 300)
         self.assertIn("题目译文60", result)
         self.assertEqual(result.count("<select"), source.count("<select"))
         self.assertEqual(result.count("<textarea"), source.count("<textarea"))

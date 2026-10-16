@@ -9,6 +9,7 @@ from translate_ordinal_bullet_list import (
     english_number_value,
     extract_response,
     translate_balcony_counting_response,
+    translate_numbered_color_response,
     translate_ordinal_bullet_list,
 )
 
@@ -66,6 +67,28 @@ class OrdinalListTranslationTests(unittest.TestCase):
         self.assertEqual(translated_lines[5], "- 第2个阳台（从上往下，样式相同）")
         self.assertEqual(translated_lines[-1], "- 第27020个阳台（从上往下）")
         self.assertTrue(all("balcony" not in line.casefold() for line in translated_lines))
+
+    def test_all_long_color_lists_keep_each_index_color_and_malformed_tail(self):
+        path = (Path(__file__).resolve().parents[1] / "report" /
+                "manual-score-audit-sample-v1.html")
+        source = path.read_text(encoding="utf-8")
+        case = re.search(r'<section class="case" id="case-15">(.*?)</section>', source, re.S)
+        for condition_index in (0, 1, 2):
+            original = extract_response(source, case_index=15, condition_index=condition_index)
+            translated = translate_numbered_color_response(original)
+            source_lines = original.splitlines()
+            translated_lines = translated.splitlines()
+            self.assertEqual(len(source_lines), len(translated_lines))
+            if condition_index == 0:
+                self.assertEqual(translated_lines[-1], "4836.")
+            for source_line, translated_line in zip(source_lines, translated_lines):
+                item = re.fullmatch(r"(\d+)\. (Yellow|White)( block)?", source_line)
+                if item:
+                    number, color, has_block = item.groups()
+                    zh = "黄色" if color == "Yellow" else "白色"
+                    self.assertEqual(translated_line, f"{number}. {zh}{'色块' if has_block else ''}")
+                elif source_line == "4":
+                    self.assertEqual(translated_line, "4")
 
 
 if __name__ == "__main__":

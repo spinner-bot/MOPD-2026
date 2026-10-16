@@ -94,6 +94,28 @@ def add_after(pattern: str, text: str, translation: str, label: str) -> str:
     return replace_once(text, pattern, lambda match: match.group(0) + translation_detail(translation), label)
 
 
+def model_length_zh(summary: str) -> str:
+    match = re.search(r"\((\d+) chars, (\d+) tokens\)", summary)
+    if not match:
+        raise ValueError(f"unrecognized model-response length metadata: {summary}")
+    chars, tokens = match.groups()
+    return f"输出长度：{chars}个字符，{tokens}个词元"
+
+
+def judge_format_zh(summary: str) -> str:
+    match = re.search(r"\(([^()]*)\)\s*$", summary)
+    if not match:
+        raise ValueError(f"unrecognized native-judge format metadata: {summary}")
+    formats = {
+        "yes": "原生输出类型：单一肯定标签（是）",
+        "non_binary": "原生输出类型：非二元（非单一是/否标签）",
+    }
+    try:
+        return formats[match.group(1)]
+    except KeyError as exc:
+        raise ValueError(f"untranslated native-judge format: {match.group(1)}") from exc
+
+
 def render_bilingual(source: str, manifest: dict[str, Any]) -> str:
     cases = validate_manifest(manifest)
     sections = list(re.finditer(r'<section class="case".*?</section>', source, re.DOTALL))
@@ -129,12 +151,20 @@ def render_bilingual(source: str, manifest: dict[str, Any]) -> str:
                 r'<div class="scores">.*?</div>\s*<p>.*?</p>', article,
                 "评分与来源：\n" + condition["scores"] + "\n\n抽取答案与证据：\n" + condition["extraction_evidence"],
                 f"case {i} {condition['condition']} scores/evidence")
-            article = add_after(
-                r'<details><summary>Model response\b.*?</details>', article,
-                condition["model_response"], f"case {i} {condition['condition']} model response")
-            article = add_after(
-                r'<details><summary>Full native judge output\b.*?</details>', article,
-                condition["judge_output"], f"case {i} {condition['condition']} judge output")
+            model_pattern = r'<details><summary>(Model response[^<]*)</summary><pre>.*?</pre></details>'
+            model_match = re.search(model_pattern, article, re.DOTALL)
+            if not model_match:
+                raise ValueError(f"missing model-response summary in case {i}")
+            model_translation = model_length_zh(model_match.group(1)) + "\n\n" + condition["model_response"]
+            article = add_after(model_pattern, article, model_translation,
+                                f"case {i} {condition['condition']} model response")
+            judge_pattern = r'<details><summary>(Full native judge output[^<]*)</summary><pre>.*?</pre></details>'
+            judge_match = re.search(judge_pattern, article, re.DOTALL)
+            if not judge_match:
+                raise ValueError(f"missing native-judge summary in case {i}")
+            judge_translation = judge_format_zh(judge_match.group(1)) + "\n\n" + condition["judge_output"]
+            article = add_after(judge_pattern, article, judge_translation,
+                                f"case {i} {condition['condition']} judge output")
             section = section[:article_match.start()] + article + section[article_match.end():]
 
         rendered = rendered[:case_match.start()] + section + rendered[case_match.end():]
