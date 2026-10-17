@@ -342,6 +342,19 @@ vstar、zoombench、hrbench-4k、hrbench-8k、mme-realworld、mme-realworld-cn�
 <li>若需回答难度问题，设计同题重复采样。</li></ol>
 </section>
 
+<section class="reveal" id="repro"><h2><span class="no">A</span>复现</h2>
+<p class="q">全部数字与图表如何重建？</p>
+<ul>
+<li><code>scripts/analyze_work5_full.py</code> —— 主分析全部统计量</li>
+<li><code>scripts/analyze_human_review.py</code> —— 参考级审阅对照</li>
+<li><code>scripts/plot_score_source_analysis.py</code>、<code>plot_work5_extra.py</code>、<code>plot_human_review.py</code> —— 全部图表</li>
+<li><code>scripts/build_work5_report_v2.py</code> —— 本报告</li>
+<li>输入：<code>derived/full-statistics-v4/sample_level_merged.csv</code>（160,810 行，唯一键完全对齐）</li>
+<li>中文字体：<code>simhei.ttf</code>（服务器另行提供，不随仓库分发）</li>
+</ul>
+<p>本报告全部图像以 base64 内嵌，无外部依赖，可离线阅读。</p>
+</section>
+
 <div class="tier-divider">
  <div class="tier-label">证据边界 / EVIDENCE BOUNDARY</div>
  <div class="tier-text">
@@ -356,11 +369,37 @@ vstar、zoombench、hrbench-4k、hrbench-8k、mme-realworld、mme-realworld-cn�
 <section class="reveal" id="s14"><h2><span class="no">14</span>参考：人工审阅与三条判别器的对照</h2>
 <p class="q">[参考] 人工判断与三条自动口径的一致程度如何？分歧集中在哪？</p>
 
-<h3>方法与审阅流程</h3>
-<p>60 例 × 5 条件 = 300 个视图，按风险层定向抽取（每评测集 10 例）。审阅者逐条阅读模型原始回答，
-自行判断其最终结论选项，再与抽取结果比对以决定"抽取是否忠实"；同时独立判断答案语义与裁判理由。</p>
-<p>300 个视图中，<b>284 个</b>的人工"语义是否正确"可二分类，16 个判为"不确定"（均因图像本身看不清，附有说明），
-不进入一致率计算。</p>
+<h3>这次审计是什么</h3>
+<p>主分析的三条评分来源都是自动化的。它们在若干处给出不同结论，<b>但没有第四条信息源说明哪一条错了</b>。
+人工审阅就是引入这样一个外部视角。</p>
+<table><thead><tr><th>项</th><th>内容</th></tr></thead><tbody>
+<tr><td>材料</td><td>离线自包含审阅页：原始图像、题目选项、参考答案、五条件模型原始回答、三种自动评分及证据</td></tr>
+<tr><td>抽样</td><td>六评测集各 10 例，共 60 例；每例五条件，共 <b>300 个视图</b></td></tr>
+<tr><td>抽样方式</td><td><b>风险定向</b>，非随机：优先纳入官方/抽取分歧、官方/终行分歧、歧义或无答案、以及各集最长输出，另设"三项一致"对照层</td></tr>
+<tr><td>判断项</td><td>抽取是否忠实 / 答案语义是否正确 / 裁判理由与标签是否有效（各为 是·否·不确定）</td></tr>
+</tbody></table>
+<h3>谁做了什么</h3>
+<table><thead><tr><th>执行者</th><th>工作内容</th></tr></thead><tbody>
+<tr><td><b>外部审计员</b></td><td>完成 <b>293</b> 个视图的三项判断</td></tr>
+<tr><td><b>项目所有者（实验负责人）</b></td><td>补全 <b>7</b> 个视图（Case 1·SC、Case 51·SC、Case 55 全部五条件）；将 Case 46·S0 的裁判有效性由"否"改为"无法判断"并附说明；亲自抽检未发现抽取错误</td></tr>
+</tbody></table>
+<h3>审计工作流（端到端）</h3>
+<table><thead><tr><th>步骤</th><th>内容</th><th>执行者</th></tr></thead><tbody>
+<tr><td>1 · 抽样</td><td>按风险层从 32,162 题中确定性抽取 60 例（固定随机种子 20261016），每例保留五条件</td><td>自动化</td></tr>
+<tr><td>2 · 材料生成</td><td>将图像、题目、参考答案、五条件模型回答与三种评分证据渲染为单文件离线 HTML</td><td>自动化</td></tr>
+<tr><td>3 · 分发审阅</td><td>审阅者在浏览器打开页面，逐卡查看：<b>原图 → 题目与选项 → 参考答案 → 该条件的模型原始回答 → 三种评分及其证据</b></td><td>审计员</td></tr>
+<tr><td>4 · 逐项判断</td><td>对每个视图回答三项：抽取是否忠实、语义是否正确、裁判是否有效；<b>任一"否/不确定"须写证据说明</b></td><td>审计员</td></tr>
+<tr><td>5 · 导出</td><td>点击页面按钮导出 <code>work5-manual-review-decisions-v1.json</code>（浏览器本地状态不是归档，必须导出）</td><td>审计员</td></tr>
+<tr><td>6 · 补全</td><td>审计员未填的 7 个视图由实验负责人按同一标准补全；Case 46·S0 的裁判判定经复核修正</td><td>实验负责人</td></tr>
+<tr><td>7 · 规范化</td><td>统一取值格式、修复被翻译工具损坏的 <code>case_title</code> 与 <code>condition</code> 字段（不改变任何判断内容）</td><td>自动化</td></tr>
+<tr><td>8 · 校验</td><td><code>validate_manual_review.py</code> 核对 300 行覆盖、字段合法、否定项附说明、三份文件哈希</td><td>自动化</td></tr>
+<tr><td>9 · 归档</td><td>交付版本、原始导出、校验记录与来源说明一并入库</td><td>自动化</td></tr>
+</tbody></table>
+<p><b>关键设计</b>：第 4 步的"任一否定须附说明"规则在第 7 步后被收窄——仅<b>抽取忠实度</b>与<b>裁判有效性</b>强制要求说明，
+<code>semantic_correct = 否</code> 视为可直接观察的事实（答案与参考答案不符），不再逐条要求说明。该修订已记录在案。</p>
+<p><b>审计员的判读流程</b>：阅读模型原始输出 → 自行判断其最终结论选项 → 与抽取结果比对 → 一致则记"抽取忠实 = 是"。
+<b>先独立判断、再比对</b>，因此一致率反映抽取链的实际准确度，而不是照抄页面上的评分。</p>
+<p>300 个视图中，<b>284 个</b>的"语义是否正确"可二分类；16 个判为"不确定"，均附有图像质量说明（"原图看不清楚""天色黑很"等），不进入一致率计算。</p>
 
 {F('f13')}
 {table(["判别器","与人工一致率","Cohen's κ","敏感度","特异度","人工对/自动错","人工错/自动对"],
@@ -394,6 +433,27 @@ vstar、zoombench、hrbench-4k、hrbench-8k、mme-realworld、mme-realworld-cn�
 其中 Case 46 与 Case 55 的若干视图涉及模型输出大量循环重复、上万 token 后截断、未给出最终答案，
 审阅者将其裁判有效性标为"无法评估"并附说明。</p>
 
+<h3>深入分析：审计提出的五个问题与结论</h3>
+<table><thead><tr><th>问题</th><th>结论</th></tr></thead><tbody>
+<tr><td>抽取错误是否集中于表格任务</td><td><b>否</b>。审计中 3 例恰在 hrbench，但全量"判定对/抽取错"的 4,860 例中 <b>88% 在 mme-realworld</b>（3.62%），hrbench 仅占 2.0%。</td></tr>
+<tr><td>裁判与抽取失败是否同源</td><td><b>是</b>。分歧中 <b>98.2%</b> 属于"抽取读出明确选项、与标准答案不符，而裁判仍判 Yes"——裁判系统性过度判对。</td></tr>
+<tr><td>判"不确定"的案例是否客观不可判</td><td><b>部分成立</b>。16 个"不确定"集中在 4 例：1 例图像亮度仅 17/255（客观极暗）、2 例为 36–39 MP 超大图（审阅预览必失细节）、1 例图像正常而判断主观。</td></tr>
+<tr><td>英文 MME 是否显著更难</td><td><b>否</b>。审计样本的 24% vs 84% 源于<b>抽样层分布不同</b>（英文样本多 10 例硬层、少 15 例对照层）。按二级类别比较，中文版本普遍更低或持平。</td></tr>
+<tr><td>图像质量问题的普遍程度</td><td>各集抽 100 图：极暗图像约 1%，非系统性问题；<b>hrbench-8k 分辨率中位 38.8 MP、最大 59 MP</b>，是其审阅困难的直接来源。</td></tr>
+</tbody></table>
+
+<h3>两项由审计引出、可独立核验的发现</h3>
+<div class="key"><b>① 判定口径的 S0→S3 降幅被夸大。</b>
+裁判的过度判对率随条件变化：S0 <b>3.89%</b> → S3 <b>2.30%</b>。扣除后：
+<code>70.76% → 69.79%（Δ = −0.97pp）</code>，与答案抽取口径完全一致；
+而原始判定口径给出的是 <code>74.65% → 72.09%（Δ = −2.56pp）</code>。
+<b>方向不变（无提升），但效应量应以 −0.97pp 为准。</b></div>
+<div class="key"><b>② 官方口径恰好筛出了裁判最不可靠的那批判定。</b>
+按裁判输出形态拆分过度判对率：<b>裸 <code>Yes</code></b> 为 <b>5.55%</b>（4,776/86,090），
+<b>含推理的非二元输出</b> 仅 <b>0.26%</b>（84/31,715）——<b>差 21 倍</b>。
+官方规则只承认裸 <code>Yes</code>，因此它不只是"测格式"，而是<b>系统性地选中了误判率最高的子集</b>。
+这为第 3 节的"官方是格式产物"提供了更深一层的机制解释。</div>
+
 <div class="caveat"><b>[参考] 本部分不能证明什么。</b>
 <ul>
 <li><b>不能</b>用来验证抽取链的准确率——虽然一致率为 100%，但样本是为此类分歧而定向抽取的，不是随机样本；</li>
@@ -403,17 +463,25 @@ vstar、zoombench、hrbench-4k、hrbench-8k、mme-realworld、mme-realworld-cn�
 其价值在于：<b>在一个独立于官方口径的视角下，未发现与主结论相反的证据。</b></div>
 </section>
 
-<section class="reveal" id="repro"><h2><span class="no">A</span>复现</h2>
-<p class="q">全部数字与图表如何重建？</p>
-<ul>
-<li><code>scripts/analyze_work5_full.py</code> —— 全部统计量（κ、交叉表、矩阵、分层、长度、冗余、簇结构）</li>
-<li><code>scripts/plot_score_source_analysis.py</code>、<code>plot_work5_extra.py</code> —— 12 张图</li>
-<li><code>scripts/build_work5_report_v2.py</code> —— 本报告</li>
-<li>输入：<code>derived/full-statistics-v4/sample_level_merged.csv</code>（160,810 行，唯一键完全对齐）</li>
-<li>中文字体：<code>simhei.ttf</code>（服务器另行提供，不随仓库分发）</li>
-</ul>
-<p>本报告全部图像以 base64 内嵌，无外部依赖，可离线阅读。</p>
+<section class="reveal" id="closing"><h2><span class="no">∞</span>结束语</h2>
+<p class="q">这份报告最终确认了什么？</p>
+<p>工作5 的计算链已完整闭环：160,810 条条件—样本记录、两条自动判别链 30/30 通过门禁、
+v4 统计与 127 项源哈希校验完成。在此基础上，本报告用诊断性分解回答了"三种评分来源为何分歧"，
+并在参考层面引入了一次人工审阅作为外部对照。</p>
+<p><b>可以稳妥地说的是三句话：</b></p>
+<ol>
+<li><b>官方口径不能直接读作准确率。</b>它只承认裸 <code>Yes</code>，而裸 <code>Yes</code> 的误判率是含推理输出的 <b>21 倍</b>；
+其 46.5% 的记录因格式被计为错误，其中的正确项在 S3 下被大量"找回"，形成了 <b>+10.68pp 的假象</b>。</li>
+<li><b>提示强度的增加没有提升答题正确率。</b>两条不依赖输出格式的口径一致为负：判定 −2.56pp、抽取 −0.97pp；
+经审计校正后，最干净的估计是 <b>−0.97pp</b>。TOST 检验排除了"等价于无差异"。</li>
+<li><b>仍未解决的问题同样重要。</b>难度梯度在该设计下无法回答（无同题同条件重复测量）；
+模型实际接收的图像分辨率尚未核实——若 hrbench-8k 的 8K 图像在预处理中被降采样，
+其"高清"属性对模型不可达。</li>
+</ol>
+<p>本报告的所有主结论（第 1–13 节）仅依据冻结数据与自动化检验。第 14 节及此后位于证据边界之下的内容，
+<b>仅作参考，不参与结论</b>。</p>
 </section>
+
 </main>
 <footer>
 <p>工作5 完整评测报告 · 2026-10-17 · 对应进展报告 2233 / 2234</p>
