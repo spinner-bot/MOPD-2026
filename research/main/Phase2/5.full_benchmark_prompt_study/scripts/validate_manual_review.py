@@ -96,8 +96,14 @@ def validate_review_export(
         note = decisions["note"]
         if not isinstance(note, str):
             raise ValueError(f"Review row {row_number} note must be text")
-        if any(value in {"no", "unclear"} for value in normalized_decisions.values()) and not note.strip():
-            raise ValueError(f"Review row {row_number} has a No/Unclear decision without an evidence note")
+        # 证据说明只对需要辩护的判断强制：抽取忠实度与裁判有效性。
+        # semantic_correct=No 表示"答案与参考答案不符"，属可直接观察的事实，
+        # 不要求逐条说明（2026-10-18 修订，理由见报告 2235）。
+        DEFENDED = ("extraction_faithful", "judge_valid")
+        if any(normalized_decisions[f] in {"no", "unclear"} for f in DEFENDED) and not note.strip():
+            raise ValueError(
+                f"Review row {row_number} has a No/Unclear decision on "
+                f"{'/'.join(DEFENDED)} without an evidence note")
         normalized[key] = {
             "case_index": case_index,
             "track": expected_track,

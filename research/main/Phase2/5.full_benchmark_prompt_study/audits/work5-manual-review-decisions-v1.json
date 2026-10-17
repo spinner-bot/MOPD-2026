@@ -1,0 +1,3005 @@
+{
+  "schema": "work5-manual-review-decisions-v1",
+  "rows": [
+    {
+      "case_title": "Case 1 vstar · selected stratum: native_extraction_disagreement",
+      "condition": "S0 · vstar",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 1 vstar · selected stratum: native_extraction_disagreement",
+      "condition": "SC · vstar",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 1 vstar · selected stratum: native_extraction_disagreement",
+      "condition": "S1 · vstar",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 1 vstar · selected stratum: native_extraction_disagreement",
+      "condition": "S2 · vstar",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 1 vstar · selected stratum: native_extraction_disagreement",
+      "condition": "S3 · vstar",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 2 vstar · selected stratum: native_extraction_disagreement",
+      "condition": "S0 · vstar",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 2 vstar · selected stratum: native_extraction_disagreement",
+      "condition": "SC · vstar",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 2 vstar · selected stratum: native_extraction_disagreement",
+      "condition": "S1 · vstar",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 2 vstar · selected stratum: native_extraction_disagreement",
+      "condition": "S2 · vstar",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "No / 否",
+        "judge_valid": "Yes / 是",
+        "note": "狗的身上黑色斑块主要为黑色，即便有少量棕色毛发，我们通常所说的黑白相间。 "
+      }
+    },
+    {
+      "case_title": "Case 2 vstar · selected stratum: native_extraction_disagreement",
+      "condition": "S3 · vstar",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 3 vstar · selected stratum: native_extraction_disagreement",
+      "condition": "S0 · vstar",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "No / 否",
+        "judge_valid": "Yes / 是",
+        "note": "画面长笛整体看起来是黑色的，有金属质感，只在顶端部分由于光线原因产生类似银色的反光，但也只占长笛整体很小一部分。"
+      }
+    },
+    {
+      "case_title": "Case 3 vstar · selected stratum: native_extraction_disagreement",
+      "condition": "SC · vstar",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "No / 否",
+        "judge_valid": "Yes / 是",
+        "note": "画面长笛整体看起来是黑色的，有金属质感，只在顶端部分由于光线原因产生类似银色的反光，但也只占长笛整体很小一部分。"
+      }
+    },
+    {
+      "case_title": "Case 3 vstar · selected stratum: native_extraction_disagreement",
+      "condition": "S1 · vstar",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "No / 否",
+        "judge_valid": "Yes / 是",
+        "note": "画面长笛整体看起来是黑色的，有金属质感，只在顶端部分由于光线原因产生类似银色的反光，但也只占长笛整体很小一部分。"
+      }
+    },
+    {
+      "case_title": "Case 3 vstar · selected stratum: native_extraction_disagreement",
+      "condition": "S2 · vstar",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "No / 否",
+        "judge_valid": "Yes / 是",
+        "note": "画面长笛整体看起来是黑色的，有金属质感，只在顶端部分由于光线原因产生类似银色的反光，但也只占长笛整体很小一部分。"
+      }
+    },
+    {
+      "case_title": "Case 3 vstar · selected stratum: native_extraction_disagreement",
+      "condition": "S3 · vstar",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "No / 否",
+        "judge_valid": "Yes / 是",
+        "note": "画面长笛整体看起来是黑色的，有金属质感，只在顶端部分由于光线原因产生类似银色的反光，但也只占长笛整体很小一部分。"
+      }
+    },
+    {
+      "case_title": "Case 4 vstar · selected stratum: three_score_agreement",
+      "condition": "S0 · vstar",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 4 vstar · selected stratum: three_score_agreement",
+      "condition": "SC · vstar",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 4 vstar · selected stratum: three_score_agreement",
+      "condition": "S1 · vstar",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 4 vstar · selected stratum: three_score_agreement",
+      "condition": "S2 · vstar",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 4 vstar · selected stratum: three_score_agreement",
+      "condition": "S3 · vstar",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 5 vstar · selected stratum: three_score_agreement",
+      "condition": "S0 · vstar",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 5 vstar · selected stratum: three_score_agreement",
+      "condition": "SC · vstar",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 5 vstar · selected stratum: three_score_agreement",
+      "condition": "S1 · vstar",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 5 vstar · selected stratum: three_score_agreement",
+      "condition": "S2 · vstar",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 5 vstar · selected stratum: three_score_agreement",
+      "condition": "S3 · vstar",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 6 vstar · selected stratum: deterministic_random_remainder",
+      "condition": "S0 · vstar",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 6 vstar · selected stratum: deterministic_random_remainder",
+      "condition": "SC · vstar",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 6 vstar · selected stratum: deterministic_random_remainder",
+      "condition": "S1 · vstar",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 6 vstar · selected stratum: deterministic_random_remainder",
+      "condition": "S2 · vstar",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 6 vstar · selected stratum: deterministic_random_remainder",
+      "condition": "S3 · vstar",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 7 vstar · selected stratum: deterministic_random_remainder",
+      "condition": "S0 · vstar",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 7 vstar · selected stratum: deterministic_random_remainder",
+      "condition": "SC · vstar",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 7 vstar · selected stratum: deterministic_random_remainder",
+      "condition": "S1 · vstar",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 7 vstar · selected stratum: deterministic_random_remainder",
+      "condition": "S2 · vstar",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 7 vstar · selected stratum: deterministic_random_remainder",
+      "condition": "S3 · vstar",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 8 vstar · selected stratum: deterministic_random_remainder",
+      "condition": "S0 · vstar",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "No / 否",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 8 vstar · selected stratum: deterministic_random_remainder",
+      "condition": "SC · vstar",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "No / 否",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 8 vstar · selected stratum: deterministic_random_remainder",
+      "condition": "S1 · vstar",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "No / 否",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 8 vstar · selected stratum: deterministic_random_remainder",
+      "condition": "S2 · vstar",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "No / 否",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 8 vstar · selected stratum: deterministic_random_remainder",
+      "condition": "S3 · vstar",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "No / 否",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 9 vstar · selected stratum: deterministic_random_remainder",
+      "condition": "S0 · vstar",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": "这不与荷兰国旗相符"
+      }
+    },
+    {
+      "case_title": "Case 9 vstar · selected stratum: deterministic_random_remainder",
+      "condition": "SC · vstar",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "No / 否",
+        "judge_valid": "Yes / 是",
+        "note": "上方蓝，下方黄是正确的"
+      }
+    },
+    {
+      "case_title": "Case 9 vstar · selected stratum: deterministic_random_remainder",
+      "condition": "S1 · vstar",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 9 vstar · selected stratum: deterministic_random_remainder",
+      "condition": "S2 · vstar",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 9 vstar · selected stratum: deterministic_random_remainder",
+      "condition": "S3 · vstar",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 10 vstar · selected stratum: deterministic_random_remainder",
+      "condition": "S0 · vstar",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 10 vstar · selected stratum: deterministic_random_remainder",
+      "condition": "SC · vstar",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 10 vstar · selected stratum: deterministic_random_remainder",
+      "condition": "S1 · vstar",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 10 vstar · selected stratum: deterministic_random_remainder",
+      "condition": "S2 · vstar",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 10 vstar · selected stratum: deterministic_random_remainder",
+      "condition": "S3 · vstar",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 11 zoombench · selected stratum: native_extraction_disagreement",
+      "condition": "S0 · zoombench",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 11 zoombench · selected stratum: native_extraction_disagreement",
+      "condition": "SC · zoombench",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 11 zoombench · selected stratum: native_extraction_disagreement",
+      "condition": "S1 · zoombench",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 11 zoombench · selected stratum: native_extraction_disagreement",
+      "condition": "S2 · zoombench",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 11 zoombench · selected stratum: native_extraction_disagreement",
+      "condition": "S3 · zoombench",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 12 zoombench · selected stratum: native_extraction_disagreement",
+      "condition": "S0 · zoombench",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 12 zoombench · selected stratum: native_extraction_disagreement",
+      "condition": "SC · zoombench",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 12 zoombench · selected stratum: native_extraction_disagreement",
+      "condition": "S1 · zoombench",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 12 zoombench · selected stratum: native_extraction_disagreement",
+      "condition": "S2 · zoombench",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 12 zoombench · selected stratum: native_extraction_disagreement",
+      "condition": "S3 · zoombench",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 13 zoombench · selected stratum: native_extraction_disagreement",
+      "condition": "S0 · zoombench",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 13 zoombench · selected stratum: native_extraction_disagreement",
+      "condition": "SC · zoombench",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 13 zoombench · selected stratum: native_extraction_disagreement",
+      "condition": "S1 · zoombench",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 13 zoombench · selected stratum: native_extraction_disagreement",
+      "condition": "S2 · zoombench",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 13 zoombench · selected stratum: native_extraction_disagreement",
+      "condition": "S3 · zoombench",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 14 zoombench · selected stratum: non_answer_extraction",
+      "condition": "S0 · zoombench",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "No / 否",
+        "judge_valid": "Yes / 是",
+        "note": "有红色文字的建筑上，共有四个阳台外面带黑色栏杆"
+      }
+    },
+    {
+      "case_title": "Case 14 zoombench · selected stratum: non_answer_extraction",
+      "condition": "SC · zoombench",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "No / 否",
+        "judge_valid": "Yes / 是",
+        "note": "有红色文字的建筑上，共有四个阳台外面带黑色栏杆"
+      }
+    },
+    {
+      "case_title": "Case 14 zoombench · selected stratum: non_answer_extraction",
+      "condition": "S1 · zoombench",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "No / 否",
+        "judge_valid": "Yes / 是",
+        "note": "有红色文字的建筑上，共有四个阳台外面带黑色栏杆"
+      }
+    },
+    {
+      "case_title": "Case 14 zoombench · selected stratum: non_answer_extraction",
+      "condition": "S2 · zoombench",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "No / 否",
+        "judge_valid": "Yes / 是",
+        "note": "有红色文字的建筑上，共有四个阳台外面带黑色栏杆"
+      }
+    },
+    {
+      "case_title": "Case 14 zoombench · selected stratum: non_answer_extraction",
+      "condition": "S3 · zoombench",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "No / 否",
+        "judge_valid": "Yes / 是",
+        "note": "有红色文字的建筑上，共有四个阳台外面带黑色栏杆"
+      }
+    },
+    {
+      "case_title": "Case 15 zoombench · selected stratum: non_answer_extraction",
+      "condition": "S0 · zoombench",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "No / 否",
+        "judge_valid": "Yes / 是",
+        "note": "交替出现黄白两个颜色，有两个不同颜色的色块。"
+      }
+    },
+    {
+      "case_title": "Case 15 zoombench · selected stratum: non_answer_extraction",
+      "condition": "SC · zoombench",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "No / 否",
+        "judge_valid": "Yes / 是",
+        "note": "交替出现黄白两个颜色，有两个不同颜色的色块。"
+      }
+    },
+    {
+      "case_title": "Case 15 zoombench · selected stratum: non_answer_extraction",
+      "condition": "S1 · zoombench",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "No / 否",
+        "judge_valid": "Yes / 是",
+        "note": "交替出现黄白两个颜色，有两个不同颜色的色块。"
+      }
+    },
+    {
+      "case_title": "Case 15 zoombench · selected stratum: non_answer_extraction",
+      "condition": "S2 · zoombench",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "No / 否",
+        "judge_valid": "Yes / 是",
+        "note": "交替出现黄白两个颜色，有两个不同颜色的色块。"
+      }
+    },
+    {
+      "case_title": "Case 15 zoombench · selected stratum: non_answer_extraction",
+      "condition": "S3 · zoombench",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "No / 否",
+        "judge_valid": "Yes / 是",
+        "note": "交替出现黄白两个颜色，有两个不同颜色的色块。"
+      }
+    },
+    {
+      "case_title": "Case 16 zoombench · selected stratum: deterministic_random_remainder",
+      "condition": "S0 · zoombench",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 16 zoombench · selected stratum: deterministic_random_remainder",
+      "condition": "SC · zoombench",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 16 zoombench · selected stratum: deterministic_random_remainder",
+      "condition": "S1 · zoombench",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 16 zoombench · selected stratum: deterministic_random_remainder",
+      "condition": "S2 · zoombench",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 16 zoombench · selected stratum: deterministic_random_remainder",
+      "condition": "S3 · zoombench",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 17 zoombench · selected stratum: deterministic_random_remainder",
+      "condition": "S0 · zoombench",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 17 zoombench · selected stratum: deterministic_random_remainder",
+      "condition": "SC · zoombench",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 17 zoombench · selected stratum: deterministic_random_remainder",
+      "condition": "S1 · zoombench",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 17 zoombench · selected stratum: deterministic_random_remainder",
+      "condition": "S2 · zoombench",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 17 zoombench · selected stratum: deterministic_random_remainder",
+      "condition": "S3 · zoombench",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 18 zoombench · selected stratum: deterministic_random_remainder",
+      "condition": "S0 · zoombench",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "No / 否",
+        "judge_valid": "Yes / 是",
+        "note": "黑色是鸟头部位置，鸟喙部分为黄色"
+      }
+    },
+    {
+      "case_title": "Case 18 zoombench · selected stratum: deterministic_random_remainder",
+      "condition": "SC · zoombench",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 18 zoombench · selected stratum: deterministic_random_remainder",
+      "condition": "S1 · zoombench",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 18 zoombench · selected stratum: deterministic_random_remainder",
+      "condition": "S2 · zoombench",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 18 zoombench · selected stratum: deterministic_random_remainder",
+      "condition": "S3 · zoombench",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 19 zoombench · selected stratum: deterministic_random_remainder",
+      "condition": "S0 · zoombench",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "No / 否",
+        "judge_valid": "Yes / 是",
+        "note": "图中炉灶有五个不同的圆形烹饪区，分别为右下一个大的烹饪区，右上两个小的烹饪区，左侧上下分别有两个一样大小的中等烹饪区。"
+      }
+    },
+    {
+      "case_title": "Case 19 zoombench · selected stratum: deterministic_random_remainder",
+      "condition": "SC · zoombench",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "No / 否",
+        "judge_valid": "Yes / 是",
+        "note": "图中炉灶有五个不同的圆形烹饪区，分别为右下一个大的烹饪区，右上两个小的烹饪区，左侧上下分别有两个一样大小的中等烹饪区。"
+      }
+    },
+    {
+      "case_title": "Case 19 zoombench · selected stratum: deterministic_random_remainder",
+      "condition": "S1 · zoombench",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "No / 否",
+        "judge_valid": "Yes / 是",
+        "note": "图中炉灶有五个不同的圆形烹饪区，分别为右下一个大的烹饪区，右上两个小的烹饪区，左侧上下分别有两个一样大小的中等烹饪区。"
+      }
+    },
+    {
+      "case_title": "Case 19 zoombench · selected stratum: deterministic_random_remainder",
+      "condition": "S2 · zoombench",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "No / 否",
+        "judge_valid": "Yes / 是",
+        "note": "图中炉灶有五个不同的圆形烹饪区，分别为右下一个大的烹饪区，右上两个小的烹饪区，左侧上下分别有两个一样大小的中等烹饪区。"
+      }
+    },
+    {
+      "case_title": "Case 19 zoombench · selected stratum: deterministic_random_remainder",
+      "condition": "S3 · zoombench",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "No / 否",
+        "judge_valid": "Yes / 是",
+        "note": "图中炉灶有五个不同的圆形烹饪区，分别为右下一个大的烹饪区，右上两个小的烹饪区，左侧上下分别有两个一样大小的中等烹饪区。"
+      }
+    },
+    {
+      "case_title": "Case 20 zoombench · selected stratum: deterministic_random_remainder",
+      "condition": "S0 · zoombench",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 20 zoombench · selected stratum: deterministic_random_remainder",
+      "condition": "SC · zoombench",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 20 zoombench · selected stratum: deterministic_random_remainder",
+      "condition": "S1 · zoombench",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 20 zoombench · selected stratum: deterministic_random_remainder",
+      "condition": "S2 · zoombench",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 20 zoombench · selected stratum: deterministic_random_remainder",
+      "condition": "S3 · zoombench",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 21 hrbench-4k · selected stratum: native_extraction_disagreement",
+      "condition": "S0 · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 21 hrbench-4k · selected stratum: native_extraction_disagreement",
+      "condition": "SC · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 21 hrbench-4k · selected stratum: native_extraction_disagreement",
+      "condition": "S1 · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 21 hrbench-4k · selected stratum: native_extraction_disagreement",
+      "condition": "S2 · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 21 hrbench-4k · selected stratum: native_extraction_disagreement",
+      "condition": "S3 · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 22 hrbench-4k · selected stratum: native_extraction_disagreement",
+      "condition": "S0 · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 22 hrbench-4k · selected stratum: native_extraction_disagreement",
+      "condition": "SC · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 22 hrbench-4k · selected stratum: native_extraction_disagreement",
+      "condition": "S1 · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "No / 否",
+        "judge_valid": "Yes / 是",
+        "note": "对于1234的认定有误，1苏格兰2英格兰3爱尔兰4欧洲某地，从图中标记3不能认为是北爱尔兰，所以是一个国家的是1和2。"
+      }
+    },
+    {
+      "case_title": "Case 22 hrbench-4k · selected stratum: native_extraction_disagreement",
+      "condition": "S2 · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 22 hrbench-4k · selected stratum: native_extraction_disagreement",
+      "condition": "S3 · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": "4个点的位置都认为是英国有误，虽然最后结果是正确的。"
+      }
+    },
+    {
+      "case_title": "Case 23 hrbench-4k · selected stratum: native_extraction_disagreement",
+      "condition": "S0 · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 23 hrbench-4k · selected stratum: native_extraction_disagreement",
+      "condition": "SC · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 23 hrbench-4k · selected stratum: native_extraction_disagreement",
+      "condition": "S1 · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 23 hrbench-4k · selected stratum: native_extraction_disagreement",
+      "condition": "S2 · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 23 hrbench-4k · selected stratum: native_extraction_disagreement",
+      "condition": "S3 · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 24 hrbench-4k · selected stratum: non_answer_extraction",
+      "condition": "S0 · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "No / 否",
+        "judge_valid": "Yes / 是",
+        "note": "抽取错误导致答案也错误，商品10是1，商品15是11，所以平均销售额是6。"
+      }
+    },
+    {
+      "case_title": "Case 24 hrbench-4k · selected stratum: non_answer_extraction",
+      "condition": "SC · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "No / 否",
+        "judge_valid": "Yes / 是",
+        "note": "抽取错误导致答案也错误，商品10是1，商品15是11，所以平均销售额是6。"
+      }
+    },
+    {
+      "case_title": "Case 24 hrbench-4k · selected stratum: non_answer_extraction",
+      "condition": "S1 · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "No / 否",
+        "semantic_correct": "No / 否",
+        "judge_valid": "Yes / 是",
+        "note": "抽取错误导致答案也错误，商品10是1，商品15是11，所以平均销售额是6。"
+      }
+    },
+    {
+      "case_title": "Case 24 hrbench-4k · selected stratum: non_answer_extraction",
+      "condition": "S2 · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "No / 否",
+        "judge_valid": "Yes / 是",
+        "note": "抽取错误导致答案也错误，商品10是1，商品15是11，所以平均销售额是6。"
+      }
+    },
+    {
+      "case_title": "Case 24 hrbench-4k · selected stratum: non_answer_extraction",
+      "condition": "S3 · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "No / 否",
+        "judge_valid": "Yes / 是",
+        "note": "抽取错误导致答案也错误，商品10是1，商品15是11，所以平均销售额是6。"
+      }
+    },
+    {
+      "case_title": "Case 25 hrbench-4k · selected stratum: non_answer_extraction",
+      "condition": "S0 · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "No / 否",
+        "judge_valid": "Yes / 是",
+        "note": "物品1有误不是73是1，错把物品2数值当作物品1."
+      }
+    },
+    {
+      "case_title": "Case 25 hrbench-4k · selected stratum: non_answer_extraction",
+      "condition": "SC · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 25 hrbench-4k · selected stratum: non_answer_extraction",
+      "condition": "S1 · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 25 hrbench-4k · selected stratum: non_answer_extraction",
+      "condition": "S2 · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 25 hrbench-4k · selected stratum: non_answer_extraction",
+      "condition": "S3 · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 26 hrbench-4k · selected stratum: three_score_agreement",
+      "condition": "S0 · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 26 hrbench-4k · selected stratum: three_score_agreement",
+      "condition": "SC · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 26 hrbench-4k · selected stratum: three_score_agreement",
+      "condition": "S1 · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 26 hrbench-4k · selected stratum: three_score_agreement",
+      "condition": "S2 · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 26 hrbench-4k · selected stratum: three_score_agreement",
+      "condition": "S3 · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 27 hrbench-4k · selected stratum: deterministic_random_remainder",
+      "condition": "S0 · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 27 hrbench-4k · selected stratum: deterministic_random_remainder",
+      "condition": "SC · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 27 hrbench-4k · selected stratum: deterministic_random_remainder",
+      "condition": "S1 · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 27 hrbench-4k · selected stratum: deterministic_random_remainder",
+      "condition": "S2 · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 27 hrbench-4k · selected stratum: deterministic_random_remainder",
+      "condition": "S3 · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 28 hrbench-4k · selected stratum: deterministic_random_remainder",
+      "condition": "S0 · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 28 hrbench-4k · selected stratum: deterministic_random_remainder",
+      "condition": "SC · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 28 hrbench-4k · selected stratum: deterministic_random_remainder",
+      "condition": "S1 · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 28 hrbench-4k · selected stratum: deterministic_random_remainder",
+      "condition": "S2 · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 28 hrbench-4k · selected stratum: deterministic_random_remainder",
+      "condition": "S3 · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 29 hrbench-4k · selected stratum: deterministic_random_remainder",
+      "condition": "S0 · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 29 hrbench-4k · selected stratum: deterministic_random_remainder",
+      "condition": "SC · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "No / 否",
+        "judge_valid": "Yes / 是",
+        "note": "人位于回收箱前方，部分遮挡回收箱。"
+      }
+    },
+    {
+      "case_title": "Case 29 hrbench-4k · selected stratum: deterministic_random_remainder",
+      "condition": "S1 · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "No / 否",
+        "judge_valid": "Yes / 是",
+        "note": "回收箱前侧偏左，并不是回收箱完全左边的位置。"
+      }
+    },
+    {
+      "case_title": "Case 29 hrbench-4k · selected stratum: deterministic_random_remainder",
+      "condition": "S2 · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "No / 否",
+        "judge_valid": "Yes / 是",
+        "note": "回收箱前侧偏左，并不是回收箱完全左边的位置。"
+      }
+    },
+    {
+      "case_title": "Case 29 hrbench-4k · selected stratum: deterministic_random_remainder",
+      "condition": "S3 · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "No / 否",
+        "judge_valid": "Yes / 是",
+        "note": "回收箱前侧偏左，并不是回收箱完全左边的位置。"
+      }
+    },
+    {
+      "case_title": "Case 30 hrbench-4k · selected stratum: deterministic_random_remainder",
+      "condition": "S0 · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 30 hrbench-4k · selected stratum: deterministic_random_remainder",
+      "condition": "SC · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 30 hrbench-4k · selected stratum: deterministic_random_remainder",
+      "condition": "S1 · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 30 hrbench-4k · selected stratum: deterministic_random_remainder",
+      "condition": "S2 · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 30 hrbench-4k · selected stratum: deterministic_random_remainder",
+      "condition": "S3 · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 31 hrbench-8k · selected stratum: native_extraction_disagreement",
+      "condition": "S0 · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 31 hrbench-8k · selected stratum: native_extraction_disagreement",
+      "condition": "SC · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 31 hrbench-8k · selected stratum: native_extraction_disagreement",
+      "condition": "S1 · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 31 hrbench-8k · selected stratum: native_extraction_disagreement",
+      "condition": "S2 · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 31 hrbench-8k · selected stratum: native_extraction_disagreement",
+      "condition": "S3 · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "No / 否",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": "1，2不位于美国 位于加拿大"
+      }
+    },
+    {
+      "case_title": "Case 32 hrbench-8k · selected stratum: native_extraction_disagreement",
+      "condition": "S0 · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 32 hrbench-8k · selected stratum: native_extraction_disagreement",
+      "condition": "SC · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 32 hrbench-8k · selected stratum: native_extraction_disagreement",
+      "condition": "S1 · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 32 hrbench-8k · selected stratum: native_extraction_disagreement",
+      "condition": "S2 · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 32 hrbench-8k · selected stratum: native_extraction_disagreement",
+      "condition": "S3 · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 33 hrbench-8k · selected stratum: native_extraction_disagreement",
+      "condition": "S0 · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 33 hrbench-8k · selected stratum: native_extraction_disagreement",
+      "condition": "SC · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 33 hrbench-8k · selected stratum: native_extraction_disagreement",
+      "condition": "S1 · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 33 hrbench-8k · selected stratum: native_extraction_disagreement",
+      "condition": "S2 · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 33 hrbench-8k · selected stratum: native_extraction_disagreement",
+      "condition": "S3 · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 34 hrbench-8k · selected stratum: non_answer_extraction",
+      "condition": "S0 · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "No / 否",
+        "judge_valid": "Yes / 是",
+        "note": "抽取错误导致答案也错误，商品10是1，商品15是11，所以平均销售额是6。"
+      }
+    },
+    {
+      "case_title": "Case 34 hrbench-8k · selected stratum: non_answer_extraction",
+      "condition": "SC · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "No / 否",
+        "judge_valid": "Yes / 是",
+        "note": "抽取错误导致答案也错误，商品10是1，商品15是11，所以平均销售额是6。"
+      }
+    },
+    {
+      "case_title": "Case 34 hrbench-8k · selected stratum: non_answer_extraction",
+      "condition": "S1 · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "No / 否",
+        "judge_valid": "Yes / 是",
+        "note": "抽取错误导致答案也错误，商品10是1，商品15是11，所以平均销售额是6。"
+      }
+    },
+    {
+      "case_title": "Case 34 hrbench-8k · selected stratum: non_answer_extraction",
+      "condition": "S2 · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "No / 否",
+        "judge_valid": "Yes / 是",
+        "note": "抽取错误导致答案也错误，商品10是1，商品15是11，所以平均销售额是6。"
+      }
+    },
+    {
+      "case_title": "Case 34 hrbench-8k · selected stratum: non_answer_extraction",
+      "condition": "S3 · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "No / 否",
+        "judge_valid": "Yes / 是",
+        "note": "抽取错误导致答案也错误，商品10是1，商品15是11，所以平均销售额是6。"
+      }
+    },
+    {
+      "case_title": "Case 35 hrbench-8k · selected stratum: non_answer_extraction",
+      "condition": "S0 · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "Unclear / 不确定",
+        "semantic_correct": "No / 否",
+        "judge_valid": "Yes / 是",
+        "note": "没能正确抓取到物品1和物品6的销售额。"
+      }
+    },
+    {
+      "case_title": "Case 35 hrbench-8k · selected stratum: non_answer_extraction",
+      "condition": "SC · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "No / 否",
+        "judge_valid": "Yes / 是",
+        "note": "没能正确抓取到物品1和物品6的销售额。"
+      }
+    },
+    {
+      "case_title": "Case 35 hrbench-8k · selected stratum: non_answer_extraction",
+      "condition": "S1 · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "No / 否",
+        "judge_valid": "Yes / 是",
+        "note": "没能正确抓取到物品1和物品6的销售额。"
+      }
+    },
+    {
+      "case_title": "Case 35 hrbench-8k · selected stratum: non_answer_extraction",
+      "condition": "S2 · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "No / 否",
+        "judge_valid": "Yes / 是",
+        "note": "没能正确抓取到物品1和物品6的销售额。"
+      }
+    },
+    {
+      "case_title": "Case 35 hrbench-8k · selected stratum: non_answer_extraction",
+      "condition": "S3 · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "No / 否",
+        "judge_valid": "Yes / 是",
+        "note": "没能正确抓取到物品1和物品6的销售额。"
+      }
+    },
+    {
+      "case_title": "Case 36 hrbench-8k · selected stratum: deterministic_random_remainder",
+      "condition": "S0 · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 36 hrbench-8k · selected stratum: deterministic_random_remainder",
+      "condition": "SC · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 36 hrbench-8k · selected stratum: deterministic_random_remainder",
+      "condition": "S1 · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 36 hrbench-8k · selected stratum: deterministic_random_remainder",
+      "condition": "S2 · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 36 hrbench-8k · selected stratum: deterministic_random_remainder",
+      "condition": "S3 · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 37 hrbench-8k · selected stratum: deterministic_random_remainder",
+      "condition": "S0 · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "No / 否",
+        "judge_valid": "Yes / 是",
+        "note": "熊的左侧，图像偏中心。"
+      }
+    },
+    {
+      "case_title": "Case 37 hrbench-8k · selected stratum: deterministic_random_remainder",
+      "condition": "SC · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "No / 否",
+        "judge_valid": "Yes / 是",
+        "note": "熊的左侧，图像偏中心。"
+      }
+    },
+    {
+      "case_title": "Case 37 hrbench-8k · selected stratum: deterministic_random_remainder",
+      "condition": "S1 · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "No / 否",
+        "judge_valid": "Yes / 是",
+        "note": "熊的左侧，图像偏中心。"
+      }
+    },
+    {
+      "case_title": "Case 37 hrbench-8k · selected stratum: deterministic_random_remainder",
+      "condition": "S2 · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "No / 否",
+        "judge_valid": "Yes / 是",
+        "note": "熊的左侧，图像偏中心。"
+      }
+    },
+    {
+      "case_title": "Case 37 hrbench-8k · selected stratum: deterministic_random_remainder",
+      "condition": "S3 · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "No / 否",
+        "judge_valid": "Yes / 是",
+        "note": "熊的左侧，图像偏中心。"
+      }
+    },
+    {
+      "case_title": "Case 38 hrbench-8k · selected stratum: deterministic_random_remainder",
+      "condition": "S0 · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Unclear / 不确定",
+        "judge_valid": "Yes / 是",
+        "note": "原图看不清楚，标志和道路情况。"
+      }
+    },
+    {
+      "case_title": "Case 38 hrbench-8k · selected stratum: deterministic_random_remainder",
+      "condition": "SC · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Unclear / 不确定",
+        "judge_valid": "Yes / 是",
+        "note": "原图看不清楚，标志和道路情况。"
+      }
+    },
+    {
+      "case_title": "Case 38 hrbench-8k · selected stratum: deterministic_random_remainder",
+      "condition": "S1 · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Unclear / 不确定",
+        "judge_valid": "Yes / 是",
+        "note": "原图看不清楚，标志和道路情况。"
+      }
+    },
+    {
+      "case_title": "Case 38 hrbench-8k · selected stratum: deterministic_random_remainder",
+      "condition": "S2 · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Unclear / 不确定",
+        "judge_valid": "Yes / 是",
+        "note": "原图看不清楚，标志和道路情况。"
+      }
+    },
+    {
+      "case_title": "Case 38 hrbench-8k · selected stratum: deterministic_random_remainder",
+      "condition": "S3 · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Unclear / 不确定",
+        "judge_valid": "Yes / 是",
+        "note": "原图看不清楚，标志和道路情况。"
+      }
+    },
+    {
+      "case_title": "Case 39 hrbench-8k · selected stratum: deterministic_random_remainder",
+      "condition": "S0 · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 39 hrbench-8k · selected stratum: deterministic_random_remainder",
+      "condition": "SC · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 39 hrbench-8k · selected stratum: deterministic_random_remainder",
+      "condition": "S1 · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 39 hrbench-8k · selected stratum: deterministic_random_remainder",
+      "condition": "S2 · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 39 hrbench-8k · selected stratum: deterministic_random_remainder",
+      "condition": "S3 · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 40 hrbench-8k · selected stratum: deterministic_random_remainder",
+      "condition": "S0 · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 40 hrbench-8k · selected stratum: deterministic_random_remainder",
+      "condition": "SC · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 40 hrbench-8k · selected stratum: deterministic_random_remainder",
+      "condition": "S1 · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 40 hrbench-8k · selected stratum: deterministic_random_remainder",
+      "condition": "S2 · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 40 hrbench-8k · selected stratum: deterministic_random_remainder",
+      "condition": "S3 · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 41 mme-realworld · selected stratum: native_extraction_disagreement",
+      "condition": "S0 · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "No / 否",
+        "judge_valid": "No / 否",
+        "note": "水面停泊7艘大型船只。"
+      }
+    },
+    {
+      "case_title": "Case 41 mme-realworld · selected stratum: native_extraction_disagreement",
+      "condition": "SC · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "No / 否",
+        "judge_valid": "No / 否",
+        "note": "水面停泊7艘大型船只。"
+      }
+    },
+    {
+      "case_title": "Case 41 mme-realworld · selected stratum: native_extraction_disagreement",
+      "condition": "S1 · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "No / 否",
+        "judge_valid": "Yes / 是",
+        "note": "水面停泊7艘大型船只。"
+      }
+    },
+    {
+      "case_title": "Case 41 mme-realworld · selected stratum: native_extraction_disagreement",
+      "condition": "S2 · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "No / 否",
+        "judge_valid": "Yes / 是",
+        "note": "水面停泊7艘大型船只。"
+      }
+    },
+    {
+      "case_title": "Case 41 mme-realworld · selected stratum: native_extraction_disagreement",
+      "condition": "S3 · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "No / 否",
+        "judge_valid": "Yes / 是",
+        "note": "水面停泊7艘大型船只。"
+      }
+    },
+    {
+      "case_title": "Case 42 mme-realworld · selected stratum: native_extraction_disagreement",
+      "condition": "S0 · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Unclear / 不确定",
+        "judge_valid": "No / 否",
+        "note": "图像中的人数不确定。"
+      }
+    },
+    {
+      "case_title": "Case 42 mme-realworld · selected stratum: native_extraction_disagreement",
+      "condition": "SC · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Unclear / 不确定",
+        "judge_valid": "No / 否",
+        "note": "图像中的人数不确定。"
+      }
+    },
+    {
+      "case_title": "Case 42 mme-realworld · selected stratum: native_extraction_disagreement",
+      "condition": "S1 · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Unclear / 不确定",
+        "judge_valid": "No / 否",
+        "note": "图像中的人数不确定。"
+      }
+    },
+    {
+      "case_title": "Case 42 mme-realworld · selected stratum: native_extraction_disagreement",
+      "condition": "S2 · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Unclear / 不确定",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 42 mme-realworld · selected stratum: native_extraction_disagreement",
+      "condition": "S3 · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Unclear / 不确定",
+        "judge_valid": "Yes / 是",
+        "note": "图像中的人数不确定。"
+      }
+    },
+    {
+      "case_title": "Case 43 mme-realworld · selected stratum: native_extraction_disagreement",
+      "condition": "S0 · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Unclear / 不确定",
+        "judge_valid": "No / 否",
+        "note": "蓝色什么，如果是蓝色汽车旁边是白色汽车，另一边是不是黑色汽车看不清楚。"
+      }
+    },
+    {
+      "case_title": "Case 43 mme-realworld · selected stratum: native_extraction_disagreement",
+      "condition": "SC · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Unclear / 不确定",
+        "judge_valid": "Yes / 是",
+        "note": "蓝色什么，如果是蓝色汽车旁边是白色汽车，另一边是不是黑色汽车看不清楚。"
+      }
+    },
+    {
+      "case_title": "Case 43 mme-realworld · selected stratum: native_extraction_disagreement",
+      "condition": "S1 · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Unclear / 不确定",
+        "judge_valid": "Yes / 是",
+        "note": "蓝色什么，如果是蓝色汽车旁边是白色汽车，另一边是不是黑色汽车看不清楚。"
+      }
+    },
+    {
+      "case_title": "Case 43 mme-realworld · selected stratum: native_extraction_disagreement",
+      "condition": "S2 · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Unclear / 不确定",
+        "judge_valid": "Yes / 是",
+        "note": "蓝色什么，如果是蓝色汽车旁边是白色汽车，另一边是不是黑色汽车看不清楚。"
+      }
+    },
+    {
+      "case_title": "Case 43 mme-realworld · selected stratum: native_extraction_disagreement",
+      "condition": "S3 · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Unclear / 不确定",
+        "judge_valid": "Yes / 是",
+        "note": "蓝色什么，如果是蓝色汽车旁边是白色汽车，另一边是不是黑色汽车看不清楚。"
+      }
+    },
+    {
+      "case_title": "Case 44 mme-realworld · selected stratum: native_terminal_disagreement",
+      "condition": "S0 · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 44 mme-realworld · selected stratum: native_terminal_disagreement",
+      "condition": "SC · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 44 mme-realworld · selected stratum: native_terminal_disagreement",
+      "condition": "S1 · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Unclear / 不确定",
+        "judge_valid": "Yes / 是",
+        "note": "图片模糊，天色黑很，距离较远看不清楚。"
+      }
+    },
+    {
+      "case_title": "Case 44 mme-realworld · selected stratum: native_terminal_disagreement",
+      "condition": "S2 · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "No / 否",
+        "judge_valid": "Yes / 是",
+        "note": "图片模糊，天色黑很，距离较远看不清楚。"
+      }
+    },
+    {
+      "case_title": "Case 44 mme-realworld · selected stratum: native_terminal_disagreement",
+      "condition": "S3 · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 45 mme-realworld · selected stratum: native_terminal_disagreement",
+      "condition": "S0 · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 45 mme-realworld · selected stratum: native_terminal_disagreement",
+      "condition": "SC · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 45 mme-realworld · selected stratum: native_terminal_disagreement",
+      "condition": "S1 · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 45 mme-realworld · selected stratum: native_terminal_disagreement",
+      "condition": "S2 · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 45 mme-realworld · selected stratum: native_terminal_disagreement",
+      "condition": "S3 · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 46 mme-realworld · selected stratum: non_answer_extraction",
+      "condition": "S0 · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "No / 否",
+        "judge_valid": "Unclear / 不确定",
+        "note": "模型输出出现大量循环重复，达到上万 token 后直接截断，最终未给出答案；抽取结果为无结论，符合输出实际，裁判无法据此评估。"
+      }
+    },
+    {
+      "case_title": "Case 46 mme-realworld · selected stratum: non_answer_extraction",
+      "condition": "SC · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 46 mme-realworld · selected stratum: non_answer_extraction",
+      "condition": "S1 · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 46 mme-realworld · selected stratum: non_answer_extraction",
+      "condition": "S2 · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 46 mme-realworld · selected stratum: non_answer_extraction",
+      "condition": "S3 · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 47 mme-realworld · selected stratum: non_answer_extraction",
+      "condition": "S0 · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "No / 否",
+        "judge_valid": "No / 否",
+        "note": "图片有多少人看不清。"
+      }
+    },
+    {
+      "case_title": "Case 47 mme-realworld · selected stratum: non_answer_extraction",
+      "condition": "SC · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "No / 否",
+        "judge_valid": "Yes / 是",
+        "note": "图片有多少人看不清。"
+      }
+    },
+    {
+      "case_title": "Case 47 mme-realworld · selected stratum: non_answer_extraction",
+      "condition": "S1 · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "No / 否",
+        "judge_valid": "Yes / 是",
+        "note": "图片有多少人看不清。"
+      }
+    },
+    {
+      "case_title": "Case 47 mme-realworld · selected stratum: non_answer_extraction",
+      "condition": "S2 · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "No / 否",
+        "judge_valid": "No / 否",
+        "note": "图片有多少人看不清。"
+      }
+    },
+    {
+      "case_title": "Case 47 mme-realworld · selected stratum: non_answer_extraction",
+      "condition": "S3 · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "No / 否",
+        "judge_valid": "Yes / 是",
+        "note": "图片有多少人看不清。"
+      }
+    },
+    {
+      "case_title": "Case 48 mme-realworld · selected stratum: three_score_agreement",
+      "condition": "S0 · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "No / 否",
+        "judge_valid": "Yes / 是",
+        "note": "没看到人。"
+      }
+    },
+    {
+      "case_title": "Case 48 mme-realworld · selected stratum: three_score_agreement",
+      "condition": "SC · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "No / 否",
+        "judge_valid": "Yes / 是",
+        "note": "没看到人。"
+      }
+    },
+    {
+      "case_title": "Case 48 mme-realworld · selected stratum: three_score_agreement",
+      "condition": "S1 · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "No / 否",
+        "judge_valid": "Yes / 是",
+        "note": "没看到人。"
+      }
+    },
+    {
+      "case_title": "Case 48 mme-realworld · selected stratum: three_score_agreement",
+      "condition": "S2 · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "No / 否",
+        "judge_valid": "Yes / 是",
+        "note": "没看到人。"
+      }
+    },
+    {
+      "case_title": "Case 48 mme-realworld · selected stratum: three_score_agreement",
+      "condition": "S3 · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "No / 否",
+        "judge_valid": "Yes / 是",
+        "note": "没看到人。"
+      }
+    },
+    {
+      "case_title": "Case 49 mme-realworld · selected stratum: three_score_agreement",
+      "condition": "S0 · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "No / 否",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 49 mme-realworld · selected stratum: three_score_agreement",
+      "condition": "SC · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "No / 否",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 49 mme-realworld · selected stratum: three_score_agreement",
+      "condition": "S1 · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "No / 否",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 49 mme-realworld · selected stratum: three_score_agreement",
+      "condition": "S2 · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "No / 否",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 49 mme-realworld · selected stratum: three_score_agreement",
+      "condition": "S3 · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "No / 否",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 50 mme-realworld · selected stratum: deterministic_random_remainder",
+      "condition": "S0 · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "No / 否",
+        "judge_valid": "Yes / 是",
+        "note": "左侧的不是白色轿车"
+      }
+    },
+    {
+      "case_title": "Case 50 mme-realworld · selected stratum: deterministic_random_remainder",
+      "condition": "SC · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "No / 否",
+        "judge_valid": "Yes / 是",
+        "note": "左侧的不是白色轿车"
+      }
+    },
+    {
+      "case_title": "Case 50 mme-realworld · selected stratum: deterministic_random_remainder",
+      "condition": "S1 · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "No / 否",
+        "judge_valid": "Yes / 是",
+        "note": "左侧的不是白色轿车"
+      }
+    },
+    {
+      "case_title": "Case 50 mme-realworld · selected stratum: deterministic_random_remainder",
+      "condition": "S2 · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "No / 否",
+        "judge_valid": "Yes / 是",
+        "note": "左侧的不是白色轿车"
+      }
+    },
+    {
+      "case_title": "Case 50 mme-realworld · selected stratum: deterministic_random_remainder",
+      "condition": "S3 · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "No / 否",
+        "judge_valid": "Yes / 是",
+        "note": "左侧的不是白色轿车"
+      }
+    },
+    {
+      "case_title": "Case 51 mme-realworld-cn · selected stratum: native_extraction_disagreement",
+      "condition": "S0 · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 51 mme-realworld-cn · selected stratum: native_extraction_disagreement",
+      "condition": "SC · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 51 mme-realworld-cn · selected stratum: native_extraction_disagreement",
+      "condition": "S1 · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 51 mme-realworld-cn · selected stratum: native_extraction_disagreement",
+      "condition": "S2 · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 51 mme-realworld-cn · selected stratum: native_extraction_disagreement",
+      "condition": "S3 · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 52 mme-realworld-cn · selected stratum: native_extraction_disagreement",
+      "condition": "S0 · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 52 mme-realworld-cn · selected stratum: native_extraction_disagreement",
+      "condition": "SC · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 52 mme-realworld-cn · selected stratum: native_extraction_disagreement",
+      "condition": "S1 · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 52 mme-realworld-cn · selected stratum: native_extraction_disagreement",
+      "condition": "S2 · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 52 mme-realworld-cn · selected stratum: native_extraction_disagreement",
+      "condition": "S3 · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 53 mme-realworld-cn · selected stratum: native_extraction_disagreement",
+      "condition": "S0 · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 53 mme-realworld-cn · selected stratum: native_extraction_disagreement",
+      "condition": "SC · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 53 mme-realworld-cn · selected stratum: native_extraction_disagreement",
+      "condition": "S1 · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 53 mme-realworld-cn · selected stratum: native_extraction_disagreement",
+      "condition": "S2 · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 53 mme-realworld-cn · selected stratum: native_extraction_disagreement",
+      "condition": "S3 · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 54 mme-realworld-cn · selected stratum: non_answer_extraction",
+      "condition": "S0 · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 54 mme-realworld-cn · selected stratum: non_answer_extraction",
+      "condition": "SC · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "No / 否",
+        "judge_valid": "Yes / 是",
+        "note": "没抓取到正确数据。"
+      }
+    },
+    {
+      "case_title": "Case 54 mme-realworld-cn · selected stratum: non_answer_extraction",
+      "condition": "S1 · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "No / 否",
+        "judge_valid": "Yes / 是",
+        "note": "没抓取到正确数据。"
+      }
+    },
+    {
+      "case_title": "Case 54 mme-realworld-cn · selected stratum: non_answer_extraction",
+      "condition": "S2 · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 54 mme-realworld-cn · selected stratum: non_answer_extraction",
+      "condition": "S3 · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "No / 否",
+        "judge_valid": "Yes / 是",
+        "note": "没抓取到正确数据。"
+      }
+    },
+    {
+      "case_title": "Case 55 mme-realworld-cn · selected stratum: non_answer_extraction",
+      "condition": "S0 · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "No / 否",
+        "judge_valid": "No / 否",
+        "note": "抽取忠实，但裁判给出 No。"
+      }
+    },
+    {
+      "case_title": "Case 55 mme-realworld-cn · selected stratum: non_answer_extraction",
+      "condition": "SC · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "No / 否",
+        "judge_valid": "No / 否",
+        "note": "抽取忠实，但裁判给出 No。"
+      }
+    },
+    {
+      "case_title": "Case 55 mme-realworld-cn · selected stratum: non_answer_extraction",
+      "condition": "S1 · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "No / 否",
+        "judge_valid": "Unclear / 不确定",
+        "note": "模型输出出现大量循环，并最终被截断。原始输出未给出最终选择，抽取结果为无，符合输出实际"
+      }
+    },
+    {
+      "case_title": "Case 55 mme-realworld-cn · selected stratum: non_answer_extraction",
+      "condition": "S2 · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "No / 否",
+        "judge_valid": "Unclear / 不确定",
+        "note": "模型输出出现大量循环，并最终被截断。原始输出未给出最终选择，抽取结果为无，符合输出实际"
+      }
+    },
+    {
+      "case_title": "Case 55 mme-realworld-cn · selected stratum: non_answer_extraction",
+      "condition": "S3 · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 56 mme-realworld-cn · selected stratum: three_score_agreement",
+      "condition": "S0 · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 56 mme-realworld-cn · selected stratum: three_score_agreement",
+      "condition": "SC · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 56 mme-realworld-cn · selected stratum: three_score_agreement",
+      "condition": "S1 · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 56 mme-realworld-cn · selected stratum: three_score_agreement",
+      "condition": "S2 · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 56 mme-realworld-cn · selected stratum: three_score_agreement",
+      "condition": "S3 · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 57 mme-realworld-cn · selected stratum: deterministic_random_remainder",
+      "condition": "S0 · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 57 mme-realworld-cn · selected stratum: deterministic_random_remainder",
+      "condition": "SC · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 57 mme-realworld-cn · selected stratum: deterministic_random_remainder",
+      "condition": "S1 · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 57 mme-realworld-cn · selected stratum: deterministic_random_remainder",
+      "condition": "S2 · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 57 mme-realworld-cn · selected stratum: deterministic_random_remainder",
+      "condition": "S3 · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 58 mme-realworld-cn · selected stratum: deterministic_random_remainder",
+      "condition": "S0 · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 58 mme-realworld-cn · selected stratum: deterministic_random_remainder",
+      "condition": "SC · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 58 mme-realworld-cn · selected stratum: deterministic_random_remainder",
+      "condition": "S1 · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 58 mme-realworld-cn · selected stratum: deterministic_random_remainder",
+      "condition": "S2 · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 58 mme-realworld-cn · selected stratum: deterministic_random_remainder",
+      "condition": "S3 · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 59 mme-realworld-cn · selected stratum: deterministic_random_remainder",
+      "condition": "S0 · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 59 mme-realworld-cn · selected stratum: deterministic_random_remainder",
+      "condition": "SC · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 59 mme-realworld-cn · selected stratum: deterministic_random_remainder",
+      "condition": "S1 · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 59 mme-realworld-cn · selected stratum: deterministic_random_remainder",
+      "condition": "S2 · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 59 mme-realworld-cn · selected stratum: deterministic_random_remainder",
+      "condition": "S3 · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "No / 否",
+        "judge_valid": "Yes / 是",
+        "note": "数据错误。"
+      }
+    },
+    {
+      "case_title": "Case 60 mme-realworld-cn · selected stratum: deterministic_random_remainder",
+      "condition": "S0 · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 60 mme-realworld-cn · selected stratum: deterministic_random_remainder",
+      "condition": "SC · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 60 mme-realworld-cn · selected stratum: deterministic_random_remainder",
+      "condition": "S1 · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 60 mme-realworld-cn · selected stratum: deterministic_random_remainder",
+      "condition": "S2 · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "Case 60 mme-realworld-cn · selected stratum: deterministic_random_remainder",
+      "condition": "S3 · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "Yes / 是",
+        "semantic_correct": "Yes / 是",
+        "judge_valid": "Yes / 是",
+        "note": ""
+      }
+    }
+  ]
+}

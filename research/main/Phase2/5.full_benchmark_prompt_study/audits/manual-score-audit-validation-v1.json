@@ -1,0 +1,3038 @@
+{
+  "schema": "phase2-work5-manual-review-validation-v1",
+  "reviewer": "external-auditor",
+  "completed_rows": 300,
+  "cases": 60,
+  "conditions": [
+    "S0",
+    "SC",
+    "S1",
+    "S2",
+    "S3"
+  ],
+  "decision_counts": {
+    "extraction_faithful": {
+      "yes": 297,
+      "no": 2,
+      "unclear": 1
+    },
+    "semantic_correct": {
+      "yes": 195,
+      "no": 89,
+      "unclear": 16
+    },
+    "judge_valid": {
+      "yes": 287,
+      "no": 10,
+      "unclear": 3
+    }
+  },
+  "rows_with_evidence_notes": 97,
+  "not_an_automatic_score_replacement": true,
+  "validated_at_utc": "2026-10-17T17:55:36.824169+00:00",
+  "decision_export_sha256": "9b758e01a0c1b9025c498a0ced36273db56aad559092b8ca994854dfacb60abe",
+  "sample_manifest_sha256": "c12fc754e7e7be3017672635840f7016446f8e4e5d3c4ef930a072491abbe331",
+  "review_packet_sha256": "c1da726f0a88db644357ea7675a9f427e7ed5f483433fbbccd43b875435a943b",
+  "review_rows": [
+    {
+      "case_index": 1,
+      "track": "vstar",
+      "sample_uid": "vstar:question_id:18",
+      "condition": "S0",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 1,
+      "track": "vstar",
+      "sample_uid": "vstar:question_id:18",
+      "condition": "S1",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 1,
+      "track": "vstar",
+      "sample_uid": "vstar:question_id:18",
+      "condition": "S2",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 1,
+      "track": "vstar",
+      "sample_uid": "vstar:question_id:18",
+      "condition": "S3",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 1,
+      "track": "vstar",
+      "sample_uid": "vstar:question_id:18",
+      "condition": "SC",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 2,
+      "track": "vstar",
+      "sample_uid": "vstar:question_id:99",
+      "condition": "S0",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 2,
+      "track": "vstar",
+      "sample_uid": "vstar:question_id:99",
+      "condition": "S1",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 2,
+      "track": "vstar",
+      "sample_uid": "vstar:question_id:99",
+      "condition": "S2",
+      "extraction_faithful": "yes",
+      "semantic_correct": "no",
+      "judge_valid": "yes",
+      "note": "狗的身上黑色斑块主要为黑色，即便有少量棕色毛发，我们通常所说的黑白相间。"
+    },
+    {
+      "case_index": 2,
+      "track": "vstar",
+      "sample_uid": "vstar:question_id:99",
+      "condition": "S3",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 2,
+      "track": "vstar",
+      "sample_uid": "vstar:question_id:99",
+      "condition": "SC",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 3,
+      "track": "vstar",
+      "sample_uid": "vstar:question_id:80",
+      "condition": "S0",
+      "extraction_faithful": "yes",
+      "semantic_correct": "no",
+      "judge_valid": "yes",
+      "note": "画面长笛整体看起来是黑色的，有金属质感，只在顶端部分由于光线原因产生类似银色的反光，但也只占长笛整体很小一部分。"
+    },
+    {
+      "case_index": 3,
+      "track": "vstar",
+      "sample_uid": "vstar:question_id:80",
+      "condition": "S1",
+      "extraction_faithful": "yes",
+      "semantic_correct": "no",
+      "judge_valid": "yes",
+      "note": "画面长笛整体看起来是黑色的，有金属质感，只在顶端部分由于光线原因产生类似银色的反光，但也只占长笛整体很小一部分。"
+    },
+    {
+      "case_index": 3,
+      "track": "vstar",
+      "sample_uid": "vstar:question_id:80",
+      "condition": "S2",
+      "extraction_faithful": "yes",
+      "semantic_correct": "no",
+      "judge_valid": "yes",
+      "note": "画面长笛整体看起来是黑色的，有金属质感，只在顶端部分由于光线原因产生类似银色的反光，但也只占长笛整体很小一部分。"
+    },
+    {
+      "case_index": 3,
+      "track": "vstar",
+      "sample_uid": "vstar:question_id:80",
+      "condition": "S3",
+      "extraction_faithful": "yes",
+      "semantic_correct": "no",
+      "judge_valid": "yes",
+      "note": "画面长笛整体看起来是黑色的，有金属质感，只在顶端部分由于光线原因产生类似银色的反光，但也只占长笛整体很小一部分。"
+    },
+    {
+      "case_index": 3,
+      "track": "vstar",
+      "sample_uid": "vstar:question_id:80",
+      "condition": "SC",
+      "extraction_faithful": "yes",
+      "semantic_correct": "no",
+      "judge_valid": "yes",
+      "note": "画面长笛整体看起来是黑色的，有金属质感，只在顶端部分由于光线原因产生类似银色的反光，但也只占长笛整体很小一部分。"
+    },
+    {
+      "case_index": 4,
+      "track": "vstar",
+      "sample_uid": "vstar:question_id:134",
+      "condition": "S0",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 4,
+      "track": "vstar",
+      "sample_uid": "vstar:question_id:134",
+      "condition": "S1",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 4,
+      "track": "vstar",
+      "sample_uid": "vstar:question_id:134",
+      "condition": "S2",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 4,
+      "track": "vstar",
+      "sample_uid": "vstar:question_id:134",
+      "condition": "S3",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 4,
+      "track": "vstar",
+      "sample_uid": "vstar:question_id:134",
+      "condition": "SC",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 5,
+      "track": "vstar",
+      "sample_uid": "vstar:question_id:46",
+      "condition": "S0",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 5,
+      "track": "vstar",
+      "sample_uid": "vstar:question_id:46",
+      "condition": "S1",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 5,
+      "track": "vstar",
+      "sample_uid": "vstar:question_id:46",
+      "condition": "S2",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 5,
+      "track": "vstar",
+      "sample_uid": "vstar:question_id:46",
+      "condition": "S3",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 5,
+      "track": "vstar",
+      "sample_uid": "vstar:question_id:46",
+      "condition": "SC",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 6,
+      "track": "vstar",
+      "sample_uid": "vstar:question_id:91",
+      "condition": "S0",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 6,
+      "track": "vstar",
+      "sample_uid": "vstar:question_id:91",
+      "condition": "S1",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 6,
+      "track": "vstar",
+      "sample_uid": "vstar:question_id:91",
+      "condition": "S2",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 6,
+      "track": "vstar",
+      "sample_uid": "vstar:question_id:91",
+      "condition": "S3",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 6,
+      "track": "vstar",
+      "sample_uid": "vstar:question_id:91",
+      "condition": "SC",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 7,
+      "track": "vstar",
+      "sample_uid": "vstar:question_id:67",
+      "condition": "S0",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 7,
+      "track": "vstar",
+      "sample_uid": "vstar:question_id:67",
+      "condition": "S1",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 7,
+      "track": "vstar",
+      "sample_uid": "vstar:question_id:67",
+      "condition": "S2",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 7,
+      "track": "vstar",
+      "sample_uid": "vstar:question_id:67",
+      "condition": "S3",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 7,
+      "track": "vstar",
+      "sample_uid": "vstar:question_id:67",
+      "condition": "SC",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 8,
+      "track": "vstar",
+      "sample_uid": "vstar:question_id:159",
+      "condition": "S0",
+      "extraction_faithful": "yes",
+      "semantic_correct": "no",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 8,
+      "track": "vstar",
+      "sample_uid": "vstar:question_id:159",
+      "condition": "S1",
+      "extraction_faithful": "yes",
+      "semantic_correct": "no",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 8,
+      "track": "vstar",
+      "sample_uid": "vstar:question_id:159",
+      "condition": "S2",
+      "extraction_faithful": "yes",
+      "semantic_correct": "no",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 8,
+      "track": "vstar",
+      "sample_uid": "vstar:question_id:159",
+      "condition": "S3",
+      "extraction_faithful": "yes",
+      "semantic_correct": "no",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 8,
+      "track": "vstar",
+      "sample_uid": "vstar:question_id:159",
+      "condition": "SC",
+      "extraction_faithful": "yes",
+      "semantic_correct": "no",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 9,
+      "track": "vstar",
+      "sample_uid": "vstar:question_id:58",
+      "condition": "S0",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": "这不与荷兰国旗相符"
+    },
+    {
+      "case_index": 9,
+      "track": "vstar",
+      "sample_uid": "vstar:question_id:58",
+      "condition": "S1",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 9,
+      "track": "vstar",
+      "sample_uid": "vstar:question_id:58",
+      "condition": "S2",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 9,
+      "track": "vstar",
+      "sample_uid": "vstar:question_id:58",
+      "condition": "S3",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 9,
+      "track": "vstar",
+      "sample_uid": "vstar:question_id:58",
+      "condition": "SC",
+      "extraction_faithful": "yes",
+      "semantic_correct": "no",
+      "judge_valid": "yes",
+      "note": "上方蓝，下方黄是正确的"
+    },
+    {
+      "case_index": 10,
+      "track": "vstar",
+      "sample_uid": "vstar:question_id:27",
+      "condition": "S0",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 10,
+      "track": "vstar",
+      "sample_uid": "vstar:question_id:27",
+      "condition": "S1",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 10,
+      "track": "vstar",
+      "sample_uid": "vstar:question_id:27",
+      "condition": "S2",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 10,
+      "track": "vstar",
+      "sample_uid": "vstar:question_id:27",
+      "condition": "S3",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 10,
+      "track": "vstar",
+      "sample_uid": "vstar:question_id:27",
+      "condition": "SC",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 11,
+      "track": "zoombench",
+      "sample_uid": "zoombench:id:01584b92282afe42b21ec3c24c526697",
+      "condition": "S0",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 11,
+      "track": "zoombench",
+      "sample_uid": "zoombench:id:01584b92282afe42b21ec3c24c526697",
+      "condition": "S1",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 11,
+      "track": "zoombench",
+      "sample_uid": "zoombench:id:01584b92282afe42b21ec3c24c526697",
+      "condition": "S2",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 11,
+      "track": "zoombench",
+      "sample_uid": "zoombench:id:01584b92282afe42b21ec3c24c526697",
+      "condition": "S3",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 11,
+      "track": "zoombench",
+      "sample_uid": "zoombench:id:01584b92282afe42b21ec3c24c526697",
+      "condition": "SC",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 12,
+      "track": "zoombench",
+      "sample_uid": "zoombench:id:a46eb424f196ad9ebf7e6bbe77cbbed7",
+      "condition": "S0",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 12,
+      "track": "zoombench",
+      "sample_uid": "zoombench:id:a46eb424f196ad9ebf7e6bbe77cbbed7",
+      "condition": "S1",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 12,
+      "track": "zoombench",
+      "sample_uid": "zoombench:id:a46eb424f196ad9ebf7e6bbe77cbbed7",
+      "condition": "S2",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 12,
+      "track": "zoombench",
+      "sample_uid": "zoombench:id:a46eb424f196ad9ebf7e6bbe77cbbed7",
+      "condition": "S3",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 12,
+      "track": "zoombench",
+      "sample_uid": "zoombench:id:a46eb424f196ad9ebf7e6bbe77cbbed7",
+      "condition": "SC",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 13,
+      "track": "zoombench",
+      "sample_uid": "zoombench:id:5d953db9a7e10c5df1077bc4af433942",
+      "condition": "S0",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 13,
+      "track": "zoombench",
+      "sample_uid": "zoombench:id:5d953db9a7e10c5df1077bc4af433942",
+      "condition": "S1",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 13,
+      "track": "zoombench",
+      "sample_uid": "zoombench:id:5d953db9a7e10c5df1077bc4af433942",
+      "condition": "S2",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 13,
+      "track": "zoombench",
+      "sample_uid": "zoombench:id:5d953db9a7e10c5df1077bc4af433942",
+      "condition": "S3",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 13,
+      "track": "zoombench",
+      "sample_uid": "zoombench:id:5d953db9a7e10c5df1077bc4af433942",
+      "condition": "SC",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 14,
+      "track": "zoombench",
+      "sample_uid": "zoombench:id:b00b89729a7b1129a85a3245d19b8bd0",
+      "condition": "S0",
+      "extraction_faithful": "yes",
+      "semantic_correct": "no",
+      "judge_valid": "yes",
+      "note": "有红色文字的建筑上，共有四个阳台外面带黑色栏杆"
+    },
+    {
+      "case_index": 14,
+      "track": "zoombench",
+      "sample_uid": "zoombench:id:b00b89729a7b1129a85a3245d19b8bd0",
+      "condition": "S1",
+      "extraction_faithful": "yes",
+      "semantic_correct": "no",
+      "judge_valid": "yes",
+      "note": "有红色文字的建筑上，共有四个阳台外面带黑色栏杆"
+    },
+    {
+      "case_index": 14,
+      "track": "zoombench",
+      "sample_uid": "zoombench:id:b00b89729a7b1129a85a3245d19b8bd0",
+      "condition": "S2",
+      "extraction_faithful": "yes",
+      "semantic_correct": "no",
+      "judge_valid": "yes",
+      "note": "有红色文字的建筑上，共有四个阳台外面带黑色栏杆"
+    },
+    {
+      "case_index": 14,
+      "track": "zoombench",
+      "sample_uid": "zoombench:id:b00b89729a7b1129a85a3245d19b8bd0",
+      "condition": "S3",
+      "extraction_faithful": "yes",
+      "semantic_correct": "no",
+      "judge_valid": "yes",
+      "note": "有红色文字的建筑上，共有四个阳台外面带黑色栏杆"
+    },
+    {
+      "case_index": 14,
+      "track": "zoombench",
+      "sample_uid": "zoombench:id:b00b89729a7b1129a85a3245d19b8bd0",
+      "condition": "SC",
+      "extraction_faithful": "yes",
+      "semantic_correct": "no",
+      "judge_valid": "yes",
+      "note": "有红色文字的建筑上，共有四个阳台外面带黑色栏杆"
+    },
+    {
+      "case_index": 15,
+      "track": "zoombench",
+      "sample_uid": "zoombench:id:2987cafcdde68283f1e403cad81dfe58",
+      "condition": "S0",
+      "extraction_faithful": "yes",
+      "semantic_correct": "no",
+      "judge_valid": "yes",
+      "note": "交替出现黄白两个颜色，有两个不同颜色的色块。"
+    },
+    {
+      "case_index": 15,
+      "track": "zoombench",
+      "sample_uid": "zoombench:id:2987cafcdde68283f1e403cad81dfe58",
+      "condition": "S1",
+      "extraction_faithful": "yes",
+      "semantic_correct": "no",
+      "judge_valid": "yes",
+      "note": "交替出现黄白两个颜色，有两个不同颜色的色块。"
+    },
+    {
+      "case_index": 15,
+      "track": "zoombench",
+      "sample_uid": "zoombench:id:2987cafcdde68283f1e403cad81dfe58",
+      "condition": "S2",
+      "extraction_faithful": "yes",
+      "semantic_correct": "no",
+      "judge_valid": "yes",
+      "note": "交替出现黄白两个颜色，有两个不同颜色的色块。"
+    },
+    {
+      "case_index": 15,
+      "track": "zoombench",
+      "sample_uid": "zoombench:id:2987cafcdde68283f1e403cad81dfe58",
+      "condition": "S3",
+      "extraction_faithful": "yes",
+      "semantic_correct": "no",
+      "judge_valid": "yes",
+      "note": "交替出现黄白两个颜色，有两个不同颜色的色块。"
+    },
+    {
+      "case_index": 15,
+      "track": "zoombench",
+      "sample_uid": "zoombench:id:2987cafcdde68283f1e403cad81dfe58",
+      "condition": "SC",
+      "extraction_faithful": "yes",
+      "semantic_correct": "no",
+      "judge_valid": "yes",
+      "note": "交替出现黄白两个颜色，有两个不同颜色的色块。"
+    },
+    {
+      "case_index": 16,
+      "track": "zoombench",
+      "sample_uid": "zoombench:id:21024069ca3b7eb7de9944fa42cccf73",
+      "condition": "S0",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 16,
+      "track": "zoombench",
+      "sample_uid": "zoombench:id:21024069ca3b7eb7de9944fa42cccf73",
+      "condition": "S1",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 16,
+      "track": "zoombench",
+      "sample_uid": "zoombench:id:21024069ca3b7eb7de9944fa42cccf73",
+      "condition": "S2",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 16,
+      "track": "zoombench",
+      "sample_uid": "zoombench:id:21024069ca3b7eb7de9944fa42cccf73",
+      "condition": "S3",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 16,
+      "track": "zoombench",
+      "sample_uid": "zoombench:id:21024069ca3b7eb7de9944fa42cccf73",
+      "condition": "SC",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 17,
+      "track": "zoombench",
+      "sample_uid": "zoombench:id:d104f3fe2ea16481f1920e7dc292ff3f",
+      "condition": "S0",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 17,
+      "track": "zoombench",
+      "sample_uid": "zoombench:id:d104f3fe2ea16481f1920e7dc292ff3f",
+      "condition": "S1",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 17,
+      "track": "zoombench",
+      "sample_uid": "zoombench:id:d104f3fe2ea16481f1920e7dc292ff3f",
+      "condition": "S2",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 17,
+      "track": "zoombench",
+      "sample_uid": "zoombench:id:d104f3fe2ea16481f1920e7dc292ff3f",
+      "condition": "S3",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 17,
+      "track": "zoombench",
+      "sample_uid": "zoombench:id:d104f3fe2ea16481f1920e7dc292ff3f",
+      "condition": "SC",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 18,
+      "track": "zoombench",
+      "sample_uid": "zoombench:id:99d49b143df5c3b606dc77de7b9579d0",
+      "condition": "S0",
+      "extraction_faithful": "yes",
+      "semantic_correct": "no",
+      "judge_valid": "yes",
+      "note": "黑色是鸟头部位置，鸟喙部分为黄色"
+    },
+    {
+      "case_index": 18,
+      "track": "zoombench",
+      "sample_uid": "zoombench:id:99d49b143df5c3b606dc77de7b9579d0",
+      "condition": "S1",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 18,
+      "track": "zoombench",
+      "sample_uid": "zoombench:id:99d49b143df5c3b606dc77de7b9579d0",
+      "condition": "S2",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 18,
+      "track": "zoombench",
+      "sample_uid": "zoombench:id:99d49b143df5c3b606dc77de7b9579d0",
+      "condition": "S3",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 18,
+      "track": "zoombench",
+      "sample_uid": "zoombench:id:99d49b143df5c3b606dc77de7b9579d0",
+      "condition": "SC",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 19,
+      "track": "zoombench",
+      "sample_uid": "zoombench:id:900c414738f9cc0052852cd00648878b",
+      "condition": "S0",
+      "extraction_faithful": "yes",
+      "semantic_correct": "no",
+      "judge_valid": "yes",
+      "note": "图中炉灶有五个不同的圆形烹饪区，分别为右下一个大的烹饪区，右上两个小的烹饪区，左侧上下分别有两个一样大小的中等烹饪区。"
+    },
+    {
+      "case_index": 19,
+      "track": "zoombench",
+      "sample_uid": "zoombench:id:900c414738f9cc0052852cd00648878b",
+      "condition": "S1",
+      "extraction_faithful": "yes",
+      "semantic_correct": "no",
+      "judge_valid": "yes",
+      "note": "图中炉灶有五个不同的圆形烹饪区，分别为右下一个大的烹饪区，右上两个小的烹饪区，左侧上下分别有两个一样大小的中等烹饪区。"
+    },
+    {
+      "case_index": 19,
+      "track": "zoombench",
+      "sample_uid": "zoombench:id:900c414738f9cc0052852cd00648878b",
+      "condition": "S2",
+      "extraction_faithful": "yes",
+      "semantic_correct": "no",
+      "judge_valid": "yes",
+      "note": "图中炉灶有五个不同的圆形烹饪区，分别为右下一个大的烹饪区，右上两个小的烹饪区，左侧上下分别有两个一样大小的中等烹饪区。"
+    },
+    {
+      "case_index": 19,
+      "track": "zoombench",
+      "sample_uid": "zoombench:id:900c414738f9cc0052852cd00648878b",
+      "condition": "S3",
+      "extraction_faithful": "yes",
+      "semantic_correct": "no",
+      "judge_valid": "yes",
+      "note": "图中炉灶有五个不同的圆形烹饪区，分别为右下一个大的烹饪区，右上两个小的烹饪区，左侧上下分别有两个一样大小的中等烹饪区。"
+    },
+    {
+      "case_index": 19,
+      "track": "zoombench",
+      "sample_uid": "zoombench:id:900c414738f9cc0052852cd00648878b",
+      "condition": "SC",
+      "extraction_faithful": "yes",
+      "semantic_correct": "no",
+      "judge_valid": "yes",
+      "note": "图中炉灶有五个不同的圆形烹饪区，分别为右下一个大的烹饪区，右上两个小的烹饪区，左侧上下分别有两个一样大小的中等烹饪区。"
+    },
+    {
+      "case_index": 20,
+      "track": "zoombench",
+      "sample_uid": "zoombench:id:d6136ce7978f3be1b03561fd8c6e771a",
+      "condition": "S0",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 20,
+      "track": "zoombench",
+      "sample_uid": "zoombench:id:d6136ce7978f3be1b03561fd8c6e771a",
+      "condition": "S1",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 20,
+      "track": "zoombench",
+      "sample_uid": "zoombench:id:d6136ce7978f3be1b03561fd8c6e771a",
+      "condition": "S2",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 20,
+      "track": "zoombench",
+      "sample_uid": "zoombench:id:d6136ce7978f3be1b03561fd8c6e771a",
+      "condition": "S3",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 20,
+      "track": "zoombench",
+      "sample_uid": "zoombench:id:d6136ce7978f3be1b03561fd8c6e771a",
+      "condition": "SC",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 21,
+      "track": "hrbench-4k",
+      "sample_uid": "hrbench-4k:index:750",
+      "condition": "S0",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 21,
+      "track": "hrbench-4k",
+      "sample_uid": "hrbench-4k:index:750",
+      "condition": "S1",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 21,
+      "track": "hrbench-4k",
+      "sample_uid": "hrbench-4k:index:750",
+      "condition": "S2",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 21,
+      "track": "hrbench-4k",
+      "sample_uid": "hrbench-4k:index:750",
+      "condition": "S3",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 21,
+      "track": "hrbench-4k",
+      "sample_uid": "hrbench-4k:index:750",
+      "condition": "SC",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 22,
+      "track": "hrbench-4k",
+      "sample_uid": "hrbench-4k:index:604",
+      "condition": "S0",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 22,
+      "track": "hrbench-4k",
+      "sample_uid": "hrbench-4k:index:604",
+      "condition": "S1",
+      "extraction_faithful": "yes",
+      "semantic_correct": "no",
+      "judge_valid": "yes",
+      "note": "对于1234的认定有误，1苏格兰2英格兰3爱尔兰4欧洲某地，从图中标记3不能认为是北爱尔兰，所以是一个国家的是1和2。"
+    },
+    {
+      "case_index": 22,
+      "track": "hrbench-4k",
+      "sample_uid": "hrbench-4k:index:604",
+      "condition": "S2",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 22,
+      "track": "hrbench-4k",
+      "sample_uid": "hrbench-4k:index:604",
+      "condition": "S3",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": "4个点的位置都认为是英国有误，虽然最后结果是正确的。"
+    },
+    {
+      "case_index": 22,
+      "track": "hrbench-4k",
+      "sample_uid": "hrbench-4k:index:604",
+      "condition": "SC",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 23,
+      "track": "hrbench-4k",
+      "sample_uid": "hrbench-4k:index:583",
+      "condition": "S0",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 23,
+      "track": "hrbench-4k",
+      "sample_uid": "hrbench-4k:index:583",
+      "condition": "S1",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 23,
+      "track": "hrbench-4k",
+      "sample_uid": "hrbench-4k:index:583",
+      "condition": "S2",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 23,
+      "track": "hrbench-4k",
+      "sample_uid": "hrbench-4k:index:583",
+      "condition": "S3",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 23,
+      "track": "hrbench-4k",
+      "sample_uid": "hrbench-4k:index:583",
+      "condition": "SC",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 24,
+      "track": "hrbench-4k",
+      "sample_uid": "hrbench-4k:index:696",
+      "condition": "S0",
+      "extraction_faithful": "yes",
+      "semantic_correct": "no",
+      "judge_valid": "yes",
+      "note": "抽取错误导致答案也错误，商品10是1，商品15是11，所以平均销售额是6。"
+    },
+    {
+      "case_index": 24,
+      "track": "hrbench-4k",
+      "sample_uid": "hrbench-4k:index:696",
+      "condition": "S1",
+      "extraction_faithful": "no",
+      "semantic_correct": "no",
+      "judge_valid": "yes",
+      "note": "抽取错误导致答案也错误，商品10是1，商品15是11，所以平均销售额是6。"
+    },
+    {
+      "case_index": 24,
+      "track": "hrbench-4k",
+      "sample_uid": "hrbench-4k:index:696",
+      "condition": "S2",
+      "extraction_faithful": "yes",
+      "semantic_correct": "no",
+      "judge_valid": "yes",
+      "note": "抽取错误导致答案也错误，商品10是1，商品15是11，所以平均销售额是6。"
+    },
+    {
+      "case_index": 24,
+      "track": "hrbench-4k",
+      "sample_uid": "hrbench-4k:index:696",
+      "condition": "S3",
+      "extraction_faithful": "yes",
+      "semantic_correct": "no",
+      "judge_valid": "yes",
+      "note": "抽取错误导致答案也错误，商品10是1，商品15是11，所以平均销售额是6。"
+    },
+    {
+      "case_index": 24,
+      "track": "hrbench-4k",
+      "sample_uid": "hrbench-4k:index:696",
+      "condition": "SC",
+      "extraction_faithful": "yes",
+      "semantic_correct": "no",
+      "judge_valid": "yes",
+      "note": "抽取错误导致答案也错误，商品10是1，商品15是11，所以平均销售额是6。"
+    },
+    {
+      "case_index": 25,
+      "track": "hrbench-4k",
+      "sample_uid": "hrbench-4k:index:676",
+      "condition": "S0",
+      "extraction_faithful": "yes",
+      "semantic_correct": "no",
+      "judge_valid": "yes",
+      "note": "物品1有误不是73是1，错把物品2数值当作物品1."
+    },
+    {
+      "case_index": 25,
+      "track": "hrbench-4k",
+      "sample_uid": "hrbench-4k:index:676",
+      "condition": "S1",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 25,
+      "track": "hrbench-4k",
+      "sample_uid": "hrbench-4k:index:676",
+      "condition": "S2",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 25,
+      "track": "hrbench-4k",
+      "sample_uid": "hrbench-4k:index:676",
+      "condition": "S3",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 25,
+      "track": "hrbench-4k",
+      "sample_uid": "hrbench-4k:index:676",
+      "condition": "SC",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 26,
+      "track": "hrbench-4k",
+      "sample_uid": "hrbench-4k:index:210",
+      "condition": "S0",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 26,
+      "track": "hrbench-4k",
+      "sample_uid": "hrbench-4k:index:210",
+      "condition": "S1",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 26,
+      "track": "hrbench-4k",
+      "sample_uid": "hrbench-4k:index:210",
+      "condition": "S2",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 26,
+      "track": "hrbench-4k",
+      "sample_uid": "hrbench-4k:index:210",
+      "condition": "S3",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 26,
+      "track": "hrbench-4k",
+      "sample_uid": "hrbench-4k:index:210",
+      "condition": "SC",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 27,
+      "track": "hrbench-4k",
+      "sample_uid": "hrbench-4k:index:670",
+      "condition": "S0",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 27,
+      "track": "hrbench-4k",
+      "sample_uid": "hrbench-4k:index:670",
+      "condition": "S1",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 27,
+      "track": "hrbench-4k",
+      "sample_uid": "hrbench-4k:index:670",
+      "condition": "S2",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 27,
+      "track": "hrbench-4k",
+      "sample_uid": "hrbench-4k:index:670",
+      "condition": "S3",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 27,
+      "track": "hrbench-4k",
+      "sample_uid": "hrbench-4k:index:670",
+      "condition": "SC",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 28,
+      "track": "hrbench-4k",
+      "sample_uid": "hrbench-4k:index:252",
+      "condition": "S0",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 28,
+      "track": "hrbench-4k",
+      "sample_uid": "hrbench-4k:index:252",
+      "condition": "S1",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 28,
+      "track": "hrbench-4k",
+      "sample_uid": "hrbench-4k:index:252",
+      "condition": "S2",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 28,
+      "track": "hrbench-4k",
+      "sample_uid": "hrbench-4k:index:252",
+      "condition": "S3",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 28,
+      "track": "hrbench-4k",
+      "sample_uid": "hrbench-4k:index:252",
+      "condition": "SC",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 29,
+      "track": "hrbench-4k",
+      "sample_uid": "hrbench-4k:index:48",
+      "condition": "S0",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 29,
+      "track": "hrbench-4k",
+      "sample_uid": "hrbench-4k:index:48",
+      "condition": "S1",
+      "extraction_faithful": "yes",
+      "semantic_correct": "no",
+      "judge_valid": "yes",
+      "note": "回收箱前侧偏左，并不是回收箱完全左边的位置。"
+    },
+    {
+      "case_index": 29,
+      "track": "hrbench-4k",
+      "sample_uid": "hrbench-4k:index:48",
+      "condition": "S2",
+      "extraction_faithful": "yes",
+      "semantic_correct": "no",
+      "judge_valid": "yes",
+      "note": "回收箱前侧偏左，并不是回收箱完全左边的位置。"
+    },
+    {
+      "case_index": 29,
+      "track": "hrbench-4k",
+      "sample_uid": "hrbench-4k:index:48",
+      "condition": "S3",
+      "extraction_faithful": "yes",
+      "semantic_correct": "no",
+      "judge_valid": "yes",
+      "note": "回收箱前侧偏左，并不是回收箱完全左边的位置。"
+    },
+    {
+      "case_index": 29,
+      "track": "hrbench-4k",
+      "sample_uid": "hrbench-4k:index:48",
+      "condition": "SC",
+      "extraction_faithful": "yes",
+      "semantic_correct": "no",
+      "judge_valid": "yes",
+      "note": "人位于回收箱前方，部分遮挡回收箱。"
+    },
+    {
+      "case_index": 30,
+      "track": "hrbench-4k",
+      "sample_uid": "hrbench-4k:index:506",
+      "condition": "S0",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 30,
+      "track": "hrbench-4k",
+      "sample_uid": "hrbench-4k:index:506",
+      "condition": "S1",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 30,
+      "track": "hrbench-4k",
+      "sample_uid": "hrbench-4k:index:506",
+      "condition": "S2",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 30,
+      "track": "hrbench-4k",
+      "sample_uid": "hrbench-4k:index:506",
+      "condition": "S3",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 30,
+      "track": "hrbench-4k",
+      "sample_uid": "hrbench-4k:index:506",
+      "condition": "SC",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 31,
+      "track": "hrbench-8k",
+      "sample_uid": "hrbench-8k:index:625",
+      "condition": "S0",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 31,
+      "track": "hrbench-8k",
+      "sample_uid": "hrbench-8k:index:625",
+      "condition": "S1",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 31,
+      "track": "hrbench-8k",
+      "sample_uid": "hrbench-8k:index:625",
+      "condition": "S2",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 31,
+      "track": "hrbench-8k",
+      "sample_uid": "hrbench-8k:index:625",
+      "condition": "S3",
+      "extraction_faithful": "no",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": "1，2不位于美国 位于加拿大"
+    },
+    {
+      "case_index": 31,
+      "track": "hrbench-8k",
+      "sample_uid": "hrbench-8k:index:625",
+      "condition": "SC",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 32,
+      "track": "hrbench-8k",
+      "sample_uid": "hrbench-8k:index:319",
+      "condition": "S0",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 32,
+      "track": "hrbench-8k",
+      "sample_uid": "hrbench-8k:index:319",
+      "condition": "S1",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 32,
+      "track": "hrbench-8k",
+      "sample_uid": "hrbench-8k:index:319",
+      "condition": "S2",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 32,
+      "track": "hrbench-8k",
+      "sample_uid": "hrbench-8k:index:319",
+      "condition": "S3",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 32,
+      "track": "hrbench-8k",
+      "sample_uid": "hrbench-8k:index:319",
+      "condition": "SC",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 33,
+      "track": "hrbench-8k",
+      "sample_uid": "hrbench-8k:index:75",
+      "condition": "S0",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 33,
+      "track": "hrbench-8k",
+      "sample_uid": "hrbench-8k:index:75",
+      "condition": "S1",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 33,
+      "track": "hrbench-8k",
+      "sample_uid": "hrbench-8k:index:75",
+      "condition": "S2",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 33,
+      "track": "hrbench-8k",
+      "sample_uid": "hrbench-8k:index:75",
+      "condition": "S3",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 33,
+      "track": "hrbench-8k",
+      "sample_uid": "hrbench-8k:index:75",
+      "condition": "SC",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 34,
+      "track": "hrbench-8k",
+      "sample_uid": "hrbench-8k:index:691",
+      "condition": "S0",
+      "extraction_faithful": "yes",
+      "semantic_correct": "no",
+      "judge_valid": "yes",
+      "note": "抽取错误导致答案也错误，商品10是1，商品15是11，所以平均销售额是6。"
+    },
+    {
+      "case_index": 34,
+      "track": "hrbench-8k",
+      "sample_uid": "hrbench-8k:index:691",
+      "condition": "S1",
+      "extraction_faithful": "yes",
+      "semantic_correct": "no",
+      "judge_valid": "yes",
+      "note": "抽取错误导致答案也错误，商品10是1，商品15是11，所以平均销售额是6。"
+    },
+    {
+      "case_index": 34,
+      "track": "hrbench-8k",
+      "sample_uid": "hrbench-8k:index:691",
+      "condition": "S2",
+      "extraction_faithful": "yes",
+      "semantic_correct": "no",
+      "judge_valid": "yes",
+      "note": "抽取错误导致答案也错误，商品10是1，商品15是11，所以平均销售额是6。"
+    },
+    {
+      "case_index": 34,
+      "track": "hrbench-8k",
+      "sample_uid": "hrbench-8k:index:691",
+      "condition": "S3",
+      "extraction_faithful": "yes",
+      "semantic_correct": "no",
+      "judge_valid": "yes",
+      "note": "抽取错误导致答案也错误，商品10是1，商品15是11，所以平均销售额是6。"
+    },
+    {
+      "case_index": 34,
+      "track": "hrbench-8k",
+      "sample_uid": "hrbench-8k:index:691",
+      "condition": "SC",
+      "extraction_faithful": "yes",
+      "semantic_correct": "no",
+      "judge_valid": "yes",
+      "note": "抽取错误导致答案也错误，商品10是1，商品15是11，所以平均销售额是6。"
+    },
+    {
+      "case_index": 35,
+      "track": "hrbench-8k",
+      "sample_uid": "hrbench-8k:index:703",
+      "condition": "S0",
+      "extraction_faithful": "unclear",
+      "semantic_correct": "no",
+      "judge_valid": "yes",
+      "note": "没能正确抓取到物品1和物品6的销售额。"
+    },
+    {
+      "case_index": 35,
+      "track": "hrbench-8k",
+      "sample_uid": "hrbench-8k:index:703",
+      "condition": "S1",
+      "extraction_faithful": "yes",
+      "semantic_correct": "no",
+      "judge_valid": "yes",
+      "note": "没能正确抓取到物品1和物品6的销售额。"
+    },
+    {
+      "case_index": 35,
+      "track": "hrbench-8k",
+      "sample_uid": "hrbench-8k:index:703",
+      "condition": "S2",
+      "extraction_faithful": "yes",
+      "semantic_correct": "no",
+      "judge_valid": "yes",
+      "note": "没能正确抓取到物品1和物品6的销售额。"
+    },
+    {
+      "case_index": 35,
+      "track": "hrbench-8k",
+      "sample_uid": "hrbench-8k:index:703",
+      "condition": "S3",
+      "extraction_faithful": "yes",
+      "semantic_correct": "no",
+      "judge_valid": "yes",
+      "note": "没能正确抓取到物品1和物品6的销售额。"
+    },
+    {
+      "case_index": 35,
+      "track": "hrbench-8k",
+      "sample_uid": "hrbench-8k:index:703",
+      "condition": "SC",
+      "extraction_faithful": "yes",
+      "semantic_correct": "no",
+      "judge_valid": "yes",
+      "note": "没能正确抓取到物品1和物品6的销售额。"
+    },
+    {
+      "case_index": 36,
+      "track": "hrbench-8k",
+      "sample_uid": "hrbench-8k:index:343",
+      "condition": "S0",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 36,
+      "track": "hrbench-8k",
+      "sample_uid": "hrbench-8k:index:343",
+      "condition": "S1",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 36,
+      "track": "hrbench-8k",
+      "sample_uid": "hrbench-8k:index:343",
+      "condition": "S2",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 36,
+      "track": "hrbench-8k",
+      "sample_uid": "hrbench-8k:index:343",
+      "condition": "S3",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 36,
+      "track": "hrbench-8k",
+      "sample_uid": "hrbench-8k:index:343",
+      "condition": "SC",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 37,
+      "track": "hrbench-8k",
+      "sample_uid": "hrbench-8k:index:414",
+      "condition": "S0",
+      "extraction_faithful": "yes",
+      "semantic_correct": "no",
+      "judge_valid": "yes",
+      "note": "熊的左侧，图像偏中心。"
+    },
+    {
+      "case_index": 37,
+      "track": "hrbench-8k",
+      "sample_uid": "hrbench-8k:index:414",
+      "condition": "S1",
+      "extraction_faithful": "yes",
+      "semantic_correct": "no",
+      "judge_valid": "yes",
+      "note": "熊的左侧，图像偏中心。"
+    },
+    {
+      "case_index": 37,
+      "track": "hrbench-8k",
+      "sample_uid": "hrbench-8k:index:414",
+      "condition": "S2",
+      "extraction_faithful": "yes",
+      "semantic_correct": "no",
+      "judge_valid": "yes",
+      "note": "熊的左侧，图像偏中心。"
+    },
+    {
+      "case_index": 37,
+      "track": "hrbench-8k",
+      "sample_uid": "hrbench-8k:index:414",
+      "condition": "S3",
+      "extraction_faithful": "yes",
+      "semantic_correct": "no",
+      "judge_valid": "yes",
+      "note": "熊的左侧，图像偏中心。"
+    },
+    {
+      "case_index": 37,
+      "track": "hrbench-8k",
+      "sample_uid": "hrbench-8k:index:414",
+      "condition": "SC",
+      "extraction_faithful": "yes",
+      "semantic_correct": "no",
+      "judge_valid": "yes",
+      "note": "熊的左侧，图像偏中心。"
+    },
+    {
+      "case_index": 38,
+      "track": "hrbench-8k",
+      "sample_uid": "hrbench-8k:index:333",
+      "condition": "S0",
+      "extraction_faithful": "yes",
+      "semantic_correct": "unclear",
+      "judge_valid": "yes",
+      "note": "原图看不清楚，标志和道路情况。"
+    },
+    {
+      "case_index": 38,
+      "track": "hrbench-8k",
+      "sample_uid": "hrbench-8k:index:333",
+      "condition": "S1",
+      "extraction_faithful": "yes",
+      "semantic_correct": "unclear",
+      "judge_valid": "yes",
+      "note": "原图看不清楚，标志和道路情况。"
+    },
+    {
+      "case_index": 38,
+      "track": "hrbench-8k",
+      "sample_uid": "hrbench-8k:index:333",
+      "condition": "S2",
+      "extraction_faithful": "yes",
+      "semantic_correct": "unclear",
+      "judge_valid": "yes",
+      "note": "原图看不清楚，标志和道路情况。"
+    },
+    {
+      "case_index": 38,
+      "track": "hrbench-8k",
+      "sample_uid": "hrbench-8k:index:333",
+      "condition": "S3",
+      "extraction_faithful": "yes",
+      "semantic_correct": "unclear",
+      "judge_valid": "yes",
+      "note": "原图看不清楚，标志和道路情况。"
+    },
+    {
+      "case_index": 38,
+      "track": "hrbench-8k",
+      "sample_uid": "hrbench-8k:index:333",
+      "condition": "SC",
+      "extraction_faithful": "yes",
+      "semantic_correct": "unclear",
+      "judge_valid": "yes",
+      "note": "原图看不清楚，标志和道路情况。"
+    },
+    {
+      "case_index": 39,
+      "track": "hrbench-8k",
+      "sample_uid": "hrbench-8k:index:293",
+      "condition": "S0",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 39,
+      "track": "hrbench-8k",
+      "sample_uid": "hrbench-8k:index:293",
+      "condition": "S1",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 39,
+      "track": "hrbench-8k",
+      "sample_uid": "hrbench-8k:index:293",
+      "condition": "S2",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 39,
+      "track": "hrbench-8k",
+      "sample_uid": "hrbench-8k:index:293",
+      "condition": "S3",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 39,
+      "track": "hrbench-8k",
+      "sample_uid": "hrbench-8k:index:293",
+      "condition": "SC",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 40,
+      "track": "hrbench-8k",
+      "sample_uid": "hrbench-8k:index:8",
+      "condition": "S0",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 40,
+      "track": "hrbench-8k",
+      "sample_uid": "hrbench-8k:index:8",
+      "condition": "S1",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 40,
+      "track": "hrbench-8k",
+      "sample_uid": "hrbench-8k:index:8",
+      "condition": "S2",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 40,
+      "track": "hrbench-8k",
+      "sample_uid": "hrbench-8k:index:8",
+      "condition": "S3",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 40,
+      "track": "hrbench-8k",
+      "sample_uid": "hrbench-8k:index:8",
+      "condition": "SC",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 41,
+      "track": "mme-realworld",
+      "sample_uid": "mme-realworld:index:21588",
+      "condition": "S0",
+      "extraction_faithful": "yes",
+      "semantic_correct": "no",
+      "judge_valid": "no",
+      "note": "水面停泊7艘大型船只。"
+    },
+    {
+      "case_index": 41,
+      "track": "mme-realworld",
+      "sample_uid": "mme-realworld:index:21588",
+      "condition": "S1",
+      "extraction_faithful": "yes",
+      "semantic_correct": "no",
+      "judge_valid": "yes",
+      "note": "水面停泊7艘大型船只。"
+    },
+    {
+      "case_index": 41,
+      "track": "mme-realworld",
+      "sample_uid": "mme-realworld:index:21588",
+      "condition": "S2",
+      "extraction_faithful": "yes",
+      "semantic_correct": "no",
+      "judge_valid": "yes",
+      "note": "水面停泊7艘大型船只。"
+    },
+    {
+      "case_index": 41,
+      "track": "mme-realworld",
+      "sample_uid": "mme-realworld:index:21588",
+      "condition": "S3",
+      "extraction_faithful": "yes",
+      "semantic_correct": "no",
+      "judge_valid": "yes",
+      "note": "水面停泊7艘大型船只。"
+    },
+    {
+      "case_index": 41,
+      "track": "mme-realworld",
+      "sample_uid": "mme-realworld:index:21588",
+      "condition": "SC",
+      "extraction_faithful": "yes",
+      "semantic_correct": "no",
+      "judge_valid": "no",
+      "note": "水面停泊7艘大型船只。"
+    },
+    {
+      "case_index": 42,
+      "track": "mme-realworld",
+      "sample_uid": "mme-realworld:index:12136",
+      "condition": "S0",
+      "extraction_faithful": "yes",
+      "semantic_correct": "unclear",
+      "judge_valid": "no",
+      "note": "图像中的人数不确定。"
+    },
+    {
+      "case_index": 42,
+      "track": "mme-realworld",
+      "sample_uid": "mme-realworld:index:12136",
+      "condition": "S1",
+      "extraction_faithful": "yes",
+      "semantic_correct": "unclear",
+      "judge_valid": "no",
+      "note": "图像中的人数不确定。"
+    },
+    {
+      "case_index": 42,
+      "track": "mme-realworld",
+      "sample_uid": "mme-realworld:index:12136",
+      "condition": "S2",
+      "extraction_faithful": "yes",
+      "semantic_correct": "unclear",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 42,
+      "track": "mme-realworld",
+      "sample_uid": "mme-realworld:index:12136",
+      "condition": "S3",
+      "extraction_faithful": "yes",
+      "semantic_correct": "unclear",
+      "judge_valid": "yes",
+      "note": "图像中的人数不确定。"
+    },
+    {
+      "case_index": 42,
+      "track": "mme-realworld",
+      "sample_uid": "mme-realworld:index:12136",
+      "condition": "SC",
+      "extraction_faithful": "yes",
+      "semantic_correct": "unclear",
+      "judge_valid": "no",
+      "note": "图像中的人数不确定。"
+    },
+    {
+      "case_index": 43,
+      "track": "mme-realworld",
+      "sample_uid": "mme-realworld:index:20868",
+      "condition": "S0",
+      "extraction_faithful": "yes",
+      "semantic_correct": "unclear",
+      "judge_valid": "no",
+      "note": "蓝色什么，如果是蓝色汽车旁边是白色汽车，另一边是不是黑色汽车看不清楚。"
+    },
+    {
+      "case_index": 43,
+      "track": "mme-realworld",
+      "sample_uid": "mme-realworld:index:20868",
+      "condition": "S1",
+      "extraction_faithful": "yes",
+      "semantic_correct": "unclear",
+      "judge_valid": "yes",
+      "note": "蓝色什么，如果是蓝色汽车旁边是白色汽车，另一边是不是黑色汽车看不清楚。"
+    },
+    {
+      "case_index": 43,
+      "track": "mme-realworld",
+      "sample_uid": "mme-realworld:index:20868",
+      "condition": "S2",
+      "extraction_faithful": "yes",
+      "semantic_correct": "unclear",
+      "judge_valid": "yes",
+      "note": "蓝色什么，如果是蓝色汽车旁边是白色汽车，另一边是不是黑色汽车看不清楚。"
+    },
+    {
+      "case_index": 43,
+      "track": "mme-realworld",
+      "sample_uid": "mme-realworld:index:20868",
+      "condition": "S3",
+      "extraction_faithful": "yes",
+      "semantic_correct": "unclear",
+      "judge_valid": "yes",
+      "note": "蓝色什么，如果是蓝色汽车旁边是白色汽车，另一边是不是黑色汽车看不清楚。"
+    },
+    {
+      "case_index": 43,
+      "track": "mme-realworld",
+      "sample_uid": "mme-realworld:index:20868",
+      "condition": "SC",
+      "extraction_faithful": "yes",
+      "semantic_correct": "unclear",
+      "judge_valid": "yes",
+      "note": "蓝色什么，如果是蓝色汽车旁边是白色汽车，另一边是不是黑色汽车看不清楚。"
+    },
+    {
+      "case_index": 44,
+      "track": "mme-realworld",
+      "sample_uid": "mme-realworld:index:2051",
+      "condition": "S0",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 44,
+      "track": "mme-realworld",
+      "sample_uid": "mme-realworld:index:2051",
+      "condition": "S1",
+      "extraction_faithful": "yes",
+      "semantic_correct": "unclear",
+      "judge_valid": "yes",
+      "note": "图片模糊，天色黑很，距离较远看不清楚。"
+    },
+    {
+      "case_index": 44,
+      "track": "mme-realworld",
+      "sample_uid": "mme-realworld:index:2051",
+      "condition": "S2",
+      "extraction_faithful": "yes",
+      "semantic_correct": "no",
+      "judge_valid": "yes",
+      "note": "图片模糊，天色黑很，距离较远看不清楚。"
+    },
+    {
+      "case_index": 44,
+      "track": "mme-realworld",
+      "sample_uid": "mme-realworld:index:2051",
+      "condition": "S3",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 44,
+      "track": "mme-realworld",
+      "sample_uid": "mme-realworld:index:2051",
+      "condition": "SC",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 45,
+      "track": "mme-realworld",
+      "sample_uid": "mme-realworld:index:3205",
+      "condition": "S0",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 45,
+      "track": "mme-realworld",
+      "sample_uid": "mme-realworld:index:3205",
+      "condition": "S1",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 45,
+      "track": "mme-realworld",
+      "sample_uid": "mme-realworld:index:3205",
+      "condition": "S2",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 45,
+      "track": "mme-realworld",
+      "sample_uid": "mme-realworld:index:3205",
+      "condition": "S3",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 45,
+      "track": "mme-realworld",
+      "sample_uid": "mme-realworld:index:3205",
+      "condition": "SC",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 46,
+      "track": "mme-realworld",
+      "sample_uid": "mme-realworld:index:5244",
+      "condition": "S0",
+      "extraction_faithful": "yes",
+      "semantic_correct": "no",
+      "judge_valid": "unclear",
+      "note": "模型输出出现大量循环重复，达到上万 token 后直接截断，最终未给出答案；抽取结果为无结论，符合输出实际，裁判无法据此评估。"
+    },
+    {
+      "case_index": 46,
+      "track": "mme-realworld",
+      "sample_uid": "mme-realworld:index:5244",
+      "condition": "S1",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 46,
+      "track": "mme-realworld",
+      "sample_uid": "mme-realworld:index:5244",
+      "condition": "S2",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 46,
+      "track": "mme-realworld",
+      "sample_uid": "mme-realworld:index:5244",
+      "condition": "S3",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 46,
+      "track": "mme-realworld",
+      "sample_uid": "mme-realworld:index:5244",
+      "condition": "SC",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 47,
+      "track": "mme-realworld",
+      "sample_uid": "mme-realworld:index:11896",
+      "condition": "S0",
+      "extraction_faithful": "yes",
+      "semantic_correct": "no",
+      "judge_valid": "no",
+      "note": "图片有多少人看不清。"
+    },
+    {
+      "case_index": 47,
+      "track": "mme-realworld",
+      "sample_uid": "mme-realworld:index:11896",
+      "condition": "S1",
+      "extraction_faithful": "yes",
+      "semantic_correct": "no",
+      "judge_valid": "yes",
+      "note": "图片有多少人看不清。"
+    },
+    {
+      "case_index": 47,
+      "track": "mme-realworld",
+      "sample_uid": "mme-realworld:index:11896",
+      "condition": "S2",
+      "extraction_faithful": "yes",
+      "semantic_correct": "no",
+      "judge_valid": "no",
+      "note": "图片有多少人看不清。"
+    },
+    {
+      "case_index": 47,
+      "track": "mme-realworld",
+      "sample_uid": "mme-realworld:index:11896",
+      "condition": "S3",
+      "extraction_faithful": "yes",
+      "semantic_correct": "no",
+      "judge_valid": "yes",
+      "note": "图片有多少人看不清。"
+    },
+    {
+      "case_index": 47,
+      "track": "mme-realworld",
+      "sample_uid": "mme-realworld:index:11896",
+      "condition": "SC",
+      "extraction_faithful": "yes",
+      "semantic_correct": "no",
+      "judge_valid": "yes",
+      "note": "图片有多少人看不清。"
+    },
+    {
+      "case_index": 48,
+      "track": "mme-realworld",
+      "sample_uid": "mme-realworld:index:2334",
+      "condition": "S0",
+      "extraction_faithful": "yes",
+      "semantic_correct": "no",
+      "judge_valid": "yes",
+      "note": "没看到人。"
+    },
+    {
+      "case_index": 48,
+      "track": "mme-realworld",
+      "sample_uid": "mme-realworld:index:2334",
+      "condition": "S1",
+      "extraction_faithful": "yes",
+      "semantic_correct": "no",
+      "judge_valid": "yes",
+      "note": "没看到人。"
+    },
+    {
+      "case_index": 48,
+      "track": "mme-realworld",
+      "sample_uid": "mme-realworld:index:2334",
+      "condition": "S2",
+      "extraction_faithful": "yes",
+      "semantic_correct": "no",
+      "judge_valid": "yes",
+      "note": "没看到人。"
+    },
+    {
+      "case_index": 48,
+      "track": "mme-realworld",
+      "sample_uid": "mme-realworld:index:2334",
+      "condition": "S3",
+      "extraction_faithful": "yes",
+      "semantic_correct": "no",
+      "judge_valid": "yes",
+      "note": "没看到人。"
+    },
+    {
+      "case_index": 48,
+      "track": "mme-realworld",
+      "sample_uid": "mme-realworld:index:2334",
+      "condition": "SC",
+      "extraction_faithful": "yes",
+      "semantic_correct": "no",
+      "judge_valid": "yes",
+      "note": "没看到人。"
+    },
+    {
+      "case_index": 49,
+      "track": "mme-realworld",
+      "sample_uid": "mme-realworld:index:9635",
+      "condition": "S0",
+      "extraction_faithful": "yes",
+      "semantic_correct": "no",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 49,
+      "track": "mme-realworld",
+      "sample_uid": "mme-realworld:index:9635",
+      "condition": "S1",
+      "extraction_faithful": "yes",
+      "semantic_correct": "no",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 49,
+      "track": "mme-realworld",
+      "sample_uid": "mme-realworld:index:9635",
+      "condition": "S2",
+      "extraction_faithful": "yes",
+      "semantic_correct": "no",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 49,
+      "track": "mme-realworld",
+      "sample_uid": "mme-realworld:index:9635",
+      "condition": "S3",
+      "extraction_faithful": "yes",
+      "semantic_correct": "no",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 49,
+      "track": "mme-realworld",
+      "sample_uid": "mme-realworld:index:9635",
+      "condition": "SC",
+      "extraction_faithful": "yes",
+      "semantic_correct": "no",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 50,
+      "track": "mme-realworld",
+      "sample_uid": "mme-realworld:index:1229",
+      "condition": "S0",
+      "extraction_faithful": "yes",
+      "semantic_correct": "no",
+      "judge_valid": "yes",
+      "note": "左侧的不是白色轿车"
+    },
+    {
+      "case_index": 50,
+      "track": "mme-realworld",
+      "sample_uid": "mme-realworld:index:1229",
+      "condition": "S1",
+      "extraction_faithful": "yes",
+      "semantic_correct": "no",
+      "judge_valid": "yes",
+      "note": "左侧的不是白色轿车"
+    },
+    {
+      "case_index": 50,
+      "track": "mme-realworld",
+      "sample_uid": "mme-realworld:index:1229",
+      "condition": "S2",
+      "extraction_faithful": "yes",
+      "semantic_correct": "no",
+      "judge_valid": "yes",
+      "note": "左侧的不是白色轿车"
+    },
+    {
+      "case_index": 50,
+      "track": "mme-realworld",
+      "sample_uid": "mme-realworld:index:1229",
+      "condition": "S3",
+      "extraction_faithful": "yes",
+      "semantic_correct": "no",
+      "judge_valid": "yes",
+      "note": "左侧的不是白色轿车"
+    },
+    {
+      "case_index": 50,
+      "track": "mme-realworld",
+      "sample_uid": "mme-realworld:index:1229",
+      "condition": "SC",
+      "extraction_faithful": "yes",
+      "semantic_correct": "no",
+      "judge_valid": "yes",
+      "note": "左侧的不是白色轿车"
+    },
+    {
+      "case_index": 51,
+      "track": "mme-realworld-cn",
+      "sample_uid": "mme-realworld-cn:index:2026",
+      "condition": "S0",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 51,
+      "track": "mme-realworld-cn",
+      "sample_uid": "mme-realworld-cn:index:2026",
+      "condition": "S1",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 51,
+      "track": "mme-realworld-cn",
+      "sample_uid": "mme-realworld-cn:index:2026",
+      "condition": "S2",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 51,
+      "track": "mme-realworld-cn",
+      "sample_uid": "mme-realworld-cn:index:2026",
+      "condition": "S3",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 51,
+      "track": "mme-realworld-cn",
+      "sample_uid": "mme-realworld-cn:index:2026",
+      "condition": "SC",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 52,
+      "track": "mme-realworld-cn",
+      "sample_uid": "mme-realworld-cn:index:3119",
+      "condition": "S0",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 52,
+      "track": "mme-realworld-cn",
+      "sample_uid": "mme-realworld-cn:index:3119",
+      "condition": "S1",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 52,
+      "track": "mme-realworld-cn",
+      "sample_uid": "mme-realworld-cn:index:3119",
+      "condition": "S2",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 52,
+      "track": "mme-realworld-cn",
+      "sample_uid": "mme-realworld-cn:index:3119",
+      "condition": "S3",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 52,
+      "track": "mme-realworld-cn",
+      "sample_uid": "mme-realworld-cn:index:3119",
+      "condition": "SC",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 53,
+      "track": "mme-realworld-cn",
+      "sample_uid": "mme-realworld-cn:index:26",
+      "condition": "S0",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 53,
+      "track": "mme-realworld-cn",
+      "sample_uid": "mme-realworld-cn:index:26",
+      "condition": "S1",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 53,
+      "track": "mme-realworld-cn",
+      "sample_uid": "mme-realworld-cn:index:26",
+      "condition": "S2",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 53,
+      "track": "mme-realworld-cn",
+      "sample_uid": "mme-realworld-cn:index:26",
+      "condition": "S3",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 53,
+      "track": "mme-realworld-cn",
+      "sample_uid": "mme-realworld-cn:index:26",
+      "condition": "SC",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 54,
+      "track": "mme-realworld-cn",
+      "sample_uid": "mme-realworld-cn:index:2321",
+      "condition": "S0",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 54,
+      "track": "mme-realworld-cn",
+      "sample_uid": "mme-realworld-cn:index:2321",
+      "condition": "S1",
+      "extraction_faithful": "yes",
+      "semantic_correct": "no",
+      "judge_valid": "yes",
+      "note": "没抓取到正确数据。"
+    },
+    {
+      "case_index": 54,
+      "track": "mme-realworld-cn",
+      "sample_uid": "mme-realworld-cn:index:2321",
+      "condition": "S2",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 54,
+      "track": "mme-realworld-cn",
+      "sample_uid": "mme-realworld-cn:index:2321",
+      "condition": "S3",
+      "extraction_faithful": "yes",
+      "semantic_correct": "no",
+      "judge_valid": "yes",
+      "note": "没抓取到正确数据。"
+    },
+    {
+      "case_index": 54,
+      "track": "mme-realworld-cn",
+      "sample_uid": "mme-realworld-cn:index:2321",
+      "condition": "SC",
+      "extraction_faithful": "yes",
+      "semantic_correct": "no",
+      "judge_valid": "yes",
+      "note": "没抓取到正确数据。"
+    },
+    {
+      "case_index": 55,
+      "track": "mme-realworld-cn",
+      "sample_uid": "mme-realworld-cn:index:4919",
+      "condition": "S0",
+      "extraction_faithful": "yes",
+      "semantic_correct": "no",
+      "judge_valid": "no",
+      "note": "抽取忠实，但裁判给出 No。"
+    },
+    {
+      "case_index": 55,
+      "track": "mme-realworld-cn",
+      "sample_uid": "mme-realworld-cn:index:4919",
+      "condition": "S1",
+      "extraction_faithful": "yes",
+      "semantic_correct": "no",
+      "judge_valid": "unclear",
+      "note": "模型输出出现大量循环，并最终被截断。原始输出未给出最终选择，抽取结果为无，符合输出实际"
+    },
+    {
+      "case_index": 55,
+      "track": "mme-realworld-cn",
+      "sample_uid": "mme-realworld-cn:index:4919",
+      "condition": "S2",
+      "extraction_faithful": "yes",
+      "semantic_correct": "no",
+      "judge_valid": "unclear",
+      "note": "模型输出出现大量循环，并最终被截断。原始输出未给出最终选择，抽取结果为无，符合输出实际"
+    },
+    {
+      "case_index": 55,
+      "track": "mme-realworld-cn",
+      "sample_uid": "mme-realworld-cn:index:4919",
+      "condition": "S3",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 55,
+      "track": "mme-realworld-cn",
+      "sample_uid": "mme-realworld-cn:index:4919",
+      "condition": "SC",
+      "extraction_faithful": "yes",
+      "semantic_correct": "no",
+      "judge_valid": "no",
+      "note": "抽取忠实，但裁判给出 No。"
+    },
+    {
+      "case_index": 56,
+      "track": "mme-realworld-cn",
+      "sample_uid": "mme-realworld-cn:index:101",
+      "condition": "S0",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 56,
+      "track": "mme-realworld-cn",
+      "sample_uid": "mme-realworld-cn:index:101",
+      "condition": "S1",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 56,
+      "track": "mme-realworld-cn",
+      "sample_uid": "mme-realworld-cn:index:101",
+      "condition": "S2",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 56,
+      "track": "mme-realworld-cn",
+      "sample_uid": "mme-realworld-cn:index:101",
+      "condition": "S3",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 56,
+      "track": "mme-realworld-cn",
+      "sample_uid": "mme-realworld-cn:index:101",
+      "condition": "SC",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 57,
+      "track": "mme-realworld-cn",
+      "sample_uid": "mme-realworld-cn:index:405",
+      "condition": "S0",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 57,
+      "track": "mme-realworld-cn",
+      "sample_uid": "mme-realworld-cn:index:405",
+      "condition": "S1",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 57,
+      "track": "mme-realworld-cn",
+      "sample_uid": "mme-realworld-cn:index:405",
+      "condition": "S2",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 57,
+      "track": "mme-realworld-cn",
+      "sample_uid": "mme-realworld-cn:index:405",
+      "condition": "S3",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 57,
+      "track": "mme-realworld-cn",
+      "sample_uid": "mme-realworld-cn:index:405",
+      "condition": "SC",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 58,
+      "track": "mme-realworld-cn",
+      "sample_uid": "mme-realworld-cn:index:670",
+      "condition": "S0",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 58,
+      "track": "mme-realworld-cn",
+      "sample_uid": "mme-realworld-cn:index:670",
+      "condition": "S1",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 58,
+      "track": "mme-realworld-cn",
+      "sample_uid": "mme-realworld-cn:index:670",
+      "condition": "S2",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 58,
+      "track": "mme-realworld-cn",
+      "sample_uid": "mme-realworld-cn:index:670",
+      "condition": "S3",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 58,
+      "track": "mme-realworld-cn",
+      "sample_uid": "mme-realworld-cn:index:670",
+      "condition": "SC",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 59,
+      "track": "mme-realworld-cn",
+      "sample_uid": "mme-realworld-cn:index:2100",
+      "condition": "S0",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 59,
+      "track": "mme-realworld-cn",
+      "sample_uid": "mme-realworld-cn:index:2100",
+      "condition": "S1",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 59,
+      "track": "mme-realworld-cn",
+      "sample_uid": "mme-realworld-cn:index:2100",
+      "condition": "S2",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 59,
+      "track": "mme-realworld-cn",
+      "sample_uid": "mme-realworld-cn:index:2100",
+      "condition": "S3",
+      "extraction_faithful": "yes",
+      "semantic_correct": "no",
+      "judge_valid": "yes",
+      "note": "数据错误。"
+    },
+    {
+      "case_index": 59,
+      "track": "mme-realworld-cn",
+      "sample_uid": "mme-realworld-cn:index:2100",
+      "condition": "SC",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 60,
+      "track": "mme-realworld-cn",
+      "sample_uid": "mme-realworld-cn:index:528",
+      "condition": "S0",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 60,
+      "track": "mme-realworld-cn",
+      "sample_uid": "mme-realworld-cn:index:528",
+      "condition": "S1",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 60,
+      "track": "mme-realworld-cn",
+      "sample_uid": "mme-realworld-cn:index:528",
+      "condition": "S2",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 60,
+      "track": "mme-realworld-cn",
+      "sample_uid": "mme-realworld-cn:index:528",
+      "condition": "S3",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    },
+    {
+      "case_index": 60,
+      "track": "mme-realworld-cn",
+      "sample_uid": "mme-realworld-cn:index:528",
+      "condition": "SC",
+      "extraction_faithful": "yes",
+      "semantic_correct": "yes",
+      "judge_valid": "yes",
+      "note": ""
+    }
+  ]
+}
