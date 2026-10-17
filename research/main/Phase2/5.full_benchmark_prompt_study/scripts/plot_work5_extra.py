@@ -45,7 +45,8 @@ def heat(ax, data, rows, cols, title, cbar_label, vmin=None, vmax=None, fmt="{:.
                     color="#1a1a1a")
     ax.set_title(title)
     cb = plt.colorbar(im, ax=ax, fraction=0.03, pad=0.02)
-    cb.set_label(cbar_label, fontsize=8)
+    if cbar_label:
+        cb.set_label(cbar_label, fontsize=8)
     cb.ax.tick_params(labelsize=7)
     return im
 
@@ -63,12 +64,13 @@ def main() -> None:
     # --- §2 κ between discriminators ---
     k = d["discriminators"]["kappa"]
     names = ("Official native / 官方原生", "Terminal diagnostic / 裁定终行", "Answer extraction / 答案抽取")
+    short = ("Official\n官方原生", "Terminal\n裁定终行", "Extraction\n答案抽取")
     order = ("official", "terminal", "extraction")
     m = [[1.0 if a == b else k.get(f"{a}_vs_{b}", k.get(f"{b}_vs_{a}", float("nan")))
           for b in order] for a in order]
     fig, ax = plt.subplots(figsize=(4.4, 3.6))
     im = ax.imshow(m, cmap="Blues", vmin=0, vmax=1)
-    ax.set_xticks(range(3)); ax.set_xticklabels(names)
+    ax.set_xticks(range(3)); ax.set_xticklabels(short, fontsize=8)
     ax.set_yticks(range(3)); ax.set_yticklabels(names)
     for i in range(3):
         for j in range(3):
@@ -85,7 +87,8 @@ def main() -> None:
     for ax, src, lab in zip(axes, ("official", "terminal", "extraction"), names):
         data = [[mat[f"{t}|{c}"][src] for c in CONDS] for t in TRACKS]
         heat(ax, data, TRACKS if ax is axes[0] else [""] * len(TRACKS), CONDS,
-             f"{lab}", "Accuracy (%) / 准确率 (%)", vmin=0, vmax=100)
+             f"{lab}", "Accuracy (%) / 准确率 (%)" if src == "extraction" else "",
+             vmin=0, vmax=100)
     fig.suptitle("Figure 9. Accuracy matrix: benchmarks x conditions under three score sources",
                  y=1.03, fontsize=10.5)
     fig.tight_layout(); fig.savefig(args.out_dir / "f9_accuracy_matrix.png", bbox_inches="tight")
@@ -97,7 +100,7 @@ def main() -> None:
         ys = [mat[f"{t}|{c}"]["terminal"] for c in CONDS]
         ax.plot(range(5), ys, marker="o", ms=4, lw=1.4, color=OKABE[i], label=t)
     ax.set_xticks(range(5)); ax.set_xticklabels(CONDS)
-    ax.set_ylabel("Terminal accuracy (%) / 裁定终行准确率 (%)")
+    ax.set_ylabel("Terminal accuracy (%)\n裁定终行准确率 (%)")
     ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.16), ncol=3, frameon=False, fontsize=7.5)
     ax.set_title("Figure 10. The six trend lines are nearly parallel: prompt effects point the same way everywhere", fontsize=10)
     fig.tight_layout(); fig.savefig(args.out_dir / "f10_condition_trend.png", bbox_inches="tight")
@@ -115,7 +118,7 @@ def main() -> None:
         ax.bar(range(5), pct, bottom=bottom, label=kk, color=OKABE[i], width=0.62)
         bottom = [x + y for x, y in zip(bottom, pct)]
     ax.set_xticks(range(5)); ax.set_xticklabels(CONDS)
-    ax.set_ylabel("Share of all records in condition (%) / 占比")
+    ax.set_ylabel("Share of all records (%)\n占该条件记录比例")
     ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.14), ncol=3, frameon=False)
     ax.set_title("Figure 11. Extraction-status composition: ANSWERED dominates every condition (>98%)", fontsize=10)
     fig.tight_layout(); fig.savefig(args.out_dir / "f11_status_composition.png", bbox_inches="tight")
