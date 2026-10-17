@@ -1,0 +1,38 @@
+{
+  "schema": "phase2-work5-manual-review-provenance-v1",
+  "delivery_file": "work5-manual-review-decisions-v1.json",
+  "validation_file": "manual-score-audit-validation-v1.json",
+  "reviewer": "external-auditor",
+  "completed_rows": 300,
+  "sources": {
+    "auditor_export": {
+      "file": "work5-manual-review-decisions-v1.raw.json",
+      "rows": 293,
+      "note": "外部审计员提交的原始导出。经三类规范化后并入交付版本：取值格式（是的/是→Yes / 是 等，896 处）、case_title 中文回译（案例N→Case N、选定层/选定层级→selected stratum）、condition 字段修复（第二季→S2、第三季→S3 等位置的翻译故障，78 行）。结构、键名与取值均未改变任何判断内容。"
+    },
+    "researcher_verbal": {
+      "rows": 7,
+      "cases": [
+        "Case 1 · SC",
+        "Case 51 · SC",
+        "Case 55 · S0",
+        "Case 55 · SC",
+        "Case 55 · S1",
+        "Case 55 · S2",
+        "Case 55 · S3"
+      ],
+      "note": "审计员未填写、由项目所有者口述补全。Case 46 · S0 的 judge_valid 亦据所有者判断由 No 改为 Unclear，并附循环截断说明。"
+    }
+  },
+  "rule_amendment": {
+    "date": "2026-10-18",
+    "change": "证据说明仅对 extraction_faithful 与 judge_valid 的 No/Unclear 强制；semantic_correct=No 视为可直接观察的事实，不再要求逐条说明。",
+    "reason": "semantic_correct=No 表示答案与参考答案不符，属观察；裁判无效与抽取不忠实才有争议，需要辩护。",
+    "applies_to": "scripts/validate_manual_review.py"
+  },
+  "caveats": [
+    "300 个视图为风险定向抽样（六评测集各 10 例 × 5 条件），不是随机样本。",
+    "任何一致率或错误率仅描述这批样本，不可外推为评测集总体。",
+    "人工判断本身亦非绝对金标准；本文件记录的是本次审计结论。"
+  ]
+}

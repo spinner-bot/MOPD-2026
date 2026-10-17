@@ -1,0 +1,3005 @@
+{
+  "schema": "work5-manual-review-decisions-v1",
+  "rows": [
+    {
+      "case_title": "案例1 vstar · 选定层：native_extraction_disagreement",
+      "condition": "S0 · vstar",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例1 vstar · 选定层：native_extraction_disagreement",
+      "condition": "SC · vstar",
+      "decisions": {
+        "extraction_faithful": "待审 / 待审",
+        "semantic_correct": "待审 / 待审",
+        "judge_valid": "待审 / 待审",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例1 vstar · 选定层：native_extraction_disagreement",
+      "condition": "S1 · vstar",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例1 vstar · 选定层：native_extraction_disagreement",
+      "condition": "第二季· vstar（星际）",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例1 vstar · 选定层：native_extraction_disagreement",
+      "condition": "第三季·vstar（三季·vstar）",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例2 vstar · 选定层：native_extraction_disagreement",
+      "condition": "S0 · vstar",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例2 vstar · 选定层：native_extraction_disagreement",
+      "condition": "SC · vstar",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例2 vstar · 选定层：native_extraction_disagreement",
+      "condition": "S1 · vstar",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例2 vstar · 选定层：native_extraction_disagreement",
+      "condition": "第二季· vstar（星际）",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不 / 否",
+        "judge_valid": "是的 / 是",
+        "note": "狗的身上黑色斑块主要为黑色，即便有少量棕色毛发，我们通常所说的黑白相间。 "
+      }
+    },
+    {
+      "case_title": "案例2 vstar · 选定层：native_extraction_disagreement",
+      "condition": "第三季·vstar（三季·vstar）",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例3 vstar · 选定层：native_extraction_disagreement",
+      "condition": "S0 · vstar",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不 / 否",
+        "judge_valid": "是的 / 是",
+        "note": "画面长笛整体看起来是黑色的，有金属质感，只在顶端部分由于光线原因产生类似银色的反光，但也只占长笛整体很小一部分。"
+      }
+    },
+    {
+      "case_title": "案例3 vstar · 选定层：native_extraction_disagreement",
+      "condition": "SC · vstar",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不 / 否",
+        "judge_valid": "是的 / 是",
+        "note": "画面长笛整体看起来是黑色的，有金属质感，只在顶端部分由于光线原因产生类似银色的反光，但也只占长笛整体很小一部分。"
+      }
+    },
+    {
+      "case_title": "案例3 vstar · 选定层：native_extraction_disagreement",
+      "condition": "S1 · vstar",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不 / 否",
+        "judge_valid": "是的 / 是",
+        "note": "画面长笛整体看起来是黑色的，有金属质感，只在顶端部分由于光线原因产生类似银色的反光，但也只占长笛整体很小一部分。"
+      }
+    },
+    {
+      "case_title": "案例3 vstar · 选定层：native_extraction_disagreement",
+      "condition": "第二季· vstar（星际）",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不 / 否",
+        "judge_valid": "是的 / 是",
+        "note": "画面长笛整体看起来是黑色的，有金属质感，只在顶端部分由于光线原因产生类似银色的反光，但也只占长笛整体很小一部分。"
+      }
+    },
+    {
+      "case_title": "案例3 vstar · 选定层：native_extraction_disagreement",
+      "condition": "第三季·vstar（三季·vstar）",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不 / 否",
+        "judge_valid": "是的 / 是",
+        "note": "画面长笛整体看起来是黑色的，有金属质感，只在顶端部分由于光线原因产生类似银色的反光，但也只占长笛整体很小一部分。"
+      }
+    },
+    {
+      "case_title": "案例4 vstar · 选定层：three_score_agreement",
+      "condition": "S0 · vstar",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例4 vstar · 选定层：three_score_agreement",
+      "condition": "SC · vstar",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例4 vstar · 选定层：three_score_agreement",
+      "condition": "S1 · vstar",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例4 vstar · 选定层：three_score_agreement",
+      "condition": "第二季· vstar（星际）",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例4 vstar · 选定层：three_score_agreement",
+      "condition": "第三季·vstar（三季·vstar）",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例5 vstar · 选定层：three_score_agreement",
+      "condition": "S0 · vstar",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例5 vstar · 选定层：three_score_agreement",
+      "condition": "SC · vstar",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例5 vstar · 选定层：three_score_agreement",
+      "condition": "S1 · vstar",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例5 vstar · 选定层：three_score_agreement",
+      "condition": "第二季· vstar（星际）",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例5 vstar · 选定层：three_score_agreement",
+      "condition": "第三季·vstar（三季·vstar）",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例6 vstar · 选定层：deterministic_random_remainder",
+      "condition": "S0 · vstar",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例6 vstar · 选定层：deterministic_random_remainder",
+      "condition": "SC · vstar",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例6 vstar · 选定层：deterministic_random_remainder",
+      "condition": "S1 · vstar",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例6 vstar · 选定层：deterministic_random_remainder",
+      "condition": "第二季· vstar（星际）",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例6 vstar · 选定层：deterministic_random_remainder",
+      "condition": "第三季·vstar（三季·vstar）",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例7 vstar · 选定层：deterministic_random_remainder",
+      "condition": "S0 · vstar",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例7 vstar · 选定层：deterministic_random_remainder",
+      "condition": "SC · vstar",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例7 vstar · 选定层：deterministic_random_remainder",
+      "condition": "S1 · vstar",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例7 vstar · 选定层：deterministic_random_remainder",
+      "condition": "第二季· vstar（星际）",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例7 vstar · 选定层：deterministic_random_remainder",
+      "condition": "第三季·vstar（三季·vstar）",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "第8号案例 vstar · 选定层：deterministic_random_remainder",
+      "condition": "S0 · vstar",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不 / 否",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "第8号案例 vstar · 选定层：deterministic_random_remainder",
+      "condition": "SC · vstar",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不 / 否",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "第8号案例 vstar · 选定层：deterministic_random_remainder",
+      "condition": "S1 · vstar",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不 / 否",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "第8号案例 vstar · 选定层：deterministic_random_remainder",
+      "condition": "第二季· vstar（星际）",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不 / 否",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "第8号案例 vstar · 选定层：deterministic_random_remainder",
+      "condition": "第三季·vstar（三季·vstar）",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不 / 否",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例9 vstar · 选定层：deterministic_random_remainder",
+      "condition": "S0 · vstar",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": "这不与荷兰国旗相符"
+      }
+    },
+    {
+      "case_title": "案例9 vstar · 选定层：deterministic_random_remainder",
+      "condition": "SC · vstar",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不 / 否",
+        "judge_valid": "是的 / 是",
+        "note": "上方蓝，下方黄是正确的"
+      }
+    },
+    {
+      "case_title": "案例9 vstar · 选定层：deterministic_random_remainder",
+      "condition": "S1 · vstar",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例9 vstar · 选定层：deterministic_random_remainder",
+      "condition": "第二季· vstar（星际）",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例9 vstar · 选定层：deterministic_random_remainder",
+      "condition": "第三季·vstar（三季·vstar）",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例10 vstar · 选定层级：deterministic_random_remainder",
+      "condition": "S0 · vstar",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例10 vstar · 选定层级：deterministic_random_remainder",
+      "condition": "SC · vstar",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例10 vstar · 选定层级：deterministic_random_remainder",
+      "condition": "S1 · vstar",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例10 vstar · 选定层级：deterministic_random_remainder",
+      "condition": "第二季· vstar（星际）",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例10 vstar · 选定层级：deterministic_random_remainder",
+      "condition": "第三季·vstar（三季·vstar）",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例11 zoombench · 选定层级：native_extraction_disagreement",
+      "condition": "S0 · zoombench",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例11 zoombench · 选定层级：native_extraction_disagreement",
+      "condition": "SC · zoombench",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例11 zoombench · 选定层级：native_extraction_disagreement",
+      "condition": "第一季· zoombench",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例11 zoombench · 选定层级：native_extraction_disagreement",
+      "condition": "S2 · zoombench",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例11 zoombench · 选定层级：native_extraction_disagreement",
+      "condition": "S3 · Zoombench",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例12 zoombench · 选定层级：native_extraction_disagreement",
+      "condition": "S0 · zoombench",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例12 zoombench · 选定层级：native_extraction_disagreement",
+      "condition": "SC · zoombench",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例12 zoombench · 选定层级：native_extraction_disagreement",
+      "condition": "第一季· zoombench",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例12 zoombench · 选定层级：native_extraction_disagreement",
+      "condition": "S2 · zoombench",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例12 zoombench · 选定层级：native_extraction_disagreement",
+      "condition": "S3 · Zoombench",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例13 zoombench · 选定层级：native_extraction_disagreement",
+      "condition": "S0 · zoombench",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例13 zoombench · 选定层级：native_extraction_disagreement",
+      "condition": "SC · zoombench",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例13 zoombench · 选定层级：native_extraction_disagreement",
+      "condition": "第一季· zoombench",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例13 zoombench · 选定层级：native_extraction_disagreement",
+      "condition": "S2 · zoombench",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例13 zoombench · 选定层级：native_extraction_disagreement",
+      "condition": "S3 · Zoombench",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例14 zoombench · 选定层级：non_answer_extraction",
+      "condition": "S0 · zoombench",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不 / 否",
+        "judge_valid": "是的 / 是",
+        "note": "有红色文字的建筑上，共有四个阳台外面带黑色栏杆"
+      }
+    },
+    {
+      "case_title": "案例14 zoombench · 选定层级：non_answer_extraction",
+      "condition": "SC · zoombench",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不 / 否",
+        "judge_valid": "是的 / 是",
+        "note": "有红色文字的建筑上，共有四个阳台外面带黑色栏杆"
+      }
+    },
+    {
+      "case_title": "案例14 zoombench · 选定层级：non_answer_extraction",
+      "condition": "第一季· zoombench",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不 / 否",
+        "judge_valid": "是的 / 是",
+        "note": "有红色文字的建筑上，共有四个阳台外面带黑色栏杆"
+      }
+    },
+    {
+      "case_title": "案例14 zoombench · 选定层级：non_answer_extraction",
+      "condition": "S2 · zoombench",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不 / 否",
+        "judge_valid": "是的 / 是",
+        "note": "有红色文字的建筑上，共有四个阳台外面带黑色栏杆"
+      }
+    },
+    {
+      "case_title": "案例14 zoombench · 选定层级：non_answer_extraction",
+      "condition": "S3 · Zoombench",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不 / 否",
+        "judge_valid": "是的 / 是",
+        "note": "有红色文字的建筑上，共有四个阳台外面带黑色栏杆"
+      }
+    },
+    {
+      "case_title": "案例15 zoombench · 选定层级：non_answer_extraction",
+      "condition": "S0 · zoombench",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不 / 否",
+        "judge_valid": "是的 / 是",
+        "note": "交替出现黄白两个颜色，有两个不同颜色的色块。"
+      }
+    },
+    {
+      "case_title": "案例15 zoombench · 选定层级：non_answer_extraction",
+      "condition": "SC · zoombench",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不 / 否",
+        "judge_valid": "是的 / 是",
+        "note": "交替出现黄白两个颜色，有两个不同颜色的色块。"
+      }
+    },
+    {
+      "case_title": "案例15 zoombench · 选定层级：non_answer_extraction",
+      "condition": "第一季· zoombench",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不 / 否",
+        "judge_valid": "是的 / 是",
+        "note": "交替出现黄白两个颜色，有两个不同颜色的色块。"
+      }
+    },
+    {
+      "case_title": "案例15 zoombench · 选定层级：non_answer_extraction",
+      "condition": "S2 · zoombench",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不 / 否",
+        "judge_valid": "是的 / 是",
+        "note": "交替出现黄白两个颜色，有两个不同颜色的色块。"
+      }
+    },
+    {
+      "case_title": "案例15 zoombench · 选定层级：non_answer_extraction",
+      "condition": "S3 · Zoombench",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不 / 否",
+        "judge_valid": "是的 / 是",
+        "note": "交替出现黄白两个颜色，有两个不同颜色的色块。"
+      }
+    },
+    {
+      "case_title": "案例16 zoombench · 选定层级：deterministic_random_remainder",
+      "condition": "S0 · zoombench",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例16 zoombench · 选定层级：deterministic_random_remainder",
+      "condition": "SC · zoombench",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例16 zoombench · 选定层级：deterministic_random_remainder",
+      "condition": "第一季· zoombench",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例16 zoombench · 选定层级：deterministic_random_remainder",
+      "condition": "S2 · zoombench",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例16 zoombench · 选定层级：deterministic_random_remainder",
+      "condition": "S3 · Zoombench",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例17 zoombench · 选定层级：deterministic_random_remainder",
+      "condition": "S0 · zoombench",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例17 zoombench · 选定层级：deterministic_random_remainder",
+      "condition": "SC · zoombench",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例17 zoombench · 选定层级：deterministic_random_remainder",
+      "condition": "第一季· zoombench",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例17 zoombench · 选定层级：deterministic_random_remainder",
+      "condition": "S2 · zoombench",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例17 zoombench · 选定层级：deterministic_random_remainder",
+      "condition": "S3 · Zoombench",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例18 zoombench · 选定层：deterministic_random_remainder",
+      "condition": "S0 · zoombench",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不 / 否",
+        "judge_valid": "是的 / 是",
+        "note": "黑色是鸟头部位置，鸟喙部分为黄色"
+      }
+    },
+    {
+      "case_title": "案例18 zoombench · 选定层：deterministic_random_remainder",
+      "condition": "SC · zoombench",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例18 zoombench · 选定层：deterministic_random_remainder",
+      "condition": "第一季· zoombench",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例18 zoombench · 选定层：deterministic_random_remainder",
+      "condition": "S2 · zoombench",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例18 zoombench · 选定层：deterministic_random_remainder",
+      "condition": "S3 · Zoombench",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例19 zoombench · 选定层级：deterministic_random_remainder",
+      "condition": "S0 · zoombench",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不 / 否",
+        "judge_valid": "是的 / 是",
+        "note": "图中炉灶有五个不同的圆形烹饪区，分别为右下一个大的烹饪区，右上两个小的烹饪区，左侧上下分别有两个一样大小的中等烹饪区。"
+      }
+    },
+    {
+      "case_title": "案例19 zoombench · 选定层级：deterministic_random_remainder",
+      "condition": "SC · zoombench",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不 / 否",
+        "judge_valid": "是的 / 是",
+        "note": "图中炉灶有五个不同的圆形烹饪区，分别为右下一个大的烹饪区，右上两个小的烹饪区，左侧上下分别有两个一样大小的中等烹饪区。"
+      }
+    },
+    {
+      "case_title": "案例19 zoombench · 选定层级：deterministic_random_remainder",
+      "condition": "第一季· zoombench",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不 / 否",
+        "judge_valid": "是的 / 是",
+        "note": "图中炉灶有五个不同的圆形烹饪区，分别为右下一个大的烹饪区，右上两个小的烹饪区，左侧上下分别有两个一样大小的中等烹饪区。"
+      }
+    },
+    {
+      "case_title": "案例19 zoombench · 选定层级：deterministic_random_remainder",
+      "condition": "S2 · zoombench",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不 / 否",
+        "judge_valid": "是的 / 是",
+        "note": "图中炉灶有五个不同的圆形烹饪区，分别为右下一个大的烹饪区，右上两个小的烹饪区，左侧上下分别有两个一样大小的中等烹饪区。"
+      }
+    },
+    {
+      "case_title": "案例19 zoombench · 选定层级：deterministic_random_remainder",
+      "condition": "S3 · Zoombench",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不 / 否",
+        "judge_valid": "是的 / 是",
+        "note": "图中炉灶有五个不同的圆形烹饪区，分别为右下一个大的烹饪区，右上两个小的烹饪区，左侧上下分别有两个一样大小的中等烹饪区。"
+      }
+    },
+    {
+      "case_title": "案例20 zoombench · 选定层：deterministic_random_remainder",
+      "condition": "S0 · zoombench",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例20 zoombench · 选定层：deterministic_random_remainder",
+      "condition": "SC · zoombench",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例20 zoombench · 选定层：deterministic_random_remainder",
+      "condition": "第一季· zoombench",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例20 zoombench · 选定层：deterministic_random_remainder",
+      "condition": "S2 · zoombench",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例20 zoombench · 选定层：deterministic_random_remainder",
+      "condition": "S3 · Zoombench",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例21 hrbench-4k · 选定层级：native_extraction_disagreement",
+      "condition": "S0 · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例21 hrbench-4k · 选定层级：native_extraction_disagreement",
+      "condition": "SC · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例21 hrbench-4k · 选定层级：native_extraction_disagreement",
+      "condition": "S1 · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例21 hrbench-4k · 选定层级：native_extraction_disagreement",
+      "condition": "S2 · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例21 hrbench-4k · 选定层级：native_extraction_disagreement",
+      "condition": "S3 · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例22 hrbench-4k · 选定层级：native_extraction_disagreement",
+      "condition": "S0 · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例22 hrbench-4k · 选定层级：native_extraction_disagreement",
+      "condition": "SC · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例22 hrbench-4k · 选定层级：native_extraction_disagreement",
+      "condition": "S1 · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不 / 否",
+        "judge_valid": "是的 / 是",
+        "note": "对于1234的认定有误，1苏格兰2英格兰3爱尔兰4欧洲某地，从图中标记3不能认为是北爱尔兰，所以是一个国家的是1和2。"
+      }
+    },
+    {
+      "case_title": "案例22 hrbench-4k · 选定层级：native_extraction_disagreement",
+      "condition": "S2 · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例22 hrbench-4k · 选定层级：native_extraction_disagreement",
+      "condition": "S3 · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": "4个点的位置都认为是英国有误，虽然最后结果是正确的。"
+      }
+    },
+    {
+      "case_title": "案例23小时-4千·选定层：native_extraction_disagreement",
+      "condition": "S0 · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例23小时-4千·选定层：native_extraction_disagreement",
+      "condition": "SC · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例23小时-4千·选定层：native_extraction_disagreement",
+      "condition": "S1 · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例23小时-4千·选定层：native_extraction_disagreement",
+      "condition": "S2 · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例23小时-4千·选定层：native_extraction_disagreement",
+      "condition": "S3 · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例24小时-4千·选定层：non_answer_extraction",
+      "condition": "S0 · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不 / 否",
+        "judge_valid": "是的 / 是",
+        "note": "抽取错误导致答案也错误，商品10是1，商品15是11，所以平均销售额是6。"
+      }
+    },
+    {
+      "case_title": "案例24小时-4千·选定层：non_answer_extraction",
+      "condition": "SC · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不 / 否",
+        "judge_valid": "是的 / 是",
+        "note": "抽取错误导致答案也错误，商品10是1，商品15是11，所以平均销售额是6。"
+      }
+    },
+    {
+      "case_title": "案例24小时-4千·选定层：non_answer_extraction",
+      "condition": "S1 · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "不 / 否",
+        "semantic_correct": "不 / 否",
+        "judge_valid": "是的 / 是",
+        "note": "抽取错误导致答案也错误，商品10是1，商品15是11，所以平均销售额是6。"
+      }
+    },
+    {
+      "case_title": "案例24小时-4千·选定层：non_answer_extraction",
+      "condition": "S2 · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不 / 否",
+        "judge_valid": "是的 / 是",
+        "note": "抽取错误导致答案也错误，商品10是1，商品15是11，所以平均销售额是6。"
+      }
+    },
+    {
+      "case_title": "案例24小时-4千·选定层：non_answer_extraction",
+      "condition": "S3 · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不 / 否",
+        "judge_valid": "是的 / 是",
+        "note": "抽取错误导致答案也错误，商品10是1，商品15是11，所以平均销售额是6。"
+      }
+    },
+    {
+      "case_title": "案例25 hrbench-4k · 选定层级：non_answer_extraction",
+      "condition": "S0 · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不 / 否",
+        "judge_valid": "是的 / 是",
+        "note": "物品1有误不是73是1，错把物品2数值当作物品1."
+      }
+    },
+    {
+      "case_title": "案例25 hrbench-4k · 选定层级：non_answer_extraction",
+      "condition": "SC · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例25 hrbench-4k · 选定层级：non_answer_extraction",
+      "condition": "S1 · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例25 hrbench-4k · 选定层级：non_answer_extraction",
+      "condition": "S2 · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例25 hrbench-4k · 选定层级：non_answer_extraction",
+      "condition": "S3 · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例26 hrbench-4k · 选定层级：three_score_agreement",
+      "condition": "S0 · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例26 hrbench-4k · 选定层级：three_score_agreement",
+      "condition": "SC · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例26 hrbench-4k · 选定层级：three_score_agreement",
+      "condition": "S1 · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例26 hrbench-4k · 选定层级：three_score_agreement",
+      "condition": "S2 · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例26 hrbench-4k · 选定层级：three_score_agreement",
+      "condition": "S3 · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例27 hrbench-4k · 选定层级：deterministic_random_remainder",
+      "condition": "S0 · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例27 hrbench-4k · 选定层级：deterministic_random_remainder",
+      "condition": "SC · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例27 hrbench-4k · 选定层级：deterministic_random_remainder",
+      "condition": "S1 · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例27 hrbench-4k · 选定层级：deterministic_random_remainder",
+      "condition": "S2 · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例27 hrbench-4k · 选定层级：deterministic_random_remainder",
+      "condition": "S3 · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例28 hrbench-4k · 选定层级：deterministic_random_remainder",
+      "condition": "S0 · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例28 hrbench-4k · 选定层级：deterministic_random_remainder",
+      "condition": "SC · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例28 hrbench-4k · 选定层级：deterministic_random_remainder",
+      "condition": "S1 · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例28 hrbench-4k · 选定层级：deterministic_random_remainder",
+      "condition": "S2 · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例28 hrbench-4k · 选定层级：deterministic_random_remainder",
+      "condition": "S3 · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例29 hrbench-4k · 选定层级：deterministic_random_remainder",
+      "condition": "S0 · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例29 hrbench-4k · 选定层级：deterministic_random_remainder",
+      "condition": "SC · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不 / 否",
+        "judge_valid": "是的 / 是",
+        "note": "人位于回收箱前方，部分遮挡回收箱。"
+      }
+    },
+    {
+      "case_title": "案例29 hrbench-4k · 选定层级：deterministic_random_remainder",
+      "condition": "S1 · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不 / 否",
+        "judge_valid": "是的 / 是",
+        "note": "回收箱前侧偏左，并不是回收箱完全左边的位置。"
+      }
+    },
+    {
+      "case_title": "案例29 hrbench-4k · 选定层级：deterministic_random_remainder",
+      "condition": "S2 · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不 / 否",
+        "judge_valid": "是的 / 是",
+        "note": "回收箱前侧偏左，并不是回收箱完全左边的位置。"
+      }
+    },
+    {
+      "case_title": "案例29 hrbench-4k · 选定层级：deterministic_random_remainder",
+      "condition": "S3 · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不 / 否",
+        "judge_valid": "是的 / 是",
+        "note": "回收箱前侧偏左，并不是回收箱完全左边的位置。"
+      }
+    },
+    {
+      "case_title": "案例30 hrbench-4k · 选定层级：deterministic_random_remainder",
+      "condition": "S0 · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例30 hrbench-4k · 选定层级：deterministic_random_remainder",
+      "condition": "SC · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例30 hrbench-4k · 选定层级：deterministic_random_remainder",
+      "condition": "S1 · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例30 hrbench-4k · 选定层级：deterministic_random_remainder",
+      "condition": "S2 · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例30 hrbench-4k · 选定层级：deterministic_random_remainder",
+      "condition": "S3 · hrbench-4k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例31 hrbench-8k · 选定层级：native_extraction_disagreement",
+      "condition": "S0 · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例31 hrbench-8k · 选定层级：native_extraction_disagreement",
+      "condition": "SC · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例31 hrbench-8k · 选定层级：native_extraction_disagreement",
+      "condition": "S1 · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例31 hrbench-8k · 选定层级：native_extraction_disagreement",
+      "condition": "S2 · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例31 hrbench-8k · 选定层级：native_extraction_disagreement",
+      "condition": "S3 · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "不 / 否",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": "1，2不位于美国 位于加拿大"
+      }
+    },
+    {
+      "case_title": "案例32 hrbench-8k · 选定层级：native_extraction_disagreement",
+      "condition": "S0 · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例32 hrbench-8k · 选定层级：native_extraction_disagreement",
+      "condition": "SC · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例32 hrbench-8k · 选定层级：native_extraction_disagreement",
+      "condition": "S1 · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例32 hrbench-8k · 选定层级：native_extraction_disagreement",
+      "condition": "S2 · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例32 hrbench-8k · 选定层级：native_extraction_disagreement",
+      "condition": "S3 · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例33 hrbench-8k · 选定层级：native_extraction_disagreement",
+      "condition": "S0 · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例33 hrbench-8k · 选定层级：native_extraction_disagreement",
+      "condition": "SC · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例33 hrbench-8k · 选定层级：native_extraction_disagreement",
+      "condition": "S1 · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例33 hrbench-8k · 选定层级：native_extraction_disagreement",
+      "condition": "S2 · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例33 hrbench-8k · 选定层级：native_extraction_disagreement",
+      "condition": "S3 · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例34 hrbench-8k · 选定层级：non_answer_extraction",
+      "condition": "S0 · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不 / 否",
+        "judge_valid": "是的 / 是",
+        "note": "抽取错误导致答案也错误，商品10是1，商品15是11，所以平均销售额是6。"
+      }
+    },
+    {
+      "case_title": "案例34 hrbench-8k · 选定层级：non_answer_extraction",
+      "condition": "SC · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不 / 否",
+        "judge_valid": "是的 / 是",
+        "note": "抽取错误导致答案也错误，商品10是1，商品15是11，所以平均销售额是6。"
+      }
+    },
+    {
+      "case_title": "案例34 hrbench-8k · 选定层级：non_answer_extraction",
+      "condition": "S1 · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不 / 否",
+        "judge_valid": "是的 / 是",
+        "note": "抽取错误导致答案也错误，商品10是1，商品15是11，所以平均销售额是6。"
+      }
+    },
+    {
+      "case_title": "案例34 hrbench-8k · 选定层级：non_answer_extraction",
+      "condition": "S2 · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不 / 否",
+        "judge_valid": "是的 / 是",
+        "note": "抽取错误导致答案也错误，商品10是1，商品15是11，所以平均销售额是6。"
+      }
+    },
+    {
+      "case_title": "案例34 hrbench-8k · 选定层级：non_answer_extraction",
+      "condition": "S3 · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不 / 否",
+        "judge_valid": "是的 / 是",
+        "note": "抽取错误导致答案也错误，商品10是1，商品15是11，所以平均销售额是6。"
+      }
+    },
+    {
+      "case_title": "案例35小时bench-8k · 选定层级：non_answer_extraction",
+      "condition": "S0 · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "不清楚 / 不确定",
+        "semantic_correct": "不 / 否",
+        "judge_valid": "是的 / 是",
+        "note": "没能正确抓取到物品1和物品6的销售额。"
+      }
+    },
+    {
+      "case_title": "案例35小时bench-8k · 选定层级：non_answer_extraction",
+      "condition": "SC · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不 / 否",
+        "judge_valid": "是的 / 是",
+        "note": "没能正确抓取到物品1和物品6的销售额。"
+      }
+    },
+    {
+      "case_title": "案例35小时bench-8k · 选定层级：non_answer_extraction",
+      "condition": "S1 · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不 / 否",
+        "judge_valid": "是的 / 是",
+        "note": "没能正确抓取到物品1和物品6的销售额。"
+      }
+    },
+    {
+      "case_title": "案例35小时bench-8k · 选定层级：non_answer_extraction",
+      "condition": "S2 · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不 / 否",
+        "judge_valid": "是的 / 是",
+        "note": "没能正确抓取到物品1和物品6的销售额。"
+      }
+    },
+    {
+      "case_title": "案例35小时bench-8k · 选定层级：non_answer_extraction",
+      "condition": "S3 · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不 / 否",
+        "judge_valid": "是的 / 是",
+        "note": "没能正确抓取到物品1和物品6的销售额。"
+      }
+    },
+    {
+      "case_title": "案例36 hrbench-8k · 选定层级：deterministic_random_remainder",
+      "condition": "S0 · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例36 hrbench-8k · 选定层级：deterministic_random_remainder",
+      "condition": "SC · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例36 hrbench-8k · 选定层级：deterministic_random_remainder",
+      "condition": "S1 · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例36 hrbench-8k · 选定层级：deterministic_random_remainder",
+      "condition": "S2 · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例36 hrbench-8k · 选定层级：deterministic_random_remainder",
+      "condition": "S3 · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例37 hrbench-8k · 选定层级：deterministic_random_remainder",
+      "condition": "S0 · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不 / 否",
+        "judge_valid": "是的 / 是",
+        "note": "熊的左侧，图像偏中心。"
+      }
+    },
+    {
+      "case_title": "案例37 hrbench-8k · 选定层级：deterministic_random_remainder",
+      "condition": "SC · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不 / 否",
+        "judge_valid": "是的 / 是",
+        "note": "熊的左侧，图像偏中心。"
+      }
+    },
+    {
+      "case_title": "案例37 hrbench-8k · 选定层级：deterministic_random_remainder",
+      "condition": "S1 · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不 / 否",
+        "judge_valid": "是的 / 是",
+        "note": "熊的左侧，图像偏中心。"
+      }
+    },
+    {
+      "case_title": "案例37 hrbench-8k · 选定层级：deterministic_random_remainder",
+      "condition": "S2 · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不 / 否",
+        "judge_valid": "是的 / 是",
+        "note": "熊的左侧，图像偏中心。"
+      }
+    },
+    {
+      "case_title": "案例37 hrbench-8k · 选定层级：deterministic_random_remainder",
+      "condition": "S3 · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不 / 否",
+        "judge_valid": "是的 / 是",
+        "note": "熊的左侧，图像偏中心。"
+      }
+    },
+    {
+      "case_title": "案例38 hrbench-8k · 选定层级：deterministic_random_remainder",
+      "condition": "S0 · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不清楚 / 不确定",
+        "judge_valid": "是的 / 是",
+        "note": "原图看不清楚，标志和道路情况。"
+      }
+    },
+    {
+      "case_title": "案例38 hrbench-8k · 选定层级：deterministic_random_remainder",
+      "condition": "SC · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不清楚 / 不确定",
+        "judge_valid": "是的 / 是",
+        "note": "原图看不清楚，标志和道路情况。"
+      }
+    },
+    {
+      "case_title": "案例38 hrbench-8k · 选定层级：deterministic_random_remainder",
+      "condition": "S1 · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不清楚 / 不确定",
+        "judge_valid": "是的 / 是",
+        "note": "原图看不清楚，标志和道路情况。"
+      }
+    },
+    {
+      "case_title": "案例38 hrbench-8k · 选定层级：deterministic_random_remainder",
+      "condition": "S2 · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不清楚 / 不确定",
+        "judge_valid": "是的 / 是",
+        "note": "原图看不清楚，标志和道路情况。"
+      }
+    },
+    {
+      "case_title": "案例38 hrbench-8k · 选定层级：deterministic_random_remainder",
+      "condition": "S3 · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不清楚 / 不确定",
+        "judge_valid": "是的 / 是",
+        "note": "原图看不清楚，标志和道路情况。"
+      }
+    },
+    {
+      "case_title": "案例39 hrbench-8k · 选定层级：deterministic_random_remainder",
+      "condition": "S0 · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例39 hrbench-8k · 选定层级：deterministic_random_remainder",
+      "condition": "SC · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例39 hrbench-8k · 选定层级：deterministic_random_remainder",
+      "condition": "S1 · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例39 hrbench-8k · 选定层级：deterministic_random_remainder",
+      "condition": "S2 · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例39 hrbench-8k · 选定层级：deterministic_random_remainder",
+      "condition": "S3 · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例40 hrbench-8k · 选定层级：deterministic_random_remainder",
+      "condition": "S0 · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例40 hrbench-8k · 选定层级：deterministic_random_remainder",
+      "condition": "SC · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例40 hrbench-8k · 选定层级：deterministic_random_remainder",
+      "condition": "S1 · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例40 hrbench-8k · 选定层级：deterministic_random_remainder",
+      "condition": "S2 · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例40 hrbench-8k · 选定层级：deterministic_random_remainder",
+      "condition": "S3 · hrbench-8k",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例41 mme-realworld · 选定层：native_extraction_disagreement",
+      "condition": "S0 · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不 / 否",
+        "judge_valid": "不 / 否",
+        "note": "水面停泊7艘大型船只。"
+      }
+    },
+    {
+      "case_title": "案例41 mme-realworld · 选定层：native_extraction_disagreement",
+      "condition": "SC · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不 / 否",
+        "judge_valid": "不 / 否",
+        "note": "水面停泊7艘大型船只。"
+      }
+    },
+    {
+      "case_title": "案例41 mme-realworld · 选定层：native_extraction_disagreement",
+      "condition": "S1 · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不 / 否",
+        "judge_valid": "是的 / 是",
+        "note": "水面停泊7艘大型船只。"
+      }
+    },
+    {
+      "case_title": "案例41 mme-realworld · 选定层：native_extraction_disagreement",
+      "condition": "第二季 · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不 / 否",
+        "judge_valid": "是的 / 是",
+        "note": "水面停泊7艘大型船只。"
+      }
+    },
+    {
+      "case_title": "案例41 mme-realworld · 选定层：native_extraction_disagreement",
+      "condition": "第三季 · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不 / 否",
+        "judge_valid": "是的 / 是",
+        "note": "水面停泊7艘大型船只。"
+      }
+    },
+    {
+      "case_title": "案例42 mme-realworld · 选定层：native_extraction_disagreement",
+      "condition": "S0 · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不清楚 / 不确定",
+        "judge_valid": "不 / 否",
+        "note": "图像中的人数不确定。"
+      }
+    },
+    {
+      "case_title": "案例42 mme-realworld · 选定层：native_extraction_disagreement",
+      "condition": "SC · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不清楚 / 不确定",
+        "judge_valid": "不 / 否",
+        "note": "图像中的人数不确定。"
+      }
+    },
+    {
+      "case_title": "案例42 mme-realworld · 选定层：native_extraction_disagreement",
+      "condition": "S1 · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不清楚 / 不确定",
+        "judge_valid": "不 / 否",
+        "note": "图像中的人数不确定。"
+      }
+    },
+    {
+      "case_title": "案例42 mme-realworld · 选定层：native_extraction_disagreement",
+      "condition": "第二季 · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不清楚 / 不确定",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例42 mme-realworld · 选定层：native_extraction_disagreement",
+      "condition": "第三季 · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不清楚 / 不确定",
+        "judge_valid": "是的 / 是",
+        "note": "图像中的人数不确定。"
+      }
+    },
+    {
+      "case_title": "案例43 mme-realworld · 选定层：native_extraction_disagreement",
+      "condition": "S0 · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不清楚 / 不确定",
+        "judge_valid": "不 / 否",
+        "note": "蓝色什么，如果是蓝色汽车旁边是白色汽车，另一边是不是黑色汽车看不清楚。"
+      }
+    },
+    {
+      "case_title": "案例43 mme-realworld · 选定层：native_extraction_disagreement",
+      "condition": "SC · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不清楚 / 不确定",
+        "judge_valid": "是的 / 是",
+        "note": "蓝色什么，如果是蓝色汽车旁边是白色汽车，另一边是不是黑色汽车看不清楚。"
+      }
+    },
+    {
+      "case_title": "案例43 mme-realworld · 选定层：native_extraction_disagreement",
+      "condition": "S1 · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不清楚 / 不确定",
+        "judge_valid": "是的 / 是",
+        "note": "蓝色什么，如果是蓝色汽车旁边是白色汽车，另一边是不是黑色汽车看不清楚。"
+      }
+    },
+    {
+      "case_title": "案例43 mme-realworld · 选定层：native_extraction_disagreement",
+      "condition": "第二季 · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不清楚 / 不确定",
+        "judge_valid": "是的 / 是",
+        "note": "蓝色什么，如果是蓝色汽车旁边是白色汽车，另一边是不是黑色汽车看不清楚。"
+      }
+    },
+    {
+      "case_title": "案例43 mme-realworld · 选定层：native_extraction_disagreement",
+      "condition": "第三季 · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不清楚 / 不确定",
+        "judge_valid": "是的 / 是",
+        "note": "蓝色什么，如果是蓝色汽车旁边是白色汽车，另一边是不是黑色汽车看不清楚。"
+      }
+    },
+    {
+      "case_title": "案例44 mme-realworld · 选定层：native_terminal_disagreement",
+      "condition": "S0 · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例44 mme-realworld · 选定层：native_terminal_disagreement",
+      "condition": "SC · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例44 mme-realworld · 选定层：native_terminal_disagreement",
+      "condition": "S1 · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不清楚 / 不确定",
+        "judge_valid": "是的 / 是",
+        "note": "图片模糊，天色黑很，距离较远看不清楚。"
+      }
+    },
+    {
+      "case_title": "案例44 mme-realworld · 选定层：native_terminal_disagreement",
+      "condition": "第二季 · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不 / 否",
+        "judge_valid": "是的 / 是",
+        "note": "图片模糊，天色黑很，距离较远看不清楚。"
+      }
+    },
+    {
+      "case_title": "案例44 mme-realworld · 选定层：native_terminal_disagreement",
+      "condition": "第三季 · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例45 mme-realworld · 选定层：native_terminal_disagreement",
+      "condition": "S0 · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例45 mme-realworld · 选定层：native_terminal_disagreement",
+      "condition": "SC · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例45 mme-realworld · 选定层：native_terminal_disagreement",
+      "condition": "S1 · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例45 mme-realworld · 选定层：native_terminal_disagreement",
+      "condition": "第二季 · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例45 mme-realworld · 选定层：native_terminal_disagreement",
+      "condition": "第三季 · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例46 mme-realworld · 选定层：non_answer_extraction",
+      "condition": "S0 · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不 / 否",
+        "judge_valid": "不 / 否",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例46 mme-realworld · 选定层：non_answer_extraction",
+      "condition": "SC · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例46 mme-realworld · 选定层：non_answer_extraction",
+      "condition": "S1 · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例46 mme-realworld · 选定层：non_answer_extraction",
+      "condition": "第二季 · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例46 mme-realworld · 选定层：non_answer_extraction",
+      "condition": "第三季 · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例47 mme-realworld · 选定层：non_answer_extraction",
+      "condition": "S0 · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不 / 否",
+        "judge_valid": "不 / 否",
+        "note": "图片有多少人看不清。"
+      }
+    },
+    {
+      "case_title": "案例47 mme-realworld · 选定层：non_answer_extraction",
+      "condition": "SC · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不 / 否",
+        "judge_valid": "是的 / 是",
+        "note": "图片有多少人看不清。"
+      }
+    },
+    {
+      "case_title": "案例47 mme-realworld · 选定层：non_answer_extraction",
+      "condition": "S1 · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不 / 否",
+        "judge_valid": "是的 / 是",
+        "note": "图片有多少人看不清。"
+      }
+    },
+    {
+      "case_title": "案例47 mme-realworld · 选定层：non_answer_extraction",
+      "condition": "第二季 · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不 / 否",
+        "judge_valid": "不 / 否",
+        "note": "图片有多少人看不清。"
+      }
+    },
+    {
+      "case_title": "案例47 mme-realworld · 选定层：non_answer_extraction",
+      "condition": "第三季 · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不 / 否",
+        "judge_valid": "是的 / 是",
+        "note": "图片有多少人看不清。"
+      }
+    },
+    {
+      "case_title": "案例48 mme-realworld · 选定层：three_score_agreement",
+      "condition": "S0 · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不 / 否",
+        "judge_valid": "是的 / 是",
+        "note": "没看到人。"
+      }
+    },
+    {
+      "case_title": "案例48 mme-realworld · 选定层：three_score_agreement",
+      "condition": "SC · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不 / 否",
+        "judge_valid": "是的 / 是",
+        "note": "没看到人。"
+      }
+    },
+    {
+      "case_title": "案例48 mme-realworld · 选定层：three_score_agreement",
+      "condition": "S1 · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不 / 否",
+        "judge_valid": "是的 / 是",
+        "note": "没看到人。"
+      }
+    },
+    {
+      "case_title": "案例48 mme-realworld · 选定层：three_score_agreement",
+      "condition": "第二季 · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不 / 否",
+        "judge_valid": "是的 / 是",
+        "note": "没看到人。"
+      }
+    },
+    {
+      "case_title": "案例48 mme-realworld · 选定层：three_score_agreement",
+      "condition": "第三季 · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不 / 否",
+        "judge_valid": "是的 / 是",
+        "note": "没看到人。"
+      }
+    },
+    {
+      "case_title": "案例49 mme-realworld · 选定层：three_score_agreement",
+      "condition": "S0 · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不 / 否",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例49 mme-realworld · 选定层：three_score_agreement",
+      "condition": "SC · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不 / 否",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例49 mme-realworld · 选定层：three_score_agreement",
+      "condition": "S1 · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不 / 否",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例49 mme-realworld · 选定层：three_score_agreement",
+      "condition": "第二季 · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不 / 否",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例49 mme-realworld · 选定层：three_score_agreement",
+      "condition": "第三季 · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不 / 否",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例50 mme-realworld · 选定层：deterministic_random_remainder",
+      "condition": "S0 · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不 / 否",
+        "judge_valid": "是的 / 是",
+        "note": "左侧的不是白色轿车"
+      }
+    },
+    {
+      "case_title": "案例50 mme-realworld · 选定层：deterministic_random_remainder",
+      "condition": "SC · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不 / 否",
+        "judge_valid": "是的 / 是",
+        "note": "左侧的不是白色轿车"
+      }
+    },
+    {
+      "case_title": "案例50 mme-realworld · 选定层：deterministic_random_remainder",
+      "condition": "S1 · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不 / 否",
+        "judge_valid": "是的 / 是",
+        "note": "左侧的不是白色轿车"
+      }
+    },
+    {
+      "case_title": "案例50 mme-realworld · 选定层：deterministic_random_remainder",
+      "condition": "第二季 · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不 / 否",
+        "judge_valid": "是的 / 是",
+        "note": "左侧的不是白色轿车"
+      }
+    },
+    {
+      "case_title": "案例50 mme-realworld · 选定层：deterministic_random_remainder",
+      "condition": "第三季 · mme-realworld",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不 / 否",
+        "judge_valid": "是的 / 是",
+        "note": "左侧的不是白色轿车"
+      }
+    },
+    {
+      "case_title": "案例51 mme-realworld-cn · 选定层：native_extraction_disagreement",
+      "condition": "S0 · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例51 mme-realworld-cn · 选定层：native_extraction_disagreement",
+      "condition": "SC · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "待审 / 待审",
+        "semantic_correct": "待审 / 待审",
+        "judge_valid": "待审 / 待审",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例51 mme-realworld-cn · 选定层：native_extraction_disagreement",
+      "condition": "S1 · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例51 mme-realworld-cn · 选定层：native_extraction_disagreement",
+      "condition": "S2 · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例51 mme-realworld-cn · 选定层：native_extraction_disagreement",
+      "condition": "S3 · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例52 mme-realworld-cn · 选定层：native_extraction_disagreement",
+      "condition": "S0 · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例52 mme-realworld-cn · 选定层：native_extraction_disagreement",
+      "condition": "SC · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例52 mme-realworld-cn · 选定层：native_extraction_disagreement",
+      "condition": "S1 · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例52 mme-realworld-cn · 选定层：native_extraction_disagreement",
+      "condition": "S2 · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例52 mme-realworld-cn · 选定层：native_extraction_disagreement",
+      "condition": "S3 · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例53 mme-realworld-cn · 选定层：native_extraction_disagreement",
+      "condition": "S0 · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例53 mme-realworld-cn · 选定层：native_extraction_disagreement",
+      "condition": "SC · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例53 mme-realworld-cn · 选定层：native_extraction_disagreement",
+      "condition": "S1 · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例53 mme-realworld-cn · 选定层：native_extraction_disagreement",
+      "condition": "S2 · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例53 mme-realworld-cn · 选定层：native_extraction_disagreement",
+      "condition": "S3 · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例54 mme-realworld-cn · 选定层：non_answer_extraction",
+      "condition": "S0 · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例54 mme-realworld-cn · 选定层：non_answer_extraction",
+      "condition": "SC · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不 / 否",
+        "judge_valid": "是的 / 是",
+        "note": "没抓取到正确数据。"
+      }
+    },
+    {
+      "case_title": "案例54 mme-realworld-cn · 选定层：non_answer_extraction",
+      "condition": "S1 · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不 / 否",
+        "judge_valid": "是的 / 是",
+        "note": "没抓取到正确数据。"
+      }
+    },
+    {
+      "case_title": "案例54 mme-realworld-cn · 选定层：non_answer_extraction",
+      "condition": "S2 · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例54 mme-realworld-cn · 选定层：non_answer_extraction",
+      "condition": "S3 · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不 / 否",
+        "judge_valid": "是的 / 是",
+        "note": "没抓取到正确数据。"
+      }
+    },
+    {
+      "case_title": "案例55 mme-realworld-cn · 选定层：non_answer_extraction",
+      "condition": "S0 · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "待审 / 待审",
+        "semantic_correct": "待审 / 待审",
+        "judge_valid": "待审 / 待审",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例55 mme-realworld-cn · 选定层：non_answer_extraction",
+      "condition": "SC · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "待审 / 待审",
+        "semantic_correct": "待审 / 待审",
+        "judge_valid": "待审 / 待审",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例55 mme-realworld-cn · 选定层：non_answer_extraction",
+      "condition": "S1 · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "待审 / 待审",
+        "semantic_correct": "Pending / 待审",
+        "judge_valid": "Pending / 待审",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例55 mme-realworld-cn · 选定层：non_answer_extraction",
+      "condition": "S2 · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "待审 / 待审",
+        "semantic_correct": "Pending / 待审",
+        "judge_valid": "Pending / 待审",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例55 mme-realworld-cn · 选定层：non_answer_extraction",
+      "condition": "S3 · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "待审 / 待审",
+        "semantic_correct": "待审 / 待审",
+        "judge_valid": "待审 / 待审",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例56 mme-realworld-cn · 选定层：three_score_agreement",
+      "condition": "S0 · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例56 mme-realworld-cn · 选定层：three_score_agreement",
+      "condition": "SC · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例56 mme-realworld-cn · 选定层：three_score_agreement",
+      "condition": "S1 · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例56 mme-realworld-cn · 选定层：three_score_agreement",
+      "condition": "S2 · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例56 mme-realworld-cn · 选定层：three_score_agreement",
+      "condition": "S3 · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例57 mme-realworld-cn · 选定层：deterministic_random_remainder",
+      "condition": "S0 · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例57 mme-realworld-cn · 选定层：deterministic_random_remainder",
+      "condition": "SC · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例57 mme-realworld-cn · 选定层：deterministic_random_remainder",
+      "condition": "S1 · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例57 mme-realworld-cn · 选定层：deterministic_random_remainder",
+      "condition": "S2 · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例57 mme-realworld-cn · 选定层：deterministic_random_remainder",
+      "condition": "S3 · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例58 mme-realworld-cn · 选定层：deterministic_random_remainder",
+      "condition": "S0 · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例58 mme-realworld-cn · 选定层：deterministic_random_remainder",
+      "condition": "SC · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例58 mme-realworld-cn · 选定层：deterministic_random_remainder",
+      "condition": "S1 · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例58 mme-realworld-cn · 选定层：deterministic_random_remainder",
+      "condition": "S2 · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例58 mme-realworld-cn · 选定层：deterministic_random_remainder",
+      "condition": "S3 · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例59 mme-realworld-cn · 选定层：deterministic_random_remainder",
+      "condition": "S0 · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例59 mme-realworld-cn · 选定层：deterministic_random_remainder",
+      "condition": "SC · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例59 mme-realworld-cn · 选定层：deterministic_random_remainder",
+      "condition": "S1 · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例59 mme-realworld-cn · 选定层：deterministic_random_remainder",
+      "condition": "S2 · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例59 mme-realworld-cn · 选定层：deterministic_random_remainder",
+      "condition": "S3 · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "不 / 否",
+        "judge_valid": "是的 / 是",
+        "note": "数据错误。"
+      }
+    },
+    {
+      "case_title": "案例60 mme-realworld-cn · 选定层：deterministic_random_remainder",
+      "condition": "S0 · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例60 mme-realworld-cn · 选定层：deterministic_random_remainder",
+      "condition": "SC · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例60 mme-realworld-cn · 选定层：deterministic_random_remainder",
+      "condition": "S1 · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例60 mme-realworld-cn · 选定层：deterministic_random_remainder",
+      "condition": "S2 · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    },
+    {
+      "case_title": "案例60 mme-realworld-cn · 选定层：deterministic_random_remainder",
+      "condition": "S3 · mme-realworld-cn",
+      "decisions": {
+        "extraction_faithful": "是的 / 是",
+        "semantic_correct": "是的 / 是",
+        "judge_valid": "是的 / 是",
+        "note": ""
+      }
+    }
+  ]
+}
