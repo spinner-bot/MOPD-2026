@@ -155,6 +155,8 @@ thead th .zh{display:block;font-weight:400;font-size:.8em;color:var(--sub);margi
 td .zh{display:block;font-weight:400;font-size:.9em;color:var(--sub);margin-top:2px;line-height:1.5}
 tbody tr:hover{background:#fafcfe}
 table.tight{max-width:780px}
+table.content th,table.content td{text-align:left}
+table.content td{line-height:1.62}
 figure{margin:26px 0;border:1px solid var(--line);border-radius:14px;overflow:hidden;
  background:#fff;transition:transform .35s cubic-bezier(.2,.7,.3,1),box-shadow .35s}
 figure:hover{transform:translateY(-3px);box-shadow:0 18px 40px -22px rgba(16,24,40,.35)}
@@ -191,8 +193,15 @@ const bar=document.getElementById('bar');
 const onScroll=()=>{const h=document.documentElement;
  const p=(h.scrollTop)/(h.scrollHeight-h.clientHeight)*100; bar.style.width=p+'%';};
 addEventListener('scroll',onScroll,{passive:true}); onScroll();
-const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}})},{threshold:.12});
+/* threshold 0 + rootMargin: a section taller than the viewport can never reach
+   an intersection ratio of 0.12, which left the long review section invisible. */
+const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},
+ {threshold:0, rootMargin:"0px 0px -8% 0px"});
 document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+/* safety net: reveal anything already on screen if the observer misses it */
+addEventListener('load',()=>setTimeout(()=>{
+ document.querySelectorAll('.reveal:not(.in)').forEach(el=>{
+  const r=el.getBoundingClientRect(); if(r.top<innerHeight*1.2) el.classList.add('in');});},600));
 document.querySelectorAll('[data-count]').forEach(el=>{
  const target=parseFloat(el.dataset.count), dec=(el.dataset.dec||'0')|0, dur=1100;
  const t0=performance.now();
@@ -468,19 +477,19 @@ def main() -> None:
 <h3>What this audit is<span class="zh">这次审计是什么</span></h3>
 {bi('All three score sources in the main analysis are automatic. At several records they disagree, <b>and no fourth source says which of them is wrong</b>. The human review introduces exactly that external view.',
     '主分析的三条评分来源都是自动化的。它们在若干处给出不同结论，<b>但没有第四条信息源说明哪一条错了</b>。人工审阅就是引入这样一个外部视角。')}
-<table><thead><tr><th>Item<span class="zh">项</span></th><th>Content<span class="zh">内容</span></th></tr></thead><tbody>
+<table class="content"><thead><tr><th>Item<span class="zh">项</span></th><th>Content<span class="zh">内容</span></th></tr></thead><tbody>
 <tr><td>Material<span class="zh">材料</span></td><td>Offline self-contained review page: original image, question and options, reference answer, raw model responses under all five conditions, the three automatic scores with their evidence<span class="zh">离线自包含审阅页：原始图像、题目选项、参考答案、五条件模型原始回答、三种自动评分及证据</span></td></tr>
 <tr><td>Sampling<span class="zh">抽样</span></td><td>10 cases per benchmark, 60 cases in total; five conditions per case, <b>300 views</b><span class="zh">六评测集各 10 例，共 60 例；每例五条件，共 <b>300 个视图</b></span></td></tr>
 <tr><td>Sampling design<span class="zh">抽样方式</span></td><td><b>Risk-targeted, not random</b>: official/extraction disagreements, official/terminal disagreements, ambiguous or no-answer cases and the longest outputs per benchmark were prioritised; an "all three agree" control stratum was added<span class="zh"><b>风险定向</b>，非随机：优先纳入官方/抽取分歧、官方/终行分歧、歧义或无答案、以及各集最长输出，另设"三项一致"对照层</span></td></tr>
 <tr><td>Judgements<span class="zh">判断项</span></td><td>Extraction faithful / answer semantically correct / judge rationale and label valid (yes, no, unclear each)<span class="zh">抽取是否忠实 / 答案语义是否正确 / 裁判理由与标签是否有效（各为 是·否·不确定）</span></td></tr>
 </tbody></table>
 <h3>Who did what<span class="zh">谁做了什么</span></h3>
-<table><thead><tr><th>Role<span class="zh">执行者</span></th><th>Work performed<span class="zh">工作内容</span></th></tr></thead><tbody>
+<table class="content"><thead><tr><th>Role<span class="zh">执行者</span></th><th>Work performed<span class="zh">工作内容</span></th></tr></thead><tbody>
 <tr><td><b>External auditor</b><span class="zh">外部审计员</span></td><td>Completed the three judgements for <b>293</b> views<span class="zh">完成 <b>293</b> 个视图的三项判断</span></td></tr>
 <tr><td><b>Project owner (experiment lead)</b><span class="zh">项目所有者（实验负责人）</span></td><td>Completed <b>7</b> views (Case 1·SC, Case 51·SC, all five conditions of Case 55); changed the judge-validity verdict for Case 46·S0 from "no" to "unclear" with a note; personally spot-checked and found no extraction errors<span class="zh">补全 <b>7</b> 个视图（Case 1·SC、Case 51·SC、Case 55 全部五条件）；将 Case 46·S0 的裁判有效性由"否"改为"无法判断"并附说明；亲自抽检未发现抽取错误</span></td></tr>
 </tbody></table>
 <h3>Audit workflow, end to end<span class="zh">审计工作流（端到端）</span></h3>
-<table><thead><tr><th>Step<span class="zh">步骤</span></th><th>Content<span class="zh">内容</span></th><th>Performed by<span class="zh">执行者</span></th></tr></thead><tbody>
+<table class="content"><thead><tr><th>Step<span class="zh">步骤</span></th><th>Content<span class="zh">内容</span></th><th>By<span class="zh">执行者</span></th></tr></thead><tbody>
 <tr><td>1 · Sampling<span class="zh">抽样</span></td><td>Deterministically draw 60 cases from the 32,162 items by risk stratum (fixed seed 20261016), keeping all five conditions per case<span class="zh">按风险层从 32,162 题中确定性抽取 60 例（固定随机种子 20261016），每例保留五条件</span></td><td>Automated<span class="zh">自动化</span></td></tr>
 <tr><td>2 · Material generation<span class="zh">材料生成</span></td><td>Render images, questions, reference answers, the five raw model responses and the three scoring evidence sets into a single offline HTML file<span class="zh">将图像、题目、参考答案、五条件模型回答与三种评分证据渲染为单文件离线 HTML</span></td><td>Automated<span class="zh">自动化</span></td></tr>
 <tr><td>3 · Review distribution<span class="zh">分发审阅</span></td><td>The reviewer opens the page and works card by card: <b>image, then question and options, then reference answer, then the raw model response for that condition, then the three scores and their evidence</b><span class="zh">审阅者在浏览器打开页面，逐卡查看：<b>原图 → 题目与选项 → 参考答案 → 该条件的模型原始回答 → 三种评分及其证据</b></span></td><td>Auditor<span class="zh">审计员</span></td></tr>
@@ -529,7 +538,7 @@ def main() -> None:
     '裁判理由/标签被判为无效或无法评估：<b>13</b> 例；抽取忠实度被判为否或不确定：<b>3</b> 例。其中 Case 46 与 Case 55 的若干视图涉及模型输出大量循环重复、上万 token 后截断、未给出最终答案，审阅者将其裁判有效性标为"无法评估"并附说明。')}
 
 <h3>In depth: five questions raised by the audit and their answers<span class="zh">深入分析：审计提出的五个问题与结论</span></h3>
-<table><thead><tr><th>Question<span class="zh">问题</span></th><th>Answer<span class="zh">结论</span></th></tr></thead><tbody>
+<table class="content"><thead><tr><th>Question<span class="zh">问题</span></th><th>Answer<span class="zh">结论</span></th></tr></thead><tbody>
 <tr><td>Are extraction errors concentrated in table tasks?<span class="zh">抽取错误是否集中于表格任务</span></td><td><b>No.</b> Three audited cases happen to be in HRBench, but of all 4,860 "terminal correct / extraction wrong" records, <b>88% are in MME-RealWorld</b> (3.62% of that benchmark); HRBench accounts for only 2.0%.<span class="zh"><b>否</b>。审计中 3 例恰在 hrbench，但全量"判定对/抽取错"的 4,860 例中 <b>88% 在 mme-realworld</b>（3.62%），hrbench 仅占 2.0%。</span></td></tr>
 <tr><td>Do judge and extraction failures share the same origin?<span class="zh">裁判与抽取失败是否同源</span></td><td><b>Yes.</b> <b>98.2%</b> of the disagreements are "extraction reads an explicit option that does not match the reference, while the judge still says Yes": systematic judge over-counting.<span class="zh"><b>是</b>。分歧中 <b>98.2%</b> 属于"抽取读出明确选项、与标准答案不符，而裁判仍判 Yes"——裁判系统性过度判对。</span></td></tr>
 <tr><td>Are the "unclear" cases objectively unjudgeable?<span class="zh">判"不确定"的案例是否客观不可判</span></td><td><b>Partly.</b> The 16 "unclear" views concentrate in 4 cases: one image with luminance 17/255 (objectively very dark), two 36-39 MP images (the review preview necessarily loses detail), and one normal image where the judgement is subjective.<span class="zh"><b>部分成立</b>。16 个"不确定"集中在 4 例：1 例图像亮度仅 17/255（客观极暗）、2 例为 36–39 MP 超大图（审阅预览必失细节）、1 例图像正常而判断主观。</span></td></tr>
