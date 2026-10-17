@@ -1,0 +1,794 @@
+{
+  "n_rows": 160810,
+  "n_unique": 160810,
+  "discriminators": {
+    "accuracy": {
+      "official": {
+        "S0": {
+          "correct": 15155,
+          "n": 32162,
+          "acc": 47.12082581928985,
+          "lo": 46.575663708280814,
+          "hi": 47.666675630587484
+        },
+        "SC": {
+          "correct": 16068,
+          "n": 32162,
+          "acc": 49.95957962813258,
+          "lo": 49.413172115880634,
+          "hi": 50.505996794924215
+        },
+        "S1": {
+          "correct": 18287,
+          "n": 32162,
+          "acc": 56.859026179963934,
+          "lo": 56.316959640725614,
+          "hi": 57.399454418082726
+        },
+        "S2": {
+          "correct": 17989,
+          "n": 32162,
+          "acc": 55.932466886387665,
+          "lo": 55.38920514952198,
+          "hi": 56.4743116338898
+        },
+        "S3": {
+          "correct": 18591,
+          "n": 32162,
+          "acc": 57.8042410297867,
+          "lo": 57.26359269268292,
+          "hi": 58.343025298073634
+        }
+      },
+      "terminal": {
+        "S0": {
+          "correct": 24008,
+          "n": 32162,
+          "acc": 74.64709906100367,
+          "lo": 74.16873355951978,
+          "hi": 75.11957752124805
+        },
+        "SC": {
+          "correct": 23754,
+          "n": 32162,
+          "acc": 73.85734717990175,
+          "lo": 73.37428934698329,
+          "hi": 74.33470660643306
+        },
+        "S1": {
+          "correct": 23381,
+          "n": 32162,
+          "acc": 72.69759343324421,
+          "lo": 72.20800731632588,
+          "hi": 73.18175815479879
+        },
+        "S2": {
+          "correct": 23476,
+          "n": 32162,
+          "acc": 72.99297307381381,
+          "lo": 72.50500954391819,
+          "hi": 73.47544465594027
+        },
+        "S3": {
+          "correct": 23186,
+          "n": 32162,
+          "acc": 72.09128785523288,
+          "lo": 71.59845531246893,
+          "hi": 72.57884382072844
+        }
+      },
+      "extraction": {
+        "S0": {
+          "correct": 22759,
+          "n": 32162,
+          "acc": 70.76363410235682,
+          "lo": 70.26407836695299,
+          "hi": 71.25823037498817
+        },
+        "SC": {
+          "correct": 22602,
+          "n": 32162,
+          "acc": 70.27548038057334,
+          "lo": 69.77358243220223,
+          "hi": 70.77253546330516
+        },
+        "S1": {
+          "correct": 22543,
+          "n": 32162,
+          "acc": 70.09203407748274,
+          "lo": 69.58927361256471,
+          "hi": 70.58999549351851
+        },
+        "S2": {
+          "correct": 22598,
+          "n": 32162,
+          "acc": 70.26304334307568,
+          "lo": 69.76108661531724,
+          "hi": 70.7601601758224
+        },
+        "S3": {
+          "correct": 22447,
+          "n": 32162,
+          "acc": 69.7935451775387,
+          "lo": 69.28940174406956,
+          "hi": 70.29296085718791
+        }
+      }
+    },
+    "kappa": {
+      "official_vs_terminal": 0.592145896491053,
+      "official_vs_extraction": 0.5338138346113964,
+      "terminal_vs_extraction": 0.9254757142250021
+    },
+    "cross": {
+      "official_vs_terminal": {
+        "both": 86090,
+        "a_only": 0,
+        "b_only": 31715,
+        "neither": 43005
+      },
+      "official_vs_extraction": {
+        "both": 81314,
+        "a_only": 4776,
+        "b_only": 31635,
+        "neither": 43085
+      },
+      "terminal_vs_extraction": {
+        "both": 112945,
+        "a_only": 4860,
+        "b_only": 4,
+        "neither": 43001
+      }
+    }
+  },
+  "discriminator_by_track": {
+    "vstar": {
+      "official": {
+        "acc": 87.95811518324608,
+        "n": 955
+      },
+      "terminal": {
+        "acc": 88.48167539267016,
+        "n": 955
+      },
+      "extraction": {
+        "acc": 88.37696335078535,
+        "n": 955
+      }
+    },
+    "zoombench": {
+      "official": {
+        "acc": 0.0,
+        "n": 4225
+      },
+      "terminal": {
+        "acc": 59.124260355029584,
+        "n": 4225
+      },
+      "extraction": {
+        "acc": 59.124260355029584,
+        "n": 4225
+      }
+    },
+    "hrbench-4k": {
+      "official": {
+        "acc": 76.475,
+        "n": 4000
+      },
+      "terminal": {
+        "acc": 83.675,
+        "n": 4000
+      },
+      "extraction": {
+        "acc": 82.4,
+        "n": 4000
+      }
+    },
+    "hrbench-8k": {
+      "official": {
+        "acc": 73.2,
+        "n": 4000
+      },
+      "terminal": {
+        "acc": 80.475,
+        "n": 4000
+      },
+      "extraction": {
+        "acc": 79.35,
+        "n": 4000
+      }
+    },
+    "mme-realworld": {
+      "official": {
+        "acc": 51.73111948833072,
+        "n": 118045
+      },
+      "terminal": {
+        "acc": 73.85488584861706,
+        "n": 118045
+      },
+      "extraction": {
+        "acc": 70.232538438731,
+        "n": 118045
+      }
+    },
+    "mme-realworld-cn": {
+      "official": {
+        "acc": 61.50752070305898,
+        "n": 29585
+      },
+      "terminal": {
+        "acc": 70.01521041068109,
+        "n": 29585
+      },
+      "extraction": {
+        "acc": 68.38262633091094,
+        "n": 29585
+      }
+    }
+  },
+  "matrix": {
+    "vstar|S0": {
+      "official": 89.52879581151832,
+      "terminal": 90.57591623036649,
+      "extraction": 90.05235602094241,
+      "n": 191
+    },
+    "vstar|SC": {
+      "official": 85.34031413612566,
+      "terminal": 86.38743455497382,
+      "extraction": 86.38743455497382,
+      "n": 191
+    },
+    "vstar|S1": {
+      "official": 89.52879581151832,
+      "terminal": 89.52879581151832,
+      "extraction": 89.52879581151832,
+      "n": 191
+    },
+    "vstar|S2": {
+      "official": 86.91099476439791,
+      "terminal": 86.91099476439791,
+      "extraction": 86.91099476439791,
+      "n": 191
+    },
+    "vstar|S3": {
+      "official": 88.48167539267016,
+      "terminal": 89.00523560209425,
+      "extraction": 89.00523560209425,
+      "n": 191
+    },
+    "zoombench|S0": {
+      "official": 0.0,
+      "terminal": 61.18343195266272,
+      "extraction": 61.18343195266272,
+      "n": 845
+    },
+    "zoombench|SC": {
+      "official": 0.0,
+      "terminal": 59.053254437869825,
+      "extraction": 59.053254437869825,
+      "n": 845
+    },
+    "zoombench|S1": {
+      "official": 0.0,
+      "terminal": 59.40828402366864,
+      "extraction": 59.40828402366864,
+      "n": 845
+    },
+    "zoombench|S2": {
+      "official": 0.0,
+      "terminal": 58.10650887573964,
+      "extraction": 58.10650887573964,
+      "n": 845
+    },
+    "zoombench|S3": {
+      "official": 0.0,
+      "terminal": 57.8698224852071,
+      "extraction": 57.8698224852071,
+      "n": 845
+    },
+    "hrbench-4k|S0": {
+      "official": 66.5,
+      "terminal": 84.625,
+      "extraction": 82.875,
+      "n": 800
+    },
+    "hrbench-4k|SC": {
+      "official": 73.5,
+      "terminal": 84.375,
+      "extraction": 82.625,
+      "n": 800
+    },
+    "hrbench-4k|S1": {
+      "official": 81.125,
+      "terminal": 82.875,
+      "extraction": 81.875,
+      "n": 800
+    },
+    "hrbench-4k|S2": {
+      "official": 79.375,
+      "terminal": 82.875,
+      "extraction": 82.125,
+      "n": 800
+    },
+    "hrbench-4k|S3": {
+      "official": 81.875,
+      "terminal": 83.625,
+      "extraction": 82.5,
+      "n": 800
+    },
+    "hrbench-8k|S0": {
+      "official": 63.25,
+      "terminal": 81.125,
+      "extraction": 79.5,
+      "n": 800
+    },
+    "hrbench-8k|SC": {
+      "official": 70.25,
+      "terminal": 81.5,
+      "extraction": 80.0,
+      "n": 800
+    },
+    "hrbench-8k|S1": {
+      "official": 78.375,
+      "terminal": 80.125,
+      "extraction": 79.625,
+      "n": 800
+    },
+    "hrbench-8k|S2": {
+      "official": 76.625,
+      "terminal": 80.0,
+      "extraction": 78.875,
+      "n": 800
+    },
+    "hrbench-8k|S3": {
+      "official": 77.5,
+      "terminal": 79.625,
+      "extraction": 78.75,
+      "n": 800
+    },
+    "mme-realworld|S0": {
+      "official": 44.343258926680505,
+      "terminal": 75.2043712143674,
+      "extraction": 70.70185098902961,
+      "n": 23609
+    },
+    "mme-realworld|SC": {
+      "official": 48.0579440044051,
+      "terminal": 74.31911559151172,
+      "extraction": 70.14697784743106,
+      "n": 23609
+    },
+    "mme-realworld|S1": {
+      "official": 55.73298318437884,
+      "terminal": 73.17124825278495,
+      "extraction": 69.98178660680249,
+      "n": 23609
+    },
+    "mme-realworld|S2": {
+      "official": 54.39874624084036,
+      "terminal": 73.67529332034394,
+      "extraction": 70.34605447075268,
+      "n": 23609
+    },
+    "mme-realworld|S3": {
+      "official": 56.12266508534881,
+      "terminal": 72.90440086407726,
+      "extraction": 69.98602227963912,
+      "n": 23609
+    },
+    "mme-realworld-cn|S0": {
+      "official": 58.76288659793814,
+      "terminal": 71.60723339530168,
+      "extraction": 68.93696129795505,
+      "n": 5917
+    },
+    "mme-realworld-cn|SC": {
+      "official": 57.61365556870035,
+      "terminal": 71.26922426905526,
+      "extraction": 68.88625992901808,
+      "n": 5917
+    },
+    "mme-realworld-cn|S1": {
+      "official": 62.22748014196383,
+      "terminal": 69.78198411357107,
+      "extraction": 68.54825080277168,
+      "n": 5917
+    },
+    "mme-realworld-cn|S2": {
+      "official": 63.07250295757986,
+      "terminal": 69.66368091938482,
+      "extraction": 68.36234578333615,
+      "n": 5917
+    },
+    "mme-realworld-cn|S3": {
+      "official": 65.86107824911272,
+      "terminal": 67.75392935609261,
+      "extraction": 67.17931384147371,
+      "n": 5917
+    }
+  },
+  "effects": {
+    "official": {
+      "vstar": {
+        "n": 191,
+        "delta_pp": -1.0471204188481675,
+        "ci_low": -4.292120613578145,
+        "ci_high": 2.1978797758818107,
+        "up": 4,
+        "down": 6,
+        "same": 181
+      },
+      "zoombench": {
+        "n": 845,
+        "delta_pp": 0.0,
+        "ci_low": 0.0,
+        "ci_high": 0.0,
+        "up": 0,
+        "down": 0,
+        "same": 845
+      },
+      "hrbench-4k": {
+        "n": 800,
+        "delta_pp": 15.375,
+        "ci_low": 11.901589313215286,
+        "ci_high": 18.848410686784714,
+        "up": 162,
+        "down": 39,
+        "same": 599
+      },
+      "hrbench-8k": {
+        "n": 800,
+        "delta_pp": 14.249999999999998,
+        "ci_low": 10.85524277099407,
+        "ci_high": 17.644757229005926,
+        "up": 153,
+        "down": 39,
+        "same": 608
+      },
+      "mme-realworld": {
+        "n": 23609,
+        "delta_pp": 11.779406158668305,
+        "ci_low": 11.130539341821807,
+        "ci_high": 12.428272975514803,
+        "up": 4445,
+        "down": 1664,
+        "same": 17500
+      },
+      "mme-realworld-cn": {
+        "n": 5917,
+        "delta_pp": 7.098191651174582,
+        "ci_low": 5.8748332455615095,
+        "ci_high": 8.321550056787654,
+        "up": 892,
+        "down": 472,
+        "same": 4553
+      },
+      "ALL": {
+        "n": 32162,
+        "delta_pp": 10.68341521049686,
+        "ci_low": 10.142588788832835,
+        "ci_high": 11.224241632160883,
+        "up": 5656,
+        "down": 2220,
+        "same": 24286
+      }
+    },
+    "terminal": {
+      "vstar": {
+        "n": 191,
+        "delta_pp": -1.5706806282722512,
+        "ci_low": -4.649158115183246,
+        "ci_high": 1.5077968586387434,
+        "up": 3,
+        "down": 6,
+        "same": 182
+      },
+      "zoombench": {
+        "n": 845,
+        "delta_pp": -3.3136094674556213,
+        "ci_low": -5.413991583063239,
+        "ci_high": -1.213227351848004,
+        "up": 27,
+        "down": 55,
+        "same": 763
+      },
+      "hrbench-4k": {
+        "n": 800,
+        "delta_pp": -1.0,
+        "ci_low": -3.020284648602023,
+        "ci_high": 1.020284648602023,
+        "up": 30,
+        "down": 38,
+        "same": 732
+      },
+      "hrbench-8k": {
+        "n": 800,
+        "delta_pp": -1.5,
+        "ci_low": -3.4903528509629895,
+        "ci_high": 0.49035285096298953,
+        "up": 27,
+        "down": 39,
+        "same": 734
+      },
+      "mme-realworld": {
+        "n": 23609,
+        "delta_pp": -2.2999703502901436,
+        "ci_low": -2.727249284250665,
+        "ci_high": -1.8726914163296224,
+        "up": 1053,
+        "down": 1596,
+        "same": 20960
+      },
+      "mme-realworld-cn": {
+        "n": 5917,
+        "delta_pp": -3.8533040392090587,
+        "ci_low": -4.832573568882448,
+        "ci_high": -2.8740345095356696,
+        "up": 323,
+        "down": 551,
+        "same": 5043
+      },
+      "ALL": {
+        "n": 32162,
+        "delta_pp": -2.555811205770785,
+        "ci_low": -2.928893671130206,
+        "ci_high": -2.182728740411364,
+        "up": 1463,
+        "down": 2285,
+        "same": 28414
+      }
+    },
+    "extraction": {
+      "vstar": {
+        "n": 191,
+        "delta_pp": -1.0471204188481675,
+        "ci_low": -3.949536827814682,
+        "ci_high": 1.8552959901183466,
+        "up": 3,
+        "down": 5,
+        "same": 183
+      },
+      "zoombench": {
+        "n": 845,
+        "delta_pp": -3.3136094674556213,
+        "ci_low": -5.413991583063239,
+        "ci_high": -1.213227351848004,
+        "up": 27,
+        "down": 55,
+        "same": 763
+      },
+      "hrbench-4k": {
+        "n": 800,
+        "delta_pp": -0.375,
+        "ci_low": -2.3195914959897745,
+        "ci_high": 1.5695914959897748,
+        "up": 30,
+        "down": 33,
+        "same": 737
+      },
+      "hrbench-8k": {
+        "n": 800,
+        "delta_pp": -0.75,
+        "ci_low": -2.5503418928341084,
+        "ci_high": 1.0503418928341084,
+        "up": 24,
+        "down": 30,
+        "same": 746
+      },
+      "mme-realworld": {
+        "n": 23609,
+        "delta_pp": -0.7158287093904867,
+        "ci_low": -1.1271642642448623,
+        "ci_high": -0.30449315453611114,
+        "up": 1143,
+        "down": 1312,
+        "same": 21154
+      },
+      "mme-realworld-cn": {
+        "n": 5917,
+        "delta_pp": -1.757647456481325,
+        "ci_low": -2.703866326078794,
+        "ci_high": -0.811428586883856,
+        "up": 356,
+        "down": 460,
+        "same": 5101
+      },
+      "ALL": {
+        "n": 32162,
+        "delta_pp": -0.9700889248181084,
+        "ci_low": -1.3294821082833763,
+        "ci_high": -0.6106957413528404,
+        "up": 1583,
+        "down": 1895,
+        "same": 28684
+      }
+    }
+  },
+  "strata_category": {
+    "direct_attributes": {
+      "n": 575,
+      "official": 87.65217391304348,
+      "terminal": 88.52173913043478
+    },
+    "relative_position": {
+      "n": 380,
+      "official": 88.42105263157895,
+      "terminal": 88.42105263157895
+    },
+    "(missing)": {
+      "n": 4225,
+      "official": 0.0,
+      "terminal": 59.124260355029584
+    },
+    "single": {
+      "n": 4000,
+      "official": 82.275,
+      "terminal": 90.4
+    },
+    "cross": {
+      "n": 4000,
+      "official": 67.4,
+      "terminal": 73.75
+    },
+    "Perception/Remote Sensing": {
+      "n": 20190,
+      "official": 56.47845468053492,
+      "terminal": 63.64041604754829
+    },
+    "Perception/Autonomous_Driving": {
+      "n": 21800,
+      "official": 37.61467889908257,
+      "terminal": 55.1651376146789
+    },
+    "Reasoning/Autonomous_Driving": {
+      "n": 10720,
+      "official": 33.00373134328358,
+      "terminal": 41.66044776119403
+    },
+    "Perception/Diagram and Table": {
+      "n": 30175,
+      "official": 52.265120132560064,
+      "terminal": 91.2046396023198
+    },
+    "Reasoning/Diagram and Table": {
+      "n": 5510,
+      "official": 63.811252268602544,
+      "terminal": 85.40834845735027
+    },
+    "Perception/Monitoring": {
+      "n": 13480,
+      "official": 36.35014836795252,
+      "terminal": 50.51186943620178
+    },
+    "Perception/OCR with Complex Context": {
+      "n": 38240,
+      "official": 74.3383891213389,
+      "terminal": 91.73117154811716
+    },
+    "Reasoning/OCR with Complex Context": {
+      "n": 3535,
+      "official": 55.8981612446959,
+      "terminal": 69.98585572842998
+    },
+    "Reasoning/Monitoring": {
+      "n": 3980,
+      "official": 38.49246231155779,
+      "terminal": 49.42211055276382
+    }
+  },
+  "strata_question_type": {
+    "(missing)": {
+      "n": 156585,
+      "official": 54.979723472874156,
+      "terminal": 73.6385988440783
+    },
+    "mcq": {
+      "n": 3105,
+      "official": 0.0,
+      "terminal": 64.38003220611917
+    },
+    "blank": {
+      "n": 1120,
+      "official": 0.0,
+      "terminal": 44.55357142857143
+    }
+  },
+  "strata_answer_format": {
+    "MCQ_OPTION": {
+      "n": 159690,
+      "official": 53.910701985096125,
+      "terminal": 73.45857599098252
+    },
+    "NUMERIC_SHORT_ANSWER": {
+      "n": 1120,
+      "official": 0.0,
+      "terminal": 44.55357142857143
+    }
+  },
+  "extraction_status": {
+    "S0": {
+      "ANSWERED": 32061,
+      "NO_ANSWER": 79,
+      "AMBIGUOUS": 22
+    },
+    "SC": {
+      "ANSWERED": 32029,
+      "NO_ANSWER": 106,
+      "AMBIGUOUS": 27
+    },
+    "S1": {
+      "ANSWERED": 32033,
+      "NO_ANSWER": 102,
+      "AMBIGUOUS": 27
+    },
+    "S2": {
+      "ANSWERED": 31994,
+      "NO_ANSWER": 140,
+      "AMBIGUOUS": 28
+    },
+    "S3": {
+      "ANSWERED": 32025,
+      "NO_ANSWER": 112,
+      "AMBIGUOUS": 25
+    }
+  },
+  "length": {
+    "S0": {
+      "n": 32162,
+      "mean": 336.91091971892297,
+      "median": 92,
+      "p95": 1008,
+      "max": 32768
+    },
+    "SC": {
+      "n": 32162,
+      "mean": 369.3998196629563,
+      "median": 87,
+      "p95": 1049,
+      "max": 32768
+    },
+    "S1": {
+      "n": 32162,
+      "mean": 306.135999005037,
+      "median": 60,
+      "p95": 790,
+      "max": 32768
+    },
+    "S2": {
+      "n": 32162,
+      "mean": 331.3530874945588,
+      "median": 61,
+      "p95": 970,
+      "max": 32768
+    },
+    "S3": {
+      "n": 32162,
+      "mean": 260.3182637895653,
+      "median": 53,
+      "p95": 705,
+      "max": 32768
+    }
+  },
+  "redundancy_kappa": {
+    "S0_vs_SC": 0.7728207082513945,
+    "S0_vs_S1": 0.7291413078490969,
+    "S0_vs_S2": 0.725789329763401,
+    "S0_vs_S3": 0.7020347312850732,
+    "SC_vs_S1": 0.7833753446153329,
+    "SC_vs_S2": 0.7582951285953184,
+    "SC_vs_S3": 0.73193329211328,
+    "S1_vs_S2": 0.8131880575496837,
+    "S1_vs_S3": 0.79440981338642,
+    "S2_vs_S3": 0.8044280505840017
+  },
+  "cluster": {
+    "n_items": 32162,
+    "n_clusters": 32162,
+    "max_size": 1,
+    "size_hist": {
+      "1": 32162
+    }
+  }
+}
