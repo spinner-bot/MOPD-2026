@@ -1,0 +1,368 @@
+{
+  "schema": "work5-human-review-reference-analysis-v1",
+  "evidence_tier": "T2-reference-only",
+  "rows_total": 300,
+  "rows_joined": 284,
+  "rows_unclear_excluded": 16,
+  "rows_missing_auto": 0,
+  "n_compared": 284,
+  "scorer_vs_human": {
+    "official": {
+      "agree_pct": 74.64788732394366,
+      "kappa": 0.49162150067127447,
+      "sensitivity": 68.2051282051282,
+      "specificity": 88.76404494382022,
+      "precision": 93.00699300699301,
+      "human_yes_auto_no": 62,
+      "human_no_auto_yes": 10,
+      "both_yes": 133,
+      "both_no": 79
+    },
+    "terminal": {
+      "agree_pct": 96.12676056338029,
+      "kappa": 0.9068685905079896,
+      "sensitivity": 100.0,
+      "specificity": 87.64044943820225,
+      "precision": 94.66019417475728,
+      "human_yes_auto_no": 0,
+      "human_no_auto_yes": 11,
+      "both_yes": 195,
+      "both_no": 78
+    },
+    "extraction": {
+      "agree_pct": 100.0,
+      "kappa": 1.0,
+      "sensitivity": 100.0,
+      "specificity": 100.0,
+      "precision": 100.0,
+      "human_yes_auto_no": 0,
+      "human_no_auto_yes": 0,
+      "both_yes": 195,
+      "both_no": 89
+    }
+  },
+  "by_condition": {
+    "S0": {
+      "n": 57,
+      "human_yes": 39,
+      "official_yes": 25,
+      "official_kappa": 0.2614840989399294,
+      "terminal_yes": 44,
+      "terminal_kappa": 0.7806004618937643,
+      "extraction_yes": 39,
+      "extraction_kappa": 1.0
+    },
+    "SC": {
+      "n": 57,
+      "human_yes": 39,
+      "official_yes": 24,
+      "official_kappa": 0.3699825479930192,
+      "terminal_yes": 41,
+      "terminal_kappa": 0.9162995594713657,
+      "extraction_yes": 39,
+      "extraction_kappa": 1.0
+    },
+    "S1": {
+      "n": 56,
+      "human_yes": 38,
+      "official_yes": 31,
+      "official_kappa": 0.5915119363395226,
+      "terminal_yes": 40,
+      "terminal_kappa": 0.9156626506024097,
+      "extraction_yes": 38,
+      "extraction_kappa": 1.0
+    },
+    "S2": {
+      "n": 57,
+      "human_yes": 39,
+      "official_yes": 31,
+      "official_kappa": 0.6374045801526718,
+      "terminal_yes": 40,
+      "terminal_kappa": 0.9587852494577005,
+      "extraction_yes": 39,
+      "extraction_kappa": 1.0
+    },
+    "S3": {
+      "n": 57,
+      "human_yes": 40,
+      "official_yes": 32,
+      "official_kappa": 0.6308290155440415,
+      "terminal_yes": 41,
+      "terminal_kappa": 0.957367240089753,
+      "extraction_yes": 40,
+      "extraction_kappa": 1.0
+    }
+  },
+  "human_s0_vs_s3": {
+    "n_paired": 57,
+    "up": 4,
+    "down": 3,
+    "delta_pp": 1.7543859649122806,
+    "mcnemar_p": 1.0
+  },
+  "by_stratum": {
+    "native_extraction_disagreement": {
+      "n": 80,
+      "human_yes": 68,
+      "official_yes": 36,
+      "terminal_yes": 72,
+      "extraction_yes": 68
+    },
+    "three_score_agreement": {
+      "n": 30,
+      "human_yes": 20,
+      "official_yes": 20,
+      "terminal_yes": 20,
+      "extraction_yes": 20
+    },
+    "deterministic_random_remainder": {
+      "n": 115,
+      "human_yes": 88,
+      "official_yes": 69,
+      "terminal_yes": 88,
+      "extraction_yes": 88
+    },
+    "non_answer_extraction": {
+      "n": 50,
+      "human_yes": 11,
+      "official_yes": 14,
+      "terminal_yes": 18,
+      "extraction_yes": 11
+    },
+    "native_terminal_disagreement": {
+      "n": 9,
+      "human_yes": 8,
+      "official_yes": 4,
+      "terminal_yes": 8,
+      "extraction_yes": 8
+    }
+  },
+  "judge_flagged": [
+    {
+      "case": 41,
+      "condition": "S0",
+      "track": "mme-realworld",
+      "human_ext": "Yes / 是",
+      "human_sem": "No / 否",
+      "human_judge": "No / 否",
+      "auto": {
+        "official": 1,
+        "terminal": 1,
+        "extraction": 0
+      },
+      "note": "水面停泊7艘大型船只。"
+    },
+    {
+      "case": 41,
+      "condition": "SC",
+      "track": "mme-realworld",
+      "human_ext": "Yes / 是",
+      "human_sem": "No / 否",
+      "human_judge": "No / 否",
+      "auto": {
+        "official": 1,
+        "terminal": 1,
+        "extraction": 0
+      },
+      "note": "水面停泊7艘大型船只。"
+    },
+    {
+      "case": 42,
+      "condition": "S0",
+      "track": "mme-realworld",
+      "human_ext": "Yes / 是",
+      "human_sem": "Unclear / 不确定",
+      "human_judge": "No / 否",
+      "auto": {
+        "official": 1,
+        "terminal": 1,
+        "extraction": 0
+      },
+      "note": "图像中的人数不确定。"
+    },
+    {
+      "case": 42,
+      "condition": "SC",
+      "track": "mme-realworld",
+      "human_ext": "Yes / 是",
+      "human_sem": "Unclear / 不确定",
+      "human_judge": "No / 否",
+      "auto": {
+        "official": 1,
+        "terminal": 1,
+        "extraction": 0
+      },
+      "note": "图像中的人数不确定。"
+    },
+    {
+      "case": 42,
+      "condition": "S1",
+      "track": "mme-realworld",
+      "human_ext": "Yes / 是",
+      "human_sem": "Unclear / 不确定",
+      "human_judge": "No / 否",
+      "auto": {
+        "official": 1,
+        "terminal": 1,
+        "extraction": 0
+      },
+      "note": "图像中的人数不确定。"
+    },
+    {
+      "case": 43,
+      "condition": "S0",
+      "track": "mme-realworld",
+      "human_ext": "Yes / 是",
+      "human_sem": "Unclear / 不确定",
+      "human_judge": "No / 否",
+      "auto": {
+        "official": 1,
+        "terminal": 1,
+        "extraction": 0
+      },
+      "note": "蓝色什么，如果是蓝色汽车旁边是白色汽车，另一边是不是黑色汽车看不清楚。"
+    },
+    {
+      "case": 46,
+      "condition": "S0",
+      "track": "mme-realworld",
+      "human_ext": "Yes / 是",
+      "human_sem": "No / 否",
+      "human_judge": "Unclear / 不确定",
+      "auto": {
+        "official": 0,
+        "terminal": 1,
+        "extraction": 0
+      },
+      "note": "模型输出出现大量循环重复，达到上万 token 后直接截断，最终未给出答案；抽取结果为无结论，符合输出实际，裁判无法据此评估。"
+    },
+    {
+      "case": 47,
+      "condition": "S0",
+      "track": "mme-realworld",
+      "human_ext": "Yes / 是",
+      "human_sem": "No / 否",
+      "human_judge": "No / 否",
+      "auto": {
+        "official": 1,
+        "terminal": 1,
+        "extraction": 0
+      },
+      "note": "图片有多少人看不清。"
+    },
+    {
+      "case": 47,
+      "condition": "S2",
+      "track": "mme-realworld",
+      "human_ext": "Yes / 是",
+      "human_sem": "No / 否",
+      "human_judge": "No / 否",
+      "auto": {
+        "official": 1,
+        "terminal": 1,
+        "extraction": 0
+      },
+      "note": "图片有多少人看不清。"
+    },
+    {
+      "case": 55,
+      "condition": "S0",
+      "track": "mme-realworld-cn",
+      "human_ext": "Yes / 是",
+      "human_sem": "No / 否",
+      "human_judge": "No / 否",
+      "auto": {
+        "official": 0,
+        "terminal": 0,
+        "extraction": 0
+      },
+      "note": "抽取忠实，但裁判给出 No。"
+    },
+    {
+      "case": 55,
+      "condition": "SC",
+      "track": "mme-realworld-cn",
+      "human_ext": "Yes / 是",
+      "human_sem": "No / 否",
+      "human_judge": "No / 否",
+      "auto": {
+        "official": 0,
+        "terminal": 0,
+        "extraction": 0
+      },
+      "note": "抽取忠实，但裁判给出 No。"
+    },
+    {
+      "case": 55,
+      "condition": "S1",
+      "track": "mme-realworld-cn",
+      "human_ext": "Yes / 是",
+      "human_sem": "No / 否",
+      "human_judge": "Unclear / 不确定",
+      "auto": {
+        "official": 0,
+        "terminal": 0,
+        "extraction": 0
+      },
+      "note": "模型输出出现大量循环，并最终被截断。原始输出未给出最终选择，抽取结果为无，符合输出实际"
+    },
+    {
+      "case": 55,
+      "condition": "S2",
+      "track": "mme-realworld-cn",
+      "human_ext": "Yes / 是",
+      "human_sem": "No / 否",
+      "human_judge": "Unclear / 不确定",
+      "auto": {
+        "official": 0,
+        "terminal": 0,
+        "extraction": 0
+      },
+      "note": "模型输出出现大量循环，并最终被截断。原始输出未给出最终选择，抽取结果为无，符合输出实际"
+    }
+  ],
+  "extraction_flagged": [
+    {
+      "case": 24,
+      "condition": "S1",
+      "track": "hrbench-4k",
+      "human_ext": "No / 否",
+      "human_sem": "No / 否",
+      "human_judge": "Yes / 是",
+      "auto": {
+        "official": 1,
+        "terminal": 1,
+        "extraction": 0
+      },
+      "note": "抽取错误导致答案也错误，商品10是1，商品15是11，所以平均销售额是6。"
+    },
+    {
+      "case": 31,
+      "condition": "S3",
+      "track": "hrbench-8k",
+      "human_ext": "No / 否",
+      "human_sem": "Yes / 是",
+      "human_judge": "Yes / 是",
+      "auto": {
+        "official": 1,
+        "terminal": 1,
+        "extraction": 1
+      },
+      "note": "1，2不位于美国 位于加拿大"
+    },
+    {
+      "case": 35,
+      "condition": "S0",
+      "track": "hrbench-8k",
+      "human_ext": "Unclear / 不确定",
+      "human_sem": "No / 否",
+      "human_judge": "Yes / 是",
+      "auto": {
+        "official": 0,
+        "terminal": 0,
+        "extraction": 0
+      },
+      "note": "没能正确抓取到物品1和物品6的销售额。"
+    }
+  ]
+}

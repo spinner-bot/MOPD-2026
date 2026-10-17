@@ -31,6 +31,12 @@ FIGS = {
             "各条件均以 ANSWERED 为绝对主体（>98%），失败模式未随条件改变。"),
     "f12": ("f12_redundancy_kappa.png", "图12　条件间逐题一致性（κ）",
             "S1/S2/S3 之间 0.79–0.81，与 S0 为 0.70–0.77。"),
+    "f13": ("f13_human_agreement.png", "图13 [参考] 三条链与人工判断的一致性",
+            "抽取达到 100%/κ=1.000。审计员的流程为「先自读、再比对」，该一致率反映抽取链准确。"),
+    "f14": ("f14_by_condition.png", "图14 [参考] 各条件下人工与三条链的判对数",
+            "官方在各条件均明显低于人工；判定与抽取接近人工。"),
+    "f15": ("f15_disagreement_direction.png", "图15 [参考] 分歧方向",
+            "官方有 62 例被人工判为「漏判为错」，仅 10 例方向相反。"),
 }
 
 CSS = r"""
@@ -94,6 +100,14 @@ figcaption b{color:var(--ink);font-weight:650;display:block;margin-bottom:3px}
 .tag{display:inline-block;font-size:.72rem;padding:2px 8px;border-radius:999px;
  background:#eef3f8;color:var(--sub);margin-left:8px;vertical-align:middle}
 footer{max-width:var(--max);margin:0 auto;padding:0 32px 70px;color:var(--sub);font-size:.82rem}
+.tier-divider{max-width:var(--max);margin:56px auto 26px;padding:0 32px;text-align:center}
+.tier-divider:before,.tier-divider:after{content:"";display:block;height:3px;
+ background:repeating-linear-gradient(90deg,#b45309 0 14px,transparent 14px 24px);margin:0 0 22px}
+.tier-divider:after{margin:22px 0 0}
+.tier-label{font-size:.8rem;letter-spacing:.28em;color:#b45309;font-weight:700;text-transform:uppercase}
+.tier-text{max-width:820px;margin:14px auto 0;color:#5b3b12;font-size:.94rem;line-height:1.85;
+ background:#fff8ef;border:1px dashed #d9a04a;border-radius:12px;padding:18px 24px;text-align:left}
+.tier-meta{margin-top:12px;font-size:.74rem;letter-spacing:.18em;color:#c07a2d}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}
  .reveal{opacity:1;transform:none}}
 @media(max-width:720px){section{padding:24px 20px}main{padding:0 16px 70px}.hero{padding:56px 20px 48px}}
@@ -326,6 +340,67 @@ vstar、zoombench、hrbench-4k、hrbench-8k、mme-realworld、mme-realworld-cn�
 <ol><li>完成 60 例人工语义审阅，对三条链的分歧给出人工裁决；</li>
 <li>用原始图像 ID 核实聚类结构，必要时以图像为簇重算区间；</li>
 <li>若需回答难度问题，设计同题重复采样。</li></ol>
+</section>
+
+<div class="tier-divider">
+ <div class="tier-label">证据边界 / EVIDENCE BOUNDARY</div>
+ <div class="tier-text">
+  以下为<b>参考级证据（T2）</b>：来自一次人工语义审阅。审阅者的判断水平未经正式评估，
+  抽样为风险定向而非随机，且审阅页面同时展示了自动评分。<br>
+  <b>本部分的任何数字与结论，均不得回流、修改或削弱上方第 1–13 节的任何结论。</b>
+  主分析仅依据冻结数据与自动化检验（T1）。本部分的作用是<b>交叉参考</b>，不是确认。
+ </div>
+ <div class="tier-meta">T2 · REFERENCE ONLY · NOT CONFIRMATORY</div>
+</div>
+
+<section class="reveal" id="s14"><h2><span class="no">14</span>参考：人工审阅与三条判别器的对照</h2>
+<p class="q">[参考] 人工判断与三条自动口径的一致程度如何？分歧集中在哪？</p>
+
+<h3>方法与审阅流程</h3>
+<p>60 例 × 5 条件 = 300 个视图，按风险层定向抽取（每评测集 10 例）。审阅者逐条阅读模型原始回答，
+自行判断其最终结论选项，再与抽取结果比对以决定"抽取是否忠实"；同时独立判断答案语义与裁判理由。</p>
+<p>300 个视图中，<b>284 个</b>的人工"语义是否正确"可二分类，16 个判为"不确定"（均因图像本身看不清，附有说明），
+不进入一致率计算。</p>
+
+{F('f13')}
+{table(["判别器","与人工一致率","Cohen's κ","敏感度","特异度","人工对/自动错","人工错/自动对"],
+ [["官方原生","74.6%","0.492","68.2%","88.8%","<b>62</b>","10"],
+  ["裁定终行","96.1%","0.907","100.0%","87.6%","0","11"],
+  ["<b>答案抽取</b>","<b>100.0%</b>","<b>1.000</b>","100.0%","100.0%","<b>0</b>","<b>0</b>"]])}
+
+<div class="key"><b>[参考] 核心一致。</b>在官方与抽取全部分歧的 <b>72 处</b>（62 + 10），
+人工的语义判断<b>每一处都与抽取一致</b>，无例外。这与主分析第 3 节的结论方向一致：
+官方口径存在系统性少计。</div>
+
+<h3>按条件</h3>
+{F('f14')}
+{table(["条件","n","人工判对","官方","判定","抽取"],
+ [["S0","57","39","25","44","39"],["SC","57","39","24","41","39"],["S1","56","38","31","40","38"],
+  ["S2","57","39","31","40","39"],["S3","57","40","32","41","40"]])}
+<p>官方在全部五个条件下均明显低于人工；判定与抽取与人工基本重合。</p>
+
+<h3>分歧方向</h3>
+{F('f15')}
+<p>官方被人工判为"漏判为错"的有 <b>62</b> 例，反方向仅 <b>10</b> 例——差距 6:1，
+与"格式规则少计"的方向一致，而非随机误差。</p>
+
+<h3>人工观察到的条件效应</h3>
+<p>按人工语义判断做 S0→S3 配对：n=57，改善 4、恶化 3，<b>Δ=+1.8 pp，McNemar p=1</b>。
+<b>未观察到提示带来的准确率变化</b>——与主分析第 5 节"无稳健提升"的结论不矛盾（但样本量极小，
+且为定向抽样，不足以独立支持该结论）。</p>
+
+<h3>审计员标记的异常</h3>
+<p>裁判理由/标签被判为无效或无法评估：<b>13</b> 例；抽取忠实度被判为否或不确定：<b>3</b> 例。
+其中 Case 46 与 Case 55 的若干视图涉及模型输出大量循环重复、上万 token 后截断、未给出最终答案，
+审阅者将其裁判有效性标为"无法评估"并附说明。</p>
+
+<div class="caveat"><b>[参考] 本部分不能证明什么。</b>
+<ul>
+<li><b>不能</b>用来验证抽取链的准确率——虽然一致率为 100%，但样本是为此类分歧而定向抽取的，不是随机样本；</li>
+<li><b>不能</b>外推为任何评测集的总体准确率；</li>
+<li><b>不能</b>替代主分析的自动化检验，也不改变第 1–13 节的任何结论。</li>
+</ul>
+其价值在于：<b>在一个独立于官方口径的视角下，未发现与主结论相反的证据。</b></div>
 </section>
 
 <section class="reveal" id="repro"><h2><span class="no">A</span>复现</h2>
