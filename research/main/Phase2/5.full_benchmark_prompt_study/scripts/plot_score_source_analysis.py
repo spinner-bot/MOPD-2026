@@ -78,8 +78,8 @@ def paired(rows, col, track=None):
 
 
 def fig1(rows, out):
-    sources = (("官方原生", "native_correct", OKABE[1]), ("裁定终行", "terminal_correct", OKABE[0]),
-               ("答案抽取", "extraction_correct", OKABE[2]))
+    sources = (("Official native / 官方原生", "native_correct", OKABE[1]), ("Terminal diagnostic / 裁定终行", "terminal_correct", OKABE[0]),
+               ("Answer extraction / 答案抽取", "extraction_correct", OKABE[2]))
     fig, ax = plt.subplots(figsize=(5.2, 3.2))
     ys = []
     for i, (label, col, colour) in enumerate(sources):
@@ -90,17 +90,18 @@ def fig1(rows, out):
     ax.axvline(0, color="#888", lw=0.9, ls="--")
     ax.set_yticks(range(len(ys)))
     ax.set_yticklabels(ys)
-    ax.set_xlabel("S3 - S0 准确率差（百分点，95% CI）")
-    ax.set_title("图1 只有官方口径上升；两条独立口径均下降\n(S0→S3，n=32,162×2 配对)", fontsize=10)
+    ax.set_xlabel("Accuracy difference S3 - S0 (pp, 95% CI) / 准确率差（百分点，95% CI）")
+    ax.set_title("Figure 1. Only the official metric rises; both format-independent metrics fall", fontsize=10)
     ax.set_xlim(-6, 14)
+    ax.set_ylim(-0.65, 2.45)          # 顶部留白，避免数值标注压到标题
     fig.tight_layout()
     fig.savefig(out / "f1_three_sources.png", bbox_inches="tight")
     plt.close(fig)
 
 
 def fig2(rows, out):
-    sources = (("官方原生", "native_correct", OKABE[1]), ("裁定终行", "terminal_correct", OKABE[0]),
-               ("答案抽取", "extraction_correct", OKABE[2]))
+    sources = (("Official native / 官方原生", "native_correct", OKABE[1]), ("Terminal diagnostic / 裁定终行", "terminal_correct", OKABE[0]),
+               ("Answer extraction / 答案抽取", "extraction_correct", OKABE[2]))
     fig, axes = plt.subplots(1, 3, figsize=(10.5, 3.6), sharey=True)
     for ax, (label, col, colour) in zip(axes, sources):
         ests, ses = [], []
@@ -125,7 +126,7 @@ def fig2(rows, out):
         ax.set_title(f"{label}\nI2 = {i2:.1f}%", fontsize=9.5)
         ax.set_xlabel("S3 - S0 (pp)")
         ax.set_xlim(-8, 20)
-    fig.suptitle("图2 官方效应的跨评测集异质性达 I2=95.3%，不可合并；另两条口径方向一致", y=1.02, fontsize=10.5)
+    fig.suptitle("Figure 2. Official effect is wildly heterogeneous across benchmarks (I2=95.3%); the other two agree in direction", y=1.02, fontsize=10.5)
     fig.tight_layout()
     fig.savefig(out / "f2_forest.png", bbox_inches="tight")
     plt.close(fig)
@@ -137,16 +138,16 @@ def fig3(rows, out):
     ter = sum(flag(r, "terminal_correct") for r in rows)
     ext = sum(flag(r, "extraction_correct") for r in rows)
     fig, ax = plt.subplots(figsize=(6.4, 2.6))
-    data = (("官方", off, OKABE[1]), ("裁定终行", ter, OKABE[0]), ("答案抽取", ext, OKABE[2]))
+    data = (("Official native / 官方原生", off, OKABE[1]), ("Terminal diagnostic / 裁定终行", ter, OKABE[0]), ("Answer extraction / 答案抽取", ext, OKABE[2]))
     for i, (label, k, colour) in enumerate(data):
         ax.barh(i, k, color=colour, height=0.6)
         ax.annotate(f"{k:,}  ({100*k/n:.1f}%)", (k, i), textcoords="offset points",
                     xytext=(6, 0), va="center", fontsize=8)
     ax.set_yticks(range(3))
     ax.set_yticklabels([d[0] for d in data])
-    ax.set_xlabel("判对的记录数（全量 n = 160,810）")
+    ax.set_xlabel("Records judged correct (n = 160,810) / 判对条数")
     ax.set_xlim(0, 145000)
-    ax.set_title("图3 三条口径构成严格嵌套：官方 是 判定 的子集，判定 是 抽取 的子集\n官方判对的记录，判定必然也判对（仅左对=0）", fontsize=10)
+    ax.set_title("Figure 3. The three score sources are strictly nested: official in terminal in extraction", fontsize=10)
     fig.tight_layout()
     fig.savefig(out / "f3_nesting.png", bbox_inches="tight")
     plt.close(fig)
@@ -166,14 +167,14 @@ def fig4(rows, out):
         t3 = sum(flag(r, "terminal_correct") for r in sel if r["condition"] == "S3")
         dod.append(o3 - o0)
         dhu.append((t3 - o3) - (t0 - o0))
-    ax.bar([x - width / 2 for x in xs], dod, width, label="Δ官方（找回被丢弃的判对）", color=OKABE[1])
-    ax.bar([x + width / 2 for x in xs], dhu, width, label="Δ丢弃量（被格式规则丢弃的条数变化）", color=OKABE[3])
+    ax.bar([x - width / 2 for x in xs], dod, width, label="Delta official (recovered true positives) / Δ官方", color=OKABE[1])
+    ax.bar([x + width / 2 for x in xs], dhu, width, label="Delta discarded (format-rule loss) / Δ丢弃量", color=OKABE[3])
     ax.axhline(0, color="#333", lw=0.8)
     ax.set_xticks(list(xs))
     ax.set_xticklabels(TRACKS, rotation=18, ha="right", fontsize=7.5)
-    ax.set_ylabel("条数变化（S3 - S0）")
+    ax.set_ylabel("Record change (S3 - S0) / 条数变化")
     ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.30), ncol=2, frameon=False)
-    ax.set_title("图4 官方的每一点上升，都对应被丢弃条数的等量下降\n恒等式 Δ官方 + Δ丢弃 = Δ判定 在六个评测集精确成立", fontsize=10)
+    ax.set_title("Figure 4. Every rise in the official score equals an equal fall in discarded records", fontsize=10)
     fig.tight_layout()
     fig.savefig(out / "f4_waterfall.png", bbox_inches="tight")
     plt.close(fig)
@@ -199,9 +200,9 @@ def fig5(rows, out):
     k = (num / den) * (sum((y - my) ** 2 for y in ys) / sum((x - mx) ** 2 for x in xs)) ** 0.5
     b = my - k * mx
     ax.plot([min(xs), max(xs)], [k * min(xs) + b, k * max(xs) + b], color=OKABE[1], lw=1.2, ls="--")
-    ax.set_xlabel("非二元判官输出占比（%）")
-    ax.set_ylabel("裁定终行 判对率（%）")
-    ax.set_title(f"图5 判官展开推理的比例是难度信号，与正确率强负相关\nPearson r = {r:+.3f}（30 个 评测集×条件 单元）", fontsize=10)
+    ax.set_xlabel("Non-binary judge output share (%) / 非二元占比（%）")
+    ax.set_ylabel("Terminal-diagnostic accuracy (%) / 裁定终行 判对率（%）")
+    ax.set_title(f"Figure 5. The judge reasoning rate is a difficulty signal, strongly negatively correlated with accuracy", fontsize=10)
     fig.tight_layout()
     fig.savefig(out / "f5_mechanism.png", bbox_inches="tight")
     plt.close(fig)
@@ -226,9 +227,9 @@ def fig6(rows, out):
                     va="center", fontsize=7.5)
     ax.set_yticks(range(len(items)))
     ax.set_yticklabels(labels, fontsize=7.5)
-    ax.set_xlabel("判定判对率 - 官方判对率（百分点）")
+    ax.set_xlabel("Terminal minus official accuracy (pp) / 判定减官方（百分点）")
     ax.set_xlim(0, max(gaps) * 1.32)
-    ax.set_title("图6 格式规则的惩罚由类别主导，从 0.9pp 到 59.1pp\n(官方相对真实判定的少计幅度)", fontsize=10)
+    ax.set_title("Figure 6. The format penalty is driven by category, ranging from 0.9 pp to 59.1 pp", fontsize=10)
     fig.tight_layout()
     fig.savefig(out / "f6_category_gap.png", bbox_inches="tight")
     plt.close(fig)
@@ -247,10 +248,10 @@ def fig7(rows, out):
     ax.axhline(0, color="#333", lw=0.8)
     ax.set_xticks(list(xs))
     ax.set_xticklabels(CONDS)
-    ax.set_ylabel("准确率（%）")
+    ax.set_ylabel("Accuracy (%) / 准确率（%）")
     ax.set_ylim(0, 75)
     ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.16), ncol=2, frameon=False)
-    ax.set_title("图7 zoombench 官方准确率恒为 0：845/845 判官输出均为非二元\n终行诊断同期给出 57.9%–61.2%，差一个数量级", fontsize=10)
+    ax.set_title("Figure 7. zoombench official accuracy is identically zero (845/845 non-binary)", fontsize=10)
     fig.tight_layout()
     fig.savefig(out / "f7_zoombench.png", bbox_inches="tight")
     plt.close(fig)

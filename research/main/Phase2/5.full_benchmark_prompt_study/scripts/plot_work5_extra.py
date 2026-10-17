@@ -62,7 +62,7 @@ def main() -> None:
 
     # --- §2 κ between discriminators ---
     k = d["discriminators"]["kappa"]
-    names = ("官方原生", "裁定终行", "答案抽取")
+    names = ("Official native / 官方原生", "Terminal diagnostic / 裁定终行", "Answer extraction / 答案抽取")
     order = ("official", "terminal", "extraction")
     m = [[1.0 if a == b else k.get(f"{a}_vs_{b}", k.get(f"{b}_vs_{a}", float("nan")))
           for b in order] for a in order]
@@ -74,7 +74,7 @@ def main() -> None:
         for j in range(3):
             ax.text(j, i, f"{m[i][j]:.3f}", ha="center", va="center",
                     color="white" if m[i][j] > 0.6 else "#111", fontsize=9)
-    ax.set_title("图8 判别器两两一致性（Cohen's κ）\n判定与抽取高度一致(0.926)，官方仅中等(0.53–0.59)", fontsize=9.5)
+    ax.set_title("Figure 8. Pairwise agreement between discriminators (Cohen kappa)", fontsize=9.5)
     plt.colorbar(im, ax=ax, fraction=0.045, pad=0.03).set_label("κ", fontsize=8)
     fig.tight_layout(); fig.savefig(args.out_dir / "f8_discriminator_kappa.png", bbox_inches="tight")
     plt.close(fig)
@@ -85,8 +85,8 @@ def main() -> None:
     for ax, src, lab in zip(axes, ("official", "terminal", "extraction"), names):
         data = [[mat[f"{t}|{c}"][src] for c in CONDS] for t in TRACKS]
         heat(ax, data, TRACKS if ax is axes[0] else [""] * len(TRACKS), CONDS,
-             f"{lab}", "准确率 (%)", vmin=0, vmax=100)
-    fig.suptitle("图9 六评测集 × 五条件准确率矩阵：官方口径的 zoombench 行恒为 0，另两口径正常",
+             f"{lab}", "Accuracy (%) / 准确率 (%)", vmin=0, vmax=100)
+    fig.suptitle("Figure 9. Accuracy matrix: benchmarks x conditions under three score sources",
                  y=1.03, fontsize=10.5)
     fig.tight_layout(); fig.savefig(args.out_dir / "f9_accuracy_matrix.png", bbox_inches="tight")
     plt.close(fig)
@@ -97,9 +97,9 @@ def main() -> None:
         ys = [mat[f"{t}|{c}"]["terminal"] for c in CONDS]
         ax.plot(range(5), ys, marker="o", ms=4, lw=1.4, color=OKABE[i], label=t)
     ax.set_xticks(range(5)); ax.set_xticklabels(CONDS)
-    ax.set_ylabel("裁定终行 准确率 (%)")
+    ax.set_ylabel("Terminal accuracy (%) / 裁定终行准确率 (%)")
     ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.16), ncol=3, frameon=False, fontsize=7.5)
-    ax.set_title("图10 五条折线几乎平行：提示对六个评测集的方向一致（均略降）", fontsize=10)
+    ax.set_title("Figure 10. The six trend lines are nearly parallel: prompt effects point the same way everywhere", fontsize=10)
     fig.tight_layout(); fig.savefig(args.out_dir / "f10_condition_trend.png", bbox_inches="tight")
     plt.close(fig)
 
@@ -115,9 +115,9 @@ def main() -> None:
         ax.bar(range(5), pct, bottom=bottom, label=kk, color=OKABE[i], width=0.62)
         bottom = [x + y for x, y in zip(bottom, pct)]
     ax.set_xticks(range(5)); ax.set_xticklabels(CONDS)
-    ax.set_ylabel("占该条件全部记录 (%)")
+    ax.set_ylabel("Share of all records in condition (%) / 占比")
     ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.14), ncol=3, frameon=False)
-    ax.set_title("图11 抽取状态构成：各条件均以 ANSWERED 为绝对主体（>98%）", fontsize=10)
+    ax.set_title("Figure 11. Extraction-status composition: ANSWERED dominates every condition (>98%)", fontsize=10)
     fig.tight_layout(); fig.savefig(args.out_dir / "f11_status_composition.png", bbox_inches="tight")
     plt.close(fig)
 
@@ -133,7 +133,7 @@ def main() -> None:
         for j in range(5):
             ax.text(j, i, f"{m2[i][j]:.2f}", ha="center", va="center", fontsize=8,
                     color="white" if m2[i][j] > 0.75 else "#111")
-    ax.set_title("图12 条件间逐题判定一致性（κ）\nS1/S2/S3 之间 0.79–0.81，S0 与它们 0.70–0.77", fontsize=9.5)
+    ax.set_title("Figure 12. Per-item agreement between conditions (kappa)", fontsize=9.5)
     plt.colorbar(im, ax=ax, fraction=0.045, pad=0.03).set_label("κ", fontsize=8)
     fig.tight_layout(); fig.savefig(args.out_dir / "f12_redundancy_kappa.png", bbox_inches="tight")
     plt.close(fig)
