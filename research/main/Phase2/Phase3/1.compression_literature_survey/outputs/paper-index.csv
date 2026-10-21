@@ -1,0 +1,64 @@
+﻿arxiv_id,published,title
+2407.06023v3,2024-07-08,Distilling System 2 into System 1
+2412.11664v1,2024-12-16,C3oT: Generating Shorter Chain-of-Thought without Compromising Effectiveness
+2501.12570v2,2025-01-22,O1-Pruner: Length-Harmonizing Fine-Tuning for O1-Like Reasoning Pruning
+2501.19201v2,2025-01-31,Efficient Reasoning with Hidden Thinking
+2502.09601v1,2025-02-13,CoT-Valve: Length-Compressible Chain-of-Thought Tuning
+2502.12067v3,2025-02-17,TokenSkip: Controllable Chain-of-Thought Compression in LLMs
+2502.15589v2,2025-02-21,LightThinker: Thinking Step-by-Step Compression
+2503.04697v2,2025-03-06,L1: Controlling How Long A Reasoning Model Thinks With Reinforcement Learning
+2503.16188v6,2025-03-20,Think or Not Think: A Study of Explicit Thinking in Rule-Based Visual Reinforcement Fine-Tuning
+2504.00810v1,2025-04-01,Z1: Efficient Test-time Scaling with Code
+2504.01296v1,2025-04-02,ThinkPrune: Pruning Long Chain-of-Thought of LLMs via Reinforcement Learning
+2504.05185v3,2025-04-07,Concise Reasoning via Reinforcement Learning
+2504.18458v2,2025-04-25,Fast-Slow Thinking GRPO for Large Vision-Language Model Reasoning
+2505.05315v2,2025-05-08,Scalable Chain of Thoughts via Elastic Reasoning
+2505.12284v3,2025-05-18,Shorten After You're Right: Lazy Length Penalties for Reasoning RL
+2505.13379v2,2025-05-19,Thinkless: LLM Learns When to Think
+2505.13417v1,2025-05-19,AdaptThink: Reasoning Models Can Learn When to Think
+2505.13438v3,2025-05-19,Optimizing Anytime Reasoning via Budget Relative Policy Optimization
+2505.14604v4,2025-05-20,Let LRMs Break Free from Overthinking via Self-Braking Tuning
+2505.15612v1,2025-05-21,Learn to Reason Efficiently with Adaptive Length-based Reward Shaping
+2505.16854v3,2025-05-22,Think or Not? Selective Reasoning via Reinforcement Learning for Vision-Language Models
+2505.17250v1,2025-05-22,ConciseRL: Conciseness-Guided Reinforcement Learning for Efficient Reasoning Models
+2505.18298v1,2025-05-23,Thinking Fast and Right: Balancing Accuracy and Reasoning Length with Adaptive Rewards
+2505.18822v2,2025-05-24,AdaCtrl: Towards Adaptive and Controllable Reasoning via Difficulty-Aware Budgeting
+2505.20258v2,2025-05-26,ARM: Adaptive Reasoning Model
+2505.21178v1,2025-05-27,Walk Before You Run! Concise LLM Reasoning via Reinforcement Learning
+2506.05256v2,2025-06-05,Just Enough Thinking: Efficient Reasoning with Adaptive Length Penalties Reinforcement Learning
+2506.14755v2,2025-06-17,Optimizing Length Compression in Large Reasoning Models
+2507.15844v3,2025-07-21,Hierarchical Budget Policy Optimization for Adaptive Reasoning
+2508.03346v2,2025-08-05,Making Slow Thinking Faster: Compressing LLM Chain-of-Thought via Step Entropy
+2508.17196v2,2025-08-24,BudgetThinker: Empowering Budget-aware LLM Reasoning with Control Tokens
+2509.23392v3,2025-09-27,Your Models Have Thought Enough: Training Large Reasoning Models to Stop Overthinking
+2510.08163v3,2025-10-09,ARM2: Adaptive Reasoning Model with Vision Understanding and Executable Code
+2510.08987v2,2025-10-10,Towards Efficient Multimodal Unified Reasoning Model via Model Merging
+2510.15110v1,2025-10-16,DLER: Doing Length pEnalty Right - Incentivizing More Intelligence per Token via Reinforcement Learning
+2510.23497v3,2025-10-27,VOLD: Reasoning Transfer from LLMs to Vision-Language Models via On-Policy Distillation
+2510.27042v3,2025-10-30,e1: Learning Adaptive Control of Reasoning Effort
+2511.13223v1,2025-11-17,TokenSqueeze: Performance-Preserving Compression for Reasoning LLMs
+2511.21581v1,2025-11-26,Learning When to Stop: Adaptive Latent Reasoning via Reinforcement Learning
+2511.22586v1,2025-11-27,Revisiting the Necessity of Lengthy Chain-of-Thought in Vision-centric Reasoning Generalization
+2512.21540v1,2025-12-25,Leash: Adaptive Length Penalty and Reward Shaping for Efficient Large Reasoning Model
+2601.02825v1,2026-01-06,SketchThinker-R1: Towards Efficient Sketch-Style Reasoning in Large Multimodal Models
+2601.02972v1,2026-01-06,"Correct, Concise and Complete: Multi-stage Training For Adaptive Reasoning"
+2601.05175v2,2026-01-08,"VideoAuto-R1: Video Auto Reasoning via Thinking Once, Answering Twice"
+2601.18734v3,2026-01-26,Self-Distilled Reasoner: On-Policy Self-Distillation for Large Language Models
+2601.20467v1,2026-01-28,CtrlCoT: Dual-Granularity Chain-of-Thought Compression for Controllable Reasoning
+2602.03380v2,2026-02-03,Seeing Through the Chain: Mitigate Hallucination in Multimodal Reasoning Models via CoT Compression and Contrastive Preference Optimization
+2603.00296v1,2026-02-27,Stepwise Penalization for Length-Efficient Chain-of-Thought Reasoning
+2603.05433v7,2026-03-05,CRISP: Compressed Reasoning via Iterative Self-Policy Distillation
+2603.10335v1,2026-03-11,Fuel Gauge: Estimating Chain-of-Thought Length Ahead of Time in Large Multimodal Models
+2603.13274v1,2026-02-27,Learning from Partial Chain-of-Thought via Truncated-Reasoning Self-Distillation
+2605.08776v1,2026-05-09,Reasoning Compression with Mixed-Policy Distillation
+2605.09806v1,2026-05-10,LEAD: Length-Efficient Adaptive and Dynamic Reasoning for Large Language Models
+2605.30832v1,2026-05-29,SLAT: Segment-Level Adaptive Trimming for Efficient CoT Reasoning
+2606.17687v1,2026-06-16,SuCo: Sufficiency-guided Continuous Adaptive Reasoning
+2606.18974v6,2026-06-17,Visual-OPSD: Cross-Modal On-Policy Self-Distillation for Efficient Unified Multimodal Reasoning
+2607.15736v1,2026-07-17,"Better Starts, Better Ends: Bootstrapped Iterative Self-Reasoning Distillation for Compressed Reasoning"
+2607.19046v2,2026-07-21,Contrastive On-Policy Distillation
+2608.05131v2,2026-08-05,OPD-V: Visual On-Policy Self-Distillation with Modality Balance
+2608.21860v1,2026-08-22,ChainPrune: Evaluating and Reducing Redundancy in Long Chain-of-Thought Reasoning
+2608.21883v2,2026-08-22,VIG: Visual Information Gain as a Reward Signal for Multimodal Chain-of-Thought Compression
+2609.29664v1,2026-08-30,To Think or Not to Think: Allocating Reasoning Where It Helps
+2609.38854v1,2026-09-30,Mitigating the Length-Scaling Tax with Online Distillation
