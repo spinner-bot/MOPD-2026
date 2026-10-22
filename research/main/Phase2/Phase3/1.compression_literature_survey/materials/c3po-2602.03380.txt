@@ -1,0 +1,954 @@
+arXiv:2602.03380v2 [cs.CV] 2 Apr 2026           Seeing Through the Chain: Mitigate
+                                       Hallucinations in Multimodal Reasoning via CoT
+
+                                            Compression and Preference Optimization
+
+                                            Hao Fang1, Jinyu Li2, Jiawei Kong1, Tianqu Zhuang1, Kuofeng Gao1,
+                                                                      Bin Chen2#, and Shu-Tao Xia1
+
+                                               1 Tsinghua Shenzhen International Graduate School, Tsinghua University
+                                                                   2 Harbin Institute of Technology, Shenzhen
+                                                                          fangh25@mails.tsinghua.edu.cn
+
+                                                Abstract. While multimodal large reasoning models (MLRMs) have ex-
+                                                hibited impressive capabilities, they remain prone to hallucinations, and
+                                                effective solutions are still underexplored. In this paper, we first experimen-
+                                                tally investigate the underlying hallucination cause and propose C3PO,
+                                                a training-based mitigation framework comprising Chain-of-Thought
+                                                Compression and Contrastive Preference Optimization. We identify that
+                                                introducing reasoning mechanisms exacerbates models' reliance on lan-
+                                                guage priors while overlooking visual inputs, which can produce CoTs
+                                                with reduced visual cues but redundant text tokens. To this end, we
+                                                propose to selectively filter redundant thinking tokens for a more compact
+                                                and signal-efficient CoT representation that preserves task-relevant infor-
+                                                mation while suppressing noise. Moreover, we observe that the quality of
+                                                the reasoning trace largely determines whether hallucination emerges in
+                                                subsequent responses. To leverage this insight, we introduce a reasoning-
+                                                enhanced preference tuning scheme that constructs training pairs using
+                                                high-quality AI feedback. We further design a multimodal hallucination-
+                                                inducing mechanism that elicits models' inherent hallucination patterns
+                                                via carefully crafted visual and textual inducers, yielding informative
+                                                negative signals for contrastive correction. We provide theoretical justi-
+                                                fication for the effectiveness and demonstrate consistent hallucination
+                                                reduction across diverse MLRMs and benchmarks.
+
+                                                Keywords: Multimodal Reasoning Models · Hallucination Mitigation ·
+                                                Reasoning-Oriented Enhancement
+
+                                       1 Introduction
+
+                                       Large Reasoning Models (LRMs) such as DeepSeek-R1 [11] have recently demon-
+                                       strated remarkable problem-solving capabilities across a wide range of practical
+                                       and complex scenarios. Motivated by these advances, a growing number of stud-
+                                       ies have sought to extend such powerful multi-step reasoning mechanisms to
+
+                                          Equal contribution.
+                                          #Corresponding author.
+2  H. Fang et al.
+
+   Is there a fork in  <think>Okay, so I need to determine if there`s a fork            83.8                88.1
+       the image?      in the image based on the provided content... Forks     83.0 (-0.8)     86.9 (-1.2)
+                       are typically used for eating salads, especially when
+                       they`re served on a plate. Given that the image            83.3 (-0.5)     87.2 (-0.9)
+                       includes a salad, it makes sense that there would be
+                       a fork nearby. Additionally, the presence of a paper            (b)
+                       napkin suggests that someone might have used it,
+                       which often comes with a fork. The fork isn't
+                       described as being hidden or obscured; instead, it's
+                       listed alongside other items on the plate. Therefore,
+                       it's reasonable to conclude that the fork is indeed in
+                       the image.</think> <Answer> Yes, there is a fork in
+                       the image...This aligns with typical meal setups
+                       where forks accompany salads... </Answer>
+
+                       (a)
+
+Fig. 1: (a) A hallucination case from R1-Onevision [38]. (b) Performance of MLRMs
+R1-Onevision and MM-Eureka [25] and the base model Qwen2.5-VL-7B [3] on the
+hallucination benchmark AMBER [32], where high values indicate fewer hallucinations.
+The hallucination increases from the base model to the reasoning variants.
+
+multimodal settings by applying supervised fine-tuning (SFT) or reinforcement
+learning (RL) algorithms to multimodal models. Benefiting from meticulous
+chain-of-thought (CoT) supervision, Multimodal Large Reasoning Models (ML-
+RMs) have achieved impressive performance on various challenging tasks, such
+as visual mathematics and physics problem-solving [33].
+
+    Despite recent progress, the hallucination phenomenon remains a persistent is-
+sue for MLRMs [20], i.e., the model occasionally generates semantically plausible
+yet factually incorrect or visually irrelevant content, as illustrated in Figure 1(a).
+More strikingly, evaluation of representative MLRMs and the corresponding base
+model on a commonly used hallucination benchmark (Figure 1(b)) reveals that
+MLRMs can hallucinate even more severely than their non-reasoning counterparts.
+This is a counterintuitive phenomenon, as the presence of logical, structured rea-
+soning should, in principle, facilitate a more detailed perception of the image and
+hence yield more faithful and image-grounded answers. These observations under-
+score the need for a deeper understanding of hallucinations specific to MLRMs
+and the development of effective mitigation strategies. However, existing studies
+primarily focus on constructing benchmarks to better evaluate MLRM's halluci-
+nations and influential factors [20], or exclusively discuss the self-contradictory
+reasoning within CoT traces [5], leaving approaches for hallucination mitigation
+in general multimodal tasks largely underexplored.
+
+    In this work, we first conduct two hallucination-analysis experiments tailored
+to the unique characteristics of MLRMs and identify two key factors contributing
+to their hallucinations. Based on these insights, we propose C3PO, a two-stage
+hallucination mitigation framework specifically designed for MLRMs via CoT
+Compression and Contrastive Preference Optimization. We begin by analyzing
+the attention distribution of MLRMs and observe that introducing explicit
+reasoning mechanisms causes models to allocate even less attention to visual
+tokens than their non-reasoning counterparts. As a result, MLRMs tend to over-
+rely on language priors rather than grounding in visual inputs. This issue weakens
+visual signals in the generated CoTs and introduce unnecessary text tokens. From
+the Information Bottleneck (IB) view [29, 30], the reasoning chain serves as an
+Title Suppressed Due to Excessive Length  3
+
+intermediate representation between visual inputs and final answers, which should
+preserve critical visual cues relevant to the answer while discarding redundant or
+noisy content. Motivated by this, we propose a simple yet effective method that
+selectively filters low-importance reasoning tokens to produce a more compact
+and signal-efficient representation, which is theoretically justified under the IB
+framework. Remarkably, this strategy reduces hallucinations without introducing
+any additional supervision, validating the rationality of our design.
+
+    Next, we investigate the causal relationship of hallucinations from reasoning
+chains to final answers. Our analysis reveals a key finding that high-quality CoTs
+consistently lead to hallucination-free responses, whereas hallucinated CoTs sub-
+stantially amplify the likelihood of hallucinations in the final answers. Building
+on this, we propose a reasoning-enhanced preference learning strategy based on
+direct preference optimization (DPO). Specifically, we leverage expert feedback
+from advanced MLLMs to enhance the quality of MLRM-generated CoTs. Data
+samples with the enhanced traces are used as preferred samples, while the original
+outputs serve as rejected ones. To further expose the model's intrinsic hallucina-
+tion behaviors, we introduce a multimodal hallucination-inducing mechanism that
+carefully crafts visual and textual inputs to elicit diverse hallucination patterns as
+additional negative contrasts. By performing contrastive preference tuning on AI-
+enhanced positives and intentionally induced hallucination negatives, the model
+is trained to generate more reliable and coherent reasoning chains, substantially
+reducing hallucinations in final responses.
+
+    Contributions. We first experimentally uncover the hallucination mecha-
+nisms specific to the unique reasoning process of MLRMs and identify two key
+challenges that guide our reasoning-oriented mitigation strategy. Based on these
+analyses, we propose C3PO, a two-stage hallucination mitigation framework tai-
+lored to MLRMs that first leverages SFT to compress redundant thinking tokens,
+and then performs a reasoning-enhanced contrastive preference optimization
+(CPO) using high-quality preference pairs derived from AI feedback. In addition,
+we introduce a multimodal hallucination-inducing technique that exploits the
+inherent failure behaviors of MLRMs via well-designed inducers, to generate
+informative contrastive references in CPO. Furthermore, we develop a theoretical
+framework from an information-bottleneck perspective that provides principled
+justification for the superiority of C3PO.
+
+    To validate the effectiveness, we conduct comprehensive experiments on
+various MLRMs across a wide range of benchmarks, which demonstrate that the
+proposed framework substantially reduces MLRMs' hallucinations.
+
+2 Related Work
+
+2.1 Multimodal Large Reasoning Models
+
+Reasoning has become a prevalent paradigm in LLMs, as the thinking process
+can significantly enhance complex problem solving with structured intermediate
+inference steps [14, 34, 35]. Recent studies extend this paradigm to multimodal
+4  H. Fang et al.
+
+models and introduce Multimodal Large Reasoning Models (MLRMs) that con-
+duct an extra reasoning step [23, 45]. To acquire such capabilities, prevalent
+approaches typically incorporate CoT supervision via supervised fine-tuning
+(SFT) or reinforcement learning (RL). Early works, including RLHF-V [42],
+LLaVA-Reasoner [44], and Insight-V [6], primarily leveraged large-scale CoT-
+style datasets combined with preference optimization to align model behaviors
+with reliable reasoning patterns. Recent MLRMs typically follow two training
+paradigms: (i) two-stage SFT + RL strategy (e.g., R1-OneVision [38]). (ii) direct
+large-scale RL approach (e.g., ThinkLite-VL [33], MM-Eureka [25]). During the
+RL stage, the powerful Group Relative Policy Optimization (GRPO) [11] is
+commonly adopted as an effective optimization algorithm for establishing models'
+reasoning capability. Notably, while models are encouraged to generate reasoning
+traces to tackle complex tasks, excessively long CoT chains often introduce sub-
+stantial redundancy. This redundancy not only increases computational overhead
+but also amplifies error accumulation within the reasoning process, which instead
+impairs model performance [4, 17].
+
+2.2 Hallucination in MLRMs
+
+Multimodal hallucination, which indicates that generated responses are semanti-
+cally coherent but contradict the visual input, has been a notorious challenge
+for multimodal models. Existing mitigation strategies for regular MLLMs can be
+broadly grouped into training-free and training-based approaches. Training-free
+methods generally utilize prompting strategies, post-hoc correction, and improved
+decoding strategies to mitigate visual inconsistencies during inference [7,12,37,40].
+Training-based approaches enhance output faithfulness by modifying the training
+pipeline via data curation, SFT, and reinforcement learning [13, 21, 39, 41, 43, 46].
+The hallucination issue becomes even more prominent in MLRMs as longer
+reasoning traces shift attention away from image-grounded evidence, amplifying
+MLRMs' reliance on language priors during generation. [20] designs a systematic
+benchmark to evaluate the hallucination behaviors of MLRMs and investigate
+several influential factors. [5] focuses on self-contradictory hallucinations in rea-
+soning chains and introduces a dedicated benchmark that targets reasoning-stage
+failures. These findings suggest that hallucinations in MLRMs are tightly coupled
+with the quality and structure of intermediate reasoning traces.
+
+    Despite the progress, mitigation strategies for MLRMs in general tasks remain
+largely unexplored. In this paper, we investigate the underlying hallucination
+causes and present the first training-based framework tailored to MLRMs for
+effective hallucination mitigation.
+
+3 Understanding Hallucination in MLRMs
+
+In this section, we conduct preliminary analyses tailored to the unique character-
+istics of MLRMs to uncover potential causes of hallucinations, which subsequently
+guide the principled design of our mitigation framework.
+     Title Suppressed Due to Excessive Length  5
+
+(a)  (b)
+
+Fig. 2: Two important hallucination analyses for MLRMs. (a) Attention distributions of
+MLRMs and the non-reasoning base model Qwen2.5-VL averaged on 300 samples from
+MSCOCO [19]. Compared to Qwen2.5-VL, MLRMs exhibit a substantial reduction in
+attention to visual tokens and a prominent increase to textual tokens. (b) Proportion of
+hallucinated answers given hallucinated (-H) and non-hallucinated (-NH) CoTs under
+CHAIR [27] evaluation. EU denotes MM-Eureka and OV denotes R1-Onevision. The
+hallucination rate of the base model Qwen2.5-VL is reported as a reference.
+
+    A key distinction between MLRMs and conventional multimodal large lan-
+guage models (MLLMs) lies in the explicit incorporation of CoT reasoning.
+Centered on this distinctive mechanism, we investigate two fundamental ques-
+tions that are closely tied to hallucination behaviors in MLRMs:
+­ Q1: How does the introduction of an additional reasoning process influence
+
+   models' attention allocation? Does reasoning increase attention to visual inputs
+   or instead shift reliance toward language priors?
+­ Q2: Does hallucination arising in the reasoning chain causally propagate to
+   the final answer? More importantly, does a hallucination-free reasoning chain
+   necessarily lead to a hallucination-free final answer?
+
+    Question 1. Previous studies [7, 8] have shown that a primary cause of
+hallucinations is models' tendency to allocate excessive attention to text tokens
+while insufficient attention to critical visual inputs. As a result, the responses are
+more influenced by the language priors rather than the actual image input.
+
+    The attention analysis in Figure 2(a) shows that reasoning models further
+exacerbate attention bias. Compared to their non-reasoning base models, MLRMs
+significantly decrease attention to visual tokens while allocating even more atten-
+tion to textual tokens. This shift amplifies the imbalance between visual grounding
+and language priors during generation, increasing the risk of hallucinations.
+
+    Summary 1. Introducing reasoning phrases decreases focus on visual tokens
+and amplifies reliance on textual priors, which can produce CoTs with diluted
+visual information and redundant text tokens. Building on the IB principle and
+empirical findings that many CoT tokens are redundant and irrespective of model
+decisions [9, 36], we adopt a selective CoT token pruning strategy to enhance
+information flow and encourage reliable answers.
+
+    Question 2. The CoT chain plays a critical role in shaping the final answer.
+To investigate the potential causal relationship between hallucinations in the
+reasoning chain and those in the final answer, we explicitly decouple these two
+6  H. Fang et al.
+
+sources of hallucination under the CHAIR evaluation and conduct a causal
+analysis, as shown in Figure 2(b). As expected, when the CoT is hallucinated,
+the majority of generated answers also exhibit hallucinated content, with a
+hallucination rate higher than that of the non-reasoning base model. This confirms
+that hallucinations in the CoT chain can strongly propagate to the final responses.
+
+    Another encouraging observation is that reliable reasoning chains almost
+always lead to hallucination-free answers. This is reasonable as a high-quality
+reasoning process enables more faithful analysis of the image and hence facilitates
+more reliable answers. This provides preliminary evidence for the feasibility of
+mitigating hallucinations by enhancing the quality of reasoning chains.
+
+    Summary 2. Hallucinated CoTs increase the likelihood of hallucinations in
+final answers, whereas reliable reasoning chains strongly suppress such errors.
+Accordingly, we employ preference optimization with a reasoning-centric objective,
+where we introduce AI-enhanced reasoning as positive supervision and deliberately
+induced hallucinated content as contrastive negatives.
+
+4 Method
+
+In this section, we introduce the proposed two-stage hallucination mitigation
+framework for MLRMs. Moreover, we provide a theoretical analysis from an IB
+perspective to justify the superiority of our method.
+
+4.1 Chain-of-Thought Compression
+
+Based on our preliminary analysis, we aim to trim superfluous reasoning tokens
+with less importance in the reasoning chain for a more compact and informative
+intermediate representation. This design also aligns with the information bottle-
+neck principle [29] and is further motivated by the widely discussed over-thinking
+issue in LRMs [4,17], where excessively long CoTs not only increase computational
+burdens but also degrade model performance. Inspired by recent findings that
+LLMs can perform reliably with pruned CoTs [36], we implement compression by
+training the model to reason and predict based on trimmed CoT traces.
+
+    Data Construction. Given a multimodal reasoning model f, we first query
+f with image­question pairs (v, x) to generate reasoning chain z and final answer
+y. We then identify reasoning tokens with limited impact on model predictions
+using importance scores provided by the powerful LLMlingua-2 [26], a token-level
+importance scoring model that has been widely adopted in prior compression
+studies [26, 36]. Specifically, LLMlingua-2 is trained with GPT-4 annotations
+and is capable of assigning higher importance scores to semantically informative
+tokens (e.g., object attributes and scene descriptions in image captioning), while
+assigning lower scores to function words and transitional tokens with limited
+semantics and minimal influence on model decisions (See examples in Appendix
+F.1). Tokens are then ranked by importance, and the top  percentile is retained
+to form the pruned chain z. We adopt a threshold of  = 90% to reduce reasoning
+                                Title Suppressed Due to Excessive Length                                                                        7
+
+              Multimodal Large                                           Hallucination                             Stage 2. CPO
+              Reasoning Model                                             Correction
+                                                                                                     GT Answer
+Prompt                           Pruned CoT Dataset       Generated CoT                 Revised CoT
+                                SFT
+Original CoT  Answer
+                                                                                                                           Contrastive
+                                Multimodal Large          Prompt         Initial          Naturally Generated Sample          Preference
+                                Reasoning Model           Prompt         Policy          Visually Induced Hallucination           Optimization
+                                                                         Model          Instruction Induced Hallucination
+              CoT Compressor
+
+Pruned CoT    Answer            Initial Policy Model
+
+                                Stage 1. CoT Compression  Misleading
+                                                            Prompt
+
+Fig. 3: Overview of the proposed C3PO framework. We first construct SFT datasets
+by removing redundant tokens within the generated CoTs based on token importance
+scores. Next, we perform hallucination-aware preference optimization, where preferred
+samples contain enhanced reasoning traces via feedback from an advanced open-source
+MLLM, while the original unmodified outputs serve as rejected ones. To further enhance
+the preference optimization, we propose a novel multimodal hallucination-inducing
+mechanism that crafts degraded visual inputs and misleading prompts to elicit MLRM's
+inherent hallucination patterns as informative negative contrasts.
+
+redundancy while preserving sufficient information to maintain clean performance.
+The resulting dataset of N samples is denoted as Ds = {(x(i), v(i), z(i), y(i))}Ni=1.
+
+    Model Training. We then use the constructed dataset Ds to perform LoRA-
+based SFT on the MLRM, which trains the model to reason with compressed
+CoTs and generate faithful answers. Let lz and ly denote the sequence lengths
+of z and y respectively, the training objective can be expressed as:
+
+     \begin {split} \mathcal {L}_{\mathrm {SFT}} = -\mathbb {E}_{(v,x,z',y)\sim \mathcal {D}_s} \sum _{t=1}^{l_{z'}} \log p_\theta (z'_t \mid v, x, z'_{<t})+\sum _{t=1}^{l_y} \log p_\theta (y_t \mid v, x, z', y_{<t}). \end {split} 
+
+                                                                                                     (1)
+
+Notably, this SFT process does not introduce any additional supervision informa-
+tion beyond the model's own outputs. We simply prune the generated reasoning
+chains and pair them with the original, unmodified answers for training. As shown
+in Appendix C, this strategy already brings a notable reduction in hallucinations,
+confirming the rationality of our analysis and design.
+
+4.2 Contrastive Preference Optimization
+
+Motivated by the preceding causal analysis, we propose a reasoning-oriented
+preference optimization strategy that constructs high-quality preference data
+pairs to effectively strengthen the model's reasoning quality, which then facilitates
+the generation of hallucination-free answers.
+
+    To obtain robust CoTs as preferred samples, we adopt the well-established
+RLAIF paradigm that constructs data by incorporating high-quality feedback
+8  H. Fang et al.
+
+from advanced MLLMs. Specifically, we decompose the refinement process into
+sentence-level hallucination detection and correction [39]. This simplification
+reduces task complexity, which enables open-source MLLMs to effectively perform
+the refinement and provide more reliable guidance. Specifically, we condition the
+advanced Qwen3-VL [2] on the input image v, the question x, and the ground-
+truth answer yGT, and instruct it to revise the reasoning chain zGen generated
+by the MLRM f. The model is instructed to identify and correct hallucinated
+content in the CoT at the sentence level, to improve the faithfulness of the
+reasoning trace to the visual input. Accordingly, the refined reasoning chain zRev
+is then used as the preferred sample and the original unmodified reasoning chains
+zGen that may contain hallucinations serve as inferior ones.
+
+    Multimodal Hallucination-Inducing Contrast. Beyond directly crafting
+high-quality positive samples, we further conduct a reverse-thinking analysis.
+While it is challenging to consistently derive hallucination-free responses from
+a given MLRM, eliciting the opposite hallucinated predictions is considerably
+easier. Such hallucinated samples are also highly valuable and informative as
+they explicitly expose the model's intrinsic hallucination patterns, which can
+serve as negative references for contrastive preference optimization.
+
+    Therefore, we propose a multimodal hallucination-inducing mechanism that
+carefully crafts both visual and textual inputs to elicit outputs with rich halluci-
+nated content. As shown in Fig. 3, we induce visual hallucinations by applying
+random masks to input images, which diminishes substantial ground-truth visual
+evidence and implicitly forces the model to rely on language priors, resulting in
+semantically coherent yet hallucinated CoT chains and answers (zimg, yimg). For
+the textual modality, we design a hallucination-amplification prompt (see Ap-
+pendix B.1) that directly instructs the model to prioritize its language priors while
+partially ignoring the visual input to create a plausible-sounding hallucinated
+reasoning trace and answer (zins, yins). These two mechanisms effectively simulate
+MLRM's hallucination behaviors commonly observed in real-world inference,
+providing informative negative samples that encourage the model to perceive and
+correct its intrinsic hallucination behaviors.
+
+    Reasoning-Enhanced Optimization. Given the preference dataset Dp
+constructed by the above operations, we strengthen the reasoning process by
+introducing a reasoning-centric preference loss, which encourages the model to
+favor reliable reasoning trajectories over inferior ones:
+
+ \begin {aligned} \mathcal {L}_{\mathrm {RE} = - \mathb {E}_{(v,x, z_{\mathrm {Rev},\mathcal {N}_z)\sim \mathcal {D}_p} &\sum _{z_{l} \in \mathcal {N}_z}\log \sigma \Big [ \beta \log \frac {p_\theta (z_\mathrm {Rev}| v, x)} {p_{\theta _{\mathrm {ref}}(z_\mathrm {Rev}|v, x)}- \beta \log \frac {p_\theta (z_l|v, x)} {p_{\theta _{\mathrm {ref}}(z_l| v, x)} \Big ],\ &\quad \quad \quad \quad \quad \quad \quad \quad \quad \text {where}\\mathcal {N}_z = \{z_{\mathrm {Gen}, z_{\mathrm {img}, z_{\mathrm {ins}\}. \end {aligned} 
+                                                                                                     (2)
+
+Here, the ref denotes the parameters of the reference model. This design provides
+direct preference supervision on the reasoning process, which effectively stabilizes
+and facilitates the generation of faithful CoT chains, hence significantly reducing
+hallucinations in the subsequent answers.
+Title Suppressed Due to Excessive Length                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  9
+
+    However, optimizing reasoning preferences alone does not guarantee that the
+outputs consistently follow the desired (reasoning, answer) format, and may
+even degrade the coherence and quality of the final answer. To stabilize holistic
+generation behavior and explicitly improve answer quality, we further adopt a
+standard DPO objective that models preferences over the joint output (z, y):
+
+ \begin {aligned} &\mathcal {L}_{\mathrm {DPO} =- \mathb {E}_{(v,x z_{\mathrm {Rev}, y_{\mathrm {GT}, \mathcal {N})\sim \mathcal {D}_p}\ &\sum _{(z_{l},y_{l}) \in \mathcal {N} \log \sigma \Big [\beta \log \frac {p_\theta (z_{\mathrm {Rev}, y_{\mathrm {GT} \mid v, x)} {p_{\theta _{\mathrm {ref} (z_{\mathrm {Rev} , y_{\mathrm {GT} \mid v, x)} -\beta \log \frac {p_\theta (z_l, y_l \mid v, x)} {p_{\theta _{\mathrm {ref} (z_l, y_l \mid v, x)} \Big ], \ &\quad \quad \quad \quad \quad \quad \quad \quad \text {wher}\mathcal {N} =\{(z_{\mathrm {Gen},y_{\mathrm {Gen}), (z_{\mathrm {img},y_{\mathrm {img}), (z_{\mathrm {ins} ,y_{\mathrm {ins})\}. \label {equ:regular} \end {aligned}   (3)
+
+    By additionally conducting contrastive preference optimization over the holis-
+tic output distribution, we guide the model to generate well-formed and faithful
+responses with both robust CoTs and final answers.
+
+    Furthermore, existing studies [31] have observed that the probability of
+preferred responses may decrease optimization because DPO essentially focuses
+on relative preferences. Similarly, we introduce the anchor regularization to
+constrain the positive reward above a predefined threshold :
+
+ \begin {aligned} \mathcal {L}_{\mathrm {Anc} = - &\mathb {E}_{(v,x, z_{\mathrm {Rev},y_{\mathrm {GT})\sim \mathcal {D}_p} \Big [\log \sigma \Big (\beta r_{\theta }(z_{\mathrm {Rev} \mid v, x) - \delta \Big )\ &+\lambda _{\mathrm {DPO}\log \sigma \Big ( \beta r_{\theta }(z_{\mathrm {Rev}, y_{\mathrm {GT} \mid v, x) - \delta \Big )\Big ], \end {aligned} \label {eq:anchor_los}                                                                                                                                                                                                                                                                                                                 (4)
+
+where DPO balances the contributions of two loss terms. With all the above loss
+terms, the overall optimization objective can be formulated as:
+
+  \mathcal {L}_{\mathrm {total}  = \mathcal {L}_{\mathrm {RE}  + \lambda _{\mathrm {DPO} \mathcal {L}_{\mathrm {DPO}  + \lambda _{\mathrm {Anc} \mathcal {L}_{\mathrm {Anc} , \label {eq:total_los }                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      (5)
+
+where Anc controls the influence of anchor loss LAnc.
+
+4.3 Theoretical Analysis
+
+In addition to empirical analysis, we build a theoretical framework to validate
+the effectiveness of C3PO. Let X denote the input, Y the ground truth response,
+and Z the reasoning trace. Note that Y  X  Z is a Markov chain, where Z
+serves as the intermediate representation between input and output. Based on
+the Information Bottleneck theory [28­30], a well-trained model should:
+
+ ­ Minimize I(X; Z), i.e., the mutual information between the input and in-
+     termediate representation. This urges the model to compress redundant
+     information in the input, thereby simplifying the problem.
+
+ ­ Maximize I(Y ; Z), i.e., the mutual information between the ground truth
+     and intermediate representation. This urges the model to retain task-relevant
+     information necessary for producing the correct answer.
+10  H. Fang et al.
+
+    Overall, the Information Bottleneck objective is defined as
+
+                      \label {eq:IBå®iä¹>} \mathcal {L}_\text {IB}(Z)=\mathcal {I}(X;Z)-\lambda _\text {IB}\mathcal {I}(Y;Z),  (6)
+
+where IB > 0 is a hyperparameter controlling the trade-off. A lower LIB(Z)
+indicates a better trade-off between redundancy compression and predictive
+accuracy. In the considered scenario, we focus on the regime IB > 1 to prioritize
+accuracy over compression, as suggested in previous study [1].
+
+    Formally, we justify the effectiveness of our proposed two key strategies in
+reducing the IB objective by the following theorems:
+
+Theorem 1 (Compression reduces IB). Let the CoT Z be decomposed into
+
+Zret and Ztrim, where Zret denotes the retaining task-critical part, Ztrim represents
+the trimmed redundant part, Zret  Ztrim = Z and Zret  Ztrim = . Then, the IB
+objective satisfies
+
+                      \mathcal {L}_\textnormal {IB}(Z)\ge \mathcal {L}_\textnormal {IB}(Z_{\mathrm {ret}}).                    (7)
+
+Theorem 2 (Enhancement reduces IB). Let the CoT Z be refined to Z via
+our reasoning-enhanced optimization, which supplements information about the
+ground truth Y . Then, the IB objective satisfies
+
+                      \mathcal {L}_\textnormal {IB}(Z) > \mathcal {L}_\textnormal {IB}(Z').                                    (8)
+
+Detailed proofs are provided in Appendix A. Theorems 1 and 2 reveal that both
+compressing and enhancing the CoT reduce the model's information bottleneck
+objective, which facilitates a more compact and faithful intermediate reasoning,
+thereby leading to more reliable final answers.
+
+5 Experiments
+
+This section provides comprehensive experiments on various MLRMs across
+different evaluation benchmarks. Due to page limits, more experimental results
+and output visualizations are provided in Appendix C and F, respectively.
+
+5.1 Experimental Setup
+
+Models and Datasets. To verify the effectiveness of our method, we conduct
+experiments on five representative MLRMs: Orsta-R1-7B [24], ThinkLite-7B [33],
+MM-Eureka-7B [25], MM-R1-7B [16], and R1-Onevision-7B [38]. To construct
+training data, we randomly sample 20k data pairs from the RLAIF-V dataset [43]
+as seed data. The CoT compression ratio is 90% by default. We apply a random
+masking ratio of 0.3 to the visual input for hallucination-inducing responses.
+More details, such as the designed misleading prompt, are in Appendix B.1.
+
+    Evaluation Benchmarks. We comprehensively evaluate the performance
+across a wide range of benchmarks. For hallucination evaluation, we consider
+(1) the CHAIR metric [27], which evaluates object hallucinations in open-ended
+         Title Suppressed Due to Excessive Length      11
+
+Table 1: Comparison of the proposed C3PO with competitive baselines on the CHAIR
+benchmark. We evaluate the performance on images from MSCOCO. CS and CI denotes
+CHAIRS and CHAIRI respectively.
+
+Method   R1-Onevision Orsta-R1 MM-Eureka MM-R1 ThinkLite
+         CS  CI  CS  CI  CS  CI  CS  CI  CS  CI 
+
+vanilla  36.7 8.2 40.7 8.5 44.0 8.6 37.0 7.4 41.7 7.8
+
+RLAIF-V 39.0 8.3 39.7 7.6 41.3 8.5 38.7 7.5 40.3 7.5
+
+OPA-DPO 36.7 7.7 41.7 8.2 41.3 7.7 36.3 7.2 40.0 7.9
+
+C3PO     35.0 7.4 35.3 6.9 40.0 7.7 35.0 7.2 38.0 7.3
+
+caption generation; (2) POPE [18], a discriminative benchmark that evaluates
+object existence consistency via yes/no questions; (3) AMBER [32], a systematic
+benchmark designed to assess fine-grained hallucinations; (4) GPT-4 assisted
+Evaluation [46] that uses GPT-4 series models to compute Sentence-level Hal-
+lucination Ratio (SHR) to detect fine-grained hallucinations. In addition, we
+evaluate the models on two widely used general-purpose benchmarks to assess
+their overall multimodal capabilities: (1) MME [10], a comprehensive benchmark
+measuring multiple dimensions of multimodal proficiency; and (2) MMBench [22],
+a multiple-choice benchmark analyzing complex multimodal comprehension and
+reasoning, covering a wide range of perception and cognition tasks.
+
+    Baselines. Since there is no previous studies specifically address hallucination
+mitigation for MLRMs, we adapt two state-of-the-art (SOTA) training-based
+approaches originally designed for MLLMs as competitive baselines, including
+RLAIF-V [43] with iterative DPO and inference-time scaling and the powerful
+OPA-DPO [39] that employs on-policy DPO to ensure the alignment of the
+reference model with the preference data distribution
+
+    Implementation Details. In the first SFT stage, we employ Low-Rank
+Adaptation (LoRA) with a rank of r = 8 and a scaling factor of  = 16 for 2
+epochs with a learning rate of 5e-5 and a global batch size B = 256. For the
+subsequent DPO stage, we adopt a learning rate of 1e-6 and B = 32 for 2 epochs
+of training, with the KL penalty coefficient  = 0.1. As suggested in [31, 39], we
+set  = 0 in Eq. (4) and Anc = 1.0 for the anchor loss LAnc in Eq. (5). For the
+hyperparameter DPO, we conduct experiments to obtain the optimal value for
+each model in Appendix C. Following [39, 43], we adopt the greedy decoding for
+evaluation reproducibility. More details are provided in Appendix B.
+
+5.2 Performance Evaluation
+
+CHAIR Evaluation. Following [39, 43], we instruct the MLRMs to generate
+captions on 300 images from the MSCOCO validation set [19] and report results
+in Table 1. By effectively enhancing the model's reasoning quality, the proposed
+framework consistently reduces hallucination across all MLRMs, significantly
+outperforming competitive baselines. E.g., C3PO achieves a 13.27% and 18.82%
+relative reduction of CS and CI on Orsta-R1, respectively.
+12                H. Fang et al.
+
+Table 2: Comparison of the proposed C3PO with competitive baselines on the POPE
+benchmark (%). We report the accuracy and F1 score for evaluation.
+
+    Model                                       Method                                           Random                                         Popular                             Adversarial
+
+                                                                                   Acc. F1 score Acc. F1 score Acc. F1 score
+
+                                                vanilla                            84.12                             81.90            83.90                       81.23             83.47                           80.85
+                                                                                                                     81.46            83.70                       80.89             83.27                           80.47
+    MM-Eureka                                   RLAIF-V                            83.81                             83.46            84.93                       82.70             84.37                           82.16
+                                                OPA-DPO                            85.29                             84.68            85.87                       83.94             85.23                           83.34
+
+                                                C3PO                          86.22
+
+                                                vanilla                            84.85                             82.83            84.47                       82.04             83.97                           81.56
+                                                                                                                     83.22            84.70                       82.39             84.23                           81.95
+    MM-R1                                       RLAIF-V 85.12                                                        83.52            85.00                       82.79             84.50                           82.31
+                                                                                                                     85.57            86.37                       84.68             85.57                           83.91
+                                                OPA-DPO 85.33
+
+                                                C3PO                          86.91
+
+                                                vanilla                            83.23                             80.63            83.03                       79.97             82.77                           79.72
+                                                                                                                     81.29            83.37                       80.50             83.00                           80.14
+    ThinkLite                                   RLAIF-V 83.71                                                        83.07            84.70                       82.34             84.10                           81.77
+                                                                                                                     84.37            85.63                       83.63             84.97                           83.00
+                                                OPA-DPO 85.02
+
+                                                C3PO                          85.98
+
+                  2UVWD5                                                 00(XUHND                                                          005                                                        7KLQN/LWH
+
+                       6+5                                                      6+5                                                            6+5                                                         6+5
+
+                            27.0                                                        28.5                                                        28.5                                                         29.0
+                            28.0                                                        28.9                                                        29.2                                                         29.8
+
+                              30.0                                                         29.9                                                       30.6                                                    31.4
+
+63, 9.7 9.1                   32.0                    JUDP  63, 8.8 8.7                    30.8                    JUDP  63, 8.8 8.4                  32.0                    JUDP  63, 9.7 9.1               33.0                    JUDP
+
+             8.1                          0.85  0.90 0.93                8.3                           0.87  0.91 0.94                7.7                         0.85  0.89 0.92                8.1                      0.85  0.90 0.93
+
+                  7.0               0.80                                      8.0                0.82                                      7.0              0.80                                      7.0           0.80
+
+                         100        0.50                                              120        0.50                                            120        0.50                                         100        0.40
+
+                   125                   0.54                                   132                   0.55                                 135                   0.54                              127                   0.47
+
+              150                              0.58                        143                              0.60                      150                              0.57                   155                              0.54
+           162                                    0.60                  149                                    0.62                158                                    0.59             168                                    0.57
+
+    :3,                                      JUDP                :3,                                      JUDP              :3,                                      JUDP           :3,                                      JUDP
+
+                                                        YDQLOOD                                        5/$,)9                                         23$'32                                          &32
+
+Fig. 4: GPT-4 assisted benchmark. Sentence-level Hallucination Ratio (SHR) measures
+the hallucination degree. We also provide 1&2-gram, the number of sentences per image
+(SPI), and words per image (WPI). A larger radar area indicates better performance.
+
+    Note that in contrast to consistent hallucination mitigation achieved by our
+method, baseline methods may even exacerbate hallucination in certain cases,
+e.g., RLAIF-V on R1-Onevision and OPA-DPO on Orsta-R1. This phenomenon
+reveals the instability of transferring methods for MLLMs to the MLRM setting,
+further highlighting the necessity and effectiveness of the proposed method, which
+explicitly accounts for their unique reasoning process.
+
+    POPE Evaluation. POPE is another popular evaluation framework for
+object hallucination, which queries models with "Is there a <object> in the
+image?" to answer a yes/no question. These questions are further categorized
+into Random, Popular, and Adversarial based on the object type (see Appendix
+B.2 for details). We report the accuracy and F1 scores over 3,000 classification
+results in Table 2. The results indicate that the proposed method facilitates more
+                              Title Suppressed Due to Excessive Length      13
+
+Table 3: Comparison of the proposed C3PO with competitive baselines on the AMBER
+benchmark (%). We report the accuracy and F1 score for evaluation.
+
+Method   R1-Onevision Orsta-R1 MM-Eureka MM-R1                   ThinkLite
+
+         Acc. F1 score Acc. F1 score Acc. F1 score Acc. F1 score Acc. F1 score
+
+vanilla  81.52  86.54  82.94  87.31  83.27  87.15  84.38  88.20  82.25  86.96
+                84.97  83.14  87.50  83.46  87.49  84.17  88.11  82.31  87.04
+RLAIF-V 80.99   85.30  83.58  87.67  83.72  87.59  84.76  88.51  83.02  87.36
+                86.73  84.57  88.50  85.01  88.80  85.61  89.25  83.96  88.26
+OPA-DPO 80.71
+
+C3PO     81.90
+
+effective reasoning and enables better perception of the images, substantially
+reducing hallucination rates across all three question types. Due to space limits,
+results for R1-Onevision and Orsta-R1 are provided in Appendix C.
+
+    GPT-4 Assisted Evaluation. While CHAIR and POPE are two widely
+used and reliable hallucination benchmarks, they focus exclusively on object
+hallucination and do not consider more complex positional, relational, or attribute
+hallucinations. To evaluate these aspects, we adopt the GPT-Assisted Benchmark
+[46], an LLM-as-judge framework that comprehensively evaluates fine-grained
+hallucinations using the Visual Genome dataset [15]. Specifically, the MLRM
+first generates a description for a given image, and the GPT 4-series model is
+instructed to assess the hallucination level of the generated content based on
+fine-grained human annotations. We additionally report 1&2- gram metrics for
+word diversity, as well as SPI and WPI to measure the level of detail.
+
+    As shown in Figure 4, C3PO achieves strong overall performance across
+different MLRMs, significantly reducing fine-grained hallucinations. For instance,
+C3PO reduces the SHR by 14.05% for Orsta-R1 compared to the vanilla model.
+Moreover, it substantially improves response detail (higher WPI and SPI), possibly
+benefiting from reasoning-enhanced optimization that allows a more comprehen-
+sive and detailed perception of the visual input.
+
+    AMBER Evaluation. AMBER [46] is another challenging benchmark de-
+signed to measure models' multi-dimensional hallucinations, including existence,
+attribute, and relation hallucinations. Following [43], we focus on the discrimina-
+tive part for an objective and reproducible evaluation and report accuracy and F1
+scores on more than 15,000 carefully designed yes/no questions in Table 3. While
+baselines provide only limited improvements or even degrade performance, the
+proposed C3PO consistently achieves improvements in hallucination mitigation,
+again demonstrating the necessity and effectiveness of the proposed framework.
+
+    MME and MMBench Evaluations. In addition to hallucination bench-
+marks, we additionally consider two popular general-purpose benchmarks that
+measure general multimodal capabilities. MME provides a suite of fine-grained
+and multiple-choice questions across various categories. We align with [12] and
+report the overall perception score covering 10 multimodal sub-tasks. MMBench
+is another large-scale benchmark consisting of over 3,000 curated multiple-choice
+questions. We compute the average score across 20 complex reasoning tasks. We
+provide results on the representative Orsta-R1 model in Figure 5. As observed,
+14    H. Fang et al.
+
+        (a)                (b)
+
+Fig. 5: Performance of different methods Fig. 6: Ablation study of the compression
+
+on two general-purpose benchmarks.        ratio  on CHAIR and SHR.
+
+MRLMs trained with the proposed reasoning-oriented strategy generally preserve
+their multimodal capabilities and even improve over the base model.
+
+5.3 Ablation Study
+
+In this section, we use Orsta-R1 as a representative model for ablation studies.
+
+We provide ablation on more MLRMs in Appendix C.
+
+    Ablation on the compression ratio. During the construction of the SFT
+
+data,  is a critical hyperparameter that controls the number of remaining tokens
+
+in the reasoning chain. A larger  may fail to sufficiently remove noise and
+
+redundancy, while a smaller  may unnecessarily discard informative tokens
+
+and thus impair performance. As shown in Figure 6,  = 0.9 achieves optimal
+
+performance on both CHAIR and GPT-4 assisted evaluations. Moreover, we
+
+observe that pruning rates smaller than 1 generally outperform the no pruning
+
+( = 1), again validating the effectiveness of our CoT compression strategy.
+
+Table 4: Ablation study of the proposed tech-      Ablation on the designed
+niques in C3PO under CHAIR and GPT-4           techniques. In addition to CoT
+assisted evaluation benchmarks.                compression, we then verify the ef-
+                                               fectiveness of the other proposed
+
+Method         CHAIR Eval GPT-4 Eval techniques. Specifically, we evalu-
+               CS  CI  SHR  ate the designed loss functions LRE,
+
+C3PO           35.3 6.9             26.3       LDPO, and LAnc, as well as the
+
+w/o loss LRE   37.3 7.2             28.8       proposed Multimodal Hallucination-
+
+w/o loss LDPO 39.7 8.1              29.4       Inducing (MHI) strategy.
+
+w/o loss LAnc  37.7 7.5             27.2       Table 4 confirms the contribu-
+
+w/o MHI strategy 37.0 7.9           28.4       tion of each component, validating
+
+                                               the rationale behind our designs. No-
+
+tably, removing LDPO leads to a significant performance drop, showing the
+
+necessity of modeling the entire output distribution as a regularization.
+
+6 Conclusion
+
+This work investigates the critical issue of hallucinations in MLRMs. We begin
+by analyzing two key factors contributing to hallucination emergence, based
+on which we propose C3PO, a two-stage training framework that first adopts
+Title Suppressed Due to Excessive Length  15
+
+SFT to remove noise and redundancy in generated reasoning trajectories, and
+then explicitly enhances reasoning via contrastive preference optimization with
+carefully constructed preference pairs. We theoretically justify the superiority
+of the proposed techniques from the information bottleneck principle. Extensive
+experiments across diverse MLRMs and benchmarks validate its effectiveness
+and generality. We highlight that this work makes a pioneering step in mitigat-
+ing hallucinations in MLRMs, deepening the understanding of the underlying
+mechanisms, and inspiring future studies on mitigation strategies.
+
+References
+
+ 1. Alemi, A.A., Fischer, I., Dillon, J.V.: Deep variational information bottleneck.
+     International Conference on Learning Representations (ICLR) (2017) 10
+
+ 2. Bai, S., Cai, Y., Chen, R., Chen, K., Chen, X., Cheng, Z., Deng, L., Ding, W., Gao,
+     C., Ge, C., Ge, W., Guo, Z., Huang, Q., Huang, J., Huang, F., Hui, B., Jiang, S., Li,
+     Z., Li, M., Li, M., Li, K., Lin, Z., Lin, J., Liu, X., Liu, J., Liu, C., Liu, Y., Liu, D.,
+     Liu, S., Lu, D., Luo, R., Lv, C., Men, R., Meng, L., Ren, X., Ren, X., Song, S., Sun,
+     Y., Tang, J., Tu, J., Wan, J., Wang, P., Wang, P., Wang, Q., Wang, Y., Xie, T.,
+     Xu, Y., Xu, H., Xu, J., Yang, Z., Yang, M., Yang, J., Yang, A., Yu, B., Zhang, F.,
+     Zhang, H., Zhang, X., Zheng, B., Zhong, H., Zhou, J., Zhou, F., Zhou, J., Zhu, Y.,
+     Zhu, K.: Qwen3-vl technical report (2025), https://arxiv.org/abs/2511.21631 8
+
+ 3. Bai, S., Chen, K., Liu, X., Wang, J., Ge, W., Song, S., Dang, K., Wang, P., Wang,
+     S., Tang, J., et al.: Qwen2. 5-vl technical report. arXiv preprint arXiv:2502.13923
+     (2025) 2
+
+ 4. Chen, X., Xu, J., Liang, T., He, Z., Pang, J., Yu, D., Song, L., Liu, Q., Zhou, M.,
+     Zhang, Z., et al.: Do not think that much for 2+ 3=? on the overthinking of o1-like
+     llms. arXiv preprint arXiv:2412.21187 (2024) 4, 6
+
+ 5. Dong, B., Ni, M., Huang, Z., Yang, G., Zuo, W., Zhang, L.: Mirage: Assessing hallu-
+     cination in multimodal reasoning chains of mllm. arXiv preprint arXiv:2505.24238
+     (2025) 2, 4
+
+ 6. Dong, Y., Liu, Z., Sun, H.L., Yang, J., Hu, W., Rao, Y., Liu, Z.: Insight-v: Exploring
+     long-chain visual reasoning with multimodal large language models. In: Proceedings
+     of the Computer Vision and Pattern Recognition Conference. pp. 9062­9072 (2025)
+     4
+
+ 7. Fang, H., Zhou, C., Kong, J., Gao, K., Chen, B., Liang, T., Ma, G., Xia, S.T.:
+     Grounding language with vision: A conditional mutual information calibrated decod-
+     ing strategy for reducing hallucinations in lvlms. Advances in Neural Information
+     Processing Systems (2025) 4, 5
+
+ 8. Favero, A., Zancato, L., Trager, M., Choudhary, S., Perera, P., Achille, A., Swami-
+     nathan, A., Soatto, S.: Multi-modal hallucination control by visual information
+     grounding. In: Proceedings of the IEEE/CVF Conference on Computer Vision and
+     Pattern Recognition. pp. 14303­14312 (2024) 5
+
+ 9. Feng, S., Fang, G., Ma, X., Wang, X.: Efficient reasoning models: A survey. arXiv
+     preprint arXiv:2504.10903 (2025) 5
+
+10. Fu, C., Chen, P., Shen, Y., Qin, Y., Zhang, M., Lin, X., Yang, J., Zheng, X., Li, K.,
+     Sun, X., et al.: Mme: A comprehensive evaluation benchmark for multimodal large
+     language models. In: The Thirty-ninth Annual Conference on Neural Information
+     Processing Systems Datasets and Benchmarks Track (2025) 11
+16  H. Fang et al.
+
+11. Guo, D., Yang, D., Zhang, H., Song, J., Zhang, R., Xu, R., Zhu, Q., Ma, S.,
+     Wang, P., Bi, X., et al.: Deepseek-r1: Incentivizing reasoning capability in llms via
+     reinforcement learning. arXiv preprint arXiv:2501.12948 (2025) 1, 4
+
+12. Huang, Q., Dong, X., Zhang, P., Wang, B., He, C., Wang, J., Lin, D., Zhang, W.,
+     Yu, N.: Opera: Alleviating hallucination in multi-modal large language models via
+     over-trust penalty and retrospection-allocation. In: Proceedings of the IEEE/CVF
+     Conference on Computer Vision and Pattern Recognition. pp. 13418­13427 (2024)
+     4, 13
+
+13. Jiang, C., Xu, H., Dong, M., Chen, J., Ye, W., Yan, M., Ye, Q., Zhang, J., Huang,
+     F., Zhang, S.: Hallucination augmented contrastive learning for multimodal large
+     language model. In: Proceedings of the IEEE/CVF Conference on Computer Vision
+     and Pattern Recognition. pp. 27036­27046 (2024) 4
+
+14. Kojima, T., Gu, S.S., Reid, M., Matsuo, Y., Iwasawa, Y.: Large language models
+     are zero-shot reasoners. Advances in neural information processing systems 35,
+     22199­22213 (2022) 3
+
+15. Krishna, R., Zhu, Y., Groth, O., Johnson, J., Hata, K., Kravitz, J., Chen, S.,
+     Kalantidis, Y., Li, L.J., Shamma, D.A., et al.: Visual genome: Connecting language
+     and vision using crowdsourced dense image annotations. International journal of
+     computer vision 123(1), 32­73 (2017) 13
+
+16. Leng, S., Wang, J., Li, J., Zhang, H., Hu, Z., Zhang, B., Jiang, Y., Zhang, H., Li,
+     X., Bing, L., et al.: Mmr1: Enhancing multimodal reasoning with variance-aware
+     sampling and open resources. arXiv preprint arXiv:2509.21268 (2025) 10
+
+17. Li, G., Gao, Y., Li, Y., Wu, Y.: Thinkless: A training-free inference-efficient method
+     for reducing reasoning redundancy. arXiv preprint arXiv:2505.15684 (2025) 4, 6
+
+18. Li, Y., Du, Y., Zhou, K., Wang, J., Zhao, W.X., Wen, J.R.: Evaluating object
+     hallucination in large vision-language models. arXiv preprint arXiv:2305.10355
+     (2023) 11
+
+19. Lin, T.Y., Maire, M., Belongie, S., Hays, J., Perona, P., Ramanan, D., Dollár, P.,
+     Zitnick, C.L.: Microsoft coco: Common objects in context. In: European conference
+     on computer vision. pp. 740­755. Springer (2014) 5, 11
+
+20. Liu, C., Xu, Z., Wei, Q., Wu, J., Zou, J., Wang, X.E., Zhou, Y., Liu, S.: More
+     thinking, less seeing? assessing amplified hallucination in multimodal reasoning
+     models. Advances in Neural Information Processing Systems (2025) 2, 4
+
+21. Liu, F., Lin, K., Li, L., Wang, J., Yacoob, Y., Wang, L.: Mitigating hallucina-
+     tion in large multi-modal models via robust instruction tuning. arXiv preprint
+     arXiv:2306.14565 (2023) 4
+
+22. Liu, Y., Duan, H., Zhang, Y., Li, B., Zhang, S., Zhao, W., Yuan, Y., Wang, J., He,
+     C., Liu, Z., et al.: Mmbench: Is your multi-modal model an all-around player? In:
+     European conference on computer vision. pp. 216­233. Springer (2024) 11
+
+23. Lu, P., Mishra, S., Xia, T., Qiu, L., Chang, K.W., Zhu, S.C., Tafjord, O., Clark,
+     P., Kalyan, A.: Learn to explain: Multimodal reasoning via thought chains for
+     science question answering. Advances in Neural Information Processing Systems
+     35, 2507­2521 (2022) 4
+
+24. Ma, Y., Du, L., Shen, X., Chen, S., Li, P., Ren, Q., Ma, L., Dai, Y., Liu, P., Yan, J.:
+     One rl to see them all: Visual triple unified reinforcement learning. arXiv preprint
+     arXiv:2505.18129 (2025) 10
+
+25. Meng, F., Du, L., Liu, Z., Zhou, Z., Lu, Q., Fu, D., Han, T., Shi, B., Wang, W.,
+     He, J., et al.: Mm-eureka: Exploring the frontiers of multimodal reasoning with
+     rule-based reinforcement learning. arXiv preprint arXiv:2503.07365 (2025) 2, 4, 10
+Title Suppressed Due to Excessive Length  17
+
+26. Pan, Z., Wu, Q., Jiang, H., Xia, M., Luo, X., Zhang, J., Lin, Q., Rühle, V., Yang, Y.,
+     Lin, C.Y., et al.: Llmlingua-2: Data distillation for efficient and faithful task-agnostic
+     prompt compression. In: Findings of the Association for Computational Linguistics
+     ACL 2024. pp. 963­981 (2024) 6
+
+27. Rohrbach, A., Hendricks, L.A., Burns, K., Darrell, T., Saenko, K.: Object halluci-
+     nation in image captioning. In: Proceedings of the 2018 Conference on Empirical
+     Methods in Natural Language Processing. pp. 4035­4045 (2018) 5, 10
+
+28. Shwartz-Ziv, R., Tishby, N.: Opening the black box of deep neural networks via
+     information. ArXiv (2017) 9
+
+29. Tishby, N., Pereira, F.C., Bialek, W.: The information bottleneck method. ArXiv
+     (2000) 2, 6, 9
+
+30. Tishby, N., Zaslavsky, N.: Deep learning and the information bottleneck principle.
+     Information Theory Workshop (ITW) (2015) 2, 9
+
+31. Wang, F., Zhou, W., Huang, J.Y., Xu, N., Zhang, S., Poon, H., Chen, M.: mdpo:
+     Conditional preference optimization for multimodal large language models. In:
+     Proceedings of the 2024 Conference on Empirical Methods in Natural Language
+     Processing. pp. 8078­8088 (2024) 9, 11
+
+32. Wang, J., Wang, Y., Xu, G., Zhang, J., Gu, Y., Jia, H., Yan, M., Zhang, J., Sang,
+     J.: An llm-free multi-dimensional benchmark for mllms hallucination evaluation.
+     CoRR (2023) 2, 11
+
+33. Wang, X., Yang, Z., Feng, C., Lu, H., Li, L., Lin, C.C., Lin, K., Huang, F., Wang,
+     L.: Sota with less: Mcts-guided sample selection for data-efficient visual reasoning
+     self-improvement. arXiv preprint arXiv:2504.07934 (2025) 2, 4, 10
+
+34. Wang, X., Wei, J., Schuurmans, D., Le, Q., Chi, E., Narang, S., Chowdhery, A.,
+     Zhou, D.: Self-consistency improves chain of thought reasoning in language models.
+     arXiv preprint arXiv:2203.11171 (2022) 3
+
+35. Wei, J., Wang, X., Schuurmans, D., Bosma, M., Xia, F., Chi, E., Le, Q.V., Zhou,
+     D., et al.: Chain-of-thought prompting elicits reasoning in large language models.
+     Advances in neural information processing systems 35, 24824­24837 (2022) 3
+
+36. Xia, H., Leong, C.T., Wang, W., Li, Y., Li, W.: TokenSkip: Controllable chain-of-
+     thought compression in LLMs. In: Christodoulopoulos, C., Chakraborty, T., Rose,
+     C., Peng, V. (eds.) Proceedings of the 2025 Conference on Empirical Methods
+     in Natural Language Processing. pp. 3351­3363. Association for Computational
+     Linguistics, Suzhou, China (Nov 2025). https://doi.org/10.18653/v1/2025.
+     emnlp-main.165, https://aclanthology.org/2025.emnlp-main.165/ 5, 6
+
+37. Xing, Y., Li, Y., Laptev, I., Lu, S.: Mitigating object hallucination via concentric
+     causal attention. Advances in neural information processing systems 37, 92012­
+     92035 (2024) 4
+
+38. Yang, Y., He, X., Pan, H., Jiang, X., Deng, Y., Yang, X., Lu, H., Yin, D., Rao, F.,
+     Zhu, M., et al.: R1-onevision: Advancing generalized multimodal reasoning through
+     cross-modal formalization. arXiv preprint arXiv:2503.10615 (2025) 2, 4, 10
+
+39. Yang, Z., Luo, X., Han, D., Xu, Y., Li, D.: Mitigating hallucinations in large
+     vision-language models via dpo: On-policy data hold the key. In: Proceedings of
+     the Computer Vision and Pattern Recognition Conference. pp. 10610­10620 (2025)
+     4, 8, 11
+
+40. Yin, S., Fu, C., Zhao, S., Xu, T., Wang, H., Sui, D., Shen, Y., Li, K., Sun, X., Chen,
+     E.: Woodpecker: Hallucination correction for multimodal large language models.
+     Science China Information Sciences 67(12), 220105 (2024) 4
+
+41. Yu, Q., Li, J., Wei, L., Pang, L., Ye, W., Qin, B., Tang, S., Tian, Q., Zhuang,
+     Y.: Hallucidoctor: Mitigating hallucinatory toxicity in visual instruction data.
+18  H. Fang et al.
+
+     In: Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern
+     Recognition. pp. 12944­12953 (2024) 4
+42. Yu, T., Yao, Y., Zhang, H., He, T., Han, Y., Cui, G., Hu, J., Liu, Z., Zheng,
+     H.T., Sun, M., et al.: Rlhf-v: Towards trustworthy mllms via behavior alignment
+     from fine-grained correctional human feedback. In: Proceedings of the IEEE/CVF
+     Conference on Computer Vision and Pattern Recognition. pp. 13807­13816 (2024)
+     4
+43. Yu, T., Zhang, H., Li, Q., Xu, Q., Yao, Y., Chen, D., Lu, X., Cui, G., Dang, Y., He,
+     T., et al.: Rlaif-v: Open-source ai feedback leads to super gpt-4v trustworthiness.
+     In: Proceedings of the Computer Vision and Pattern Recognition Conference. pp.
+     19985­19995 (2025) 4, 10, 11, 13
+44. Zhang, R., Zhang, B., Li, Y., Zhang, H., Sun, Z., Gan, Z., Yang, Y., Pang, R., Yang,
+     Y.: Improve vision language model chain-of-thought reasoning. In: Proceedings of
+     the 63rd Annual Meeting of the Association for Computational Linguistics (Volume
+     1: Long Papers). pp. 1631­1662 (2025) 4
+45. Zhang, Z., Zhang, A., Li, M., Zhao, H., Karypis, G., Smola, A.: Multimodal chain-
+     of-thought reasoning in language models. arXiv preprint arXiv:2302.00923 (2023)
+     4
+46. Zhao, Z., Wang, B., Ouyang, L., Dong, X., Wang, J., He, C.: Beyond hallucinations:
+     Enhancing lvlms through hallucination-aware direct preference optimization. arXiv
+     preprint arXiv:2311.16839 (2023) 4, 11, 13
+

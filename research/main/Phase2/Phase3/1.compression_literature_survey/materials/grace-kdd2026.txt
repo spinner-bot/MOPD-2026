@@ -1,0 +1,913 @@
+Learning Graph Rationales to Compress Long Chains of Thought
+                          in Multimodal Reasoning
+
+            Yizhi Wang                            Linan Yue                                     Deng-Bao Wang
+
+   School of Computer Science and        School of Computer Science and                   School of Computer Science and
+  Engineering, Southeast University     Engineering, Southeast University                Engineering, Southeast University
+
+         Nanjing 210096, China                 Nanjing 210096, China                            Nanjing 210096, China
+Key Laboratory of Computer Network    Key Laboratory of Computer Network               Key Laboratory of Computer Network
+
+     and Information Integration           and Information Integration                      and Information Integration
+ (Southeast University), Ministry of   (Southeast University), Ministry of              (Southeast University), Ministry of
+
+                Education                             Education                                        Education
+         Nanjing 210096, China                 Nanjing 210096, China                            Nanjing 210096, China
+
+             Tong Wei                                                                           Min-Ling Zhang
+
+   School of Computer Science and                                                         School of Computer Science and
+  Engineering, Southeast University                                                      Engineering, Southeast University
+
+         Nanjing 210096, China                                                                  Nanjing 210096, China
+Key Laboratory of Computer Network                                                     Key Laboratory of Computer Network
+
+     and Information Integration                                                            and Information Integration
+ (Southeast University), Ministry of                                                    (Southeast University), Ministry of
+
+                Education                                                                              Education
+         Nanjing 210096, China                                                                  Nanjing 210096, China
+
+Abstract                                                                               datasets for further MLRMs tuning. Experiments on multiple mul-
+                                                                                       timodal benchmarks show that GRACE substantially improves in-
+Recent advances in multimodal large reasoning models (MLRMs)                           ference efficiency and interpretability without sacrificing accuracy.
+have demonstrated impressive capabilities on complex multimodal                        Code is available at https://anonymous.4open.science/status/Codes-
+tasks, yet their reliance on long Chain-of-Thoughts (CoTs) often                       of-GRACE-AEDD.
+leads to redundant reasoning and high computational cost. Existing
+chain-based distillation and refinement approaches alleviate redun-                    Keywords
+dancy to some extent but remain limited when handling ultra-long
+reasoning chains, suffering from weakened dependency modeling,                         Efficient Reasoning, CoT Compression, Graph Rationale Learning
+accumulated redundancy, and the omission of critical reasoning
+steps. To this end, in this paper, we propose GRACE, a Graph-based                     ACM Reference Format:
+Rationalized CoT Compression framework that transforms long                            Yizhi Wang, Linan Yue, Deng-Bao Wang, Tong Wei, and Min-Ling Zhang.
+CoTs into reasoning graphs to enable efficient CoT compression,                        2026. Learning Graph Rationales to Compress Long Chains of Thought in
+where reasoning steps are represented as nodes and semantic de-                        Multimodal Reasoning. In Proceedings of the 32nd ACM SIGKDD Conference
+pendencies as edges. Specifically, after constructing the reasoning                    on Knowledge Discovery and Data Mining V.2 (KDD '26), August 09­13, 2026,
+graph, GRACE applies a graph rationale learning approach with a                        Jeju Island, Republic of Korea. ACM, New York, NY, USA, 12 pages. https:
+selector­predictor architecture. Among them, the selector estimates                    //doi.org/10.1145/3770855.3817627
+node-level rationale scores to sample a compact rationale subgraph,
+while the predictor leverages this subgraph for final prediction. The                  1 Introduction
+resulting subgraph serves as the distilled core rationale, retaining
+essential reasoning while removing irrelevant steps. Finally, the                      Multimodal Large Reasoning Models (MLRMs) [13, 24, 49, 56] are
+compressed CoTs are then used to build supervised fine-tuning                          a specialized class of Multimodal Large Language Models (MLLMs).
+                                                                                       MLRMs are obtained by fine-tuning base MLLMs with long Chain-
+Corresponding author.                                                                  of-Thoughts (long CoTs) data through supervised fine-tuning (SFT),
+                                                                                       or by applying reinforcement fine-tuning (RFT) with reinforcement
+This work is licensed under a Creative Commons Attribution 4.0 International License.  learning methods such as GRPO [32]. Building on these training
+KDD '26, Jeju Island, Republic of Korea                                                strategies, MLRMs leverage structured long CoTs for reasoning
+© 2026 Copyright held by the owner/author(s).                                          and integrate self-reflection and self-correction mechanisms, which
+ACM ISBN 979-8-4007-2259-2/2026/08                                                     substantially improve their multimodal reasoning capabilities and
+https://doi.org/10.1145/3770855.3817627                                                decision quality.
+
+                                                                                          However, during actual reasoning processes, multimodal CoTs
+                                                                                       often contain excessive intermediate steps, leading to the phenom-
+                                                                                       enon of "overthinking" [6, 22, 29, 37], where many steps contain
+                                                                                       redundant information that does not contribute to the final answer.
+KDD '26, August 09­13, 2026, Jeju Island, Republic of Korea                                                   Yizhi Wang, Linan Yue, Deng-Bao Wang, Tong Wei, and Min-Ling Zhang
+
+a Long CoTs with input query                                                         b                        Chain-based CoT Compression
+
+                                                                                                              <think> Okay, so I`m trying to figure out how to find
+
+                            E     <think> Okay, so I`m trying to    CoT Input                                 the value of x in this triangle problem. Step
+                                  figure out how to find the
+                C                 value of x in this triangle                                        CoT      1:xxxx ... , Step 2: xxxx ..., Step 3: xxxx ..., Step n:
+A                                 problem.                                                      Distillation
+                                  Step 1:xxxx ... ,                                                           xxxx ..., </think>  Over 3,000 tokens
+                  B               Step 2: Given that BCDE...,
+                               D  Step 3: xxxx ..., ... ...                          c          Graph-based Rationalized CoT compression (GRACE)
+                                  Step 9: BC is parallel to DE...,
+Question:                         Step n: xxxx ...,                 Graph            Reasoning   Rationale    Rationale  <think> Okay, so I`m trying to figure out
+Find x.                           </think>                             Construction    Graph    Extraction    Subgraph   how to find the value of x in this triangle
+(A) 4 (B) 6                                                                                                              problem. Step 1:xxxx ... , Step 2: xxxx ...,
+(C) 8 (D) 10                      Over 5,000 tokens                                                                      Step 3: xxxx ..., Step n: xxxx ..., </think>
+
+                                                                                                                                        About 2,000 tokens
+
+Figure 1: Comparison between Chain-based CoT compression and our GRACE method. (a) Long CoTs generated by existing
+MLRMs. (b) Chain-based CoT compression, which compresses the CoT following its sequential chain structure. (c) The GRACE
+pipeline, which constructs a reasoning graph based on the long CoT and then extracts rationales to form the compressed CoT.
+
+Unlike text-only reasoning where redundancy primarily stems from                                accurately. This approach enhances both compression quality and
+verbose phrasing, multimodal CoTs exhibit structural redundancy                                 reasoning efficiency in complex multimodal scenarios.
+due to the repeated verbalization of low-level perceptual cues or
+cross-modal correspondences. For example, as shown in Figure 1(a),                                 Along this line, as shown in Figure 1(c), we propose a Graph-
+given a simple problem, MLRMs restate the same visual cue for                                   based Rationalized CoT compression (GRACE) to efficiently com-
+multiple times (e.g. "Given that BC  DE" and "BC is parallel to DE")                            press long reasoning chains. Specifically, we first divide the orig-
+and generate an excessively long CoT to produce the answer (over                                inal long CoT into steps, treating each step as a graph node, and
+5,000 tokens). This not only increases computational cost and re-                               construct edges between nodes by analyzing their semantic re-
+duces inference efficiency but also weakens model interpretability,                             lationships using a LLM, thereby forming a complete reasoning
+limiting the practical performance of MLRMs.                                                    graph. In detail, we employ Qwen3-8B rather than flagship-scale
+                                                                                                models for reasoning graph construction, as it provides sufficient
+   To mitigate this issue, a straightforward approach is to directly                            capability while remaining cost-efficient. Moreover, since the con-
+adapt CoT compression methods from the text domain to multi-                                    structed graphs are used solely to derive refined SFT data and are
+modal settings [18, 21, 47, 64]. As illustrated in Figure 1(b), existing                        not generated during inference, the procedure incurs only a one-
+methods predominantly adopt a chain-based structure, shorten-                                   time offline cost, resulting in minimal overall overhead. In addition,
+ing raw multimodal reasoning traces by detecting and pruning                                    to ensure robustness and stability in graph construction, we design
+redundant or repetitive steps, which yields more concise chains.                                explicit stepwise instructions and leverage in-context learning with
+The resulting "original query­compressed CoT" pairs are used to                                 a diverse set of high-quality examples. Based on this constructed
+construct a new dataset for supervised fine-tuning (SFT). Training                              reasoning graph, we design the graph rationale compression frame-
+on this dataset could equip the model with the ability to gener-                                work, which consists of a selector and a predictor. Specifically, the
+ate more concise multimodal reasoning at inference time, thereby                                reasoning graph and the corresponding text query are encoded by
+significantly improving its efficiency.                                                         a language model (e.g., Qwen3-Embedding-8B [48]) to obtain node
+                                                                                                and query representations. The selector then predicts the proba-
+   However, chain-based CoT compression approaches face limi-                                   bility of each node being a key node and samples the important
+tations when applied to ultra-long multimodal CoTs. Multimodal                                  subgraph accordingly, generating the corresponding subgraph rep-
+reasoning trajectories typically exhibit higher redundancy and non-                             resentation. Finally, the subgraph representation are concatenated
+linear dependencies, characterized by rich visual grounding details,                            with the query one and fed into the predictor for the final prediction.
+spatial relationships, and vision­language alignment cues. These                                After training, the selector can automatically identify key nodes
+features give rise to cross-referential structures rather than sequen-                          from long CoTs, enabling efficient compression of reasoning chains.
+tial ones. Under such conditions, chain-based CoT compression                                   Key reasoning nodes are then merged in order and smoothed by a
+struggles to adequately model the intricate interleaving depen-                                 lightweight-LLM (Qwen3-0.5B) with only minimal edits (e.g., link-
+dencies. Moreover, in a linear chain, excessively long information                              ing words). Ultimately, the compressed CoTs, together with the
+propagation paths impair the model's ability to capture long-range                              original problems, are then used to construct a new SFT dataset for
+contextual dependencies, often resulting in either redundant con-                               further MLLMs tuning to achieve MLRMs. Through this process,
+tent accumulation or the omission of critical reasoning steps.                                  the MLRMs can retain essential reasoning information while signif-
+                                                                                                icantly reducing redundancy, improving inference efficiency and
+   In contrast, graph structures [16, 60] can more naturally capture                            interpretability, thus achieving efficient long-chain multimodal rea-
+the dependency structure and topological relationships in multi-                                soning. Extensive experiments on multiple multimodal benchmark
+modal reasoning, enabling comprehensive modeling of visual con-                                 datasets demonstrate that our method enables efficient reasoning
+tent and cross-modal interactions throughout the reasoning process.                             while achieving strong performance.
+As illustrated in Figure 1(c), by representing each reasoning step as
+a graph node and semantic relationships between steps as edges,                                    In summary, our main contributions are as follows:
+the core reasoning path and pivotal steps can be identified more
+Learning Graph Rationales to Compress Long Chains of Thought in Multimodal Reasoning  KDD '26, August 09­13, 2026, Jeju Island, Republic of Korea
+
+     · We explore CoT compression for multimodal reasoning and                           Despite their advances, current MLRMs are prone to excessive
+        highlight the suitability of a graph-based perspective for                    overthinking [6, 22], characterized by unnecessary reasoning paths
+        modeling long multimodal CoTs, as graph structures can                        and repeated reflection. This not only raises computational demands
+        capture structural redundancy and non-linear dependencies                     but also limits inference speed and interpretability, creating a sig-
+        among reasoning steps.                                                        nificant obstacle to scaling these models for complex multimodal
+                                                                                      applications.
+     · We propose GRACE, a graph-based rationalized CoT com-
+        pression framework that constructs reasoning graphs from                      2.2 CoT Compression
+        long CoTs and learns to extract compact rationale subgraphs
+        through a selector-predictor architecture.                                    Chain-of-Thought (CoT) compression aims to shorten reasoning
+                                                                                      chains while preserving core inferential information. Early ap-
+     · We conduct extensive empirical studies on multiple multi-                      proaches primarily relied on prompt-based strategies, where care-
+        modal reasoning benchmarks, demonstrating that GRACE                          fully designed prompts guided the model to produce more concise
+        substantially improves reasoning efficiency while maintain-                   reasoning sequences [26, 31]. For instance, [12] proposed a "Use
+        ing strong accuracy and visual information preservation.                      at most k tokens" prompt, which constrained the length of gener-
+                                                                                      ated reasoning chains. However, such methods heavily depended
+2 Related Work                                                                        on manual prompt design and were limited in scalability. More
+                                                                                      recently, researchers [35, 53] explored model-driven compression
+2.1 Multimodal Large Reasoning Models                                                 methods, which operated at different granularities of reasoning
+                                                                                      units, including token-level and step/chunk-level. After compres-
+Multimodal Large Language Models (MLLMs) have recently achieved                       sion, these methods often used the resulting concise CoTs for SFT,
+impressive performance across diverse tasks, including visual ques-                   helping models reduce redundancy while maintaining reasoning
+tion answering, image captioning, and document understanding                          capability.
+[1, 11, 14, 19]. These models integrated visual and linguistic signals
+within a unified generative architecture, allowing them to jointly in-                   Specifically, at the token level, the focus was on evaluating the
+terpret and describe complex scenes [7, 43, 51, 57]. However, while                   contribution of individual tokens and removing low-value tokens
+these models excelled at perception and modality alignment, they                      to simplify reasoning [44, 52, 64]. For example, [52] introduced Con-
+were not originally equipped with mechanisms for complex rea-                         ditional Token Selection (CTS), which trained a reference model to
+soning. As a result, their ability to conduct structured inference                    dynamically estimate token importance using perplexity metrics
+remained limited, particularly when faced with tasks requiring                        and pruned redundant tokens. [44] proposed TokenSkip, which
+compositional logic or long-term dependency tracking.                                 retained only tokens above a certain importance threshold to gener-
+                                                                                      ate more compact CoTs. At the step or chunk level, reasoning chains
+   Motivated by the progress of reasoning-focused language models,                    were divided into higher-level semantic units, and only the most im-
+researchers began exploring how to extend such capabilities to mul-                   portant steps were preserved [21]. For instance, [45] proposed the
+timodal scenarios, giving rise to Multimodal Large Reasoning Mod-                     PIR (Perplexity-based Importance Refinement) framework, which
+els (MLRMs). Early studies typically relied on explicit instruction                   evaluated the importance of progressive and functional reasoning
+tuning or search-based reasoning optimization to induce step-by-                      steps using perplexity metrics and removed low-contribution steps.
+step reasoning behaviors. For example, Mulberry [50] and LLaVA-                       [41] partitioned reasoning into semantic chunks, generated multi-
+CoT [46] guided models to generate explicit Chains of Thought                         ple simplified candidates for each chunk, and used a greedy strategy
+(CoTs) via carefully designed prompts or Monte Carlo Tree Search                      to select the combination that best balanced conciseness and fidelity.
+(MCTS), thereby improving transparency and interpretability in                        Some works went further by replacing the chain structure with
+multimodal reasoning.                                                                 a graph-based representation. For example, [60] proposed Prune-
+                                                                                      on-Logic, which converted CoTs into logical graphs and pruned
+   With the emergence of powerful text reasoning models such as                       redundant or low-value nodes to achieve more structured compres-
+DeepSeek-R1 [8, 9], DeepSeekMath [32], and other R1-style archi-                      sion. While these approaches showed effectiveness in text-based
+tectures, reinforcement learning (RL)­based post-training became                      reasoning, research on compressing CoTs for MLRMs remained lim-
+the mainstream paradigm for enhancing complex reasoning ability                       ited. Compared with text-only CoTs, multimodal reasoning chains
+[17, 30, 34]. By introducing reward-driven optimization objectives,                   were longer and more complex, involving interactions across differ-
+these methods encouraged models to produce logically consistent,                      ent modalities, which made exploring CoT compression strategies
+multi-step reasoning paths [10, 33, 39].                                              for multimodal models particularly valuable.
+
+   Among them, a line of works directly applied RL to improve mul-                    2.3 Graph Rationale Learning
+timodal reasoning, such as MM-Eureka [24] and VisualThinker-R1
+[62], along with other efforts that followed a similar reinforcement-                 Graph rationale learning has recently attracted increasing attention
+driven optimization framework [4, 27, 38, 58]. Another line of re-                    as a means to enhance the interpretability of graph predictions. The
+search adopted a two-stage paradigm, where models were first                          core idea of these methods was to first identify key subgraphs in
+supervised on long, high-quality CoTs and then refined via RL post-                   the input graph that were relevant to the prediction task, referred
+training to enhance reasoning depth and stability. Representative                     to as rationales, and then make predictions solely based on these
+examples included recent Qwen3-VL [1, 48], R1-OneVision [49], and
+Vision-R1 [13], as well as several related studies exploring similar
+hybrid strategies [5, 36]. Collectively, these approaches substan-
+tially advanced multimodal reasoning and represented a prevailing
+paradigm in MLRM development.
+KDD '26, August 09­13, 2026, Jeju Island, Republic of Korea                          Yizhi Wang, Linan Yue, Deng-Bao Wang, Tong Wei, and Min-Ling Zhang
+
+Graph Construction on train & under-com                                  Graph Rationale Compression on train
+
+                      <think> Okay, so I`m trying to ... .   train
+                      Step 1:xxxx ... , Step 2: xxxx ...,
+        <think>       Step 3: xxxx ..., Step n: xxxx ...,                           Selector   Predictor 
+             ......   Therefore, the answer is ...</think>
+            </think>                                                     train
+                      <node 1> Okay, so ... . </node>
+node                  <node 2> Step 1:xxx ... , </node>                              Selector
+                      <node 3> Step 2: xxx ..., </node>
+edge                  ......                                             SFT on SFT                            <think> Okay, so... .
+                      <node 6> Therefore, ... . </node>                                                        Step 1:xxxx ... ,
+                                                             under-com                                         Step 2: xxxx ...,
+                      <edge from=1 to=2> ... </edge>                                                           Step 3: xxxx ...,
+                      <edge from=2 to=3> ... </edge>                                Selector                   Step n: xxxx ...,
+                      <edge from=2 to=4> ... </edge>                                                           Therefore, ...</think>
+                      ......                                             under-com
+                      <edge from=n-1 to=n> ... </edge>                                                                SFT
+
+Figure 2: The overall framework of GRACE. Both Dtrain and Dunder-com are first converted into graph-structured data (Graph
+Construction). Then, the selector and predictor are trained on Dtrain to obtain graph-based reasoning compression capability
+(Graph Rationale Compression). Finally, the trained selector is applied to Dunder-com to generate the compressed dataset DSFT,
+which is subsequently used for supervised fine-tuning of the base model (SFT on DSFT).
+
+extracted rationales. The selected rationales thus served as direct ex-         4 Graph-based Rationalized CoT Compression
+planations for the model's decisions. Existing studies [3, 25, 42, 54]
+primarily focused on improving the faithfulness and reliability of              In this section, we present the implementation details of the pro-
+rationale extraction. For instance, [42] decomposed the input graph             posed GRACE framework. The overall pipeline consists of three
+into rationale and non-rationale components and utilized the lat-               key components: reasoning graph construction, graph rationale
+ter to generate counterfactual samples, enhancing the credibility               compression, and SFT on the compressed data. The core idea of
+of the explanations. Others [25] incorporated information bottle-               GRACE is to leverage the reasoning graph to automatically iden-
+neck principles or attention mechanisms to constrain information                tify the most critical reasoning steps (rationales) from long CoTs,
+flow or reduce stochasticity, ensuring that the extracted rationales            thereby removing redundant reasoning while preserving essential
+accurately reflected the model's decision-making process. In this               logical consistency. This process produces a compact CoT dataset
+paper, we focus on the design framework of graph rationale learn-               for SFT, enabling more efficient and effective reasoning.
+ing, emphasizing how rationales could be leveraged for efficient
+compression of long reasoning chains, without delving into the                  4.1 Reasoning Graph Construction
+specific algorithmic implementations.
+                                                                                We begin by constructing reasoning graphs from the Graph Ratio-
+3 Problem Definition                                                            nale training set Dtrain = {(, ,  )}=t1rain . For each CoT  , the se-
+                                                                                quence is segmented into semantic units or reasoning steps, which
+In this section, we formally define the objective of GRACE. Specif-             are then modeled as nodes to form a reasoning graph  = (V, E ).
+ically, our approach consists of two stages. First, given a Graph               Here, the node set V = {,1, . . . , ,| V | } corresponds to individ-
+Rationale training dataset:                                                     ual CoT steps, while the edge set E encodes semantic or logical
+                                                                                dependencies between steps.
+Dtrain = {(, ,  )}=t1rain,                                   (1)
+                                                                                   As shown in Figure 2, to operationalize this process, we em-
+where  = (query, image ),  = {1, 2, . . . ,  } is a pre-generated               ploy two prompting stages powered by a LLM. First, using a node
+long CoT with  denoting the -th token, and  is the correspond-                  extraction prompt node, each original CoT  is decomposed into
+ing answer, our goal is to first construct a reasoning graph  from              a series of semantically independent reasoning fragments, each
+the long CoT  . Based on this graph, we train a Graph Rationale                 representing a distinct inferential step. These fragments are instan-
+model consisting of a selector Fs and a predictor Fp, which identifies          tiated as nodes, yielding the node set V . Next, an edge extraction
+key reasoning nodes (rationales) within the graph.                              prompt edge is applied to identify semantic and logical dependen-
+                                                                                cies among the extracted nodes. For any pair of nodes (, ), the
+Then, for a CoT compression dataset:                                            LLM determines whether a directed relation exists and records it
+                                                                                as an edge   E .
+Dunder-com = {(  ,   ,  )}=u1nder-com ,                      (2)
+                                                                                   Through these two prompting stages, the original long CoT
+we apply the trained selector Fs to extract the key nodes and gen-              is transformed into a structured reasoning graph  = (V, E ),
+                                                                                where each node captures a concise reasoning unit and each edge
+erate a compressed CoT  , yielding a new supervised fine-tuning                 encodes explicit semantic dependencies, laying the foundation for
+                                                                                subsequent rationale learning and compression. The prompt for
+                                                                                node splitting is shown in Appendix D, and the prompt for edge
+                                                                                extraction is shown in Appendix E.
+dataset:
+
+DSFT  =  {            (    ,      ,    )  }=S1FT  ,          (3)
+
+                              
+
+                                
+
+where SFT is equal to under-com. This SFT dataset can be used to
+fine-tune MLLMs to achieve MLRMs, enabling efficient compression
+of long-chain CoTs while retaining essential reasoning information.
+Learning Graph Rationales to Compress Long Chains of Thought in Multimodal Reasoning                     KDD '26, August 09­13, 2026, Jeju Island, Republic of Korea
+
+Remark. In the two prompting stages, we adopt Qwen3-8B in-                                and feed it into the predictor Fp to produce the prediction ^ =
+stead of flagship-scale models for reasoning graph construction,                          Fp ( ).
+as it provides sufficient capability at a much lower cost. Notably,
+the constructed reasoning graphs are used only to generate a com-                            By minimizing the loss between ^ and the ground-truth answer
+pressed CoT dataset, which is then employed for subsequent SFT to                          , the selector Fs learns to extract the most representative reasoning
+enable efficient reasoning. Once generated, these reasoning graphs                        steps, thereby compressing the original CoT. Formally, the overall
+are reused across all downstream stages without incurring any ad-
+ditional inference-time overhead. Consequently, reasoning graph                           loss function of GRACE can be expressed as:
+construction is a one-off offline process, making the overall pipeline
+highly cost-effective despite leveraging an LLM for structure extrac-                                  LGRACE     =  (, ^ )   +    ·  (  -   1      )2,            (10)
+tion. To further ensure robustness and stability in graph construc-                                                                         |V|
+tion, we design explicit stepwise instructions and employ in-context                                                                             
+learning with a diverse set of high-quality examples.
+                                                                                          where  denotes the task-specific objective (e.g., cross-entropy
+                                                                                          loss),  is a predefined compression ratio controlling the expected
+                                                                                          proportion of selected nodes, and  is a regularization coefficient.
+
+4.2 Graph Rationale Compression                                                           4.3 Supervised Fine-tuning on Compressed CoT
+
+Given the reasoning graph  = (V, E), we introduce the graph ra-                           After training, we can further compress long CoTs using the com-
+tionale compression framework, including a selector and a predictor.
+Among them, the selector Fs is employed to automatically identify                         pression dataset Dunder-com = {(  ,   ,  )}=u1nder-com . Specifically,
+the critical reasoning nodes, and the predictor Fp yields the task                        we first convert each  into a reasoning graph following the method
+results based on the identified nodes and input queries. Specifically,
+we first map each node text   into an initial embedding    R                              introduced in Section 4.1. Then, the selector is applied to identify
+using Qwen3-Embedding-8B [48], while the text query in  is en-
+coded as   R . Then, the node representations, together with                              key nodes and generate compressed CoTs  . This process produces
+the graph structure, are passed through a graph neural network
+(GNN) to obtain contextualized node embeddings:                                                                                                                  
+
+                                                                                          a new SFT dataset, denoted as DSFT.
+
+                                                                                          Specifically, we first remove non-critical nodes from each rea-
+
+                                                                                          soning graph according to the binary mask M predicted by the
+
+                                                                                          selector. The remaining nodes representing the selected rationale
+
+                                                                                          subgraph are then reassembled in their original sequential order to
+
+                 H    =  GNN(, {  })            | V | ×              (4)                  reconstruct a compressed CoT  .
+
+                                              R.                                                                                                
+
+On top of these embeddings, the selector predicts a probability                              However, since the selected rationale fragments may contain
+distribution over nodes being selected as rationales:
+                                                                                          discontinuities or missing linguistic transitions, we employ a light-
+
+                                                                                          weight LLM (Qwen3-0.5B) to refine these fragments. The model is
+
+                         M~ =  (H ),                                 (5)                  prompted to smooth the text by adding minimal connective expres-
+
+where   R1× is a trainable parameter,  (·) is the Sigmoid                                 sions, while preserving the original reasoning semantics and struc-
+function, and M~  (0, 1) |V | represents the continuous selection
+                                                                                          ture. This refinement process ensures that the resulting  remains
+
+                                                                                                                                                                                        
+
+probabilities.                                                                            coherent  and  human-readable.      The     final  collection  of  (  ,    ,    )
+
+                                                                                                                                                                     
+
+Next,  to  sample  a  binary  mask  M  =      |V|  with      {0, 1}  from                 pairs constitutes the supervised fine-tuning dataset DSFT.
+                                               =1
+                                                                                          We then fine-tune downstream multimodal LLMs on DSFT. The
+
+M~ while ensuring differentiability, we adopt the Gumbel-Softmax                          training objective minimizes the negative log-likelihood of gen-
+
+trick [15]. Specifically, each  is computed as:                                           erating the answer conditioned on the compressed CoT, enabling
+
+                         exp log ~ +  /                                                   the model to produce shorter yet logically consistent reasoning
+                                                      ,
+                   =                                                 (6)                  chains. This process preserves the critical reasoning logic while
+                          exp ((log ~ +  ) /)
+                                                                                          significantly reducing redundancy, thereby improving reasoning
+
+where  is the temperature hyperparameter,  = - log - log  ,                               efficiency and interpretability.
+and  is sampled from the uniform distribution  (0, 1).
+                                                                                                                     under-com 
+   Based on this mask, the rationale node embeddings can be rep-                                                      
+resented as:
+                                                                                                       LLLM = -                    log           |        ,        (11)
+
+                                                                                                                                                    
+                                                                                                                                             , ,<
+                         H = M  H ,
+                                                                     (7)                                             =1 =1
+
+where  denotes element-wise multiplication. Next, a READOUT                               where     =  len( ),       denotes  the  model     parameters.
+operation aggregates the rationale node embeddings into a single
+                                                                                                                
+
+representation:                                                                           5 Experiments
+
+                       = READOUT(H ).                                (8)                  In this section, we conduct experiments to evaluate the effectiveness
+                                                                                          and efficiency of GRACE by investigating the following research
+   Finally, we concatenate the rationale representation  with the                         questions (RQs):
+query embedding  1:
+                                                                                          · RQ1: To what extent can GRACE improve model efficiency while
+                          = [ ; ],                                   (9)                    maintaining high reasoning accuracy?
+
+1Except for the text query, no additional modalities are introduced at this stage, since  · RQ2: How does the compression ratio  affect the performance
+the CoT already encapsulates the understanding of other modalities, effectively con-        of GRACE?
+verting them into text and internalizing this information within the CoT sequence.
+KDD '26, August 09­13, 2026, Jeju Island, Republic of Korea                         Yizhi Wang, Linan Yue, Deng-Bao Wang, Tong Wei, and Min-Ling Zhang
+
+· RQ3: How are the reasoning graphs constructed by GRACE                 correspond to atomic reasoning statements, while connectors
+  characterized, and what types of nodes tend to be preserved            represent the logical relations between these statements. This
+  during compression?                                                    decomposition is achieved via prompting an LLM. The method
+                                                                         then constructs a reasoning graph by linking nodes based on
+· RQ4: Could GRACE preserve the key visual information from              semantic dependencies extracted by an LLM-based parser, and
+  the original reasoning trajectory?                                     prunes the graph according to a predefined compression ratio.
+                                                                         Node importance is evaluated and ranked based on the change
+· RQ5: How do models fine-tuned on GRACE-compressed reason-              in model perplexity after removing each node.
+  ing data perform in terms of both efficiency and accuracy on
+  downstream reasoning tasks?                                          While both Prune-on-Logic and GRACE share the same overarch-
+                                                                       ing goal of compressing reasoning structures to improve efficiency
+Table 1: Statistics of the GRACE-Dataset, where Dtrain is the          and interpretability, their technical paradigms differ substantially.
+graph rationale training data, Dunder-com is the under com-            Prune-on-Logic follows a heuristic scoring approach that relies on
+pressed dataset, and DSFT is the compressed dataset.                   perplexity-based importance estimation, whereas GRACE intro-
+                                                                       duces a learnable graph representation framework capable
+Item                                   Value                           of explicitly modeling both node-level semantics and edge-level
+                                                                       logical relations. This design enables a data-driven and adaptive
+#Samples                               29,514                          identification of critical reasoning components, thereby improving
+|Dtrain |                              9,838                           robustness and generalization beyond handcrafted heuristics.
+|Dunder-com |                          19,676
+Answer length of Dunder-com ( ± )  484.6 ± 168.5                          (2) Chain-based CoT compression methods. We further in-
+Answer length of DSFT ( ± )        221.3 ± 127.2                       clude three representative state-of-the-art chain-based text CoT
+                                                                       compression methods, which are transferred to the multimodal
+5.1 Dataset                                                            setting for comparison with GRACE:
+
+To evaluate the influence of CoT compression on multimodal rea-        · StepEntropy [20]: StepEntropy splits the CoT into individual
+soning, we construct a new dataset named GRACE-Dataset, which            reasoning steps, scores each step by summing token-level en-
+contains 29,514 samples. This dataset integrates samples from mul-       tropies derived from generation probabilities, and retains only
+tiple multimodal data sources, including Geo170k, RAVEN, Ge-             the highest-scoring steps for fine-tuning.
+omVerse, DVQA, and InterGPS, covering diverse domains such
+as mathematical reasoning, geometric analysis, chart understand-       · LIMOPro [45]: LIMOPro evaluates step importance based on
+ing, commonsense question answering, and scientific reasoning.           perplexity and prunes reasoning steps with low contribution.
+Each sample in GRACE-Dataset contains an (image, query, answer)
+triplet paired with a long CoT, where every query has a unique         · R1-Compress [40]: R1-Compress chunks the reasoning process
+and verifiable answer. The CoTs are directly adopted from the R1-        and searches for optimal combinations of steps to achieve com-
+OneVision Dataset introduced in [49], where multimodal reasoning         pression.
+traces were generated via image­text conversion method.
+                                                                          (3) Multimodal Large Reasoning Models. Beyond reasoning
+   As shown in Table 1, we divide GRACE-Dataset into two subsets:      compression methods, we also benchmark GRACE against several
+Dtrain and Dunder-com. We first train the selector and predictor of    representative multimodal reasoning models:
+GRACE on Dtrain, and then apply the trained selector to compress
+the CoTs in Dunder-com, thereby constructing a fine-tuning dataset     · No Compression: Fine-tune the base model using the original,
+DSFT for downstream multimodal reasoning models.                         uncompressed CoTs (i.e., Dunder-com) from the GRACE-Dataset.
+
+   During evaluation, we comprehensively assess model perfor-          · R1-OneVision [49]: R1-OneVision enhances step-by-step reason-
+mance on several widely recognized multimodal reasoning bench-           ing capability through supervised fine-tuning on long CoT anno-
+marks, including MathVerse [59], MathVista [23], WeMath [28] and         tations.
+MMMU [55]. These datasets cover a broad range of visual reasoning
+tasks with varying complexity and modality interactions.               · Vision-R1 / Vision-R1-CI [13]: Vision-R1-CI is supervised fine-
+                                                                         tuned on long CoT data to improve reasoning ability, and Vision-
+5.2 Comparison Methods                                                   R1 is further obtained via an additional reinforcement learn-
+                                                                         ing­based post-training stage, which enhances reasoning depth.
+Since graph-based CoT compression remains a relatively novel and
+underexplored research problem, the amount of existing work in            It is worth noting that all of the above models belong to the
+this area is still quite limited, particularly in the context of mul-  category of long CoT reasoning models, which typically suffer
+timodal reasoning. To enable a meaningful and comprehensive            from varying degrees of overthinking. Moreover, we do not report
+comparison, we select the following three categories of representa-    the results of Vision-R1 and Vision-R1-CI on the WeMath dataset,
+tive methods as baselines:                                             as this dataset is included in their training corpus, making direct
+                                                                       comparison unfair. This setup ensures that all reported results
+   (1) Graph-based CoT compression methods. We adopt Prune-            reflect fair and unbiased evaluations across all benchmarks.
+on-Logic [60] as a representative graph-based CoT compression
+approach. Originally proposed for text-based CoT compression, it is    5.3 Experimental Setup
+transferred to the multimodal reasoning setting in our experiments:
+                                                                       We adopt the Qwen2.5-VL series as the base model for all experi-
+· Prune-on-Logic [60]: Prune-on-Logic decomposes a CoT into            ments, considering its strong multimodal understanding capability
+  two types of textual components: nodes and connectors. Nodes         and compatibility with large-scale visual­language reasoning tasks.
+Learning Graph Rationales to Compress Long Chains of Thought in Multimodal Reasoning                            KDD '26, August 09­13, 2026, Jeju Island, Republic of Korea
+
+Table 2: Performance comparison on three multimodal reasoning benchmarks. Accuracy (Acc.) measures effectiveness. Average
+CoT length (Avg. length) reflects reasoning efficiency. Bold indicates the best performance among CoT compression methods.
+
+Method                                            MathVerse                                    MathVista        WeMath                MMMU
+
+                     Acc. (%)  Avg. length (#tok)  Acc. (%)  Avg. length (#tok)  Acc. (%)  Avg. length (#tok)  Acc. (%)  Avg. length (#tok) 
+
+Vision-R1                  43.6                     639.1                                68.9  482.1      -             -       49.3            722.5
+
+R1-Onevision               43.0                     578.9                                67.3  414.4      58.9  548.4           48.7            649.8
+
+Vision-R1-CI               41.8                     598.9                                67.5  358.2      -             -       47.8            654.3
+
+No Compression 42.7                                 504.8                                67.5  342.9      59.5  492.0           48.4            594.2
+
+LIMOPro                    40.5                     432.7                                66.4  329.8      58.1  435.1           47.3            492.0
+
+R1-Compress                38.8                     368.6                                64.3  310.4      57.4  387.4           46.9            435.2
+
+StepEntropy                40.7                     394.2                                67.3  319.1      58.2  412.4           47.7            458.7
+
+Prune-on-Logic 40.9                                 357.2                                67.1  304.5      58.7  353.1           47.5            390.4
+
+GRACE                      42.0                     377.1                                67.7  288.7      59.3  327.5           48.2            354.1
+
+                              *5$&(                                                                       Table 3: Evaluation of Visual Information Preservation.
+
+                                                                                 =0.7    =0.9
+
+        $FFXUDF\                                                                                               Method          Visual Infor. 
+                                                             =0.5
+                                                                                                                R1-Compress           2.51
+                                                                                                                Step Entropy          2.79
+                                                                                                                LIMOPro               3.17
+                                                                                                                Prune-on-Logic        3.62
+                                            =0.3                                                                GRACE                3.78
+
+                     =0.1
+
+                                                                                         
+                                                  $YJ/HQJWKWRN
+                                                                                                          by 40.4% (from 594.2 to 354.1 tokens) with only a marginal 0.2%
+Figure 3: Sensitivity Analysis of Compression Ratio . Exper-                                              drop in accuracy. Notably, on MathVista, GRACE not only main-
+                                                                                                          tains the same level of accuracy as the full CoT model but slightly
+iments are conducted on Mathverse.                                                                        surpasses it (67.7% vs. 67.5%), demonstrating that appropriate rea-
+                                                                                                          soning compression can enhance both efficiency and reasoning
+All fine-tuning and post-training procedures are conducted using                                          quality. This indicates that compacting the CoT helps the model
+the LLaMA-Factory framework [61], which provides a unified and                                            focus on the truly essential reasoning steps, thereby improving its
+flexible interface for instruction tuning, reinforcement learning,                                        ability to learn more concise and effective reasoning patterns.
+and evaluation under diverse configurations.
+                                                                                                             Compared with Prune-on-Logic [60], which is designed for text-
+   Within the selector component of our framework, we incorpo-                                            based reasoning compression, GRACE achieves markedly higher
+rate a Graph Attention Network (GATv2) [2] to model the reasoning                                         performance under similar or even shorter reasoning lengths. For
+graph representations. This choice allows the model to capture fine-                                      instance, on MathVerse, GRACE outperforms Prune-on-Logic by 1.1
+grained dependencies among multimodal reasoning nodes through                                             percentage points in accuracy while maintaining a shorter reason-
+adaptive attention weights, thereby enhancing the interpretability                                        ing sequence. On MathVista, GRACE achieves both higher accuracy
+and expressiveness of the reasoning process. For hyperparameter                                           and lower token usage, suggesting that its learnable, graph-based
+settings, we fix the compression ratio to  = 0.5, controlling the                                         selection mechanism effectively identifies critical reasoning steps
+degree of reasoning path reduction, and set the regularization co-                                        and prunes redundant content. Benefiting from its learnable graph
+efficient to  = 1, balancing the optimization between reasoning                                           representation framework, GRACE preserves the essential logical
+consistency and compression efficiency. For node-level text embed-                                        structure of reasoning chains while removing minor or repetitive
+ding, we employ Qwen3-Embedding-8B, a high-quality embedding                                              segments, achieving structure-aware CoT compression that bal-
+model specifically optimized for the Qwen model family. This model                                        ances interpretability and efficiency.
+provides semantically rich and well-aligned textual representations,
+which help maintain consistency between the selector's reasoning                                             Compared with Chain-based CoT Compression methods (R1-
+space and the underlying vision­language backbone.                                                        Compression, LIMOPro, and StepEntropy), GRACE consistently
+                                                                                                          achieves higher accuracy with shorter reasoning lengths across
+   For quantitative assessment, we report both Accuracy and Av-                                           benchmarks. On MathVerse, GRACE outperforms the best among
+erage CoT length, which respectively reflect the effectiveness and                                        these baselines (StepEntropy, 40.7%) by 1.37% in accuracy while
+efficiency of the reasoning process. Higher accuracy indicates bet-                                       using less tokens (377.1 vs. 394.2). On MathVista, GRACE surpasses
+ter problem-solving capability, while a shorter average CoT length                                        all baselines in accuracy and achieves the shortest CoT length
+suggests more compact and efficient reasoning behaviors.                                                  (288.7 tokens), substantially improving over R1-Compress (310.4)
+                                                                                                          and LIMOPro (329.8). On MMMU, GRACE further reduces token
+5.4 Overall Performance (RQ1)                                                                             consumption by 18.6% compared to the most concise baseline (R1-
+                                                                                                          Compress, 435.2 tokens), demonstrating its effectiveness.
+As shown in Table 2, compared with No Compression, GRACE
+achieves comparable or even superior accuracy while significantly
+reducing token usage. On MMMU, the reasoning length decreases
+KDD '26, August 09­13, 2026, Jeju Island, Republic of Korea               Yizhi Wang, Linan Yue, Deng-Bao Wang, Tong Wei, and Min-Ling Zhang
+
+   1          2                                              CoT:                                                   Question:
+                                                             (1) Okay, so I'm trying to solve this geometry         In the provided diagram of triangle ABC,
+                  3                                          problem about triangle ABC where DE is parallel to     where line DE is parallel to line BC, the
+                                                             BC. (2) The ratio of AD to AB is 3:4, and AC is 8      ratio of AD to AB is 3.0:4.0 and AC
+4         10      11                                         units long. (3) I need to find the length of AE,       measures 8.0 units. What is the value of
+                                                             which is labeled as u. (4) Hmm, first, since DE is     the variable u, representing the length of
+5      9      12  13                                         parallel to BC, the image shows that triangles ADE     segment AE?
+                                                             and ABC are similar. (5) This is because if two lines
+6                        14                                  are parallel, the corresponding angles should be       A: 8.0
+    7     8                                                  equal, making the triangles similar by AA (Angle-      B: 19.0
+                                                             Angle) similarity. (6) So, if they're similar, their   C: 6.0
+                  15                                         sides should be proportional. (7) That means the       D: 5.0
+                                                             ratio of AD to AB should be the same as the ratio
+          16                                                 of AE to AC. (8) Let me write that down: AD / AB       Compressed Rationale:
+                                                             = AE / AC. (9) Given that AD/AB is 3/4, and AC is      The ratio of AD to AB is 3:4, and AC is 8
+                                                             8 units. (10) Plugging those into the equation: 3 / 4  units long. Plugging those into the equation:
+                                                             = u / 8. (11) Now, I need to solve for u. (12) Cross-  3 / 4 = u / 8. Cross-multiplying gives me: 4
+                                                             multiplying gives me: 4 * u = 3 * 8. (13) Calculating  * u = 3 * 8. Calculating the right side: 4u =
+                                                             the right side: 4u = 24. (14) Then, dividing both      24. Then, dividing both sides by 4: u = 24
+                                                             sides by 4: u = 24 / 4 = 6. (15) So, u is 6.0 units.   / 4 = 6. So, u is 6.0 units. Looking back at
+                                                             (16) Looking back at the choices, option C is 6.0, so  the choices, option C is 6.0, so that must
+                                                             that must be the correct answer.                       be the correct answer.
+
+Figure 4: Reasoning graph constructed by GRACE, along with the corresponding CoT and compressed rationale. Red nodes/text
+indicate the removed content, while green nodes/text represent the retained content.
+
+5.5 Sensitivity Analysis of Compression Ratio                             structures naturally capture inter-step dependencies, better preserv-
+      (RQ2)                                                               ing critical visual details and cross-modal alignment cues. To assess
+                                                                          whether GRACE retains essential visual information in its com-
+In this section, we examine the impact of the compression ratio  on       pressed CoTs, we adopt an "LLM-as-Judge" protocol using Qwen3-
+model accuracy and reasoning efficiency. As illustrated in Figure 3,      VL-8B. The evaluator scores each compressed CoT on a 1­5 scale
+both accuracy and average CoT length decrease as  decreases. This         based on two criteria: (i) reference to visually salient objects or
+trend suggests that overly aggressive compression may cause the           fine-grained image details, and (ii) inclusion of explicit spatial or
+model to learn shorter reasoning habits, resulting in the omission of     relational descriptions (prompt in Appendix ??). As shown in Ta-
+key intermediate steps necessary for complete inference. Excessive        ble 3, GRACE outperforms all baselines, surpassing StepEntropy
+pruning may thus remove essential reasoning structures, leading           by 0.99 points. This gap indicates that text-only, step-level com-
+to a decline in performance.                                              pression may discard vital visual grounding details when applied
+                                                                          to multimodal reasoning. By explicitly modeling visual content
+   However, moderate compression yields a favorable trade-off be-         during compression, GRACE preserves key cross-modal evidence,
+tween efficiency and accuracy. The elbow point of the performance         supporting more accurate and grounded multimodal reasoning.
+curve appears around  = 0.5, indicating that this setting achieves
+a balance between preserving reasoning fidelity and improving             5.8 Case Study on Fine-tuned Models (RQ5)
+inference efficiency. Consequently, we adopt  = 0.5 as the default
+configuration in all main experiments.                                    To further examine the impact of GRACE-compressed reasoning
+                                                                          data on downstream multimodal reasoning models, we conduct a
+5.6 Analysis of Reasoning Graphs (RQ3)                                    qualitative case study comparing models fine-tuned on the original
+                                                                          long CoTs and those fine-tuned on GRACE-compressed CoTs.
+To better understand how GRACE performs structured CoT com-
+pression, we conduct a qualitative analysis of the reasoning graphs          As illustrated in Figure 5, the model fine-tuned on uncompressed
+it constructs, visualizing a representative sample from the GRACE-        CoTs (left, red box) tends to produce lengthy and repetitive rea-
+Dataset and examining which nodes are preserved or pruned.                soning traces. Although logically valid, these explanations often
+                                                                          include redundant restatements of known conditions and unneces-
+   As shown in Figure 4, GRACE constructs a directed graph where          sary elaboration, leading to inefficient inference. In contrast, the
+nodes represent reasoning steps and edges encode logical or seman-        model fine-tuned on GRACE-compressed data (right, green box)
+tic dependencies. During compression, it retains nodes carrying           demonstrates a more concise and coherent reasoning process. It di-
+crucial deductive content (e.g., "Plugging those into the equation:       rectly identifies the key geometric relations, infers the correct angle
+3/4=u/8") or pivotal transitions, while pruning redundant repeti-         in fewer steps, and maintains logical completeness while using less
+tions that merely restate known facts or intermediate results. The        than half the number of tokens. This observation highlights that
+preserved nodes are typically semantically dense, causally con-           GRACE not only enhances reasoning efficiency but also encourages
+nected, and located near key decision points, whereas pruned nodes        models to internalize more compact and focused reasoning patterns.
+often contain paraphrased explanations, unnecessary reflections,          By filtering out redundant reasoning steps and retaining essential
+or repetitive visual cues that contribute little to the final answer. In  logical transitions, GRACE enables fine-tuned MLRMs to achieve
+the example, GRACE removes an entire branch containing repeated           more efficient inference without compromising accuracy.
+reasoning steps, demonstrating its structure-aware capability.
+                                                                          6 Conclusion
+5.7 Evaluation of Visual Information
+      Preservation (RQ4)                                                  In this paper, we proposed GRACE, a graph-based rationalized
+                                                                          CoT compression framework designed to efficiently compress long
+As noted in Section 1, chain-based CoT compression methods strug-         reasoning chains in MLRMs. Specifically, we first converted the
+gle with ultra-long multimodal reasoning chains. In contrast, graph
+Learning Graph Rationales to Compress Long Chains of Thought in Multimodal Reasoning                                              KDD '26, August 09­13, 2026, Jeju Island, Republic of Korea
+
+<think>                                                                                                             Question:
+Okay, so I'm trying to solve this geometry problem where there's a right triangle ABC with a right angle at B.      As shown in the figure, AB is perpendicular to BC. Mike
+The image shows that AB is perpendicular to BC, which means angle B is 90 degrees. The problem states that          needs 5 meters to walk from A to B, and 5 meters to
+Mike walks 5 meters from point A to point B and another 5 meters from B to C. I need to find the measure of         walk from B to C. What is the measure of BAC? ( )°
+angle BAC.                                                                                                          A. 45; B. 60;
+First, since it's a right triangle at B, sides AB and BC are the legs, and AC must be the hypotenuse. The image     C. 72; D. 90;
+shows that both AB and BC are 5 meters each. So, if I consider triangle ABC, with AB = 5m, BC = 5m, and angle       E. No correct answer
+B being 90 degrees, maybe it's an isosceles right triangle?In an isosceles right triangle, the two legs are equal,
+and the angles opposite those legs should be equal too. Since AB and BC are both 5 meters, they're equal, so        <think>
+the angles opposite them, which would be angles at C and A respectively, should be equal. However, in a right-      Okay, so I'm trying to solve this geometry problem where there's a right triangle ABC
+angled triangle, the sum of the other two angles must be 90 degrees because all three angles add up to 180          with a right angle at B.
+degrees. So, if angle B is 90 degrees, then angles A and C together make 90 degrees. If angles A and C are          The image shows that AB is perpendicular to BC, which means angle B is 90 degrees. So,
+equal, each one would be half of 90 degrees, which is 45 degrees.                                                   AB and BC are the legs of the triangle, and AC is the hypotenuse.
+So, angle BAC is at point A, between BA and CA. Since AB is one leg and AC is the hypotenuse, angle BAC is          Since both AB and BC are 5 meters each, triangle ABC must be an isosceles right triangle.
+opposite side BC, which is 5 meters. In a 45-45-90 triangle, the legs are equal, and the hypotenuse is leg *        In an isosceles right triangle, the two legs are equal, and the angles opposite those legs
+sqrt(2). Here, both legs are 5 meters, so the hypotenuse AC should be 5*sqrt(2) meters, but that doesn't            are equal.
+affect the angle measurement.                                                                                       Therefore, angle BAC is 45 degrees. Looking at the options, A is 45, which should be the
+Alternatively, using trigonometry, in triangle ABC, tan(angle BAC) = opposite/adjacent. Opposite side to angle      correct answer.
+BAC is BC, which is 5m, and adjacent is AB, which is also 5m. So tan(theta) = 5/5 = 1. Therefore, theta is          </think> <answer>
+arctan(1), which is 45 degrees. ... ...                                                                             Answer: \boxed{A}
+I think that makes sense. Both methods lead me to 45 degrees, so the measure of angle BAC is 45 degrees.            </answer>
+</think> <answer> Answer: \boxed{A} </answer>
+
+#tokens: 588  SFT with "No Compression"                                                                             #tokens: 159                                             SFT with GRACE
+
+Figure 5: Case study on fine-tuned models. The content in the red box on the left shows the output of the model fine-tuned on
+the original long CoT, while the content in the green box on the right shows the output of the model fine-tuned on GRACE-
+compressed reasoning data.
+
+original long CoTs into reasoning graphs. Then, a graph rationale                       [8] DeepSeek-AI, Daya Guo, Dejian Yang, Haowei Zhang, Junxiao Song, Ruoyu
+compression framework, consisting of a selector and a predictor,                             Zhang, Runxin Xu, Qihao Zhu, Shirong Ma, and Peiyi et al. Wang. 2025. DeepSeek-
+was trained on these reasoning graphs. The selector learned to                               R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning.
+predict the importance of each node to the extract rationale sub-                            doi:10.48550/arXiv.2501.12948 arXiv:2501.12948 [cs].
+graph, while the predictor used the selected rationale to generate
+the final prediction. After training, the trained selector was applied                  [9] DeepSeek-AI, Aixin Liu, Bei Feng, Bing Xue, Bingxuan Wang, Bochao Wu,
+to uncompressed CoTs in new datasets to automatically extract key                            Chengda Lu, Chenggang Zhao, Chengqi Deng, and Chenyu et al. Zhang. 2025.
+nodes and construct compressed subgraphs, effectively removing                               DeepSeek-V3 Technical Report. doi:10.48550/arXiv.2412.19437 arXiv:2412.19437
+redundant reasoning steps. Finally, these compressed CoTs were                               [cs].
+subsequently used to build a SFT dataset, enabling MLLMs to retain
+essential reasoning information while significantly reducing redun-                    [10] Yihe Deng, Hritik Bansal, Fan Yin, Nanyun Peng, Wei Wang, and Kai-Wei Chang.
+dancy. Extensive experiments on multiple multimodal benchmark                                2025. Openvlthinker: An early exploration to complex vision-language reasoning
+datasets demonstrated that GRACE improved inference efficiency                               via iterative self-improvement. arXiv preprint arXiv:2503.17352 (2025).
+while consistently maintaining reasoning performance.
+                                                                                       [11] Abhimanyu Dubey, Abhinav Jauhri, Abhinav Pandey, Abhishek Kadian, Ahmad
+References                                                                                   Al-Dahle, Aiesha Letman, Akhil Mathur, Alan Schelten, Amy Yang, and Angela
+                                                                                             Fan. 2024. The llama 3 herd of models. arXiv e-prints (2024), arXiv­2407. https:
+ [1] Shuai Bai, Keqin Chen, Xuejing Liu, et al. 2025. Qwen2.5-VL Technical Report.           //ui.adsabs.harvard.edu/abs/2024arXiv240721783D/abstract
+      doi:10.48550/arXiv.2502.13923 arXiv:2502.13923 [cs].
+                                                                                       [12] Tingxu Han, Zhenting Wang, Chunrong Fang, Shiyu Zhao, Shiqing Ma, and
+ [2] Shaked Brody, Uri Alon, and Eran Yahav. 2021. How attentive are graph attention         Zhenyu Chen. 2024. Token-budget-aware llm reasoning. arXiv preprint
+      networks? arXiv preprint arXiv:2105.14491 (2021).                                      arXiv:2412.18547 (2024).
+
+ [3] Shiyu Chang, Yang Zhang, Mo Yu, and Tommi S. Jaakkola. 2020. Invariant            [13] Wenxuan Huang, Bohan Jia, Zijie Zhai, Shaosheng Cao, Zheyu Ye, Fei Zhao, Zhe
+      Rationalization. In Proceedings of the 37th International Conference on Machine        Xu, Yao Hu, and Shaohui Lin. 2025. Vision-r1: Incentivizing reasoning capability
+      Learning, (ICML).                                                                      in multimodal large language models. arXiv preprint arXiv:2503.06749 (2025).
+
+ [4] Liang Chen, Hongcheng Gao, Tianyu Liu, Zhiqi Huang, Flood Sung, Xinyu Zhou,       [14] Aaron Hurst, Adam Lerer, Adam P Goucher, Adam Perelman, Aditya Ramesh,
+      Yuxin Wu, and Baobao Chang. 2025. G1: Bootstrapping Perception and Reasoning           Aidan Clark, AJ Ostrow, Akila Welihinda, Alan Hayes, Alec Radford, et al. 2024.
+      Abilities of Vision-Language Model via Reinforcement Learning. arXiv preprint          Gpt-4o system card. arXiv preprint arXiv:2410.21276 (2024).
+      arXiv:2505.13426 (2025).
+                                                                                       [15] Eric Jang, Shixiang Gu, and Ben Poole. 2017. Categorical reparametrization with
+ [5] Shuang Chen, Yue Guo, Zhaochen Su, Yafu Li, Yulun Wu, Jiacheng Chen, Jiayu              gumble-softmax. In International Conference on Learning Representations (ICLR
+      Chen, Weijie Wang, Xiaoye Qu, and Yu Cheng. 2025. Advancing Multimodal                 2017). OpenReview. net.
+      Reasoning: From Optimized Cold Start to Staged Reinforcement Learning. arXiv
+      preprint arXiv:2506.04207 (2025).                                                [16] Gangwei Jiang, Yahui Liu, Zhaoyi Li, Qi Wang, Fuzheng Zhang, Linqi Song, Ying
+                                                                                             Wei, and Defu Lian. 2025. What Makes a Good Reasoning Chain? Uncover-
+ [6] Xingyu Chen, Jiahao Xu, Tian Liang, Zhiwei He, Jianhui Pang, Dian Yu, Lin-              ing Structural Patterns in Long Chain-of-Thought Reasoning. arXiv preprint
+      feng Song, Qiuzhi Liu, Mengfei Zhou, Zhuosheng Zhang, et al. 2024. Do not              arXiv:2505.22148 (2025).
+      think that much for 2+ 3=? on the overthinking of o1-like llms. arXiv preprint
+      arXiv:2412.21187 (2024).                                                         [17] KimiTeam, Angang Du, Bohong Yin, Bowei Xing, Bowen Qu, Bowen Wang,
+                                                                                             Cheng Chen, Chenlin Zhang, Chenzhuang Du, and Chu et al. Wei. 2025. Kimi-VL
+ [7] Zhe Chen, Weiyun Wang, Yue Cao, Yangzhou Liu, Zhangwei Gao, Erfei Cui,                  Technical Report. doi:10.48550/arXiv.2504.07491 arXiv:2504.07491 [cs].
+      Jinguo Zhu, Shenglong Ye, Hao Tian, Zhaoyang Liu, et al. 2024. Expanding
+      performance boundaries of open-source multimodal models with model, data,        [18] Ayeong Lee, Ethan Che, and Tianyi Peng. 2025. How well do llms compress
+      and test-time scaling. arXiv preprint arXiv:2412.05271 (2024).                         their own chain-of-thought? a token complexity approach. arXiv preprint
+                                                                                             arXiv:2503.01141 (2025).
+
+                                                                                       [19] Bo Li, Yuanhan Zhang, Dong Guo, Renrui Zhang, Feng Li, Hao Zhang,
+                                                                                             Kaichen Zhang, Peiyuan Zhang, Yanwei Li, Ziwei Liu, and Chunyuan Li. 2024.
+                                                                                             LLaVA-OneVision: Easy Visual Task Transfer. doi:10.48550/arXiv.2408.03326
+                                                                                             arXiv:2408.03326 [cs].
+
+                                                                                       [20] Zeju Li, Jianyuan Zhong, Ziyang Zheng, Xiangyu Wen, Zhijian Xu, Yingying
+                                                                                             Cheng, Fan Zhang, and Qiang Xu. 2025. Compressing chain-of-thought in llms
+                                                                                             via step entropy. arXiv preprint arXiv:2508.03346 (2025).
+
+                                                                                       [21] Weizhe Lin, Xing Li, Zhiyuan Yang, Xiaojin Fu, Hui-Ling Zhen, Yaoyuan Wang,
+                                                                                             Xianzhi Yu, Wulong Liu, Xiaosong Li, and Mingxuan Yuan. 2025. TrimR: Verifier-
+                                                                                             based Training-Free Thinking Compression for Efficient Test-Time Scaling. arXiv
+                                                                                             preprint arXiv:2505.17155 (2025).
+
+                                                                                       [22] Jinghui Lu, Haiyang Yu, Siliang Xu, Shiwei Ran, Guozhi Tang, Siqi Wang, Bin
+                                                                                             Shan, Teng Fu, Hao Feng, Jingqun Tang, et al. 2025. Prolonged Reasoning Is
+                                                                                             Not All You Need: Certainty-Based Adaptive Routing for Efficient LLM/MLLM
+                                                                                             Reasoning. arXiv preprint arXiv:2505.15154 (2025).
+
+                                                                                       [23] Pan Lu, Hritik Bansal, Tony Xia, Jiacheng Liu, Chunyuan Li, Hannaneh Hajishirzi,
+                                                                                             Hao Cheng, Kai-Wei Chang, Michel Galley, and Jianfeng Gao. 2023. Mathvista:
+                                                                                             Evaluating mathematical reasoning of foundation models in visual contexts.
+KDD '26, August 09­13, 2026, Jeju Island, Republic of Korea                                           Yizhi Wang, Linan Yue, Deng-Bao Wang, Tong Wei, and Min-Ling Zhang
+
+      arXiv preprint arXiv:2310.02255 (2023).                                            [47] Xiaoang Xu, Shuo Wang, Xu Han, Zhenghao Liu, Huijia Wu, Peipei Li, Zhiyuan
+[24] Fanqing Meng, Lingxiao Du, Zongkai Liu, Zhixiang Zhou, Quanfeng Lu,                       Liu, Maosong Sun, and Zhaofeng He. 2025. A*-Thought: Efficient Reason-
+                                                                                               ing via Bidirectional Compression for Low-Resource Settings. arXiv preprint
+      Daocheng Fu, Botian Shi, Wenhai Wang, Junjun He, Kaipeng Zhang, et al. 2025.             arXiv:2505.24550 (2025).
+      Mm-eureka: Exploring visual aha moment with rule-based large-scale reinforce-
+      ment learning. CoRR (2025).                                                        [48] An Yang, Anfeng Li, Baosong Yang, Beichen Zhang, Binyuan Hui, Bo Zheng,
+[25] Siqi Miao, Mia Liu, and Pan Li. 2022. Interpretable and generalizable graph learn-        Bowen Yu, Chang Gao, Chengen Huang, Chenxu Lv, et al. 2025. Qwen3 technical
+      ing via stochastic attention mechanism. In International Conference on Machine           report. arXiv preprint arXiv:2505.09388 (2025).
+      Learning. PMLR, 15524­15543.
+[26] Sania Nayab, Giulio Rossolini, Marco Simoni, Andrea Saracino, Giorgio Buttazzo,     [49] Yi Yang, Xiaoxuan He, Hongkun Pan, Xiyan Jiang, Yan Deng, Xingtao Yang,
+      Nicolamaria Manes, and Fabrizio Giacomelli. 2024. Concise thoughts: Impact of            Haoyu Lu, Dacheng Yin, Fengyun Rao, Minfeng Zhu, et al. 2025. R1-onevision:
+      output length on llm reasoning and cost. arXiv preprint arXiv:2407.19825 (2024).         Advancing generalized multimodal reasoning through cross-modal formalization.
+[27] Yingzhe Peng, Gongrui Zhang, Miaosen Zhang, Zhiyuan You, Jie Liu, Qipeng Zhu,             arXiv preprint arXiv:2503.10615 (2025).
+      Kai Yang, Xingzhong Xu, Xin Geng, and Xu Yang. 2025. Lmm-r1: Empowering
+      3b lmms with strong reasoning abilities through two-stage rule-based rl. arXiv     [50] Huanjin Yao, Jiaxing Huang, Wenhao Wu, Jingyi Zhang, Yibo Wang, Shunyu
+      preprint arXiv:2503.07536 (2025).                                                        Liu, Yingjie Wang, Yuxin Song, Haocheng Feng, Li Shen, and Dacheng Tao. 2024.
+[28] Runqi Qiao, Qiuna Tan, Guanting Dong, Minhui Wu, Chong Sun, Xiaoshuai                     Mulberry: Empowering MLLM with o1-like Reasoning and Reflection via Collec-
+      Song, Zhuoma GongQue, Shanglin Lei, Zhe Wei, Miaoxuan Zhang, et al. 2024.                tive Monte Carlo Tree Search. doi:10.48550/arXiv.2412.18319 arXiv:2412.18319
+      We-math: Does your large multimodal model achieve human-like mathematical                [cs].
+      reasoning? arXiv preprint arXiv:2407.01284 (2024).
+[29] Xiaoye Qu, Yafu Li, Zhaochen Su, Weigao Sun, Jianhao Yan, Dongrui Liu, Ganqu        [51] Yuan Yao, Tianyu Yu, Ao Zhang, Chongyi Wang, Junbo Cui, Hongji Zhu, Tianchi
+      Cui, Daizong Liu, Shuxian Liang, Junxian He, et al. 2025. A survey of efficient          Cai, Haoyu Li, Weilin Zhao, Zhihui He, Qianyu Chen, Huarong Zhou, Zhensheng
+      reasoning for large reasoning models: Language, multimodality, and beyond.               Zou, Haoye Zhang, Shengding Hu, Zhi Zheng, Jie Zhou, Jie Cai, Xu Han, Guoyang
+      arXiv preprint arXiv:2503.21614 (2025).                                                  Zeng, Dahai Li, Zhiyuan Liu, and Maosong Sun. 2024. MiniCPM-V: A GPT-4V
+[30] QwenTeam. 2024. QVQ: To See the World with Wisdom. https://qwenlm.github.                 Level MLLM on Your Phone. doi:10.48550/arXiv.2408.01800 arXiv:2408.01800
+      io/blog/qvq- 72b- preview/                                                               [cs].
+[31] Matthew Renze and Erhan Guven. 2024. The benefits of a concise chain of
+      thought on problem-solving in large language models. In 2024 2nd International     [52] Hang Yuan, Bin Yu, Haotian Li, Shijun Yang, Christina Dan Wang, Zhou Yu,
+      Conference on Foundation and Large Language Models (FLLM). IEEE, 476­483.                Xueyin Xu, Weizhen Qi, and Kai Chen. 2025. Not All Tokens Are What You Need
+[32] Zhihong Shao, Peiyi Wang, Qihao Zhu, Runxin Xu, Junxiao Song, Xiao Bi, Haowei             In Thinking. arXiv preprint arXiv:2505.17827 (2025).
+      Zhang, Mingchuan Zhang, YK Li, Y Wu, et al. 2024. Deepseekmath: Pushing
+      the limits of mathematical reasoning in open language models. arXiv preprint       [53] Linan Yue, Yichao Du, Yizhi Wang, Weibo Gao, Fangzhou Yao, Li Wang, Ye Liu,
+      arXiv:2402.03300 (2024).                                                                 Ziyu Xu, Qi Liu, Shimin Di, et al. 2025. Don't Overthink It: A Survey of Efficient
+[33] Haozhan Shen, Peng Liu, Jingcheng Li, Chunxin Fang, Yibo Ma, Jiajia Liao,                 R1-style Large Reasoning Models. arXiv preprint arXiv:2508.02120 (2025).
+      Qiaoli Shen, Zilun Zhang, Kangjia Zhao, Qianqian Zhang, et al. 2025. Vlm-r1:
+      A stable and generalizable r1-style large vision-language model. arXiv preprint    [54] Linan Yue, Qi Liu, Yichao Du, Yanqing An, Li Wang, and Enhong Chen. 2022.
+      arXiv:2504.07615 (2025).                                                                 DARE: Disentanglement-Augmented Rationale Extraction. In Advances in Neural
+[34] StepFunTeam. [n. d.]. Step3: Cost-Effective Multimodal Intelligence. https:               Information Processing Systems, Vol. 35. 26603­26617.
+      //stepfun.ai/research/step3
+[35] Yang Sui, Yu-Neng Chuang, Guanchu Wang, Jiamu Zhang, Tianyi Zhang, Jiayi            [55] Xiang Yue, Yuansheng Ni, Kai Zhang, Tianyu Zheng, Ruoqi Liu, Ge Zhang, Samuel
+      Yuan, Hongyi Liu, Andrew Wen, Shaochen Zhong, Hanjie Chen, et al. 2025. Stop             Stevens, Dongfu Jiang, Weiming Ren, Yuxuan Sun, et al. 2024. Mmmu: A massive
+      overthinking: A survey on efficient reasoning for large language models. arXiv           multi-discipline multimodal understanding and reasoning benchmark for expert
+      preprint arXiv:2503.16419 (2025).                                                        agi. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern
+[36] Huajie Tan, Yuheng Ji, Xiaoshuai Hao, Minglan Lin, Pengwei Wang, Zhongyuan                Recognition. 9556­9567.
+      Wang, and Shanghang Zhang. 2025. Reason-rft: Reinforcement fine-tuning for
+      visual reasoning. arXiv preprint arXiv:2503.20752 (2025).                          [56] Duzhen Zhang, Yahan Yu, Jiahua Dong, Chenxing Li, Dan Su, Chenhui Chu, and
+[37] Kimi Team, Angang Du, Bofei Gao, Bowei Xing, Changjiu Jiang, Cheng Chen,                  Dong Yu. 2024. Mm-llms: Recent advances in multimodal large language models.
+      Cheng Li, Chenjun Xiao, Chenzhuang Du, Chonghua Liao, et al. 2025. Kimi k1. 5:           arXiv preprint arXiv:2401.13601 (2024).
+      Scaling reinforcement learning with llms. arXiv preprint arXiv:2501.12599 (2025).
+[38] Peiyu Wang, Yichen Wei, Yi Peng, Xiaokun Wang, Weijie Qiu, Wei Shen, Tianyi-        [57] Haotian Zhang, Mingfei Gao, Zhe Gan, Philipp Dufter, Nina Wenzel, Forrest
+      dan Xie, Jiangbo Pei, Jianhao Zhang, Yunzhuo Hao, et al. 2025. Skywork                   Huang, Dhruti Shah, Xianzhi Du, Bowen Zhang, Yanghao Li, Sam Dodge, Keen
+      r1v2: Multimodal hybrid reinforcement learning for reasoning. arXiv preprint             You, Zhen Yang, Aleksei Timofeev, Mingze Xu, Hong-You Chen, Jean-Philippe
+      arXiv:2504.16656 (2025).                                                                 Fauconnier, Zhengfeng Lai, Haoxuan You, Zirui Wang, Afshin Dehghan, Peter
+[39] Weiyun Wang, Zhe Chen, Wenhai Wang, Yue Cao, Yangzhou Liu, Zhangwei Gao,                  Grasch, and Yinfei Yang. 2024. MM1.5: Methods, Analysis & Insights from
+      Jinguo Zhu, Xizhou Zhu, Lewei Lu, Yu Qiao, and Jifeng Dai. 2025. Enhancing the           Multimodal LLM Fine-tuning. doi:10.48550/arXiv.2409.20566 arXiv:2409.20566
+      Reasoning Ability of Multimodal Large Language Models via Mixed Preference               [cs].
+      Optimization. doi:10.48550/arXiv.2411.10442 arXiv:2411.10442 [cs].
+[40] Yibo Wang, Haotian Luo, Huanjin Yao, Tiansheng Huang, Haiying He, Rui Liu,          [58] Jingyi Zhang, Jiaxing Huang, Huanjin Yao, Shunyu Liu, Xikun Zhang, Shijian
+      Naiqiang Tan, Jiaxing Huang, Xiaochun Cao, Dacheng Tao, et al. 2025. R1-                 Lu, and Dacheng Tao. 2025. R1-VL: Learning to Reason with Multimodal Large
+      compress: Long chain-of-thought compression via chunk compression and search.            Language Models via Step-wise Group Relative Policy Optimization. doi:10.
+      arXiv preprint arXiv:2505.16838 (2025).                                                  48550/arXiv.2503.12937 arXiv:2503.12937 [cs].
+[41] Yibo Wang, Li Shen, Huanjin Yao, Tiansheng Huang, Rui Liu, Naiqiang Tan,
+      Jiaxing Huang, Kai Zhang, and Dacheng Tao. 2025. R1-Compress: Long Chain-          [59] Renrui Zhang, Dongzhi Jiang, Yichi Zhang, Haokun Lin, Ziyu Guo, Pengshuo Qiu,
+      of-Thought Compression via Chunk Compression and Search. arXiv preprint                  Aojun Zhou, Pan Lu, Kai-Wei Chang, Yu Qiao, et al. 2024. Mathverse: Does your
+      arXiv:2505.16838 (2025).                                                                 multi-modal llm truly see the diagrams in visual math problems?. In European
+[42] Ying-Xin Wu, Xiang Wang, An Zhang, Xiangnan He, and Tat seng Chua. 2022.                  Conference on Computer Vision. Springer, 169­186.
+      Discovering Invariant Rationales for Graph Neural Networks. In ICLR.
+[43] Zhiyu Wu, Xiaokang Chen, Zizheng Pan, Xingchao Liu, et al. 2024. DeepSeek-          [60] Shangziqi Zhao, Jiahao Yuan, Guisong Yang, and Usman Naseem. 2025. Can
+      VL2: Mixture-of-Experts Vision-Language Models for Advanced Multimodal                   Pruning Improve Reasoning? Revisiting Long-CoT Compression with Capability
+      Understanding. doi:10.48550/arXiv.2412.10302 arXiv:2412.10302 [cs].                      in Mind for Better Reasoning. arXiv preprint arXiv:2505.14582 (2025).
+[44] Heming Xia, Yongqi Li, Chak Tou Leong, Wenjie Wang, and Wenjie Li. 2025.
+      Tokenskip: Controllable chain-of-thought compression in llms. arXiv preprint       [61] Yaowei Zheng, Richong Zhang, Junhao Zhang, Yanhan Ye, Zheyan Luo, Zhangchi
+      arXiv:2502.12067 (2025).                                                                 Feng, and Yongqiang Ma. 2024. LlamaFactory: Unified Efficient Fine-Tuning
+[45] Yang Xiao, Jiashuo Wang, Ruifeng Yuan, Chunpu Xu, Kaishuai Xu, Wenjie Li, and             of 100+ Language Models. In Proceedings of the 62nd Annual Meeting of the
+      Pengfei Liu. 2025. LIMOPro: Reasoning Refinement for Efficient and Effective             Association for Computational Linguistics (Volume 3: System Demonstrations).
+      Test-time Scaling. arXiv preprint arXiv:2505.19187 (2025).                               Association for Computational Linguistics, Bangkok, Thailand. http://arxiv.org/
+[46] Guowei Xu, Peng Jin, Ziang Wu, Hao Li, Yibing Song, Lichao Sun, and Li Yuan.              abs/2403.13372
+      2025. LLaVA-CoT: Let Vision Language Models Reason Step-by-Step. doi:10.
+      48550/arXiv.2411.10440 arXiv:2411.10440 [cs].                                      [62] Hengguang Zhou, Xirui Li, Ruochen Wang, Minhao Cheng, Tianyi Zhou, and
+                                                                                               Cho-Jui Hsieh. 2025. R1-Zero's" Aha Moment" in Visual Reasoning on a 2B
+                                                                                               Non-SFT Model. arXiv preprint arXiv:2503.05132 (2025).
+
+                                                                                         [63] Jinguo Zhu, Weiyun Wang, Zhe Chen, Zhaoyang Liu, Shenglong Ye, Lixin Gu,
+                                                                                               Hao Tian, Yuchen Duan, Weijie Su, Jie Shao, et al. 2025. Internvl3: Exploring
+                                                                                               advanced training and test-time recipes for open-source multimodal models.
+                                                                                               arXiv preprint arXiv:2504.10479 (2025).
+
+                                                                                         [64] Ren Zhuang, Ben Wang, and Shuifa Sun. 2025. Accelerating Chain-of-Thought
+                                                                                               Reasoning: When Goal-Gradient Importance Meets Dynamic Skipping. arXiv
+                                                                                               preprint arXiv:2505.08392 (2025).
+Learning Graph Rationales to Compress Long Chains of Thought in Multimodal Reasoning  KDD '26, August 09­13, 2026, Jeju Island, Republic of Korea
+
+A Variant Experiments                                                                      reasoning trunks. Each trunk must:
+                                                                                           - Represent ONE atomic reasoning action (e.g., define, compute,
+To validate the effectiveness of GRACE's graph construction mecha-                         compare, infer, assume, conclude).
+nism, we compare it against two variants: (i) Random, where edges                          - Be semantically self-contained - understandable without needing
+are assigned randomly, and (ii) Fully-Connected, where every rea-                          adjacent trunks.
+soning step is connected to all others. As shown in Table 4, GRACE                         - Preferably 1 sentence; up to 2 sentences MAXIMUM. Never
+consistently outperforms both variants across all three benchmarks                         exceed 3.
+in both accuracy and average CoT length. The gains demonstrate                             - Preserve the original wording - DO NOT paraphrase or
+that explicitly modeling semantic dependencies between reasoning                           summarize.
+steps, rather than using arbitrary or dense connections, is crucial                        - NEVER split across causal/logical connectors (e.g., "because...so...",
+for effective compression and performance retention.                                       "if...then...", "since...therefore...") - keep them together.
+                                                                                           - ALWAYS include the final answer (especially if boxed) as a
+B Generalization Across MLLM Backbones                                                     separate trunk.
+                                                                                           ### Splitting Rules ###
+To assess GRACE's compatibility with different MLLMs, we exam-                             SPLIT when:
+ine its performance under various backbone models. While our main                          - A new reasoning action begins (e.g., after "Next, ...", "Then, ...")
+experiments are based on Qwen-series, we additionally evaluate                             - A new variable/formula is introduced
+GRACE on InternVL3-8B [63]. Results in Table 5 show that GRACE                             - A conclusion is drawn from prior steps
+consistently improves inference efficiency while maintaining or                            DO NOT SPLIT:
+slightly enhancing accuracy compared to both the uncompressed                              - Across causal/conditional phrases ("because...", "since...",
+baseline and a strong pruning baseline (Prune-on-Logic). These                             "if...then...")
+results confirm that GRACE's graph-based compression framework                             - Mathematical expressions (keep "x = a + b  x = 5" intact)
+generalizes well beyond Qwen Series, highlighting its broad appli-                         ### Output Format ###
+cability across different MLLMs.                                                           Strictly output in this XML-style format. One trunk per line.
+                                                                                           Preserve original order.
+C Prompt for Text Smoothing                                                                <node>[Exact text from CoT]</node>
+                                                                                           Preserve original sentence order. Strictly follow the format - NO
+     Prompt for Text Smoothing                                                             explanations, NO extra text, NO numbering. ONLY nodes in
+                                                                                           specified format.
+     ### Task ###
+     Combine the given reasoning steps into a single, fluent                               ### Examples ###
+     Chain-of-Thought. - Preserve the exact content and logical                            {Examples}
+     order of all steps.
+    - Make only minimal edits (e.g., add or adjust linking words                      E Prompt for Edge Extraction
+     like "then", "since", "therefore", or punctuation) to ensure
+     smooth transitions.                                                                   Prompt for Edge Construction (edge)
+    - Do not omit, rephrase, or alter any substantive reasoning
+     content.                                                                              ### Role ###
+    - If the sequence of steps is already fluent and well-                                 You are a reasoning graph architect specializing in DAG
+     connected, output it exactly as-is without any modification.                          (Directed Acyclic Graph) construction. Your task is to build
+                                                                                           accurate, cycle-free dependency edges between segmented
+     ### Examples ###                                                                      reasoning nodes - capturing branching, merging, and
+     {Examples}                                                                            multi-premise logic while strictly forbidding cycles or
+                                                                                           backward edges.
+D Prompt for Node Splitting
+                                                                                           ### Task ###
+     Prompt for Node Splitting (node)                                                      Given a numbered list of <node> elements, assign directed
+                                                                                           edges from earlier nodes to later nodes based on logical,
+      ### Role ###                                                                         mathematical, or semantic dependency. Each edge must
+     You are a world-class reasoning structure parser with expertise                       reflect how a later node builds upon, references, or branches
+      in logic, mathematics, and discourse analysis. Your job is to                        from one or more prior nodes. The resulting graph must be
+      dissect Chain-of-Thought (CoT) reasoning passages into minimal,                      a valid DAG - no cycles, no backward edges.
+      semantically complete reasoning units - each representing one
+      atomic step in the logical flow.                                                     ### Rules ###
+      ### Task ###                                                                        ­ Forward-Only Edges: An edge may only go from Node A
+      Given a problem-solving passage, segment it into discrete                            to Node B if A's id < B's id.
+KDD '26, August 09­13, 2026, Jeju Island, Republic of Korea                     Yizhi Wang, Linan Yue, Deng-Bao Wang, Tong Wei, and Min-Ling Zhang
+
+Table 4: Performance comparison on variants of GRACE. Accuracy (Acc.) measures effectiveness, while average CoT length
+(Avg. length) reflects reasoning efficiency.
+
+Method                          MathVerse                                 MathVista                      WeMath
+
+Random           Acc. (%)  Avg. length (#tok)                       Acc. (%)  Avg. length (#tok)   Acc. (%)  Avg. length (#tok) 
+Fully-Connected
+GRACE                     31.7        385.2                         55.1        297.8              48.2  395.4
+
+                          39.8        410.5                         64.2        329.6              54.9  437.1
+
+                          42.0        377.1                         67.7        288.7              59.5  369.3
+
+Table 5: Results with InternVL3-8B as backbone. Accuracy (Acc.) measures effectiveness, while average CoT length (Avg. length)
+reflects reasoning efficiency.
+
+InternVL3-8B as backbone              MathVerse                                 MathVista                WeMath
+
+No-Compression            Acc. (%)  Avg. length (#tok)              Acc. (%)  Avg. length (#tok)   Acc. (%)  Avg. length (#tok) 
+Prune-on-Logic
+GRACE                           48.5                         557.6        57.1       346.1         60.9          489.0
+
+                                47.5                         449.1        56.3       319.2         59.8          407.3
+
+                                47.7                         412.2        56.8       267.4         60.4          385.5
+
+­ No Cycles Allowed: Under no circumstance create a circu-                      ­ sequential - B follows A in narrative, procedural, or dis-
+lar dependency.                                                                 course order, but shares NO computational, logical, or re-
+­ Graph Richness Requirement: Actively construct the most                       flective dependency.
+semantically rich and densely connected graph possible.                         ­ reflects - B represents the **initiating act** of meta-
+Connect nodes wherever logically justified - even if mul-                       cognitive reflection: checking, verifying, doubting, or re-
+tiple edges, multi-parent or multi-child nodes result. DO                       considering the validity, consistency, or interpretation of
+NOT output a trivial linear chain (e.g., 1->2->3->4...) unless                  A's content.
+the reasoning is genuinely devoid of computation, logic, or                     ­ branches_from - B introduces a new assumption, hypothet-
+reflection. Enrichment over simplification.                                     ical path, or alternative interpretation that diverges from A
+... ...                                                                         - but is NOT triggered by reflection or doubt.
+­ Support Rich Structures:                                                      ­ Uncertainty Handling: If no clear dependency exists, DO
+­ Multiple parents -> allowed (e.g., Node5 depends on Node2                     NOT create an edge. It's better to under-connect than to
+AND Node3)                                                                      risk cycles or spurious links.
+­ Branching paths -> use alternative_of for conditional or                      ### Output Format ###
+assumption splits                                                               Strictly output in the following format. One edge per line.
+­ Converging conclusions -> allowed (e.g., summary node
+depends on multiple results)                                                    <edge from=N to=M type=EDGE_TYPE>Justification:
+­ Justification Requirement:                                                    QUOTE OR LOGIC</edge>
+­ Quote exact phrase from node text that implies the depen-
+dency                                                                           -> NO extra text. NO explanations. ONLY the above.
+­ Concisely describe the logical bridge (e.g., "uses variable x
+from Node 1")                                                                   ### Examples ### {Examples}
+­ DO NOT invent content. DO NOT paraphrase unnecessar-
+ily.
+­ Edge Types (choose one per edge):
+­ computes_from - B performs a mathematical, symbolic,
+or formula-based derivation that directly uses A's output,
+value, or defined entity.
+­ depends_on - B logically or semantically requires A as a
+premise, condition, definition, or supporting fact - but NOT
+via computation.
+

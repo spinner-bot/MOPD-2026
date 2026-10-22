@@ -25,3 +25,7 @@ __pycache__/
 # 独立案例图像仅作本地复现材料；正式 HTML 已内嵌图像
 research/main/Phase2/1.vision_opd_output_audit/assets/
 research/main/Phase2/3.paired_flip_analysis/raw/case_images/
+
+# 工作1调研临时缓存（有用论文已归档至 Phase3/1.compression_literature_survey/materials）
+/.tmp_research/
+/swap_venue.html
