@@ -1,0 +1,293 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CRISP 精读报告 · Compressed Reasoning via Iterative Self-Policy Distillation</title>
+<style>
+:root{--ink:#111827;--sub:#5b6674;--line:#dfe4ea;--bg:#f7f8fa;--card:#ffffff;
+--accent:#2563a8;--accent2:#c2410c;--ok:#047857;--warn:#b45309;--max:1080px}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);
+ font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei","Noto Sans SC",sans-serif;
+ font-size:16px;line-height:1.8;-webkit-font-smoothing:antialiased}
+.hero{background:linear-gradient(135deg,#0b172a 0%,#16324f 48%,#1f4b6e 100%);color:#eef3f8;
+ padding:70px 32px 58px;position:relative;overflow:hidden}
+.hero:before{content:"";position:absolute;inset:0;
+ background:radial-gradient(900px 380px at 18% 0%,rgba(96,165,250,.24),transparent 70%),
+            radial-gradient(700px 340px at 88% 100%,rgba(251,146,60,.18),transparent 70%)}
+.hero .inner{max-width:var(--max);margin:0 auto;position:relative}
+.kicker{letter-spacing:.22em;font-size:.74rem;text-transform:uppercase;color:#93b4d1;margin-bottom:16px}
+.hero h1{font-size:clamp(1.8rem,4vw,2.6rem);line-height:1.24;margin:0 0 10px;font-weight:650}
+.hero h1 .zh{display:block;font-size:.5em;font-weight:500;color:#b9cee0;margin-top:12px}
+.hero p.lead{max-width:840px;color:#c9d8e6;font-size:1rem;margin:0}
+.hero p.lead.zh{color:#9fb6ca;font-size:.93rem;margin-top:8px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin-top:32px}
+.stat{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);border-radius:12px;padding:15px 18px}
+.stat .n{font-size:1.6rem;font-weight:700;font-variant-numeric:tabular-nums;color:#fff}
+.stat .l{font-size:.77rem;color:#c2d5e4;margin-top:2px}
+.stat .l .zh{display:block;color:#93aec5;font-size:.72rem;margin-top:1px}
+.progress{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,#2563a8,#f59e0b);width:0;z-index:99;transition:width .1s linear}
+main{max-width:var(--max);margin:0 auto;padding:0 32px 90px}
+section{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:32px 38px;
+ margin:-34px 0 24px;box-shadow:0 1px 2px rgba(16,24,40,.05),0 12px 32px -18px rgba(16,24,40,.18);position:relative}
+section:first-of-type{margin-top:-48px}
+section h2{display:flex;align-items:baseline;gap:14px;font-size:1.26rem;margin:0 0 6px;font-weight:650}
+section h2 .no{font-size:2rem;font-weight:800;color:#c8d6e5;line-height:1;font-variant-numeric:tabular-nums}
+section h2 .t .zh{display:block;font-size:.72em;font-weight:500;color:var(--sub);margin-top:1px}
+section .q{color:var(--sub);font-size:.93rem;margin:0 0 16px}
+section .q .zh{display:block;font-size:.92em;color:#7a8492;margin-top:1px}
+h3{font-size:1.02rem;margin:24px 0 4px;font-weight:650;color:#1f2937}
+h3 .zh{font-weight:500;color:var(--sub);font-size:.86em;margin-left:8px}
+p{margin:.6rem 0}
+.key,.caveat,.okbox{margin:18px 0}
+.key{background:linear-gradient(180deg,#f0f6fc,#e8f1fa);border-left:4px solid var(--accent);padding:15px 20px;border-radius:0 10px 10px 0}
+.caveat{background:linear-gradient(180deg,#fff8ef,#fdf1e3);border-left:4px solid var(--warn);padding:15px 20px;border-radius:0 10px 10px 0}
+.okbox{background:linear-gradient(180deg,#f0fdf6,#e7f8ef);border-left:4px solid var(--ok);padding:15px 20px;border-radius:0 10px 10px 0}
+.key p,.caveat p,.okbox p{margin:.3rem 0}
+table{border-collapse:collapse;width:100%;margin:14px 0;font-size:.88rem;font-variant-numeric:tabular-nums}
+th,td{border-bottom:1px solid var(--line);padding:8px 10px;text-align:right;vertical-align:top}
+th:first-child,td:first-child{text-align:left}
+thead th{background:#f2f5f8;font-weight:650;border-bottom:2px solid #d5dce4}
+td .zh{display:block;font-weight:400;font-size:.9em;color:var(--sub);margin-top:2px;line-height:1.5}
+tbody tr:hover{background:#fafcfe}
+table.content th,table.content td{text-align:left}
+table.content td{line-height:1.65}
+table.tight{max-width:820px}
+code{background:#eef2f6;border-radius:4px;padding:1px 5px;font-size:.88em}
+.eq{background:#f6f8fb;border:1px solid #e3e9f0;border-radius:10px;padding:14px 18px;margin:14px 0;
+ font-family:"Cambria Math","Latin Modern Math",Georgia,serif;font-size:1.02rem;text-align:center;overflow-x:auto}
+.eq .small{display:block;font-family:-apple-system,"Microsoft YaHei",sans-serif;font-size:.8rem;color:var(--sub);margin-top:6px}
+.tag{display:inline-block;font-size:.72rem;padding:2px 8px;border-radius:999px;background:#eef3f8;color:var(--sub);margin-left:6px}
+.tag.hot{background:#fdecec;color:#b42318}
+.tag.ok{background:#e7f8ef;color:#047857}
+.tag.mid{background:#fff8ef;color:#b45309}
+ul,ol{margin:.5rem 0 .5rem 1.2rem;padding-left:.6rem}
+li{margin:.35rem 0}
+.reveal{opacity:0;transform:translateY(16px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.3,1)}
+.reveal.in{opacity:1;transform:none}
+footer{max-width:var(--max);margin:0 auto;padding:0 32px 60px;color:var(--sub);font-size:.82rem}
+footer .zh{display:block;color:#8592a1;font-size:.96em;margin-top:2px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.reveal{opacity:1;transform:none}}
+@media(max-width:720px){section{padding:24px 20px}main{padding:0 16px 70px}.hero{padding:52px 20px 44px}}
+</style></head><body>
+<div class="hero"><div class="inner">
+ <div class="kicker">Paper reading · arXiv 2603.05433v7 · 2026-10-27</div>
+ <h1>CRISP：用迭代自策略蒸馏压缩推理<span class="zh">Compressed Reasoning via Iterative Self-Policy Distillation</span></h1>
+ <p class="lead">A single model, two prompts: a conciseness instruction defines the teacher, the plain prompt defines the student.
+ Per-token reverse KL on the student's own rollouts internalizes brevity without ground-truth answers. This report covers the method,
+ the exact training configuration, the main results, every ablation, and what transfers to our dual-teacher project.</p>
+ <p class="lead zh" lang="zh-CN">同一套参数、两个提示：教师加“简洁”指令，学生用原提示；在学生自己生成的轨迹上做逐 token reverse KL，
+ 把简洁行为写回权重，不需要标准答案。本报告覆盖方法、完整训练配置、主结果、全部消融，以及对双教师项目的可迁移部分。</p>
+ <div class="stats">
+  <div class="stat"><div class="n">−56.3<span>%</span></div><div class="l">MATH-500 length, Qwen3-14B<span class="zh">MATH-500 长度下降（Qwen3-14B）</span></div></div>
+  <div class="stat"><div class="n">93.0→96.3</div><div class="l">MATH-500 accuracy (v1)<span class="zh">MATH-500 准确率（v1）</span></div></div>
+  <div class="stat"><div class="n">M=50</div><div class="l">Teacher refresh interval<span class="zh">教师刷新间隔（步）</span></div></div>
+  <div class="stat"><div class="n">0</div><div class="l">Ground-truth answers used<span class="zh">训练使用的标准答案</span></div></div>
+ </div>
+</div></div>
+
+<main>
+<section class="reveal" id="s1"><h2><span class="no">01</span><span class="t">一句话与方法定位<span class="zh">One-sentence summary and positioning</span></span></h2>
+<p class="q">它到底做了什么？<span class="zh">What does it actually do?</span></p>
+<div class="key"><p><b>同一模型，教师 = 模型 + “be concise”指令，学生 = 原模型；在学生自己的 rollout 上，对每个 token 最小化学生到教师的 reverse KL；教师权重每 M=50 步与学生同步一次。</b>不需要标准答案、奖励模型、token 预算或难度估计。</p></div>
+<p>方法定位：这是 <b>on-policy self-distillation（OPSD）</b> 的一个新应用——把“指令带来的简洁行为”当作<b>特权信息</b>蒸馏回权重，而不是在推理时一直挂着 prompt。它与 OPSD（Zhao et al., 2026）的关键区别是：OPSD 的教师看标准答案，CRISP 的教师只看简洁指令。</p>
+<p>评测域：数学推理（MATH-500、AIME 2024/2025）为主，另有 GPQA-Diamond、MMLU 检验通用能力。<b>纯文本、无视觉</b>——这一点对我们最重要。</p>
+</section>
+
+<section class="reveal" id="s2"><h2><span class="no">02</span><span class="t">方法：教师、学生与训练目标<span class="zh">Method: teacher, student, objective</span></span></h2>
+<p class="q">训练信号从哪里来，梯度的路径是什么？<span class="zh">Where the signal comes from and where gradients flow.</span></p>
+<h3>2.1 两个策略<span class="zh">Two policies, one set of weights</span></h3>
+<ul>
+<li><b>学生</b> <code>πθ(·|x)</code>：原始问题 x，不加任何简洁提示。</li>
+<li><b>教师</b> <code>πθ̄(·|x,c)</code>：同一个模型，问题前加简洁指令 c；参数 <code>θ̄</code> 是学生的“过期快照”（stop-gradient），不是另一个训练好的模型。</li>
+<li><b>数据</b>：只有题目，没有答案。学生先生成 rollout <code>y ~ πθ(·|x)</code>，教师在同一 prefix <code>y&lt;t</code> 上打分。</li>
+</ul>
+<h3>2.2 损失函数<span class="zh">Per-token reverse KL</span></h3>
+<div class="eq">
+L(θ) = E<sub>x~D, y~πθ(·|x)</sub> [ (1/|y|) Σ<sub>t=1</sub><sup>|y|</sup> D<sub>KL</sub>( πθ(·|x, y&lt;t) ‖ πθ̄(·|x, c, y&lt;t) ) ]
+<span class="small">式 (1)：只有在学生实际生成的 token 位置上计算；教师前向不传梯度。</span>
+</div>
+<ul>
+<li><b>Reverse KL 的方向</b>是 <code>D_KL(student ‖ teacher)</code>，梯度按学生自己的分布加权——学生只在自己真正会生成的 token 区域调整。</li>
+<li><b>mode-seeking</b>：删掉简洁教师不生成的 token，保留教师仍在用的推理步骤；更新幅度受学生当前分布约束。</li>
+<li><b>为什么不用 forward KL</b>：forward KL 的梯度按教师分布加权，与学生当前状态解耦；在“教师是学生旧快照”的设定下不稳定。论文报告 Qwen3-8B 用 forward KL 在前 100 步内崩溃，准确率接近 0，长度发散到预算上限。</li>
+<li><b>为什么不用 JSD</b>：JSD 是两者的对称插值，梯度部分学生加权、部分教师加权；论文主实验选 reverse KL，并在附录 G 讨论三者差异。</li>
+</ul>
+<h3>2.3 与 SFT / RL 压缩的区别<span class="zh">Why not SFT or length-penalized RL</span></h3>
+<table class="content">
+<thead><tr><th>路线</th><th>监督来源</th><th>问题</th></tr></thead>
+<tbody>
+<tr><td>SFT on compressed CoT</td><td>外部整理的短轨迹</td><td>分布偏移，学生学别人的推理，遗忘自身能力</td></tr>
+<tr><td>RL + 长度惩罚</td><td>标准答案 + 奖励</td><td>需要可验证答案；过度压缩会损害探索与难题</td></tr>
+<tr><td>Prompt / 解码时压缩</td><td>推理时指令</td><td>提示一撤效果就消失，不写回权重</td></tr>
+<tr><td><b>CRISP</b></td><td>学生自己的 rollout + 简洁指令</td><td>无 GT、无奖励工程、无难度估计；但依赖基座的指令跟随能力</td></tr>
+</tbody></table>
+</section>
+
+<section class="reveal" id="s3"><h2><span class="no">03</span><span class="t">教师参数化：周期刷新是关键旋钮<span class="zh">Teacher parameterization: periodic refresh</span></span></h2>
+<p class="q">为什么教师不能一直冻结，也不能每步都同步？<span class="zh">Why neither a frozen teacher nor a per-step refresh works.</span></p>
+<div class="eq">
+θ̄ ← θ &nbsp;&nbsp; every M training steps &nbsp;&nbsp;(默认 M = 50)
+<span class="small">式 (2)：每 M 步把学生权重复制给教师；两次刷新之间教师固定、不传梯度。</span>
+</div>
+<ul>
+<li><b>冻结教师（M=∞）</b>：稳定，但学生学会初始简洁信号后，教师不再提供更强的压缩目标，压缩上限受限。</li>
+<li><b>周期刷新（M=50）</b>：每次刷新后，新教师已经内化了上一轮压缩，在同样指令下会生成更短的轨迹，形成<b>渐进压缩</b>；同时离散刷新避免了连续互相追逐。</li>
+<li><b>每步刷新（M=1）</b>：学生追一个随自己变化的移动目标，正反馈导致崩溃。论文 Qwen3-8B 上 MATH-500 准确率跌到 <b>60.8%</b>、AIME 2024 跌到 <b>6.7%</b>，且响应长度反而变长。</li>
+<li><b>EMA 教师</b>（附录 F）：<code>θ̄ ← λθ̄ + (1−λ)θ</code>，λ∈[0.99,0.999]；比冻结强、比 M=1 稳，但需要监控崩溃。主实验不用 EMA。</li>
+</ul>
+</section>
+
+<section class="reveal" id="s4"><h2><span class="no">04</span><span class="t">训练算法与完整配置<span class="zh">Algorithm and full training configuration</span></span></h2>
+<p class="q">复现需要哪些细节？<span class="zh">Everything needed to reproduce it.</span></p>
+<h3>4.1 每个训练步做什么<span class="zh">Per-step procedure</span></h3>
+<ol>
+<li>每 M 步刷新教师：<code>θ̄ ← θ</code>。</li>
+<li>取一个 batch 的题目，学生按原始 prompt 生成 rollout（每个 prompt 1 条）。</li>
+<li>在 rollout 的每个位置计算学生分布 <code>q_t</code> 与教师分布 <code>p_t</code>（教师输入 = 题目 + 简洁指令 + 同一 prefix）。</li>
+<li>逐 token 计算 reverse KL，按序列长度归一化，得到该样本损失。</li>
+<li>只对学生反传；教师前向 <code>no_grad</code>，logits 分块计算、用完即释放。</li>
+<li>所有 rollout 都用于训练，<b>不按正确性过滤</b>——因为没有标准答案。</li>
+</ol>
+<h3>4.2 超参数<span class="zh">Hyperparameters (Table 7)</span></h3>
+<table class="tight">
+<thead><tr><th>项</th><th>值</th></tr></thead>
+<tbody>
+<tr><td>模型</td><td>Qwen3-8B、Qwen3-14B、DeepSeek-R1-Distill-Llama-8B</td></tr>
+<tr><td>训练数据</td><td>DAPO-Math-17k 随机划分：13,600 训练 / 3,400 验证；<b>只用题目，不用答案</b></td></tr>
+<tr><td>损失</td><td>Reverse KL（全词表；logits 按 256 token 分块）</td></tr>
+<tr><td>教师刷新</td><td>M = 50 步</td></tr>
+<tr><td>训练轮数 / 优化器</td><td>1 epoch；AdamW</td></tr>
+<tr><td>学习率 / 权重衰减 / 梯度裁剪</td><td>1×10⁻⁶ 常数 / 0.01 / 1.0（max norm）</td></tr>
+<tr><td>全局 batch / 每卡 micro-batch</td><td>32 / 2</td></tr>
+<tr><td>rollout</td><td>SGLang；temperature 1.0，top-p 1.0，每 prompt 1 条，最大生成 9,216 tokens</td></tr>
+<tr><td>序列长度</td><td>训练：prompt ≤ 1,024，response ≤ 8,192；评测最大生成 30,000</td></tr>
+<tr><td>评测</td><td>每 20 步；MATH-500 / AIME 2024 / AIME 2025；temp 0.6、top-p 0.95、top-k 20、每题 8 条、mean@8</td></tr>
+<tr><td>基础设施</td><td>单节点 8×H200；verl（HybridEngine）；FSDP + 参数/优化器 offload；Ulysses 序列并行 degree 4；推理 TP=2；bf16；gradient checkpointing</td></tr>
+</tbody></table>
+<div class="caveat"><p><b>收敛速度：</b>名义上 1 个 epoch，实际约 100 步就收敛到论文使用的 checkpoint；论文所有主表用的是 step 99。</p></div>
+</section>
+
+<section class="reveal" id="s5"><h2><span class="no">05</span><span class="t">主结果<span class="zh">Main results</span></span></h2>
+<p class="q">压缩多少，准确率变化多少？<span class="zh">How much shorter, at what accuracy cost?</span></p>
+<table>
+<thead><tr><th>模型 / 方法</th><th>MATH-500 准确率</th><th>长度 / 降幅</th><th>AIME 2024</th><th>AIME 2025</th></tr></thead>
+<tbody>
+<tr><td>Qwen3-14B base</td><td>93.0</td><td>4,139</td><td>75.0</td><td>69.2</td></tr>
+<tr><td>Qwen3-14B · 仅推理时简洁 prompt（v1）</td><td>95.9</td><td>2,354（−43.1%）</td><td>76.7</td><td>66.2</td></tr>
+<tr><td><b>Qwen3-14B · CRISP v1</b></td><td><b>96.3</b></td><td><b>1,808（−56.3%）</b></td><td>73.8（−1.2）</td><td>62.9（−6.3）</td></tr>
+<tr><td><b>Qwen3-14B · CRISP v2</b>（难度感知）</td><td>95.2</td><td>2,701（−34.7%）</td><td>75.0（0）</td><td>67.1（−2.1）</td></tr>
+<tr><td>Qwen3-8B base</td><td>95.7</td><td>4,884</td><td>76.2</td><td>70.4</td></tr>
+<tr><td>Qwen3-8B · 仅推理时简洁 prompt（v1）</td><td>95.6</td><td>2,983（−38.9%）</td><td>74.2</td><td>62.1</td></tr>
+<tr><td><b>Qwen3-8B · CRISP v1</b></td><td>95.7</td><td><b>2,107（−56.9%）</b></td><td>72.9（−3.3）</td><td>58.8（−11.6）</td></tr>
+<tr><td><b>Qwen3-8B · CRISP v2</b></td><td>95.7</td><td>3,339（−31.6%）</td><td>75.0（−1.2）</td><td>65.8（−4.6）</td></tr>
+</tbody></table>
+<p>数据取自 Table 2 / Table 5（30K 预算，mean@8）。DeepSeek-R1-Distill-Llama-8B 上准确率全面上升（MATH-500 71.3→82.1），说明基座有提升空间时压缩反而有益。</p>
+<div class="key"><p><b>三个可以直接引用的结论：</b>① 越简单的题压得越狠（MATH-500 32–57%，AIME 5–38%），无需显式难度估计；② 强压缩（v1）在最强难题（AIME 2025）上会掉 6–12 分；③ 难度感知指令（v2）用一点压缩率换回难题准确率。</p></div>
+<div class="caveat"><p><b>容易被忽略的对照：</b>“只加 prompt”本身就能压缩 20–43%，而且在 Qwen3-14B 的 MATH-500 上准确率反而升到 95.9。因此“prompt 压缩一定掉点”这个前提在 CRISP 的表格里并不普遍成立——掉点主要出现在 AIME 2025 这类最难题上。做故事第一幕时要把这个细节讲清楚，否则会被追问。</p></div>
+</section>
+
+<section class="reveal" id="s6"><h2><span class="no">06</span><span class="t">消融：每个旋钮的作用<span class="zh">Ablations: what each knob does</span></span></h2>
+<p class="q">哪些设计真的重要？<span class="zh">Which design choices actually matter?</span></p>
+<h3>6.1 压缩甜点区 ≈ 2×<span class="zh">Compression sweet spot</span></h3>
+<p>训练越久越短，但准确率先在 AIME 2024、后在 MATH-500 下滑。MATH-500 长度从 4,823 降到约 2,000（2.4×），准确率在约 2× 压缩前保持 ~95%，之后降到 93%；AIME 2024 在 2× 后从 70–74% 掉到 57%。论文选 step 99（1.45×，偏保守），而不是训到 epoch 末尾。</p>
+<h3>6.2 教师刷新间隔 M<span class="zh">Teacher refresh interval</span></h3>
+<table class="tight">
+<thead><tr><th>M</th><th>行为</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>崩溃：学生追移动目标；MATH-500 60.8%，AIME 2024 6.7%，长度反而变长</td></tr>
+<tr><td>10 / 30 / 50</td><td>30 与 50 形成稳定平台；压缩强、准确率保持</td></tr>
+<tr><td>100（step 99 时相当于冻结）</td><td>稳定但压缩上限低</td></tr>
+</tbody></table>
+<h3>6.3 简洁指令措辞<span class="zh">Instruction variants</span></h3>
+<p>五个变体（v1 统一简洁、v2 难度感知、v3 指定可删/必留类别、v4 面向专家、v5 编号列表）结果接近，说明不是单条 prompt 调出来的。v1 与 v2 的取舍最清楚：</p>
+<table class="content">
+<thead><tr><th>指令</th><th>原文要点</th><th>效果</th></tr></thead>
+<tbody>
+<tr><td>v1 统一简洁</td><td>“Solve concisely… avoid unnecessary elaboration, redundant steps, or restating the problem.”</td><td>压缩最多（MATH-500 −56%），最难题掉点最多</td></tr>
+<tr><td>v2 难度感知</td><td>“Prioritize a correct final answer above brevity… For difficult or multi-step problems, do NOT over-compress…”</td><td>压缩少约 20 个百分点，AIME 2025 只掉 2.1（14B）</td></tr>
+</tbody></table>
+<h3>6.4 采样温度与 rollout 长度<span class="zh">Temperature and rollout length</span></h3>
+<ul>
+<li><b>温度</b> 0.3–1.5：MATH-500 准确率波动 ≤0.7pp，压缩率 30.8–33.3%；默认 1.0 在 AIME 上最稳（−1.6%）。</li>
+<li><b>训练 rollout 上限</b> 1K / 4K / 8K / 30K：1K 就足以训练（29.8% 压缩、无准确率损失）；8K 最佳（31.6%、AIME −1.6%）；30K 最差（AIME −6.5%、只压 13.8%），因为无约束的长 rollout 让学生先强化了自己的啰嗦。</li>
+</ul>
+<h3>6.5 KL 方向<span class="zh">Reverse vs. forward vs. JSD</span></h3>
+<p>附录 G：reverse KL 的梯度由学生分布加权，自带“不跑远”的正则；forward KL 由教师加权，在教师是旧快照时前 100 步崩溃；JSD 介于两者之间。这是方法能稳定训练的关键工程选择。</p>
+</section>
+
+<section class="reveal" id="s7"><h2><span class="no">07</span><span class="t">理论解释（口头报告用）<span class="zh">Theory in plain words</span></span></h2>
+<p class="q">为什么这么简单的目标能同时压缩和保准确率？<span class="zh">Why does it work?</span></p>
+<ul>
+<li><b>Lemma 1：</b>逐 token KL 之和等于序列级 KL <code>D_KL(πθ(·|x) ‖ πθ̄(·|x,c))</code>（自回归链式法则）。</li>
+<li><b>Theorem 1（隐式奖励）：</b>目标等价于最大化 <code>r_t = log πθ̄(y_t|x,c,y&lt;t) − log πθ(y_t|x,y&lt;t)</code>——教师比学生更支持某个 token 时奖励为正。相当于一个随策略变化的“简洁奖励”，但不需要显式长度惩罚。</li>
+<li><b>Theorem 2（准确率界）：</b><code>Acc(θ) ≥ Acc(teacher) − T − √(KL/2)</code>，T 是教师相对基座的准确率差。简洁教师不掉点时，学生最多掉 √(KL/2)。</li>
+<li><b>Prop. 1（难度自适应）：</b>可压缩 token 的 KL 更大，难题的 essential token 占比更高，所以压缩压力随难度下降。</li>
+<li><b>Prop. 3（复合误差）：</b>若每个 token 独立以概率 p_err 引入错误，去掉冗余 token 会指数级降低复合错误——解释了“更短反而更准”。</li>
+</ul>
+<div class="key"><p><b>一句话：</b>它把“简洁”变成了一个策略内生的奖励，而不是外加的长度惩罚；教师只提供目标分布，不提供答案。</p></div>
+</section>
+
+<section class="reveal" id="s8"><h2><span class="no">08</span><span class="t">局限与可迁移性<span class="zh">Limits and transferability</span></span></h2>
+<p class="q">哪些结论不能直接搬到视觉 OPD？<span class="zh">What does not transfer to visual OPD?</span></p>
+<table class="content">
+<thead><tr><th>限制</th><th>对我们的影响</th></tr></thead>
+<tbody>
+<tr><td>依赖基座的指令跟随能力</td><td>VLM 上“简洁指令”是否同样有效、是否与视觉焦点指令冲突，需要实测</td></tr>
+<tr><td>纯文本数学、答案可符号验证</td><td>视觉问答多为选择题，准确率口径本身不稳（work5 已证明官方判别器不可用）</td></tr>
+<tr><td>无视觉特权</td><td>CRISP 的教师只改文本提示；我们的教师还要改图像（Zoom-In / Mask）</td></tr>
+<tr><td>“压缩 ≈2× 是甜点”是数学域结论</td><td>视觉推理的冗余结构不同，甜点位置未知</td></tr>
+<tr><td>教师质量决定上限</td><td>简洁教师如果在视觉题上掉点，Theorem 2 的 T 项会直接吃掉收益</td></tr>
+</tbody></table>
+</section>
+
+<section class="reveal" id="s9"><h2><span class="no">09</span><span class="t">对双教师项目的意义<span class="zh">What this means for our project</span></span></h2>
+<p class="q">这篇论文在我们的故事里站在哪？<span class="zh">Where it sits in our story.</span></p>
+<div class="okbox">
+<p><b>1. 它是 G1 的现成实现。</b>“单教师 + 简洁指令”就是 CRISP；代码公开（<code>github.com/HJSang/OPSD_Reasoning_Compression</code>），训练配置完整。我们可以直接复现 G1，而不是从零写。</p>
+<p><b>2. 它把“冲突假设”机制化了。</b>reverse KL 会删掉简洁教师不生成的 token；如果这些 token 恰好是视觉证据驱动的长推理，压缩就会伤 grounding。这就是“单教师叠两种特权会打架”的可检验版本。</p>
+<p><b>3. 它证明了“简洁教师”组件不新。</b>novelty 不能放在“用简洁指令做教师”上，只能放在仲裁信号（视觉证据门控）和受控证据上。</p>
+<p><b>4. 可以直接借的工程细节：</b>reverse KL、教师周期刷新、每 prompt 单 rollout、截断 rollout、不做正确性过滤、分块 logits。这些都能进 G0–G3 实验。</p>
+</div>
+<div class="caveat"><p><b>不能直接借的假设：</b>文本单模态、数学答案可验证、简洁指令是唯一特权。迁到 VLM 时，教师输入要同时改变图像和文本提示，冲突点正在这里；而且我们还要回答“压缩掉的是不是视觉证据”。</p></div>
+</section>
+
+<section class="reveal" id="s10"><h2><span class="no">10</span><span class="t">口头报告提纲与可能追问<span class="zh">Oral outline and likely questions</span></span></h2>
+<p class="q">5 分钟怎么讲，导师会问什么。<span class="zh">A five-minute script and the obvious follow-ups.</span></p>
+<h3>10.1 五分钟提纲<span class="zh">Five-minute script</span></h3>
+<ol>
+<li><b>一句话：</b>同一模型加简洁指令当教师，在学生自己的输出上做 reverse KL，把简洁写回权重。</li>
+<li><b>为什么不需要答案：</b>监督来自两个 prompt 的分布差，不来自正确性；所以能用在没有标准答案的场景。</li>
+<li><b>三个关键工程选择：</b>reverse KL（稳定）、教师每 50 步刷新（渐进压缩）、截断 rollout（便宜）。</li>
+<li><b>结果：</b>14B 上 MATH-500 短 56%、准确率反升 3.3 分；但 AIME 2025 掉 6.3，难题是代价所在。</li>
+<li><b>与我们的关系：</b>它就是“单教师 + 简洁”这一半；我们缺的是“视觉特权 + 简洁”放在一起会不会冲突的实验。</li>
+</ol>
+<h3>10.2 可能被问到的<span class="zh">Likely questions</span></h3>
+<table class="content">
+<thead><tr><th>问题</th><th>回答要点</th></tr></thead>
+<tbody>
+<tr><td>“这不就是加个 prompt 吗？”</td><td>prompt 只在推理时有效；CRISP 把行为写进权重，撤掉 prompt 仍保留。但论文表格确实显示 prompt 本身能压 20–43%，所以差异要用“撤掉 prompt 后的保留率”来证明。</td></tr>
+<tr><td>“为什么用 reverse KL？”</td><td>教师是学生旧快照，forward KL 会崩；reverse KL 的梯度按学生分布加权，自带信任域。</td></tr>
+<tr><td>“教师为什么要刷新？”</td><td>冻结教师的压缩上限低；每步刷新会追移动目标崩掉；M=50 是稳定与压缩的折中。</td></tr>
+<tr><td>“为什么不用标准答案？”</td><td>用了就变成普通 OPSD；不用 GT 才能迁到没有验证器的域。代价是依赖指令跟随。</td></tr>
+<tr><td>“压缩为什么能提准确率？”</td><td>冗余 token 本身会引入复合错误；去掉它们降低错误累积，前提是没有删掉 essential steps。</td></tr>
+<tr><td>“能直接搬到视觉吗？”</td><td>不能直接搬：单模态、数学域、无视觉特权；需要把视觉证据当额外特权，并重新测 ground。</td></tr>
+</tbody></table>
+</section>
+</main>
+<footer>
+<p>Paper reading report · CRISP (arXiv 2603.05433v7, 2026-07-03) · prepared 2026-10-27<span class="zh">论文精读报告 · CRISP（arXiv 2603.05433v7，2026-07-03）· 2026-10-27 整理</span></p>
+<p>All numbers are taken from the paper's Tables 2, 5, 7 and Figures 4–8; no independent reproduction was performed.<span class="zh">所有数字取自原文 Table 2/5/7 与 Figure 4–8，未做独立复现。</span></p>
+</footer>
+<div class="progress" id="bar"></div>
+<script>
+const bar=document.getElementById('bar');
+const onScroll=()=>{const h=document.documentElement;
+ const p=(h.scrollTop)/(h.scrollHeight-h.clientHeight)*100; bar.style.width=p+'%';};
+addEventListener('scroll',onScroll,{passive:true}); onScroll();
+const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},
+ {threshold:0, rootMargin:"0px 0px -8% 0px"});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+addEventListener('load',()=>setTimeout(()=>{
+ document.querySelectorAll('.reveal:not(.in)').forEach(el=>{
+  const r=el.getBoundingClientRect(); if(r.top<innerHeight*1.2) el.classList.add('in');});},600));
+</script></body></html>
