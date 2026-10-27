@@ -169,7 +169,7 @@ L<sub>OPD-V</sub>(θ) = E [ (1 / Σ<sub>t</sub> r<sub>t</sub>) · Σ<sub>t∈R<s
 <tr><td>Rollout 校正</td><td>token 级，阈值 2.0</td></tr>
 <tr><td>模式</td><td>non-thinking；不做 checkpoint/验证；离线 W&B</td></tr>
 </tbody></table>
-<div class="caveat"><p><b>注意：</b>论文 Table 4 没有列学习率和优化器类型，复现时需从官方代码补；训练时 query 带视觉焦点指令，<b>评测只用原图与原始 query</b>，不提供任何特权输入。</p></div>
+<div class="caveat"><p><b>注意：</b>论文 Table 4 没有列学习率和优化器类型，复现时需从官方代码补；训练样本的 query 含视觉焦点指令，<b>评测只用原图与原始 query</b>，不提供 bbox/放大图等特权输入。</p></div>
 </section>
 
 <section class="reveal" id="s5"><h2><span class="no">05</span><span class="t">评测协议<span class="zh">Evaluation protocol</span></span></h2>
