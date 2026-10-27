@@ -1,0 +1,317 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>OPD-V 精读报告 · Visual On-Policy Self-Distillation with Modality Balance</title>
+<style>
+:root{--ink:#111827;--sub:#5b6674;--line:#dfe4ea;--bg:#f7f8fa;--card:#ffffff;
+--accent:#2563a8;--accent2:#c2410c;--ok:#047857;--warn:#b45309;--max:1080px}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);
+ font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei","Noto Sans SC",sans-serif;
+ font-size:16px;line-height:1.8;-webkit-font-smoothing:antialiased}
+.hero{background:linear-gradient(135deg,#0b172a 0%,#16324f 48%,#1f4b6e 100%);color:#eef3f8;
+ padding:70px 32px 58px;position:relative;overflow:hidden}
+.hero:before{content:"";position:absolute;inset:0;
+ background:radial-gradient(900px 380px at 18% 0%,rgba(96,165,250,.24),transparent 70%),
+            radial-gradient(700px 340px at 88% 100%,rgba(251,146,60,.18),transparent 70%)}
+.hero .inner{max-width:var(--max);margin:0 auto;position:relative}
+.kicker{letter-spacing:.22em;font-size:.74rem;text-transform:uppercase;color:#93b4d1;margin-bottom:16px}
+.hero h1{font-size:clamp(1.8rem,4vw,2.6rem);line-height:1.24;margin:0 0 10px;font-weight:650}
+.hero h1 .zh{display:block;font-size:.5em;font-weight:500;color:#b9cee0;margin-top:12px}
+.hero p.lead{max-width:840px;color:#c9d8e6;font-size:1rem;margin:0}
+.hero p.lead.zh{color:#9fb6ca;font-size:.93rem;margin-top:8px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin-top:32px}
+.stat{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);border-radius:12px;padding:15px 18px}
+.stat .n{font-size:1.6rem;font-weight:700;font-variant-numeric:tabular-nums;color:#fff}
+.stat .l{font-size:.77rem;color:#c2d5e4;margin-top:2px}
+.stat .l .zh{display:block;color:#93aec5;font-size:.72rem;margin-top:1px}
+.progress{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,#2563a8,#f59e0b);width:0;z-index:99;transition:width .1s linear}
+main{max-width:var(--max);margin:0 auto;padding:0 32px 90px}
+section{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:32px 38px;
+ margin:-34px 0 24px;box-shadow:0 1px 2px rgba(16,24,40,.05),0 12px 32px -18px rgba(16,24,40,.18);position:relative}
+section:first-of-type{margin-top:-48px}
+section h2{display:flex;align-items:baseline;gap:14px;font-size:1.26rem;margin:0 0 6px;font-weight:650}
+section h2 .no{font-size:2rem;font-weight:800;color:#c8d6e5;line-height:1;font-variant-numeric:tabular-nums}
+section h2 .t .zh{display:block;font-size:.72em;font-weight:500;color:var(--sub);margin-top:1px}
+section .q{color:var(--sub);font-size:.93rem;margin:0 0 16px}
+section .q .zh{display:block;font-size:.92em;color:#7a8492;margin-top:1px}
+h3{font-size:1.02rem;margin:24px 0 4px;font-weight:650;color:#1f2937}
+h3 .zh{font-weight:500;color:var(--sub);font-size:.86em;margin-left:8px}
+p{margin:.6rem 0}
+.key,.caveat,.okbox{margin:18px 0}
+.key{background:linear-gradient(180deg,#f0f6fc,#e8f1fa);border-left:4px solid var(--accent);padding:15px 20px;border-radius:0 10px 10px 0}
+.caveat{background:linear-gradient(180deg,#fff8ef,#fdf1e3);border-left:4px solid var(--warn);padding:15px 20px;border-radius:0 10px 10px 0}
+.okbox{background:linear-gradient(180deg,#f0fdf6,#e7f8ef);border-left:4px solid var(--ok);padding:15px 20px;border-radius:0 10px 10px 0}
+.key p,.caveat p,.okbox p{margin:.3rem 0}
+table{border-collapse:collapse;width:100%;margin:14px 0;font-size:.88rem;font-variant-numeric:tabular-nums}
+th,td{border-bottom:1px solid var(--line);padding:8px 10px;text-align:right;vertical-align:top}
+th:first-child,td:first-child{text-align:left}
+thead th{background:#f2f5f8;font-weight:650;border-bottom:2px solid #d5dce4}
+td .zh{display:block;font-weight:400;font-size:.9em;color:var(--sub);margin-top:2px;line-height:1.5}
+tbody tr:hover{background:#fafcfe}
+table.content th,table.content td{text-align:left}
+table.content td{line-height:1.65}
+table.tight{max-width:840px}
+code{background:#eef2f6;border-radius:4px;padding:1px 5px;font-size:.88em}
+.eq{background:#f6f8fb;border:1px solid #e3e9f0;border-radius:10px;padding:14px 18px;margin:14px 0;
+ font-family:"Cambria Math","Latin Modern Math",Georgia,serif;font-size:1.02rem;text-align:center;overflow-x:auto}
+.eq .small{display:block;font-family:-apple-system,"Microsoft YaHei",sans-serif;font-size:.8rem;color:var(--sub);margin-top:6px}
+.tag{display:inline-block;font-size:.72rem;padding:2px 8px;border-radius:999px;background:#eef3f8;color:var(--sub);margin-left:6px}
+.tag.hot{background:#fdecec;color:#b42318}
+.tag.ok{background:#e7f8ef;color:#047857}
+.tag.mid{background:#fff8ef;color:#b45309}
+ul,ol{margin:.5rem 0 .5rem 1.2rem;padding-left:.6rem}
+li{margin:.35rem 0}
+.reveal{opacity:0;transform:translateY(16px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.3,1)}
+.reveal.in{opacity:1;transform:none}
+footer{max-width:var(--max);margin:0 auto;padding:0 32px 60px;color:var(--sub);font-size:.82rem}
+footer .zh{display:block;color:#8592a1;font-size:.96em;margin-top:2px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.reveal{opacity:1;transform:none}}
+@media(max-width:720px){section{padding:24px 20px}main{padding:0 16px 70px}.hero{padding:52px 20px 44px}}
+</style></head><body>
+<div class="hero"><div class="inner">
+ <div class="kicker">Paper reading · arXiv 2608.05131v2 · 2026-10-27</div>
+ <h1>OPD-V：以“模态平衡”为特权信息的视觉 OPSD<span class="zh">Visual On-Policy Self-Distillation with Modality Balance</span></h1>
+ <p class="lead">A positive teacher sees a zoomed-in crop, a negative teacher sees the same crop with a region masked, and the student sees the original image.
+ The log-probability gap between the two teachers defines a trust region: distill only where zooming in supports the student's token more than masking does.</p>
+ <p class="lead zh" lang="zh-CN">正教师看放大后的证据区域，负教师看同一区域被随机遮挡后的图，学生看原图。两个教师对同一学生 token 的对数概率差定义信任域：
+ 只在“放大后更支持该 token”的位置上做 JSD 蒸馏。它用两个教师，但两个教师是同一特权的正负对照，不是两种不同的特权。</p>
+ <div class="stats">
+  <div class="stat"><div class="n">64.30→80.01</div><div class="l">Average accuracy, Qwen3.5-4B<span class="zh">平均准确率（Qwen3.5-4B）</span></div></div>
+  <div class="stat"><div class="n">−74.5<span>%</span></div><div class="l">Response length vs. OPSD<span class="zh">相对 OPSD 的长度下降</span></div></div>
+  <div class="stat"><div class="n">53.8<span>%</span></div><div class="l">Tokens in trust region (4B)<span class="zh">信任域 token 占比（4B）</span></div></div>
+  <div class="stat"><div class="n">−31.8<span>%</span></div><div class="l">Step latency, 4B<span class="zh">单步耗时下降（4B）</span></div></div>
+ </div>
+</div></div>
+
+<main>
+<section class="reveal" id="s1"><h2><span class="no">01</span><span class="t">一句话与定位<span class="zh">One-sentence summary and positioning</span></span></h2>
+<p class="q">它解决什么问题？<span class="zh">What problem does it solve?</span></p>
+<div class="key"><p><b>视觉 OPSD 里，教师提供的特权信息可能被模型的语言先验淹没（Modality Imbalance）。OPD-V 构造“正教师（Zoom-In）+ 负教师（Mask）”两种图像条件，用两者对同一 token 的支持差判定该 token 是否依赖视觉证据，只在正差位置蒸馏正教师。</b></p></div>
+<p>定位：这是<b>视觉特权 OPSD</b> 的一个新范式。与传统 OPSD 不同，教师不接收标准答案，而是接收<b>变换后的图像</b>；学生始终只看原图和原问题，推理时不需要任何额外输入。</p>
+<p>论文状态：arXiv 2608.05131v2（2026-08-06），预印本，未见录用信息。工作5 复现的是它的 Qwen3.5-4B 模型与数据协议。</p>
+</section>
+
+<section class="reveal" id="s2"><h2><span class="no">02</span><span class="t">问题：模态失衡<span class="zh">The problem: Modality Imbalance</span></span></h2>
+<p class="q">为什么已有的视觉特权信息不够用？<span class="zh">Why existing privileged information underperforms.</span></p>
+<ul>
+<li>MLLM 的每个预测同时依赖图像、文本问题和自回归前缀；<b>强文本先验会压过图像证据</b>。</li>
+<li>因此即使教师看到了更清晰的图，它给出的高置信度也可能主要来自语言先验，而不是视觉证据；学生学到的是“看起来很强的信号”，但不一定可迁移。</li>
+<li>论文用 <b>Modality-Balance Attention Ratio</b> 量化这一点：</li>
+</ul>
+<div class="eq">
+ρ(c; y) = Σ<sub>t∈Ty</sub> α<sup>V</sup><sub>t</sub>(c) / ( Σ<sub>t∈Ty</sub> α<sup>T</sup><sub>t</sub>(c) + ε )
+<span class="small">式 (5)：α<sup>V</sup>、α<sup>T</sup> 分别为第 t 个位置对视觉/文本的注意力质量；ρ 越大表示越依赖视觉。</span>
+</div>
+<p>Figure 1 的三组匹配条件给出直接证据：Mask 图（负教师）的 ρ 最低（0.148），原图（学生）居中（0.226），Zoom-In 图（正教师）最高（0.263）。也就是说，<b>同一模型、同一文本，仅改变图像条件，就能系统地改变模态分配</b>——这使“模态平衡”可以被显式构造出来。</p>
+</section>
+
+<section class="reveal" id="s3"><h2><span class="no">03</span><span class="t">方法：正负教师与信任域<span class="zh">Method: positive/negative teachers and trust region</span></span></h2>
+<p class="q">两个教师分别看什么，蒸馏目标是谁？<span class="zh">What each teacher sees, and which one is distilled.</span></p>
+<h3>3.1 三种图像条件<span class="zh">Three image conditions</span></h3>
+<table class="content">
+<thead><tr><th>角色</th><th>图像输入</th><th>构造方式</th><th>作用</th></tr></thead>
+<tbody>
+<tr><td>学生</td><td>原图 I</td><td>原始输入</td><td>生成 rollout</td></tr>
+<tr><td><b>正教师</b></td><td>Zoom-In 图 I<sub>zoom</sub></td><td>训练数据自带的证据区域 bbox 裁剪并放大（字段 <code>bbox_images</code>）</td><td>提供蒸馏目标分布</td></tr>
+<tr><td><b>负教师</b></td><td>Mask 图 I<sub>mask</sub></td><td>在 I<sub>zoom</sub> 上把随机矩形区域替换为黑像素</td><td>提供成对比较，决定哪些 token 进入信任域</td></tr>
+</tbody></table>
+<p>两个教师共享同一组 EMA 参数 <code>θ̄</code>，文本问题、prefix 完全相同，<b>差别只在图像</b>。学生 rollout 由原图生成，所以三个分布都在同一 prefix 上打分。</p>
+<h3>3.2 模态平衡对数边际与信任域<span class="zh">Logits margin and trust region</span></h3>
+<div class="eq">
+δ<sup>MB</sup><sub>t</sub> = log q<sup>+</sup><sub>t</sub>(y<sub>t</sub>) − log q<sup>−</sup><sub>t</sub>(y<sub>t</sub>) &nbsp;&nbsp;;&nbsp;&nbsp;
+R<sub>MB</sub>(y) = { t ∈ T<sub>y</sub> : δ<sup>MB</sup><sub>t</sub> &gt; 0 }
+<span class="small">式 (7)(8)：只比较学生实际采样到的那个 token y_t 在两个教师下的对数概率。</span>
+</div>
+<p><b>正边际</b>意味着：同一个 token，在放大证据区域后比在遮挡后更受支持。这些位置被认为“依赖视觉证据”，进入信任域。</p>
+<h3>3.3 目标函数<span class="zh">Objective</span></h3>
+<div class="eq">
+L<sub>OPD-V</sub>(θ) = E [ (1 / Σ<sub>t</sub> r<sub>t</sub>) · Σ<sub>t∈R<sub>MB</sub>(y)</sub> r<sub>t</sub> δ<sup>MB</sup><sub>t</sub> · D<sub>JS</sub>( q<sup>+</sup><sub>t</sub> ‖ p<sub>θ,t</sub> ) ]
+<span class="small">式 (9)：只在信任域内蒸馏；δ<sup>MB</sup><sub>t</sub> 作为该 token 的权重；归一化按有效 token 数，不按权重和。</span>
+</div>
+<ul>
+<li><b>蒸馏目标</b>是正教师 <code>q+</code>，不是负教师；负教师只通过 δ 进入，决定“压不压这个位置、压多重”。</li>
+<li><b>散度</b>用 Jensen–Shannon（β=0.5），不是 reverse KL。这是与 CRISP 的一个关键工程差异。</li>
+<li><b>EMA 教师</b>：每次更新后 <code>θ̄ ← (1−τ)θ̄ + τθ</code>，τ=0.05（保留 95% 旧教师参数）。</li>
+</ul>
+</section>
+
+<section class="reveal" id="s4"><h2><span class="no">04</span><span class="t">算法逐行与工程细节<span class="zh">Algorithm and engineering details</span></span></h2>
+<p class="q">复现要看懂哪几行？<span class="zh">The lines that matter for reproduction.</span></p>
+<h3>4.1 训练循环（Algorithm 1）<span class="zh">Training loop</span></h3>
+<ol>
+<li>初始化教师参数 <code>θ̄ ← θ</code>。</li>
+<li>每个训练步取 mini-batch B；对每个样本取 <code>I_zoom</code>（训练数据自带），生成 <code>I_mask = Mask(I_zoom)</code>。</li>
+<li>每个 prompt 采样 <b>n=8</b> 条 rollout <code>y ~ pθ(·|I,x)</code>。</li>
+<li>对每个生成的 token：计算 <code>pθ,t</code>、<code>q+,t</code>、<code>q−,t</code>；算 δ；<b>只有 δ&gt;0 且 r_t=1</b> 时，计算 JSD 并加权累加。</li>
+<li>按有效 token 数归一化 rollout 损失；batch 内按 <code>n|B|</code> 再归一化。</li>
+<li>更新学生；随后更新 EMA 教师。</li>
+</ol>
+<h3>4.2 Top-K 蒸馏与尾部概率<span class="zh">Top-K distillation with tail bucket</span></h3>
+<ul>
+<li>只取学生分布的 <b>top-K=100</b> 个 token 作为候选集 <code>K_t</code>；正教师在同一集合上求概率。</li>
+<li>每个分布保留 top-K 概率，再加一个<b>尾部桶</b> <code>s_tail = 1 − Σ_{v∈K_t} s(v)</code>，得到 K+1 维分布，避免物化全词表。</li>
+<li>论文称 top-100 之外的累计概率 &lt;1×10⁻¹³，近似无损。</li>
+<li>JSD 按标准混合分布 <code>m=(q+ + p)/2</code> 计算。</li>
+</ul>
+<h3>4.3 训练配置（Table 4）<span class="zh">Hyperparameters</span></h3>
+<table class="tight">
+<thead><tr><th>项</th><th>值</th></tr></thead>
+<tbody>
+<tr><td>基座</td><td>Qwen3.5-4B、Qwen3.5-9B、Qwen3-VL-4B-Instruct、Qwen3-VL-8B-Instruct</td></tr>
+<tr><td>训练数据</td><td>Vision-OPD 提供的 6,241 条视觉推理样本（含原图、问题、验证目标、bbox 图）</td></tr>
+<tr><td>散度 / top-K</td><td>JSD（β=0.5）/ K=100 + 尾部桶</td></tr>
+<tr><td>教师更新</td><td>EMA，τ=0.05；每个训练步构造教师输入</td></tr>
+<tr><td>GPU / batch</td><td>1 节点 4×H200；训练 batch 48；actor mini-batch 48</td></tr>
+<tr><td>每 prompt rollout</td><td>n=8</td></tr>
+<tr><td>序列长度</td><td>prompt ≤ 8,192；response ≤ 1,024</td></tr>
+<tr><td>轮数</td><td>1 epoch</td></tr>
+<tr><td>Rollout 校正</td><td>token 级，阈值 2.0</td></tr>
+<tr><td>模式</td><td>non-thinking；不做 checkpoint/验证；离线 W&B</td></tr>
+</tbody></table>
+<div class="caveat"><p><b>注意：</b>论文 Table 4 没有列学习率和优化器类型，复现时需从官方代码补；训练时 query 带视觉焦点指令，<b>评测只用原图与原始 query</b>，不提供任何特权输入。</p></div>
+</section>
+
+<section class="reveal" id="s5"><h2><span class="no">05</span><span class="t">评测协议<span class="zh">Evaluation protocol</span></span></h2>
+<p class="q">六个基准、32,162 条样本，怎么判分？<span class="zh">Six benchmarks, 32,162 examples, and the scoring rules.</span></p>
+<table>
+<thead><tr><th>基准</th><th>样本数</th><th>判分规则</th></tr></thead>
+<tbody>
+<tr><td>V* Bench</td><td>191</td><td>先规则匹配，未决样本交 Yes/No 裁判</td></tr>
+<tr><td>ZoomBench</td><td>845</td><td>归一化匹配，未决交裁判</td></tr>
+<tr><td>HR-Bench 4K</td><td>800</td><td>先直接答案匹配与选项字母匹配，未决交裁判</td></tr>
+<tr><td>HR-Bench 8K</td><td>800</td><td>同 4K</td></tr>
+<tr><td>MME-RealWorld EN</td><td>23,609</td><td>选择题匹配 + Yes/No 裁判</td></tr>
+<tr><td>MME-RealWorld CN</td><td>5,917</td><td>MME-RealWorld 选择题规则</td></tr>
+</tbody></table>
+<p>Average 是六个基准准确率的<b>不加权平均</b>，不是按样本池化的总体准确率（后者会把 23,609 条 MME-EN 的权重放大）。这一点在复现时必须对齐。</p>
+</section>
+
+<section class="reveal" id="s6"><h2><span class="no">06</span><span class="t">主结果<span class="zh">Main results</span></span></h2>
+<p class="q">提升有多大，代价是什么？<span class="zh">How large is the gain, and what does it cost?</span></p>
+<h3>6.1 Qwen3.5-4B 的基准分解<span class="zh">Per-benchmark, 4B</span></h3>
+<table>
+<thead><tr><th>基准</th><th>Base</th><th>+ OPSD</th><th>+ Vision-OPD</th><th>+ OPD-V</th></tr></thead>
+<tbody>
+<tr><td>V* Bench</td><td>80.63</td><td>84.29</td><td>89.01</td><td><b>94.76</b></td></tr>
+<tr><td>ZoomBench</td><td>49.82</td><td>57.51</td><td>65.33</td><td><b>65.92</b></td></tr>
+<tr><td>HR-Bench 4K</td><td>73.50</td><td>77.25</td><td>82.25</td><td><b>85.75</b></td></tr>
+<tr><td>HR-Bench 8K</td><td>67.50</td><td>72.88</td><td>81.25</td><td><b>83.25</b></td></tr>
+<tr><td>MME-RealWorld EN</td><td>55.78</td><td>61.20</td><td>74.50</td><td><b>76.31</b></td></tr>
+<tr><td>MME-RealWorld CN</td><td>58.56</td><td>62.40</td><td>70.26</td><td><b>74.06</b></td></tr>
+<tr><td><b>Average</b></td><td><b>64.30</b></td><td><b>69.26</b></td><td><b>77.10</b></td><td><b>80.01</b></td></tr>
+</tbody></table>
+<p>同基座其它对照：SFT 66.85、GRPO 69.65、VA-OPD 71.88。OPD-V 比最强的 Vision-OPD 高 2.91 分，六个基准全部更高。</p>
+<h3>6.2 跨架构<span class="zh">Across backbones</span></h3>
+<table class="tight">
+<thead><tr><th>基座</th><th>Base</th><th>OPSD</th><th>OPD-V</th></tr></thead>
+<tbody>
+<tr><td>Qwen3-VL-4B-Instruct</td><td>68.00</td><td>—</td><td>74.14</td></tr>
+<tr><td>Qwen3-VL-8B-Instruct</td><td>68.93</td><td>—</td><td>73.03</td></tr>
+<tr><td>Qwen3.5-9B</td><td>69.75</td><td>—</td><td>77.63</td></tr>
+</tbody></table>
+<h3>6.3 训练动态与成本<span class="zh">Training dynamics and cost</span></h3>
+<table class="content">
+<thead><tr><th>指标</th><th>结果</th><th>含义</th></tr></thead>
+<tbody>
+<tr><td>响应长度</td><td>OPSD 553.8 → OPD-V 140.9 tokens（−74.5%）</td><td>OPD-V 本身就把输出压得很短；OPSD 后期反而变长</td></tr>
+<tr><td>信任域占比</td><td>4B 53.8%；9B 49.6%</td><td>约一半 token 进入蒸馏，选择是持续的</td></tr>
+<tr><td>策略熵</td><td>4B 0.827；9B 0.761（warm-up 后稳定）</td><td>没有塌缩</td></tr>
+<tr><td>单步耗时</td><td>4B 352→240 s（−31.8%）；9B 451→340 s（−24.7%）</td><td>虽然多一个教师前向，但更短的 rollout 抵消了成本</td></tr>
+<tr><td>教师输入构造</td><td>OPSD 79.2 s → OPD-V 15.3 s</td><td>图像变换比重建“答案提示”序列便宜</td></tr>
+<tr><td>两个教师前向</td><td>27.1 s，低于 OPSD 单教师的 40.4 s</td><td>长度效应大于教师数量效应</td></tr>
+</tbody></table>
+</section>
+
+<section class="reveal" id="s7"><h2><span class="no">07</span><span class="t">消融：两个教师是否缺一不可<span class="zh">Ablations: are both teachers necessary?</span></span></h2>
+<p class="q">正教师和负教师各自贡献什么？<span class="zh">What does each teacher contribute?</span></p>
+<table class="tight">
+<thead><tr><th>配置</th><th>平均准确率</th><th>相对 Base</th></tr></thead>
+<tbody>
+<tr><td>Base</td><td>64.30</td><td>—</td></tr>
+<tr><td>只用负教师</td><td>71.98</td><td>+7.68</td></tr>
+<tr><td>只用正教师</td><td>74.62</td><td>+10.32</td></tr>
+<tr><td><b>正 + 负</b></td><td><b>80.01</b></td><td><b>+15.71</b></td></tr>
+</tbody></table>
+<p>负教师单独也有效，说明“遮挡后变弱”本身提供信号；两者结合比最强单教师高 5.39 分，说明分工互补：正教师给目标分布，负教师决定哪些位置进入信任域。</p>
+<h3>7.1 图像操作的选择<span class="zh">Image-operation ablation</span></h3>
+<table class="tight">
+<thead><tr><th>改动</th><th>准确率</th><th>结论</th></tr></thead>
+<tbody>
+<tr><td>正教师：Repeat 图代替 Zoom-In</td><td>75.95</td><td>放大证据区域本身重要（−4.06）</td></tr>
+<tr><td>负教师：Blur 代替 Mask</td><td>74.31</td><td>遮挡比模糊更强</td></tr>
+<tr><td>负教师：Prune 代替 Mask</td><td>73.74</td><td>—</td></tr>
+<tr><td>负教师：No Image</td><td>72.17</td><td>保留图像上下文比彻底移除好（−7.84）</td></tr>
+</tbody></table>
+<div class="key"><p><b>关键点：</b>“Zoom-In + Mask”不是随便两个变换，而是同时改变<b>证据显著度</b>与<b>上下文完整性</b>；把任一操作换成更弱的版本都会掉点。</p></div>
+</section>
+
+<section class="reveal" id="s8"><h2><span class="no">08</span><span class="t">与 CRISP 的逐项对照<span class="zh">Side-by-side with CRISP</span></span></h2>
+<p class="q">两篇都是 OPSD，差在哪？<span class="zh">Two OPSD papers, different privileged channels.</span></p>
+<table class="content">
+<thead><tr><th>维度</th><th>CRISP</th><th>OPD-V</th></tr></thead>
+<tbody>
+<tr><td>特权通道</td><td>文本简洁指令 c</td><td>图像变换（Zoom-In / Mask）</td></tr>
+<tr><td>教师数量</td><td>一个（同一权重 + 指令）</td><td>两个（正/负，同一 EMA 权重）</td></tr>
+<tr><td>蒸馏目标</td><td>简洁教师分布</td><td>正教师分布</td></tr>
+<tr><td>token 选择</td><td>全部 token</td><td>只在 δ<sup>MB</sup>&gt;0 的信任域，按 δ 加权</td></tr>
+<tr><td>散度</td><td>Reverse KL</td><td>JSD（β=0.5）</td></tr>
+<tr><td>教师更新</td><td>每 50 步硬同步</td><td>每步 EMA（τ=0.05）</td></tr>
+<tr><td>需要标准答案</td><td>否</td><td>否</td></tr>
+<tr><td>输出长度</td><td>主要目标（−56%）</td><td>副产物（相对 OPSD −74.5%）</td></tr>
+<tr><td>模态</td><td>纯文本数学</td><td>视觉问答</td></tr>
+</tbody></table>
+<div class="caveat"><p><b>必须注意的冲突：</b>OPD-V 已经把视觉 OPSD 的输出长度从 553.8 压到 140.9。导师故事的第一句“Vision-OPD 输出太长”在 2026-08 之后需要重新表述——至少要说明“长”是相对 OPSD 基线，而不是当前视觉 OPD 的最先进水平。否则会被审稿人或导师直接指出。</p></div>
+</section>
+
+<section class="reveal" id="s9"><h2><span class="no">09</span><span class="t">对双教师项目的意义<span class="zh">What this means for our project</span></span></h2>
+<p class="q">我们在它的基础上还能做什么？<span class="zh">What can we build on top of it?</span></p>
+<div class="okbox">
+<p><b>1. 它是 G0 基线，且我们已经有它的 4B 模型与评测链。</b>工作5 用的就是 <code>OPD-V-Qwen3.5-4B</code>；复现口径、官方判别器问题、人工审计结论都可直接继承。</p>
+<p><b>2. 它已经用了“两个教师 + token 级选择”。</b>这进一步压缩了“双教师架构”的新颖性，但也给了我们现成的工程模板：多教师前向、EMA、token 级信任域都可以复用。</p>
+<p><b>3. 它的“正负对照”正好是我们要的冲突检测工具。</b>如果再加一个“简洁教师”，就变成三路信号；冲突可能表现为：视觉信任域内的 token 被简洁信号要求删除。G2 可以在这个信任域上直接测长度与 grounding。</p>
+<p><b>4. 可借的工程细节：</b>top-K + 尾部桶、JSD、EMA 教师、δ 加权、按有效 token 归一化、图像字段 <code>bbox_images</code>、评测的不加权平均口径。</p>
+</div>
+<div class="caveat"><p><b>不能直接借的假设：</b>① 它的 token 选择衡量“是否依赖视觉”，不衡量“是否冗余”；② 它的负教师是随机遮挡，不是“简洁”；③ 评测是选择题，grounding 指标（CHAIR/POPE）不在它的评测里，我们需要自己补；④ 论文未给学习率等完整超参，复现需读代码。</p></div>
+</section>
+
+<section class="reveal" id="s10"><h2><span class="no">10</span><span class="t">口头报告提纲与可能追问<span class="zh">Oral outline and likely questions</span></span></h2>
+<p class="q">5 分钟怎么讲，导师会问什么。<span class="zh">A five-minute script and the obvious follow-ups.</span></p>
+<h3>10.1 五分钟提纲<span class="zh">Five-minute script</span></h3>
+<ol>
+<li><b>问题：</b>视觉 OPD 的教师即使看到细节，模型也可能主要靠语言先验答题——模态失衡。</li>
+<li><b>方法：</b>正教师看放大证据，负教师看随机遮挡；同一 token 在两边对数概率差为正，才算“依赖视觉”，只在这些位置蒸馏正教师。</li>
+<li><b>结果：</b>4B 平均 64.30→80.01，超过 Vision-OPD 2.91 分；输出从 553.8 降到 140.9 tokens；单步反而快 31.8%。</li>
+<li><b>消融：</b>正、负教师缺一不可（74.62 / 71.98 / 80.01）；Zoom-In 与 Mask 都不能换成更弱的操作。</li>
+<li><b>与我们的关系：</b>它证明“两个教师 + token 选择”在视觉侧也已被做过；我们要再进一步，只能做“视觉证据 vs 简洁信号”的仲裁。</li>
+</ol>
+<h3>10.2 可能被问到的<span class="zh">Likely questions</span></h3>
+<table class="content">
+<thead><tr><th>问题</th><th>回答要点</th></tr></thead>
+<tbody>
+<tr><td>“它的两个教师不就是双教师吗？”</td><td>是双教师结构，但不是两种特权：两个教师共享参数，只是同一图像特权的正负对照。我们的设想是两个不同来源的特权（视觉 + 简洁）。</td></tr>
+<tr><td>“它需要标准答案吗？”</td><td>不需要；教师只看图像变换 + 问题 + prefix。这也是它能和 CRISP 并列的原因。</td></tr>
+<tr><td>“为什么用 JSD 不用 reverse KL？”</td><td>教师在训练中持续 EMA 更新，JSD 对称、稳定；CRISP 用旧快照 + reverse KL。两者都可行，但训练动力学不同。</td></tr>
+<tr><td>“为什么要 top-K？”</td><td>全词表 logits 对 VLM 太占显存；top-100 + 尾部桶近似无损。</td></tr>
+<tr><td>“输出变短是好事还是副作用？”</td><td>论文把它当效率结果报告，不是训练目标；它没有显式长度奖励。这恰好说明视觉信任域选择会顺带删冗余。</td></tr>
+<tr><td>“我们能直接加一个简洁教师吗？”</td><td>可以试，但冲突点就在信任域：视觉支持的 token 可能正是简洁教师想删的长推理。必须先做 G2。</td></tr>
+</tbody></table>
+</section>
+</main>
+<footer>
+<p>Paper reading report · OPD-V (arXiv 2608.05131v2, 2026-08-06) · prepared 2026-10-27<span class="zh">论文精读报告 · OPD-V（arXiv 2608.05131v2，2026-08-06）· 2026-10-27 整理</span></p>
+<p>All numbers are taken from the paper's Tables 1–4 and Figures 3–6; no independent reproduction was performed in this report.<span class="zh">所有数字取自原文 Table 1–4 与 Figure 3–6，本报告未做独立复现。</span></p>
+</footer>
+<div class="progress" id="bar"></div>
+<script>
+const bar=document.getElementById('bar');
+const onScroll=()=>{const h=document.documentElement;
+ const p=(h.scrollTop)/(h.scrollHeight-h.clientHeight)*100; bar.style.width=p+'%';};
+addEventListener('scroll',onScroll,{passive:true}); onScroll();
+const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},
+ {threshold:0, rootMargin:"0px 0px -8% 0px"});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+addEventListener('load',()=>setTimeout(()=>{
+ document.querySelectorAll('.reveal:not(.in)').forEach(el=>{
+  const r=el.getBoundingClientRect(); if(r.top<innerHeight*1.2) el.classList.add('in');});},600));
+</script></body></html>
