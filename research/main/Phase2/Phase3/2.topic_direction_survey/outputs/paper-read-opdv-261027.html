@@ -85,6 +85,7 @@ footer .zh{display:block;color:#8592a1;font-size:.96em;margin-top:2px}
 </div></div>
 
 <main>
+<div class="caveat" style="margin-top:-40px"><p><b>篇目说明（2026-10-27 补记）</b>：本文精读的是 <b>OPD-V（arXiv 2608.05131，2026-08）</b>，属于 Vision-OPD 的<b>后续工作</b>。A211 会议导师指定的两篇是 <b>Vision-OPD（2605.18740）</b> 与 <b>CRISP（2603.05433）</b>，对应报告见 <code>paper-read-vision-opd-261027.html</code> 和 <code>paper-read-crisp-261027.html</code>。本报告保留作"视觉 OPD 最新形态"的参考资料，<b>不计入任务 2 交付</b>。</p></div>
 <section class="reveal" id="s1"><h2><span class="no">01</span><span class="t">一句话与定位<span class="zh">One-sentence summary and positioning</span></span></h2>
 <p class="q">它解决什么问题？<span class="zh">What problem does it solve?</span></p>
 <div class="key"><p><b>视觉 OPSD 里，教师提供的特权信息可能被模型的语言先验淹没（Modality Imbalance）。OPD-V 构造“正教师（Zoom-In）+ 负教师（Mask）”两种图像条件，用两者对同一 token 的支持差判定该 token 是否依赖视觉证据，只在正差位置蒸馏正教师。</b></p></div>
