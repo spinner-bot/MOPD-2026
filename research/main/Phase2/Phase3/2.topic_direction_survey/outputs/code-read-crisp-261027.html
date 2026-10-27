@@ -1,0 +1,384 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CRISP 代码拆解 · 在 verl 上加一个长度压缩自蒸馏器</title>
+<style>
+:root{--ink:#111827;--sub:#5b6674;--line:#dfe4ea;--bg:#f7f8fa;--card:#ffffff;
+--accent:#2563a8;--accent2:#c2410c;--ok:#047857;--warn:#b45309;--max:1080px}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);
+ font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei","Noto Sans SC",sans-serif;
+ font-size:16px;line-height:1.8;-webkit-font-smoothing:antialiased}
+.hero{background:linear-gradient(135deg,#1a1024 0%,#2d1b3d 48%,#43305a 100%);color:#f0eaf6;
+ padding:70px 32px 58px;position:relative;overflow:hidden}
+.hero:before{content:"";position:absolute;inset:0;
+ background:radial-gradient(900px 380px at 18% 0%,rgba(167,139,250,.26),transparent 70%),
+            radial-gradient(700px 340px at 88% 100%,rgba(251,146,60,.16),transparent 70%)}
+.hero .inner{max-width:var(--max);margin:0 auto;position:relative}
+.kicker{letter-spacing:.22em;font-size:.74rem;text-transform:uppercase;color:#b8a5d0;margin-bottom:16px}
+.hero h1{font-size:clamp(1.8rem,4vw,2.6rem);line-height:1.24;margin:0 0 10px;font-weight:650}
+.hero h1 .zh{display:block;font-size:.5em;font-weight:500;color:#cfc0e0;margin-top:12px}
+.hero p.lead{max-width:840px;color:#ddd0ea;font-size:1rem;margin:0}
+.hero p.lead.zh{color:#b9a8cc;font-size:.93rem;margin-top:8px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin-top:32px}
+.stat{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);border-radius:12px;padding:15px 18px}
+.stat .n{font-size:1.5rem;font-weight:700;font-variant-numeric:tabular-nums;color:#fff}
+.stat .l{font-size:.77rem;color:#d6c8e4;margin-top:2px}
+.stat .l .zh{display:block;color:#b1a1c4;font-size:.72rem;margin-top:1px}
+.progress{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,#7c3aed,#f59e0b);width:0;z-index:99;transition:width .1s linear}
+main{max-width:var(--max);margin:0 auto;padding:0 32px 90px}
+section{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:32px 38px;
+ margin:-34px 0 24px;box-shadow:0 1px 2px rgba(16,24,40,.05),0 12px 32px -18px rgba(16,24,40,.18);position:relative}
+section:first-of-type{margin-top:-48px}
+section h2{display:flex;align-items:baseline;gap:14px;font-size:1.26rem;margin:0 0 6px;font-weight:650}
+section h2 .no{font-size:2rem;font-weight:800;color:#c8d6e5;line-height:1;font-variant-numeric:tabular-nums}
+section h2 .t .zh{display:block;font-size:.72em;font-weight:500;color:var(--sub);margin-top:1px}
+section .q{color:var(--sub);font-size:.93rem;margin:0 0 16px}
+section .q .zh{display:block;font-size:.92em;color:#7a8492;margin-top:1px}
+h3{font-size:1.02rem;margin:24px 0 4px;font-weight:650;color:#1f2937}
+h3 .zh{font-weight:500;color:var(--sub);font-size:.86em;margin-left:8px}
+p{margin:.6rem 0}
+.key,.caveat,.okbox{margin:18px 0}
+.key{background:linear-gradient(180deg,#f0f6fc,#e8f1fa);border-left:4px solid var(--accent);padding:15px 20px;border-radius:0 10px 10px 0}
+.caveat{background:linear-gradient(180deg,#fff8ef,#fdf1e3);border-left:4px solid var(--warn);padding:15px 20px;border-radius:0 10px 10px 0}
+.okbox{background:linear-gradient(180deg,#f0fdf6,#e7f8ef);border-left:4px solid var(--ok);padding:15px 20px;border-radius:0 10px 10px 0}
+.key p,.caveat p,.okbox p{margin:.3rem 0}
+table{border-collapse:collapse;width:100%;margin:14px 0;font-size:.88rem}
+th,td{border-bottom:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+thead th{background:#f2f5f8;font-weight:650;border-bottom:2px solid #d5dce4}
+tbody tr:hover{background:#fafcfe}
+code{background:#eef2f6;border-radius:4px;padding:1px 5px;font-size:.88em;
+ font-family:"Cascadia Code",Consolas,"SF Mono",Menlo,monospace}
+pre{background:#160f22;color:#e6dcf2;border-radius:10px;padding:16px 18px;overflow-x:auto;
+ font-size:.82rem;line-height:1.65;font-family:"Cascadia Code",Consolas,"SF Mono",Menlo,monospace}
+pre .c{color:#9a8ab0}
+pre .k{color:#f0a45c}
+pre .s{color:#9ed08a}
+.file{font-family:"Cascadia Code",Consolas,monospace;font-size:.8rem;color:var(--accent);
+ background:#eef3f8;border-radius:6px;padding:3px 9px;display:inline-block;margin:10px 0 4px}
+.tag{display:inline-block;font-size:.72rem;padding:2px 8px;border-radius:999px;background:#eef3f8;color:var(--sub);margin-left:6px}
+.tag.hot{background:#fdecec;color:#b42318}
+.tag.ok{background:#e7f8ef;color:#047857}
+.tag.mid{background:#fff8ef;color:#b45309}
+ul,ol{margin:.5rem 0 .5rem 1.2rem;padding-left:.6rem}
+li{margin:.35rem 0}
+.reveal{opacity:0;transform:translateY(16px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.3,1)}
+.reveal.in{opacity:1;transform:none}
+footer{max-width:var(--max);margin:0 auto;padding:0 32px 60px;color:var(--sub);font-size:.82rem}
+footer .zh{display:block;color:#8592a1;font-size:.96em;margin-top:2px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.reveal{opacity:1;transform:none}}
+@media(max-width:720px){section{padding:24px 20px}main{padding:0 16px 70px}.hero{padding:52px 20px 44px}}
+</style></head><body>
+<div class="progress" id="pg"></div>
+<div class="hero"><div class="inner">
+ <div class="kicker">Code walkthrough · github.com/HJSang/OPSD_Reasoning_Compression · 2026-10-27</div>
+ <h1>CRISP 代码拆解<span class="zh">Teaching verl to compress its own reasoning</span></h1>
+ <p class="lead">CRISP does not fork verl — it wraps it. A self-contained package under <code>workspace/src/self_distill_hybrid/</code>
+ swaps in its own trainer and worker, then reuses verl's FSDP actor, sglang rollout and HybridEngine unchanged.
+ This report follows one training step end to end.</p>
+ <p class="lead zh" lang="zh-CN">CRISP 没有改 verl，而是<b>在外面套了一层</b>：自己写了一个 trainer（<code>opsd_trainer.py</code>）和一个 worker（<code>opsd_worker.py</code>），
+ 底下照常调用 verl 的 FSDP actor、sglang 推理和 HybridEngine。本报告沿着一步训练，把数据、两次前向、reverse KL、教师刷新全部走一遍，最后和 Vision-OPD 的代码做逐项对照。</p>
+ <div class="stats">
+  <div class="stat"><div class="n">3.3K</div><div class="l">Lines of custom code<span class="zh">真正的自定义代码行数</span></div></div>
+  <div class="stat"><div class="n">reverse KL</div><div class="l">Loss actually used<span class="zh">实际使用的损失</span></div></div>
+  <div class="stat"><div class="n">50 步</div><div class="l">Teacher hard-copy interval<span class="zh">教师硬拷贝间隔</span></div></div>
+  <div class="stat"><div class="n">全词表</div><div class="l">Logits compared (no top-K)<span class="zh">分布对比粒度</span></div></div>
+ </div>
+</div></div>
+
+<main>
+<section class="reveal" id="s1"><h2><span class="no">01</span><span class="t">先纠正一个预期：它不是"改了 verl"<span class="zh">A wrapper, not a fork</span></span></h2>
+<p class="q">为什么这个仓库里还有个 <code>miles/</code>？到底跑的是哪个？<span class="zh">Two frameworks in one repo — which one runs?</span></p>
+<div class="key"><p><b>论文实验跑的是 verl。</b>入口是 <code>python3 -m self_distill_hybrid.main_opsd --config-path .../config --config-name opsd_trainer</code>，配置直接继承 verl 的 <code>dp_actor</code> / <code>dp_ref</code> / <code>rollout</code> 子配置。仓库里的 <code>miles/</code> 是作者后来加进来的<b>另一个框架</b>，README 明写是给"新实验"用的，<b>和论文数字无关</b>。</p></div>
+<p>所以要看懂论文的代码，只需要读这一个目录：</p>
+<div class="file">workspace/src/self_distill_hybrid/</div>
+<table>
+<thead><tr><th>文件</th><th>行数</th><th>干什么</th><th>优先级</th></tr></thead>
+<tbody>
+<tr><td><code>opsd_trainer.py</code></td><td>944</td><td>训练主循环：生成 → 验证 → 训练 → 刷新教师</td><td><span class="tag ok">必读</span></td></tr>
+<tr><td><code>opsd_worker.py</code></td><td>831</td><td>真正的前向与损失（reverse KL / JSD）</td><td><span class="tag ok">必读</span></td></tr>
+<tr><td><code>sd_verifier.py</code></td><td>479</td><td><code>build_opsd_batch()</code>：把同一条回答切成两组输入</td><td><span class="tag ok">必读</span></td></tr>
+<tr><td><code>config/opsd_trainer.yaml</code></td><td>229</td><td>所有默认配置</td><td><span class="tag mid">通读</span></td></tr>
+<tr><td><code>main_opsd.py</code></td><td>211</td><td>Hydra 入口，几乎只是 <code>@hydra.main</code> 的壳</td><td><span class="tag mid">扫一眼</span></td></tr>
+<tr><td><code>sd_dataset.py</code></td><td>—</td><td>读 parquet（<code>sd_prompt</code>/<code>sft_prompt</code> 两列）</td><td><span class="tag mid">扫一眼</span></td></tr>
+<tr><td><code>test_opsd_jsd.py</code></td><td>479</td><td>单元测试——<b>读损失实现的最好辅助材料</b></td><td><span class="tag ok">推荐</span></td></tr>
+</tbody></table>
+<div class="caveat"><p><b>和 Vision-OPD 最大的结构差别</b>：Vision-OPD 是<b>直接改 verl 源码</b>（在 <code>ray_trainer.py</code>、<code>dp_actor.py</code> 里插代码），所以你要"读清哪一行是新的"必须靠搜索。<br>CRISP 是<b>把 verl 当库来用</b>（自己写 trainer，继承 verl 的 Trainer 基类），所以"哪些是新的"一眼就能看出来——整个目录都是新的。<b>这两种改法各有好处，后面第 08 节会对比。</b></p></div>
+</section>
+
+<section class="reveal" id="s2"><h2><span class="no">02</span><span class="t">入口与配置：一个 shell，一个 yaml<span class="zh">Entry point and config</span></span></h2>
+<p class="q">从哪里开始跑？<span class="zh">Where does it start?</span></p>
+<div class="file">workspace/scripts/sft/train_opsd.sh</div>
+<pre><span class="c"># 关键超参全部是环境变量，带默认值</span>
+OPSD_BETA=${OPSD_BETA:-0.5}
+OPSD_LOSS_TYPE=${OPSD_LOSS_TYPE:-reverse_kl}
+TEACHER_UPDATE_FREQ=${TEACHER_UPDATE_FREQ:-0}
+SD_TEMPERATURE=${SD_TEMPERATURE:-0.7}
+SD_MAX_TOKENS=${SD_MAX_TOKENS:-8192}
+
+TOTAL_EPOCHS=${TOTAL_EPOCHS:-10}
+TRAIN_BATCH_SIZE=${TRAIN_BATCH_SIZE:-64}
+LEARNING_RATE=${LEARNING_RATE:-1e-5}
+
+<span class="c"># 启动</span>
+python3 -m self_distill_hybrid.main_opsd \
+    --config-path "${SD_SRC}/self_distill_hybrid/config" \
+    --config-name opsd_trainer \
+    opsd.teacher_update_freq="${TEACHER_UPDATE_FREQ}" \
+    opsd.loss_type="${OPSD_LOSS_TYPE}" \
+    actor_rollout_ref.rollout.name=sglang \
+    actor_rollout_ref.rollout.n=1 \</pre>
+<div class="caveat"><p><b>坑：脚本里的默认值 ≠ 论文用的值。</b>脚本默认 <code>TEACHER_UPDATE_FREQ=0</code>（教师冻结），<code>LR=1e-5</code>，<code>batch=64</code>。但论文的主实验配置在 <code>workspace/execution-configs/qwen3-14b-opsd-length-prune.json</code> 里：</p></div>
+<table>
+<thead><tr><th>参数</th><th>脚本默认</th><th><b>论文实际值</b></th></tr></thead>
+<tbody>
+<tr><td>teacher_update_freq</td><td>0</td><td><b>50</b></td></tr>
+<tr><td>learning_rate</td><td>1e-5</td><td><b>1e-6</b></td></tr>
+<tr><td>train_batch_size</td><td>64</td><td><b>32</b></td></tr>
+<tr><td>micro_batch_size</td><td>8</td><td><b>2</b></td></tr>
+<tr><td>total_epochs</td><td>10</td><td><b>1</b></td></tr>
+<tr><td>max_prompt_length</td><td>4096</td><td><b>1024</b></td></tr>
+<tr><td>max_response_length</td><td>8192</td><td><b>30000</b></td></tr>
+<tr><td>sd_temperature / top_p</td><td>0.7 / 0.95</td><td><b>1.0 / 1.0</b></td></tr>
+<tr><td>use_liger</td><td>false</td><td><b>true</b></td></tr>
+<tr><td>loss_type</td><td>reverse_kl</td><td>reverse_kl</td></tr>
+</tbody></table>
+<div class="key"><p><b>复现的第一原则</b>：先读 <code>execution-configs/*.json</code>，再看 shell 默认值。这个仓库里 <code>execution-configs</code> 有 20 个文件，其中 <code>-tu1/tu10/tu20/tu40/tu60/tu80/tu100</code> 是<b>教师刷新间隔的扫描</b>，<code>-20pct/50pct/80pct</code> 是<b>压缩目标比例的扫描</b>——正好对应论文的消融章节。<b>这就是论文实验的完整台账。</b></p></div>
+</section>
+
+<section class="reveal" id="s3"><h2><span class="no">03</span><span class="t">数据：一条样本，两个提问<span class="zh">One response, two prompts</span></span></h2>
+<p class="q">"教师更简洁"在数据里是怎么表达的？<span class="zh">Where does the conciseness live?</span></p>
+<div class="file">workspace/src/data/prepare_length_prune_data.py</div>
+<pre>def build_teacher_prompt_concise(question):
+    cfg = _PROMPTS[<span class="s">"length_prune_teacher"</span>]
+    content = cfg[<span class="s">"prefix"</span>] + question + cfg[<span class="s">"suffix"</span>]
+    <span class="k">return</span> json.dumps([{<span class="s">"role"</span>: <span class="s">"user"</span>, <span class="s">"content"</span>: content}])</pre>
+<p>教师提示的原文在 <code>workspace/config/prompts.json</code> 的 <code>length_prune_teacher</code> 字段：</p>
+<pre><span class="s">"Solve the following math problem concisely and correctly. Be direct — avoid
+unnecessary elaboration, redundant steps, or restating the problem. Focus only on
+the key reasoning steps needed to reach the answer.
+
+The last line of your response should be of the form Answer: $Answer ..."</span></pre>
+<div class="okbox"><p><b>所以 CRISP 的"教师"到底是什么</b>：同一份权重、同一个问题，只是提示前多了一段"要简洁、别废话、只写关键步骤"。<b>没有第二个模型，也没有标准答案</b>。这就是它和"用 GPT 生成短答案再 SFT"的根本区别。</p></div>
+<h3>3.1 产出的 parquet 有哪几列</h3>
+<table>
+<thead><tr><th>列名</th><th>内容</th><th>谁用</th></tr></thead>
+<tbody>
+<tr><td><code>sft_prompt</code></td><td>DAPO 原始提示（"Solve ... step by step."）</td><td><b>学生生成</b>用</td></tr>
+<tr><td><code>sd_prompt</code></td><td>原题 + 简洁指令</td><td><b>教师打分</b>用</td></tr>
+<tr><td><code>question</code></td><td>剥掉套话的纯题目</td><td>日志、评测</td></tr>
+<tr><td><code>teacher_solution</code></td><td>空字符串</td><td>长度压缩模式下故意留空（不提供参考答案）</td></tr>
+<tr><td><code>ground_truth</code></td><td>标准答案</td><td><b>只用于统计准确率，不进损失</b></td></tr>
+</tbody></table>
+<h3>3.2 四种压缩目标（对应论文消融）</h3>
+<pre><span class="c">length_prune_concise   → "Solve concisely"           （主实验）</span>
+<span class="c">length_prune_20pct     → "using {20}% fewer tokens"</span>
+<span class="c">length_prune_50pct     → "using {50}% fewer tokens"</span>
+<span class="c">length_prune_80pct     → "using {80}% fewer tokens"</span></pre>
+<p>同一个脚本用 <code>batch</code> 模式一次生成四套，并用<b>同一个随机种子 42</b> 做 80/20 划分，保证四组实验的题集完全一致——这是个很值得学的实验卫生习惯：<b>变的是提示，不是数据</b>。</p>
+</section>
+
+<section class="reveal" id="s4"><h2><span class="no">04</span><span class="t">训练主循环：五步走<span class="zh">The fit() loop</span></span></h2>
+<p class="q">一步训练里发生了什么？<span class="zh">What happens in one step.</span></p>
+<div class="file">workspace/src/self_distill_hybrid/opsd_trainer.py:567 fit()</div>
+<pre><span class="c"># ① 保存教师提示，把 batch 的提示换成学生提示</span>
+sd_prompts_json[i] = json.dumps(batch.non_tensor_batch[<span class="s">"raw_prompt"</span>][i])
+batch.non_tensor_batch[<span class="s">"raw_prompt"</span>][i] = json.loads(batch.non_tensor_batch[<span class="s">"sft_prompt"</span>][i])
+
+<span class="c"># ② 学生生成（sglang，on-policy）</span>
+gen_output = self.async_rollout_manager.generate_sequences(batch)
+self.checkpoint_manager.sleep_replicas()      <span class="c"># ★ 让出显存给训练前向</span>
+
+<span class="c"># ③ 验证（只统计，不过滤）</span>
+<span class="c"># ④ 训练：对全部回答做 reverse KL</span>
+opsd_metrics = self._opsd_update(batch, responses)
+
+<span class="c"># ⑤ 每隔 50 步，把学生权重重拷贝给教师</span>
+<span class="k">if</span> self.teacher_update_freq &gt; 0 <span class="k">and</span> self.global_steps % self.teacher_update_freq == 0:
+    self._update_teacher_weights()
+
+<span class="c"># ⑥ 把新权重同步回推理引擎，保证下一步仍是 on-policy</span>
+self.checkpoint_manager.update_weights()</pre>
+<div class="key"><p><b>第 ① 步是整个方法的核心动作</b>：<b>同一道题，用两句不同的话去问</b>。学生被问"一步步解"（原提示），教师被问"简洁地解"（加了指令的提示）。两个模型输出的是<b>同一条回答</b>（学生写的），所以可以逐 token 比较。</p></div>
+<h3>4.1 为什么第 ③ 步"验证但不过滤"值得单独说</h3>
+<p>绝大多数 RL 方法（GRPO/DAPO）会丢掉答错样本，只用答对的。CRISP <b>全部保留</b>——因为它不需要"答对"这个信号，它只需要"教师在这里更简洁"。答错的轨迹一样有压缩价值。</p>
+<div class="caveat"><p><b>注意 <code>sleep_replicas()</code> 那一行</b>：sglang 推理引擎和训练前向共享同一批 GPU。生成完必须让推理引擎"睡下"（释放 KV cache 与权重），否则训练前向会 OOM。代码里 <code>train_opsd.sh</code> 顶部那段长注释专门讲了这个：<b>不能开 <code>expandable_segments</code></b>，否则 sglang 的 <code>torch_memory_saver</code> 会拒绝初始化。<b>这是"改关键参数"时最容易踩的雷</b>。</p></div>
+</section>
+
+<section class="reveal" id="s5"><h2><span class="no">05</span><span class="t">关键机制：两组输入怎么对齐<span class="zh">Keeping teacher and student aligned</span></span></h2>
+<p class="q">教师提示更长，怎么保证逐 token 比较时不错位？<span class="zh">How alignment is guaranteed.</span></p>
+<div class="file">workspace/src/self_distill_hybrid/sd_verifier.py:347 build_opsd_batch()</div>
+<pre><span class="k">for</span> t_prompt, s_prompt, response_text <span class="k">in</span> zip(teacher_prompts, student_prompts, responses):
+    t_seq = _tokenize_sequence(t_prompt,   response_text, tokenizer, max_length, pad_token_id)
+    s_seq = _tokenize_sequence(s_prompt, response_text, tokenizer, max_length, pad_token_id)
+    <span class="k">if</span> t_seq <span class="k">is None</span> <span class="k">or</span> s_seq <span class="k">is None</span>:
+        skipped += 1        <span class="c"># ★ 任何一边超长，整条丢掉</span>
+        <span class="k">continue</span>
+    teacher_seqs.append(t_seq)
+    student_seqs.append(s_seq)</pre>
+<div class="key"><p><b>核心不变量</b>：教师序列 = <code>sd_prompt</code> + <code>response</code>，学生序列 = <code>sft_prompt</code> + <b>同一条</b> <code>response</code>。
+两边的 <b>response token 完全相同</b>，只是前面接的提示不同、长度不同。</p></div>
+<p>这个不变量靠三道防线保证，worker 里那行 assert 只是第三道：</p>
+<ol>
+<li><code>SelfDistillDataset.filter_overlong_prompts</code>：载入时就丢掉教师提示超长的样本；</li>
+<li><code>_tokenize_sequence()</code> 返回 <code>None</code> 就整条丢弃——<b>绝不允许只截断一边</b>；</li>
+<li><code>opsd_worker.py:295</code> 的 <code>assert teacher_logits.shape[0] == student_logits.shape[0]</code>。</li>
+</ol>
+<div class="caveat"><p>如果这个 assert 挂了，报错信息会直接告诉你去看 <code>data.max_prompt_length</code> 和 <code>opsd.sft_max_length</code>。<b>这是这份代码里写得最好的一条错误信息</b>，值得学习：它不但报错，还给了下一步查哪里。</p></div>
+<h3>5.1 <code>loss_mask</code> 在标什么</h3>
+<pre>teacher_loss_mask: [0,0,0,...,0, 1,1,1,...,1]
+                   └─ 提示部分 ─┘ └─ 回答部分 ─┘
+student_loss_mask: [0,0,...,0, 1,1,1,...,1]
+                   └─ 更短的提示 ┘ └─ 同一段回答 ─┘</pre>
+<p>只在<b>回答部分</b>算损失，提示部分全部屏蔽。因为两边的提示本来就不同——比提示没有意义。</p>
+</section>
+
+<section class="reveal" id="s6"><h2><span class="no">06</span><span class="t">损失：全词表的 reverse KL<span class="zh">Full-vocabulary reverse KL</span></span></h2>
+<p class="q">和 Vision-OPD 的 top-100 有什么不同？<span class="zh">How it differs from Vision-OPD's top-K.</span></p>
+<div class="file">workspace/src/self_distill_hybrid/opsd_worker.py:194 _opsd_training_step()</div>
+<pre><span class="c"># 教师前向（冻结，不传梯度）</span>
+<span class="k">with</span> torch.no_grad():
+    teacher_logits = self._forward_logits_unpadded(
+        self.ref_module_fsdp, t_input_ids, t_attention_mask, t_position_ids, t_loss_mask)
+
+<span class="c"># 学生前向（带梯度）</span>
+student_logits = self._forward_logits_unpadded(
+    self.actor_module_fsdp, s_input_ids, s_attention_mask, s_position_ids, s_loss_mask)
+
+<span class="c"># 两种损失，默认走 reverse_kl</span>
+loss_fn_map = {
+    <span class="s">"jsd"</span>:        (self._compute_jsd_loss,         self._compute_jsd_loss_liger),
+    <span class="s">"reverse_kl"</span>: (self._compute_reverse_kl_loss, self._compute_reverse_kl_loss_liger),
+}</pre>
+<div class="key"><p><b>这里没有 top-K。</b>两遍前向都返回<b>完整词表</b>的 logits（<code>(N_resp, vocab)</code>），逐 token 算完整分布。为了不炸显存，实现上用 <code>chunk_size=128</code> 把 token 分块处理，每块算完立刻 <code>del</code> 掉中间张量。</p></div>
+<h3>6.1 reverse KL 的写法</h3>
+<pre>KL(p_S ‖ p_T) = Σ_x p_S(x) · [ log p_S(x) − log p_T(x) ]</pre>
+<div class="file">opsd_worker.py:688 _compute_reverse_kl_loss()</div>
+<p>注释里写得很直白，值得原样记住：</p>
+<pre><span class="s">"""This is "mode-seeking": the student concentrates probability mass on the
+teacher's high-probability tokens, which encourages the student to adopt the
+teacher's concise reasoning style without spreading probability over tokens
+the teacher assigns low weight to."""</span></pre>
+<div class="okbox"><p><b>为什么这里必须是 reverse KL，而 Vision-OPD 用 JSD</b>——两篇的代码各自写了原因，而且互相印证：</p>
+<p>· CRISP 的教师<b>更简洁</b>，学生要"收缩"到教师的模态上 ⇒ 需要 mode-seeking ⇒ reverse KL。</p>
+<p>· Vision-OPD 的教师和学生<b>能力相同、只是视角不同</b> ⇒ 不需要收缩，对称的 JSD 更好（论文 Table 4 实测高约 1 分）。</p>
+<p><b>结论：散度的选择不是风格问题，是由"教师相对学生是什么关系"决定的。</b>我们的双教师如果一个是"看得到证据"、一个是"说得简短"，那它们和学生的关系就同时包含"对称"和"收缩"两种——<b>这正是需要仲裁的地方，也是论文最好的立论点。</b></p></div>
+<h3>6.2 JSD 分支也实现了（虽然没用作主实验）</h3>
+<div class="file">opsd_worker.py:498 _compute_jsd_loss()</div>
+<pre>m_log_probs = (beta * t_probs + (1.0 - beta) * s_probs).clamp(min=1e-8).log()
+kl_t = (t_probs * (t_log_probs - m_log_probs)).sum(-1)
+kl_s = (s_probs * (s_log_probs - m_log_probs)).sum(-1)
+jsd_chunk = beta * kl_t + (1.0 - beta) * kl_s</pre>
+<p>代码里 <code>USE_LIGER=true</code> 时走 liger 的融合实现（省显存），否则走上面这段手写版。<b>两版都应该给出同样的数</b>——<code>test_opsd_jsd.py</code> 就是干这个的，可以直接跑来验证自己的理解对不对。</p>
+<h3>6.3 梯度累积与裁剪</h3>
+<pre>scaled_loss = loss / grad_accum
+scaled_loss.backward()
+
+grad_clip = self.config.actor.get(<span class="s">"grad_clip"</span>, 1.0)   <span class="c"># 论文用 1.0</span>
+grad_norm = self.actor_module_fsdp.clip_grad_norm_(max_norm=grad_clip)</pre>
+</section>
+
+<section class="reveal" id="s7"><h2><span class="no">07</span><span class="t">教师刷新：硬拷贝，不是 EMA<span class="zh">Hard copy, not EMA</span></span></h2>
+<p class="q">"教师每 50 步刷新"在代码里是哪几行？<span class="zh">Where the 50-step refresh lives.</span></p>
+<div class="file">opsd_trainer.py:551 _update_teacher_weights() → opsd_worker.py:53 update_teacher()</div>
+<pre><span class="k">def</span> update_teacher(self):
+    <span class="k">with</span> torch.no_grad():
+        <span class="k">for</span> p_student, p_teacher <span class="k">in</span> zip(student_params, teacher_params):
+            <span class="k">if</span> p_student.shape != p_teacher.shape:
+                <span class="k">raise</span> ValueError(<span class="s">"update_teacher shard mismatch"</span>)
+            p_teacher.data.copy_(p_student.data)     <span class="c"># ★ 直接覆盖，不是加权平均</span></pre>
+<p>和 Vision-OPD 的 <code>teacher = 0.95*teacher + 0.05*student</code> 对比，这里是<b>每 50 步整体覆盖一次</b>：</p>
+<pre><span class="c">CRISP     : teacher ← student            （每 50 步，一次性跳跃）</span>
+<span class="c">Vision-OPD: teacher ← 0.95·teacher + 0.05·student  （每步，缓慢跟进）</span></pre>
+<div class="caveat"><p><b>两者语义不同，不能混用</b>：CRISP 的教师相当于"学生的周期性快照"，两次刷新之间是<b>完全冻结</b>的；Vision-OPD 的教师则连续地跟着走。CRISP 论文里对刷新间隔做了完整扫描（<code>tu1/10/20/40/60/80/100</code>），Vision-OPD 只比了"冻结/信任域/EMA"三种。<b>如果我们要做双教师，这个"用哪种教师同步方式"本身就是一组现成可跑的消融。</b></p></div>
+<h3>7.1 一个容易忽略的细节：同步是双向的</h3>
+<pre>self._update_teacher_weights()          <span class="c"># 学生 → 教师</span>
+self.checkpoint_manager.update_weights() <span class="c"># 学生 → 推理引擎（sglang）</span></pre>
+<p>每一步训练完都要把新权重推给推理引擎，否则下一步生成的还是旧模型的输出，on-policy 就不成立了。<b>这也是这套代码吃显存的原因</b>：同一时刻显存里要装 actor（带优化器）、ref（教师）、rollout（推理引擎）三份。</p>
+</section>
+
+<section class="reveal" id="s8"><h2><span class="no">08</span><span class="t">两套代码逐项对照（最有用的部分）<span class="zh">Vision-OPD vs CRISP, side by side</span></span></h2>
+<p class="q">同样是 OPSD，工程上差在哪？<span class="zh">Same family, different engineering.</span></p>
+<table>
+<thead><tr><th>维度</th><th>Vision-OPD</th><th>CRISP</th></tr></thead>
+<tbody>
+<tr><td>改造方式</td><td><b>改 verl 源码</b>（5 个文件插入代码）</td><td><b>外层包装</b>（自写 trainer/worker，调用 verl 组件）</td></tr>
+<tr><td>教师看什么</td><td>裁剪放大的图（视觉特权）</td><td>同一句话 + 简洁指令（提示特权）</td></tr>
+<tr><td>特权从哪来</td><td><code>bbox_images</code> 数据列</td><td><code>sd_prompt</code> 数据列</td></tr>
+<tr><td>损失</td><td>JSD (β=0.5)</td><td><b>reverse KL</b>（JSD 分支存在但没用作主实验）</td></tr>
+<tr><td>对比粒度</td><td><b>top-100 + tail 桶</b>（101 维）</td><td><b>全词表</b>（分块计算）</td></tr>
+<tr><td>教师同步</td><td>EMA，ρ=0.05，<b>每步</b></td><td>硬拷贝，<b>每 50 步</b>（另有 progressive 等价物）</td></tr>
+<tr><td>生成引擎</td><td>vLLM</td><td>sglang</td></tr>
+<tr><td>并行</td><td>FSDP + 参数/优化器 offload</td><td>FSDP + Ulysses 序列并行(4) + TP(2)</td></tr>
+<tr><td>rollout 条数</td><td>n=8</td><td>n=1</td></tr>
+<tr><td>是否要标签</td><td>不需要</td><td>不需要（标签只用于统计准确率）</td></tr>
+<tr><td>自定义代码量</td><td>约 5 个文件、几百行插入</td><td>约 3.3K 行独立包</td></tr>
+<tr><td>二次开发难度</td><td>要读懂 verl 内部数据流</td><td>只管自己那个包，出问题时的排查面更小</td></tr>
+</tbody></table>
+<div class="key"><p><b>给我们项目的启示</b>：做"视觉 + 简洁"双教师，最省事的路线是<b>在 Vision-OPD 的仓库上改</b>——因为它已经把"从数据列取教师图像"这条链路打通了，而 CRISP 的"从数据列取教师提示"是同构的。<b>两个教师 = 两条这样的链路同时喂给一个学生。</b>Vision-OPD 的改法更贴近成品（一步到位），CRISP 的改法更干净（好维护），如果只做实验，选前者。</p></div>
+</section>
+
+<section class="reveal" id="s9"><h2><span class="no">09</span><span class="t">一次训练步的完整时序<span class="zh">One step, end to end</span></span></h2>
+<pre>① 从 parquet 取 batch：sd_prompt（含简洁指令）+ sft_prompt（原提示）+ 答案
+       ↓
+② raw_prompt 换成 sft_prompt  →  学生生成（sglang，n=1，温度 1.0）
+       ↓                                   <span class="c">← 回答里没有任何"简洁"的痕迹</span>
+③ sleep_replicas()：推理引擎让出显存
+       ↓
+④ 验证：用 ground_truth 判对错 —— <b>只记指标，不过滤</b>
+       ↓
+⑤ build_opsd_batch：同一条回答，前面分别接两个提示，tokenize 两次
+       ↓
+⑥ 教师前向（ref_module_fsdp，no_grad）→ 全词表 logits
+       ↓
+⑦ 学生前向（actor_module_fsdp，带梯度）→ 全词表 logits
+       ↓
+⑧ 只取回答位置，逐 token 算 reverse KL（分块，chunk=128）
+       ↓
+⑨ backward → grad_clip=1.0 → optimizer.step()
+       ↓
+⑩ 每 50 步：teacher ← student（硬拷贝）
+       ↓
+⑪ update_weights()：学生 → sglang，下一步继续 on-policy</pre>
+</section>
+
+<section class="reveal" id="s10"><h2><span class="no">10</span><span class="t">读代码路线与验收<span class="zh">Reading order and self-check</span></span></h2>
+<p class="q">半天时间怎么过一遍？<span class="zh">Half a day.</span></p>
+<ol>
+<li><b>15 分钟</b>：<code>README.md</code> 的 "How It Works" + "Key Hyperparameters" 两节。建立整体印象。</li>
+<li><b>20 分钟</b>：<code>workspace/config/prompts.json</code>。把 <code>length_prune_teacher</code> 的原文抄下来——<b>这就是"简洁教师"的全部实现</b>。</li>
+<li><b>25 分钟</b>：<code>data/prepare_length_prune_data.py</code>。搞清楚 <code>sd_prompt</code> 与 <code>sft_prompt</code> 的分工。</li>
+<li><b>40 分钟</b>：<code>opsd_trainer.py</code> 的 <code>fit()</code>（567 行起）。画出第 09 节那张时序图的草稿，然后对照。</li>
+<li><b>30 分钟</b>：<code>sd_verifier.build_opsd_batch()</code>。重点理解"为什么必须丢整条而不是截断一边"。</li>
+<li><b>50 分钟</b>：<code>opsd_worker.py</code> 的 <code>_opsd_training_step()</code> 与 <code>_compute_reverse_kl_loss()</code>。</li>
+<li><b>20 分钟</b>：<code>opsd_worker.py:53 update_teacher()</code> + <code>execution-configs/*.json</code>。</li>
+<li><b>可选</b>：跑一遍 <code>pytest self_distill_hybrid/test_opsd_jsd.py</code>。能跑通说明你对 JSD 的理解和作者一致。</li>
+</ol>
+<div class="okbox"><p><b>验收标准（导师问"哪一行"时能答上来的最小集合）</b>：<br>
+① 学生用 <code>sft_prompt</code> 生成、教师用 <code>sd_prompt</code> 打分，发生在 <code>opsd_trainer.py:628–640</code>；<br>
+② 两类输入的拼装与丢弃规则在 <code>sd_verifier.py:347 build_opsd_batch()</code>；<br>
+③ 教师前向的 <code>with torch.no_grad():</code> 在 <code>opsd_worker.py:259</code>；<br>
+④ reverse KL 在 <code>opsd_worker.py:688</code>，注意<b>没有 top-K，是全词表</b>；<br>
+⑤ 教师刷新 = <b>硬拷贝、每 50 步</b>，在 <code>opsd_worker.py:105</code> 的 <code>p_teacher.data.copy_(p_student.data)</code>。</p></div>
+<h3>10.1 三个可以马上做的参数实验</h3>
+<table>
+<thead><tr><th>实验</th><th>怎么改</th><th>看什么指标</th></tr></thead>
+<tbody>
+<tr><td>教师刷新间隔</td><td><code>teacher_update_freq</code> = 1 / 20 / 50 / 100</td><td>回答平均长度、MATH-500 准确率</td></tr>
+<tr><td>散度方向</td><td><code>opsd_loss_type</code> = <code>reverse_kl</code> / <code>jsd</code></td><td>学生熵、教师熵、长度收敛速度</td></tr>
+<tr><td>压缩强度</td><td>换 <code>length_prune_20pct/50pct/80pct</code> 数据集</td><td>实际压缩比 vs 掉分幅度</td></tr>
+</tbody></table>
+<div class="caveat"><p><b>不要动 <code>use_liger</code> 和 <code>expandable_segments</code></b>。前者影响显存路径，后者会直接让 sglang 起不来（脚本顶部注释写了原因）。改这两个得到的"结果"很可能是环境问题，不是方法问题。</p></div>
+</section>
+</main>
+<footer>
+<p>代码版本：<code>github.com/HJSang/OPSD_Reasoning_Compression</code> 主分支，下载于 2026-10-27。<code>miles/</code> 为作者后续新增的框架，与论文数字无关，本报告未涉及。所有行号以该版本为准。<span class="zh">本报告为静态代码阅读，未运行训练。</span></p>
+<p>Generated 2026-10-27 by Claude Code (local). 配套：<code>paper-read-crisp-261027.html</code>（论文精读）、<code>code-read-vision-opd-261027.html</code>（Vision-OPD 代码）。</p>
+</footer>
+<script>
+const pg=document.getElementById('pg');
+addEventListener('scroll',()=>{const h=document.documentElement;pg.style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight)*100)+'%'},{passive:true});
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('in')}),{threshold:.08});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+</script>
+</body></html>
