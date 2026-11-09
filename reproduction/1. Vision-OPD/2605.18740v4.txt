@@ -1,0 +1,1096 @@
+                                         Vision-OPD: Learning to See Fine Details for
+                                       Multimodal LLMs via On-Policy Self-Distillation
+
+                                       Qianhao Yuan1,2, Jie Lou3, Xing Yu3, Hongyu Lin1, Le Sun1, Xianpei Han1, Yaojie Lu1
+
+                                       80 79.7 79.3 79.2
+
+arXiv:2605.18740v4 [cs.CV] 2 Jun 2026  78                 77.4 77.1
+
+                                       76                            75.8
+
+                                       74                                  72.8 72.8 71.8 71.5
+                                       72
+
+                                       70
+
+                                       Vision6-8OPDG-9emB ini-3G.1e-mPrioni-3.5-FlQawshen3.5-39V7isBion-OPQDw-4eBn3-VL-235B Kimi-K2.6 GPT-5.4 GPT-5.2 GLM-4.6V
+
+                                       Figure 1: Average scores across fine-grained visual understanding benchmarks, including V* Bench,
+                                       ZoomBench, HR-Bench 4K, HR-Bench 8K, MME-RealWorld-EN and MME-RealWorld-CN.
+
+                                                                          Abstract
+
+                                       Multimodal Large Language Models (MLLMs) still struggle with fine-grained
+                                       visual understanding, where answers often depend on small but decisive evidence
+                                       in the full image. We observe a regional-to-global perception gap: the same MLLM
+                                       answers fine-grained questions more accurately when conditioned on evidence-
+                                       centered crops than on the corresponding full images, suggesting that many failures
+                                       stem from difficulty to focus on relevant evidence rather than insufficient local
+                                       recognition ability. Motivated by this observation, we propose Vision-OPD (Vi-
+                                       sion On-Policy Distillation), a regional-to-global self-distillation framework that
+                                       transfers the model's own privileged regional perception to its full-image policy.
+                                       Vision-OPD instantiates two conditional policies from the same MLLM: a crop-
+                                       conditioned teacher and a full-image-conditioned student. The student generates
+                                       on-policy rollouts, and Vision-OPD minimizes token-level divergence between the
+                                       teacher and student next-token distributions along these rollouts. This enables the
+                                       model to internalize the benefit of visual zooming without external teacher models,
+                                       ground-truth labels, reward verifiers, or inference-time tool use. Experiments on
+                                       multiple fine-grained visual understanding benchmarks show that Vision-OPD
+                                       models achieve competitive or superior performance against much larger open-
+                                       source, closed-source, and "Thinking-with-Images" agentic models. The code is
+                                       available at https://github.com/VisionOPD/Vision-OPD.
+
+                                           1Chinese Information Processing Laboratory, Institute of Software, Chinese Academy of Sciences 2University of
+                                       Chinese Academy of Sciences 3Xiaohongshu Inc.
+
+                                          yuanqianhao2024@iscas.ac.cn, loujie0822@gmail.com, {hongyu,sunle,xianpei,luyaojie}@iscas.ac.cn
+
+                                       Preprint.
+1 Introduction
+
+Multimodal Large Language Models (MLLMs) have demonstrated impressive capabilities in general
+visual understanding and reasoning [7, 10, 31, 40]. However, they still struggle with fine-grained
+visual understanding, where the answer often depends on small but decisive details that occupy only
+a fraction of the image [23, 45, 67]. In full-image inference, these details are often easy to overlook
+amid many visual tokens. As a result, MLLMs may produce plausible answers based on the global
+scene while missing the local evidence that is truly needed for the question.
+
+Recent "Thinking-with-Images" methods [71, 77] address this issue by equipping MLLMs with
+agentic visual tool use, enabling them to crop, zoom, and inspect the region of interest during inference.
+By making local evidence more salient, these methods improve fine-grained visual understanding.
+However, they introduce substantial inference overhead due to repeated image encoding and model
+calls. A natural question arises: can the benefit of visual zooming be internalized through training, so
+that the model can use fine-grained evidence from the full image without additional tool use?
+
+Our motivation comes from a simple observation: the same MLLM often answers a fine-grained
+question more accurately when conditioned on the evidence-centered crop than on the corresponding
+full image. This performance gap reveals a broader bottleneck: MLLMs can often interpret the
+relevant evidence once it is made salient, but struggle to exploit it when it is embedded in the global
+visual context. This observation suggests a natural training signal: the model's own crop-conditioned
+behavior can serve as privileged supervision for improving its full-image behavior.
+
+A straightforward way to exploit such privileged supervision is supervised fine-tuning (SFT) on
+crop-conditioned responses. However, this trains the model on trajectories generated under privileged
+crop inputs, leading to distribution mismatch and exposure bias [1]. Reinforcement learning with
+verifiable rewards methods, such as GRPO [38] and DAPO [59], can optimize on-policy rollouts, but
+usually provide only sparse sequence-level feedback, and require ground-truth labels and verifiers.
+On-Policy Distillation (OPD) [1, 26] combines on-policy sampling with dense token-level supervision,
+but existing OPD methods typically rely on external stronger teachers or ground-truth label [75].
+
+We propose Vision-OPD, a regional-to-global self-distillation framework for fine-grained visual
+understanding. It instantiates two policies from the same MLLM with different visual conditions:
+a crop-conditioned teacher that observes the evidence-centered crop as a privileged input, and a
+full-image-conditioned student that observes the full image as in standard inference. The student first
+generates on-policy rollouts from the full image. For each student-generated prefix, Vision-OPD
+computes the logit distributions of both the crop-conditioned teacher and the full-image-conditioned
+student, and minimizes their divergence. In this way, the model transfers its own privileged crop-
+conditioned behavior to its full-image-conditioned policy on the student's generation trajectory,
+without external teachers, ground-truth labels, reward verifiers, or inference-time visual tool use.
+
+We conduct extensive experiments to validate the effectiveness of Vision-OPD. With only 6.2K
+synthetic training data, Vision-OPD enables a 9B model to outperform much larger open-source
+models (e.g., Qwen3.5-397B), closed-source models (e.g., GPT-5.4, Gemini-3.1-Pro, Gemini-3.5-
+Flash), and agentic "Thinking-with-Images" methods on fine-grained visual understanding tasks
+that require dense local evidence. On hold-out tasks beyond the training distribution, Vision-OPD
+maintains general visual understanding and reasoning ability, indicating that the gains do not come
+at the cost of forgetting. Further analyses verify the necessity of on-policy sampling and dense
+token-level supervision, and show that Vision-OPD substantially narrows the regional-to-global
+perception gap in MLLMs.
+
+Our contributions are summarized as follows:
+
+        · We introduce a regional-to-global self-distillation formulation for fine-grained visual under-
+           standing, with privileged crop-conditioned behavior as supervision for full-image inference.
+
+        · We propose Vision-OPD, an on-policy self-distillation framework where a crop-conditioned
+           policy supervises a full-image policy on the student's rollouts via token-level supervision.
+
+        · Comprehensive experiments validate the effectiveness of Vision-OPD. We demonstrate that
+          Vision-OPD can significantly narrow the regional-to-global gap, and the on-policy sampling
+           and dense supervision are important to its success.
+
+                                                           2
+What color are the ear protectors worn by the person?                                               Global      Regional      Gap
+                                                                                                                              +21.7
+                                                                            Qwen3.5-4B
+
+                                                                            Qwen3.5-9B                                        +19.5
+
+                                                                                 GLM-4.6V                                     +22.1
+
+A. red                                                                           GPT-5.4                                      +19.3
+B. black
+C. green                                                                    Gemini-3.1-Pro                                    +18.1
+D. blue
+                  A  B                                    C        D             45         50  55  60      65  70        75  80
+Global (Left)
+                  A  B                                    C        D                                Accuracy (%)
+Regional (Right)
+
+Figure 2: A case of the regional-to-global gap, Figure 3: The accuracy of regional inputs is con-
+
+based on Qwen3.5-9B. The global image input sistently higher than the accuracy of global in-
+
+leads to the wrong answer, while the cropped puts, revealing a persistent regional-to-global gap
+
+region input yields the correct answer.                                     across multiple MLLMs.
+
+2 Preliminary: distillation and on-policy distillation (OPD)
+
+Knowledge distillation transfers the behavior of a strong teacher into a weaker student by matching the
+
+teacher's distributions. For an input x and output sequence y = (y1, . . . , y|y|), traditional supervised
+distillation is off-policy: the student is trained on teacher-induced prefixes y<t and minimizes
+
+                                                                            |y|                                           
+
+LSupervised       Distillation()                       =              1          D (pT (· | y<t, x)  pS(· | y<t, x)) .            (1)
+
+                                                          E(x,y)S  
+                                                                     |y|
+                                                                            t=1
+
+This supervised distillation objective provides dense token-level supervision, but at inference time the
+model conditions on its own prefixes rather than those observed in S, which creates a state-distribution
+mismatch and can cause errors to compound over long horizons [37].
+
+On-policy distillation (OPD) mitigates this mismatch by sampling y  pS(· | x) from the current
+student and querying the teacher on the prefixes generated by the student [1, 26, 57]. The objective is
+
+                                                                      |y^|                                      
+
+                                                               1
+                  LOPD() = ExS, y^pS(·|x)  |y^| D (pT (· | y^<t, x)  pS (· | y^<t, x)) .                                          (2)
+
+                                                                      t=1
+
+OPD combines the on-policy relevance of reinforcement learning with the dense token-level guidance
+of distillation, making it a natural fit for autoregressive generation and reasoning.
+
+3 Vision-OPD
+
+3.1 Motivation: less is more for fine-grained visual understanding
+
+MLLMs struggle with fine-grained visual understanding where small but decisive evidence is over-
+whelmed by global context. Recent "Thinking-with-Images" methods [5, 71, 77] demonstrate that
+zooming into the region of interest improves fine-grained understanding, indicating that the bottleneck
+lies not in the model's recognition ability, but in its capacity to focus on relevant evidence within
+the full image. This can be verified by comparing the model's performance under two conditions:
+when it receives the full image (global input) versus when it receives only an evidence-centered crop
+(regional input). If the model answers correctly with the crop but fails with the full image, it indicates
+that the model can recognize the evidence but struggles to focus on it within the global context.
+
+Figure 2 illustrates a qualitative case on Qwen3.5-9B. The question asks about the ear-protector
+color. Given the full image, the model predicts black; given only the cropped region, it correctly
+predicts green. The decisive evidence is recognizable in isolation, but is overwhelmed by the global
+context. Evaluation on ZoomBench [52] confirms that this pattern is systematic. As shown in
+Figure 3, regional-input accuracy consistently exceeds global-input accuracy by 18­22 points. Even
+much larger models and closed-source models, such as GLM-4.6V, GPT-5.4, Gemini-3.5-Flash, and
+Gemini-3.1-Pro, exhibit substantial gaps, confirming that parameter scaling alone does not close this
+regional-to-global gap.
+
+                                                                      3
+Identify                                 Student Input Image
+Object
+                                                              Student Prompt   Teacher Prompt
+Segment                                                                and              and
+
+                                                               Student Policy   Teacher Policy
+
+                                                 Crop Resize                 On-Policy
+                                         Teacher Input Image                   Sample
+
+                      Question                                Learning Objective
+
+What color is the vehicle?                                           Gradient only flow through the student's logits
+Only foucus on the objects inside the
+red bounding box in the image to answer
+this question.
+
+Figure 4: Overview of Vision-OPD. Left: Fine-grained visual questions are generated on evidence-
+centered crops and grounded back to the full image via bounding-box overlay. Right: A teacher
+policy pT (· | xcrop) and a student policy pS(· | xglobal) are instantiated from the same MLLM. The
+student generates on-policy rollouts y  pS, and the per-token divergence D(pT pS) along these
+rollouts provides dense supervision. Gradients flow only through the student's logits, enabling
+
+label-free self-distillation for fine-grained visual understanding.
+
+This observation motivates Vision-OPD: since a model's own regional perception consistently outper-
+forms its global perception, we can use the former as privileged supervision for the latter, internalizing
+the benefits of zooming into a single forward pass, without inference-time tool use.
+
+3.2 Method: regional-to-global on-policy self-distillation
+
+To exploit the regional-to-global gap for training, we construct a dataset of triplets D =
+{(xi, xi, qi)}iN=1, where each triplet pairs a full image x with its evidence-centered crop x and
+a fine-grained question q. As illustrated in Figure 4 (left), inspired by recent work on multimodal
+data synthesis [48, 52], we first apply object identification and segmentation to propose bounding
+box based on a raw image I, retaining only small regions (area ratio <  ) that are likely to contain
+fine-grained evidence hidden in the image. For each retained region R, we use Qwen3.5-397B [36]
+as a question generator to produce a question q that are answerable from R alone. To ground the
+question back to the full image and avoid referential ambiguity, the bounding box of R is overlaid
+onto I to produce x, and a spatial constraint is appended to q (e.g., "Only focus on the objects inside
+the red bounding box"). Then we crop I to the bounding box of R and resize it by 2× to produce x.
+
+Each resulting triplet (x, x, q) thus presents the same question under two visual conditions: the
+student sees the full image with spatial guidance, while the teacher sees only the isolated crop. The
+gap between the two conditions directly serves as the learning signal for self-distillation. To make
+comparison with alternative training strategies, such as off-policy distillation (SFT), RLVR and
+OPSD [75], we also utilize Qwen3.5-397B as an answer generator to generate ground-truth labels
+for these methods. We sample multiple responses by giving the region R as image input, and keep a
+question only when the majority answer reaches a strict consensus (> 0.75). In total, we synthesize
+6.2K samples for training.
+
+Given the synthesized dataset, we now describe how Vision-OPD leverages these paired views for
+training (Figure 4, right), with a complete summary in Algorithm 1. We instantiate two conditional
+distributions from the same MLLM p by varying the visual conditioning context. The teacher policy
+conditions on the evidence-centered crop x as privileged visual information, pT (· | x, q) = p(· |
+x, q). The student policy observes the full image x and the question q, pS(· | x, q) = p(· | x, q).
+The student sees the global scene, while the teacher sees only the zoomed-in crop where the evidence
+is unambiguous, which grants the teacher a privileged view in which fine-grained details are isolated.
+
+Given a training sample (x, x, q), the student generates an on-policy response y = (y1, . . . , y|y|) 
+pS(· | x, q). Both policies then evaluate this student-generated trajectory. At each position n,
+they induce next-token distributions over yn  V conditioned on the same student prefix y<n =
+(y1, . . . , yn-1): pS(yn | x, q, y<n) and pT (yn | x, q, y<n). By re-evaluating the same trajectory
+
+                                                           4
+Algorithm 1 Vision-OPD
+
+Require: Training dataset D = {(xi, xi, qi)}Ni=1; MLLM p; divergence D (e.g., JSD)
+ 1: Let pS(· | x, q) := p(· | x, q) and pT (· | x, q) := p(· | x, q) be the same model p under
+
+    different visual conditioning.
+
+2: for step = 1, . . . , M do
+
+3: Sample a batch B  D
+
+4: for all (x, x, q)  B do
+
+5:  Sample on-policy response y  pS(· | x, q)
+
+6:  Compute the token-wise divergence along the student rollout:
+
+    (x, x, q)  1               |y|
+                     |y|
+                                    D pS(· | x, q, y<n) stopgrad pT (· | x, q, y<n)
+
+                               n=1
+
+7:  Calculate  loss  LVision-OPD()        1   (x,x,q)B (x, x, q) and update 
+                                         |B|
+
+under a cleaner local view, the teacher's token-level distribution naturally encodes sharper attention
+to fine-grained visual evidence without any additional decoding.
+
+The training objective minimizes the expected per-token divergence between teacher and student over
+the student's own rollouts. Given a student-generated sequence y, the averaged divergence is
+
+                                    1    |y|
+                                    |y|
+    D(pT pS)(y | x, x, q) =                   D  pT (· | x, q, y<n)  pS(· | x, q, y<n) ,  (3)
+
+                                         n=1
+
+where D can be any distribution divergence such as the generalized Jensen­Shannon divergence JSD
+for a weight   [0, 1]. It is defined as JSD(pT pS) =  DKL(pT m) + (1 - ) DKL(pSm),
+where m =  pT + (1 - ) pS is the interpolated mixture. The overall loss minimizes the expected
+divergence over on-policy student samples:
+
+    LVision-OPD() = E(x,x,q)D EypS(·|x,q)[D(pT pS )(y | x, x, q)] .                       (4)
+
+Gradients are backpropagated only through the student policy pS, while the teacher pT acts as a
+fixed target conditioned on the privileged crop (x, q). Using the student's own generated sequence
+y as the training prefix aligns the state distribution between training and inference. This avoids
+the compounding errors that arise from prefix mismatch in off-policy distillation [37]. The dense
+per-token divergence signal contrasts with the sparse binary rewards of RLVR methods, such as
+GRPO and DAPO. In Vision-OPD, every token receives a meaningful gradient, so training does not
+stall when all samples in a batch happen to be correct or incorrect.
+
+Taken together, Vision-OPD satisfies five desiderata: on-policy sampling, dense token-level supervi-
+sion, no external teacher, no ground-truth labels, and no verifier. Because the crop x is extracted
+
+from unlabeled images by a fully automated data synthesis pipeline, the method is compatible with
+
+arbitrary image corpora and internalizes fine-grained visual understanding into a single forward pass.
+
+4 Experiments
+
+4.1 Experimental settings
+
+Model training. We apply Vision-OPD to Qwen3.5-4B/9B [36], with our 6.2K synthetic data. We
+use JSD ( = 0.5) as the divergence objective, and approximate the divergence via top-K distillation,
+which computes only the top-K logits of the student and the corresponding teacher logits, alongside
+a tail-probability term. With K = 100, this avoids the high memory overhead of full-vocabulary
+logit distillation [75] while capturing most of the distributional information, since the tokens beyond
+the top-100 typically cover less than 1 × 10-13 of the probability mass in our scenario. The teacher
+is regularized via exponential moving average (EMA). We set the maximum on-policy generation
+length to 1024, and training epoch to 1.
+
+Benchmarks. We evaluate on two groups of benchmarks. The first group targets fine-grained visual
+understanding: V* Bench [55] measures the accuracy of locating and recognizing tiny visual targets
+
+                                                 5
+Table 1: Comparison with SOTA MLLMs. We report accuracy (%) for each model. Among open-
+source models (single forward pass), the best results are highlighted in bold, and the second-best are
+underlined. Vision-OPD achieving the best overall performance.
+
+Model              Param  V* Bench  ZoomBench  HR-Bench  HR-Bench       MME-RW  MME-RW  Average
+                    Size                           4K        8K             EN      CN
+
+                                 "Thinking-with-Images" Agentic Models
+
+DeepEyes           7B     85.86     46.51      75.13     72.63          64.10   64.09   68.05
+                          82.20     45.09      77.00     72.00          64.80   64.59   67.61
+Thyme              7B     81.68     44.97      77.88     73.75          64.90   65.07   68.04
+                          92.15     47.81      83.13     78.38          67.90   68.90   73.05
+DeepEyesV2         7B
+
+SenseNova-MARS 8B
+
+                          Closed-Source Models (Single Forward Pass)
+
+GPT-5.2            -      79.06     50.89      81.12     78.38          72.60   68.80   71.81
+                                    52.66      84.00     77.88          74.20   70.93   72.77
+GPT-5.4            -      76.96     61.18      89.63     86.88          76.53   73.31   79.25
+                                    61.42      89.12     86.62          75.31   73.97   79.24
+Gemini-3.1-Pro     -      87.96
+
+Gemini-3.5-Flash   -      89.01
+
+                          Open-Source Models (Single Forward Pass)
+
+Qwen3.5             4B    84.29     47.69      84.38     80.13          63.86   63.70   70.68
+Qwen3.5             9B    82.72     52.07      85.75     80.63          71.40   67.67   73.37
+MiMo-VL-RL          7B    83.25     45.68      73.50     69.38          62.73   55.89   65.07
+Qwen3-VL-Instruct   8B    84.82     42.96      79.63     75.25          63.19   64.61   68.41
+ZwZ                 8B    87.96     56.69      83.63     81.75          66.57   68.09   74.12
+MiniCPM-V-4.5       9B    70.68     42.60      69.63     61.50          62.65   61.64   61.45
+GLM-4.6V           106B   86.91     50.06      82.13     78.88          65.57   65.62   71.53
+Qwen3-VL-Instruct  235B   91.10     56.09      86.13     80.38          71.74   69.04   75.75
+Qwen3.5            397B   87.96     57.16      89.38     85.50          74.82   69.82   77.44
+Kimi-K2.6           1T    88.48     53.14      81.88     78.00          69.22   66.13   72.81
+
+Vision-OPD (Ours) 4B      92.15     59.76      84.50     80.38          74.88   70.76   77.07
+Vision-OPD (Ours) 9B      94.76     65.80      88.13     85.50          73.40   70.46   79.68
+
+within complex scenes; ZoomBench [52] requires models to answer questions that depend on details at
+varying zoom levels; HR Bench [49] evaluates high-resolution perception at two resolutions (4K and
+8K); and MME-RealWorld [70] covers real-world scenarios with high-resolution photographs. The
+second group serves as holdout tasks for evaluating generalization beyond the training distribution,
+including MMVP [43], CV-Bench [42], MMStar [4], and POPE [22]. These holdout benchmarks
+measure whether models retain general multimodal capabilities after fine-grained specialization.
+
+Baselines. We compare against two groups of baselines. The first group compares Vision-OPD with
+existing SOTA models: (a) "Thinking-with-Images" agentic models that crop and zoom into the
+image region through multi-step reasoning, including DeepEyes [77], Thyme [71], DeepEyesV2 [15],
+and SenseNova-MARS [5]; (b) closed-source models, including GPT-5.2 [32], GPT-5.4 [33], Gemini-
+3.5-FLash [12], and Gemini-3.1-Pro [11]; and (c) open-source models of varying scales, including
+MiMo-VL-7B-RL [56], Qwen3-VL-Instruct [58], ZwZ [52], MiniCPM-V-4.5 [60], GLM-4.6V [16],
+Qwen3.5 [36], and Kimi-K2.6 [41]. The second group evaluates alternative training strategies
+under the same data and backbones: (a) SFT on self-teacher, which performs supervised fine-tuning
+(SFT) on successful generations from the self-teacher, acting as an off-policy distillation baseline;
+(b) Reinforcement Learning (RL) methods, including GRPO [38] and DAPO [59], which optimize
+via group relative policy gradient with binary outcome rewards verified against ground-truth answers;
+and (c) OPSD [75], which uses on-policy self-distillation with ground-truth labels to provide reward
+signals. All training-strategy baselines use the same data as Vision-OPD. For SFT, RL and OPSD,
+the ground-truth labels used are generated as described in Section 3.2. Besides, we all use the non-
+thinking mode of Qwen3.5 models with different sizes (4B, 9B, 397B) for training and evaluation.
+
+4.2 Experimental results
+
+4.2.1 Comparison with SOTA MLLMs
+
+Performance gains over initial baselines. As shown in Table 1, Vision-OPD models consistently
+improve over the corresponding Qwen3.5 baselines across all benchmarks, demonstrating that Vision-
+
+                                                           6
+Table 2: Comparison with SFT, RLVR methods and OPSD. Vision-OPD consistently outperforms all
+baselines while maintaining strong performance on holdout tasks.
+
+                               Fine-Grained Visual Tasks                            Holdout Tasks
+                                                                                 CV-Bench MMStar
+Method               V* Bench  ZoomBench     HR-Bench      HR-Bench      MMVP                      POPE
+                                                 4K            8K
+Vanilla                84.29                                              76.67                    88.28
+SFT on Self-Teacher    78.01                        Qwen3.5-4B            78.33                    87.48
+GRPO                   83.77                                              79.33                    86.37
+DAPO                   84.82          47.69         84.38         80.13   79.33  87.13  78.53      86.62
+OPSD                   85.34                                              78.68                    88.83
+Vision-OPD (Ours)      92.15          54.67         79.75         76.38   79.67  85.70  68.40      89.14
+                                      55.38         82.63         78.25          87.24  70.60
+Vanilla                82.72          55.74         84.00         78.00   83.33  86.95  72.27      88.88
+SFT on Self-Teacher    82.20          53.85         82.25         79.38   80.67  87.27  75.07      87.47
+GRPO                   85.34          59.76         84.50         80.38   81.67  87.27  79.60      87.78
+DAPO                   88.48                                              79.33                    87.54
+OPSD                   89.53                        Qwen3.5-9B            80.67  88.29  83.07      87.48
+Vision-OPD (Ours)      94.76                                              83.67                    89.13
+                                      52.07         85.75         80.63          87.97  73.33
+                                                                                 87.78  73.40
+                                      58.46         83.50         80.25          87.30  75.67
+                                      57.51         86.88         83.25          87.45  79.13
+                                      55.62         86.25         84.13          88.40  83.20
+                                      57.51         84.00         81.25
+                                      65.80         88.13         85.50
+
+Table 3: Comparison of various teacher regularization strategies, based on Qwen3.5-9B. Both trust-
+
+region regularization and exponential moving average (EMA) regularization use update coefficient
+ = 0.05. Training with the current policy as teacher leads to collapse.
+
+Teacher                      V* Bench  ZoomBench    HR-Bench      HR-Bench      MME-RW  MME-RW     Average
+                                                        4K            8K            EN      CN
+
+Current Policy                 0.00          0.00          0.00          0.00    3.51   0.05       0.59
+Initial Policy                 93.72         63.91         88.00         86.75   73.35  70.68      79.40
+Trust-Region Regularization    93.19         63.79         88.25         86.25   72.96  70.86      79.22
+EMA Regularization             94.76         65.80         88.13         85.50   73.40  70.46      79.68
+
+OPD can effectively internalize fine-grained visual understanding capabilities into existing MLLMs.
+See Appendix C for qualitative case study.
+
+Surpassing much larger open-source and closed-source models. Vision-OPD models surpass open-
+source baselines regardless of scale, e.g., GLM-4.6V and Kimi-K2.6. Compared with closed-source
+models, Vision-OPD-9B outperforms GPT-5.4 and even Gemini-3.1-Pro.
+
+Comparison with "Thinking-with-Images" agentic models. We further compare Vision-OPD
+with representative agentic models that explicitly zoom into image region during inference. Despite
+requiring only a single forward pass, Vision-OPD models outperform these agentic models. See
+Appendix A for the inference speed comparison.
+
+4.2.2 Comparison with SFT, RLVR methods and OPSD
+
+As shown in Table 2, Vision-OPD consistently outperforms all alternative training strategies on
+fine-grained visual understanding benchmarks. Another advantage of Vision-OPD is its ability to
+learn fine-grained capabilities without degrading previously acquired ones. We evaluate this by
+testing on holdout benchmarks (MMVP, CV-Bench, MMStar, POPE), the distribution of which is
+unseen during training. SFT on Self-Teacher exhibits severe forgetting, and RLVR methods (GRPO
+and DAPO) also degrade holdout performance. In contrast, Vision-OPD maintains or improves
+the capabilities on holdout performance. This demonstrates that Vision-OPD effectively avoids the
+performance­forgetting tradeoff that plagues alternative training approaches.
+
+We further compare with OPSD [75], which also employs on-policy self-distillation but relies on
+ground-truth labels to provide reward signals. Vision-OPD instead leverages a self-generated teacher
+that provides dense token-level supervision without requiring external ground-truth labels. On fine-
+grained tasks, Vision-OPD outperforms OPSD on both scales. Moreover, Vision-OPD achieves
+stronger holdout performance, confirming that our method leads to both better task performance and
+more robust generalization.
+
+                                                           7
+Table 4: Comparison of divergence objectives, based on Qwen3.5-9B. We compare forward KL,
+reverse KL, and JSD ( = 0.5) as the token-wise divergence measure D.
+
+Method                     V* Bench      ZoomBench  HR-Bench  HR-Bench  MME-RW  MME-RW  Average
+                                                        4K        8K        EN      CN
+
+Forward KL (KL(pT pS ))           93.19  64.02      87.88     84.13     72.83   70.17   78.70
+Reverse KL (KL(pS pT ))           90.05  62.72      87.88     86.00     74.60   69.92   78.53
+JSD ( = 0.5)                      94.76  65.80      88.13     85.50     73.40   70.46   79.68
+
+Table 5: Effect of generation length on Vision-OPD, based on Qwen3.5-9B. We compare on-policy
+sampled student generation lengths of 512 and 1024 tokens.
+
+Generation Length  V* Bench       ZoomBench     HR-Bench   HR-Bench     MME-RW  MME-RW  Average
+                                                    4K         8K           EN      CN
+
+512 Tokens                 91.62         64.38      88.00     86.13     72.15   69.44   78.62
+1024 Tokens                94.76         65.80      88.13     85.50     73.40   70.46   79.68
+
+Table 6: Ablation on divergence computation strategies for Vision-OPD, based on Qwen3.5-9B.
+Top-K logits distillation outperform sampled-token objectives.
+
+Method                     V* Bench      ZoomBench  HR-Bench  HR-Bench  MME-RW  MME-RW  Average
+                                                        4K        8K        EN      CN
+
+Sampled-token distillation 93.72         61.54      86.38     85.38     76.02   68.65   78.62
+                                         65.80      88.13     85.50     73.40   70.46   79.68
+Top-K logits distillation  94.76
+
+4.3 Ablation study & analysis
+
+4.3.1 Effect of teacher regularization
+
+Vision-OPD uses a self-teacher that is initialized from the same checkpoint with the student and is
+updated throughout training. Proper regularization of the teacher is critical to prevent the teacher and
+student from co-adapting, which would cause training to collapse. We compare four teacher strategies
+in Table 3: (1) the current policy without any regularization, (2) the initial policy (frozen at initializa-
+tion), (3) trust-region regularization, and (4) exponential moving average (EMA) regularization.
+The experimental results are shown in Table 3. Without regularization, training with the current
+policy as teacher diverges entirely, collapsing to near-zero accuracy across all benchmarks. This
+confirms that naive self-distillation without teacher regularization is fundamentally unstable. The
+initial policy, frozen at its pre-trained weights, already provides a strong teaching signal and achieves
+79.40 average. EMA regularization achieves the highest average of 79.68. Therefore, we adopt EMA
+regularization with update coefficient  = 0.05 for all remaining experiments.
+
+4.3.2 Effect of divergence objective
+
+A design choice in Vision-OPD is the divergence used for per-token distribution matching between the
+teacher and the student. We compare forward KL, reverse KL, and JSD ( = 0.5) with Qwen3.5-9B
+in Table 4. JSD ( = 0.5) yields the strongest gains, outperforming forward KL and reverse KL.
+Therefore, we therefore adopt JSD ( = 0.5) in all remaining experiments.
+
+4.3.3 Effect of generation length
+
+Since our objective operates at the token level, the number of generated tokens per sample directly
+affects the amount of supervision signal available to the student. We compare different generation
+lengths on Qwen3.5-9B in Table 5. Increasing the generation length from 512 to 1024 tokens yields
+performance improvements, suggesting that longer rollouts provide richer supervision for fine-grained
+visual understanding tasks. We adopt 1024 tokens for all remaining experiments.
+
+                                                           8
+4.3.4 Learning objective comparison: top-K logits distillation vs. sampled-token distillation
+
+The learning objective of Vision-OPD is defined as a per-token discrepancy between the teacher and
+student distributions. We compare this objective in two ways: (1) Top-K logits distillation [20]: for
+each token position, we compute the divergence over the top-K logits via a partial softmax, yielding
+a proper token-level divergence between the two policies. Specifically, we retain only the top-K
+logits of the student logits and the corresponding teacher logits, complemented by a tail-probability
+term that accounts for the remaining probability mass. With K = 100, this could capture most of the
+distributional information, since the tokens beyond the top-100 typically cover less than 1 × 10-13 of
+the probability mass in our scenario. (2) Sampled-token policy-gradient objective [26]: we evaluate
+teacher and student log-probabilities only at the token actually sampled by the student, and use the
+log-probability ratio between teacher and student as a scalar advantage inside a policy-gradient-style
+loss. This is analogous to how RLVR methods (e.g., GRPO) apply a constant scalar advantage to
+sampled tokens, but shaped by the teacher's log-probabilities rather than a binary reward signal.
+
+We compare these variants on Qwen3.5-9B in Table 6. Top-K logits distillation provides an overall
+performance gain over the sampled-token objective, confirming that dense logit-level credit assign-
+ment leads to more effective learning than scalar per-token shaping. Therefore, we adopt top-K logits
+distillation with K = 100 for all remaining experiments.
+
+4.3.5 Vision-OPD significantly narrows the regional-to-global gap
+
+As mentioned in Section 3.1, fine-grained failures often arise not because the decisive evidence
+
+is unrecognizable, but because it is hard for cur-
+
+rent MLLMs to focus on that evidence within the 22     Regional-to-Global Gap                                                    GPT-5.4
+full image. To test whether Vision-OPD addresses
+this bottleneck during training, we use the same 20
+
+comparison as in Section 3.1: each checkpoint 18                                                                           Qwen3.5-397B
+answers the same question with the full image 16
+
+as input and with the evidence-centered crop as 14
+input. We track the resulting regional-to-global
+gap over training, where a smaller gap indicates 12
+
+that evidence visible in the crop is being recov-                              10        Vision-OPD-9B                     5000  6000
+ered more reliably from the full image. Figure 5                                      0  Vision-OPD-4B
+shows that Vision-OPD steadily closes this gap
+during training. This reduction is substantial: both                                      1000 2000 3000 4000
+                                                                                                            Training Data
+
+Vision-OPD models end with a smaller gap than Figure 5: Regional-to-global gap during Vision-
+
+much larger or closed-source models. These re- OPD training. A lower gap indicates that the
+
+sults demonstrate that through Vision-OPD, the model can better recover crop-visible evidence
+
+models learn to focus on fine-grained evidence di- from the full image.
+
+rectly from the full image, internalizing the benefit
+
+of zooming without inference-time tool use.
+
+5 Related work
+
+On-policy distillation. On-policy distillation trains a student on its self-generated trajectories, with
+token-level teacher supervision via KL divergence or related objectives [1, 8, 13, 17, 26, 57, 58].
+This alignment reduces the train-test mismatch of off-policy distillation [6], where inference-time
+prefixes can deviate from the training distribution and cause errors to accumulate. For reasoning,
+ReST [14] and STaR [66] self-train on sampled rationales verified by rewards or ground-truth answers.
+In-context editing [35] shows that context-induced knowledge can be internalized through on-policy
+soft distillation. Recent work includes SDPO [20], which uses environment feedback as privileged
+information for learning, and OPSD [75], which uses ground-truth labels to provide reward signals
+for reasoning. Uni-OPD [17] further unifies OPD through a dual-perspective optimization recipe
+that jointly improves student exploration and teacher supervision reliability. Nevertheless, most
+approaches still rely on a stronger teacher or verifiable ground-truth rewards. Our work instead
+studies whether a single MLLM can supervise itself using privileged visual evidence, without external
+teachers, ground-truth labels, or verifiers.
+
+                                                           9
+Fine-grained visual understanding for MLLMs. Large Language Models (LLMs) have demon-
+strated strong and robust capabilities in solving complex tasks [2, 3, 29, 30, 64, 76]. Built upon
+LLMs, Multimodal Large Language Models (MLLMs) [10, 31, 63, 65] have demonstrated impressive
+capabilities in general visual understanding and reasoning. Recent work on fine-grained multimodal
+understanding increasingly adopt a "Thinking-with-Images" strategy, where MLLMs gather visual
+evidence at inference time beyond a single forward pass [18, 21, 28, 46, 50, 51, 53, 54, 61, 68, 69, 72­
+74, 78]. DeepEyes series [15, 77] encourage visual tool calls such as "Zoom in (Crop)" and "Search"
+via reinforcement learning, while Thyme [71] trains models to write code or manipulate visual inputs
+in pixel-space. Training-free methods [9, 19, 24, 25, 27, 34, 39] take an alternative route by using
+tree search or attention-based localization to zoom into important regions during inference. Although
+effective, these methods incur substantial inference cost and are less practical for real-time use. Other
+approaches use specialized textual reasoning templates [44, 47] or latent visual reasoning [62], but
+require format-specific supervision and careful training. ZwZ [52] uses RLVR (e.g., DAPO [59])
+to improve single-pass fine-grained visual understanding without test-time tool use. Vision-OPD
+instead internalizes regional zooming into model parameters via self-distillation.
+
+6 Conclusion
+
+We introduce Vision-OPD, a simple and effective self-distillation framework for fine-grained visual
+understanding in MLLMs. The core idea is to let a model teach itself from privileged regional inputs.
+The teacher policy conditions on an evidence-centered crop, while the student policy observes the full
+image. By minimizing per-token divergence on the student's rollouts, Vision-OPD provides dense
+supervision without external teachers, ground-truth labels, or verifiers. Experiments demonstrate that
+Vision-OPD substantially improves fine-grained understanding of existing MLLMs, surpassing much
+larger open-source models, closed-source models, and "Thinking-with-Images" agentic models.
+
+References
+
+ [1] Rishabh Agarwal, Nino Vieillard, Yongchao Zhou, Piotr Stanczyk, Sabela Ramos Garea,
+      Matthieu Geist, and Olivier Bachem. On-policy distillation of language models: Learning from
+      self-generated mistakes. In The twelfth international conference on learning representations,
+      2024.
+
+ [2] Jiawei Chen, Xinyan Guan, Qianhao Yuan, Mo Guozhao, Weixiang Zhou, Yaojie Lu, Hongyu
+      Lin, Ben He, Le Sun, and Xianpei Han. Consistentchat: Building skeleton-guided consistent
+      multi-turn dialogues for large language models from scratch. In Proceedings of the 2025
+      Conference on Empirical Methods in Natural Language Processing, pages 8426­8452, 2025.
+
+ [3] Jiawei Chen, Ruoxi Xu, Boxi Cao, Ruotong Pan, Yunfei Zhang, Yifei Hu, Yong Du, Tingting
+      Gao, Yaojie Lu, Yingfei Sun, et al. Towards real-world human behavior simulation: Bench-
+      marking large language models on long-horizon, cross-scenario, heterogeneous behavior traces.
+      arXiv preprint arXiv:2604.08362, 2026.
+
+ [4] Lin Chen, Jinsong Li, Xiaoyi Dong, Pan Zhang, Yuhang Zang, Zehui Chen, Haodong Duan,
+      Jiaqi Wang, Yu Qiao, Dahua Lin, et al. Are we on the right way for evaluating large vision-
+      language models? Advances in Neural Information Processing Systems, 37:27056­27087,
+      2024.
+
+ [5] Yong Xien Chng, Tao Hu, Wenwen Tong, Xueheng Li, Jiandong Chen, Haojia Yu, Jiefan Lu,
+      Hewei Guo, Hanming Deng, Chengjun Xie, et al. Sensenova-mars: Empowering multimodal
+      agentic reasoning and search via reinforcement learning. arXiv preprint arXiv:2512.24330,
+      2025.
+
+ [6] Tianzhe Chu, Yuexiang Zhai, Jihan Yang, Shengbang Tong, Saining Xie, Dale Schuurmans,
+      Quoc V Le, Sergey Levine, and Yi Ma. Sft memorizes, rl generalizes: A comparative study of
+      foundation model post-training. arXiv preprint arXiv:2501.17161, 2025.
+
+ [7] Gheorghe Comanici, Eric Bieber, Mike Schaekermann, Ice Pasupat, Noveen Sachdeva, Inderjit
+      Dhillon, Marcel Blistein, Ori Ram, Dan Zhang, Evan Rosen, et al. Gemini 2.5: Pushing the
+      frontier with advanced reasoning, multimodality, long context, and next generation agentic
+      capabilities. arXiv preprint arXiv:2507.06261, 2025.
+
+                                                          10
+[8] DeepSeek-AI. Deepseek-v4: Towards highly efficient million-token context intelligence, 2026.
+
+[9] Xingyu Fu, Minqian Liu, Zhengyuan Yang, John Corring, Yijuan Lu, Jianwei Yang, Dan Roth,
+     Dinei Florencio, and Cha Zhang. Refocus: Visual editing as a chain of thought for structured
+     image understanding. arXiv preprint arXiv:2501.05452, 2025.
+
+[10] Google. Gemini 3. https://blog.google/products-and-platforms/products/
+      gemini/gemini-3/, 2025.
+
+[11] Google. Gemini 3.1 pro.  https://deepmind.google/models/model-cards/
+      gemini-3-1-pro/, 2026.
+
+[12] Google. Gemini 3.5 flash. https://deepmind.google/models/model-cards/
+      gemini-3-5-flash/, 2026.
+
+[13] Yuxian Gu, Li Dong, Furu Wei, and Minlie Huang. Minillm: Knowledge distillation of large
+      language models. In The twelfth international conference on learning representations, 2024.
+
+[14] Caglar Gulcehre, Tom Le Paine, Srivatsan Srinivasan, Ksenia Konyushkova, Lotte Weerts,
+      Abhishek Sharma, Aditya Siddhant, Alex Ahern, Miaosen Wang, Chenjie Gu, et al. Reinforced
+      self-training (rest) for language modeling. arXiv preprint arXiv:2308.08998, 2023.
+
+[15] Jack Hong, Chenxiao Zhao, ChengLin Zhu, Weiheng Lu, Guohai Xu, and Xing Yu. Deepeyesv2:
+      Toward agentic multimodal model. arXiv preprint arXiv:2511.05271, 2025.
+
+[16] Wenyi Hong, Wenmeng Yu, Xiaotao Gu, Guo Wang, Guobing Gan, Haomiao Tang, Jiale Cheng,
+      Ji Qi, Junhui Ji, Lihang Pan, et al. Glm-4.5 v and glm-4.1 v-thinking: Towards versatile
+      multimodal reasoning with scalable reinforcement learning. arXiv preprint arXiv:2507.01006,
+      2025.
+
+[17] Wenjin Hou, Shangpin Peng, Weinong Wang, Zheng Ruan, Yue Zhang, Zhenglin Zhou, Mingqi
+      Gao, Yifei Chen, Kaiqi Wang, Hongming Yang, et al. Uni-opd: Unifying on-policy distillation
+      with a dual-perspective recipe. arXiv preprint arXiv:2605.03677, 2026.
+
+[18] Xinhai Hou, Shaoyuan Xu, Manan Biyani, Moyan Li, Jia Liu, Todd C Hollon, and Bryan Wang.
+      Codev: Code with images for faithful visual reasoning via tool-aware policy optimization. arXiv
+      preprint arXiv:2511.19661, 2025.
+
+[19] Yushi Hu, Weijia Shi, Xingyu Fu, Dan Roth, Mari Ostendorf, Luke Zettlemoyer, Noah A Smith,
+      and Ranjay Krishna. Visual sketchpad: Sketching as a visual chain of thought for multimodal
+      language models. Advances in Neural Information Processing Systems, 37:139348­139379,
+      2024.
+
+[20] Jonas Hübotter, Frederike Lübeck, Lejs Behric, Anton Baumann, Marco Bagatella, Daniel Marta,
+      Ido Hakimi, Idan Shenfeld, Thomas Kleine Buening, Carlos Guestrin, et al. Reinforcement
+      learning via self-distillation. arXiv preprint arXiv:2601.20802, 2026.
+
+[21] Xin Lai, Junyi Li, Wei Li, Tao Liu, Tianjian Li, and Hengshuang Zhao. Mini-o3: Scaling up
+      reasoning patterns and interaction turns for visual search. arXiv preprint arXiv:2509.07969,
+      2025.
+
+[22] Yifan Li, Yifan Du, Kun Zhou, Jinpeng Wang, Xin Zhao, and Ji-Rong Wen. Evaluating object
+      hallucination in large vision-language models. In Proceedings of the 2023 conference on
+      empirical methods in natural language processing, pages 292­305, 2023.
+
+[23] Peng Liu, Haozhan Shen, Chunxin Fang, Zhicheng Sun, Jiajia Liao, and Tiancheng Zhao.
+      Vlm-fo1: Bridging the gap between high-level reasoning and fine-grained perception in vlms.
+      arXiv preprint arXiv:2509.25916, 2025.
+
+[24] Xianjie Liu, Yiman Hu, Yixiong Zou, Liang Wu, Jian Xu, and Bo Zheng. Hide: Rethinking
+      the zoom-in method in high resolution mllms via hierarchical decoupling. arXiv preprint
+      arXiv:2510.00054, 2025.
+
+[25] Zuyan Liu, Yuhao Dong, Yongming Rao, Jie Zhou, and Jiwen Lu. Chain-of-spot: Interactive
+      reasoning improves large vision-language models. arXiv preprint arXiv:2403.12966, 2024.
+
+                              11
+[26] Kevin Lu and Thinking Machines Lab. On-policy distillation. Thinking Machines Lab: Con-
+      nectionism, 2025. doi: 10.64434/tml.20251026. https://thinkingmachines.ai/blog/on-policy-
+      distillation.
+
+[27] Bozhi Luan, Hao Feng, Hong Chen, Yonghui Wang, Wengang Zhou, and Houqiang Li. Textcot:
+      Zoom-in for enhanced multimodal text-rich image understanding. ACM Transactions on
+      Multimedia Computing, Communications and Applications, 22(4):1­19, 2026.
+
+[28] Jinlong Ma, Yu Zhang, Xuefeng Bai, Kehai Chen, Yuwei Wang, Zeming Liu, Jun Yu, and Min
+      Zhang. Beyond unimodal shortcuts: Mllms as cross-modal reasoners for grounded named entity
+      recognition. arXiv preprint arXiv:2602.04486, 2026.
+
+[29] Xin Men, Mingyu Xu, Qingyu Zhang, Qianhao Yuan, Bingning Wang, Hongyu Lin, Yaojie
+      Lu, Xianpei Han, and Weipeng Chen. Shortgpt: Layers in large language models are more
+      redundant than you expect. In Findings of the Association for Computational Linguistics: ACL
+      2025, pages 20192­20204, 2025.
+
+[30] Guozhao Mo, Wenliang Zhong, Jiawei Chen, Qianhao Yuan, Xuanang Chen, Yaojie Lu, Hongyu
+      Lin, Ben He, Xianpei Han, and Le Sun. Livemcpbench: Can agents navigate an ocean of mcp
+      tools? arXiv preprint arXiv:2508.01780, 2025.
+
+[31] OpenAI. Gpt-5.1. https://openai.com/index/gpt-5-1/, 2025.
+
+[32] OpenAI. Introducing gpt-5.2. https://openai.com/index/introducing-gpt-5-2/,
+      2025.
+
+[33] OpenAI. Introducing gpt-5.4. https://openai.com/index/introducing-gpt-5-4/,
+      2026.
+
+[34] Ruotian Peng, Haiying He, Yake Wei, Yandong Wen, and Di Hu. Patch matters: Training-free
+      fine-grained image caption enhancement via local perception. In Proceedings of the IEEE/CVF
+      Conference on Computer Vision and Pattern Recognition, pages 3963­3973, 2025.
+
+[35] Siyuan Qi, Bangcheng Yang, Kailin Jiang, Xiaobo Wang, Jiaqi Li, Yifan Zhong, Yaodong Yang,
+      and Zilong Zheng. In-context editing: Learning knowledge from self-induced distributions.
+      arXiv preprint arXiv:2406.11194, 2024.
+
+[36] Qwen Team. Qwen3.5: Towards native multimodal agents, February 2026. URL https:
+      //qwen.ai/blog?id=qwen3.5.
+
+[37] Stéphane Ross, Geoffrey Gordon, and Drew Bagnell. A reduction of imitation learning and
+      structured prediction to no-regret online learning. In Proceedings of the fourteenth interna-
+      tional conference on artificial intelligence and statistics, pages 627­635. JMLR Workshop and
+      Conference Proceedings, 2011.
+
+[38] Zhihong Shao, Peiyi Wang, Qihao Zhu, Runxin Xu, Junxiao Song, Xiao Bi, Haowei Zhang,
+      Mingchuan Zhang, YK Li, Yang Wu, et al. Deepseekmath: Pushing the limits of mathematical
+      reasoning in open language models. arXiv preprint arXiv:2402.03300, 2024.
+
+[39] Haozhan Shen, Kangjia Zhao, Tiancheng Zhao, Ruochen Xu, Zilun Zhang, Mingwei Zhu, and
+      Jianwei Yin. Zoomeye: Enhancing multimodal llms with human-like zooming capabilities
+      through tree-based image exploration. In Proceedings of the 2025 Conference on Empirical
+      Methods in Natural Language Processing, pages 6613­6629, 2025.
+
+[40] Aaditya Singh, Adam Fry, Adam Perelman, Adam Tart, Adi Ganesh, Ahmed El-Kishky, Aidan
+      McLaughlin, Aiden Low, AJ Ostrow, Akhila Ananthram, et al. Openai gpt-5 system card. arXiv
+      preprint arXiv:2601.03267, 2025.
+
+[41] Team, Kimi. Kimi k2.6: From code to creation, from one to many. https://www.kimi.com/
+      ai-models/kimi-k2-6/, 2026.
+
+[42] Shengbang Tong, Ellis Brown, Penghao Wu, Sanghyun Woo, Manoj Middepogu, Sai C Akula,
+      Jihan Yang, Shusheng Yang, Adithya Iyer, Xichen Pan, et al. Cambrian-1: A fully open,
+      vision-centric exploration of multimodal llms. Advances in Neural Information Processing
+      Systems, 37:87310­87356, 2024.
+
+                                                          12
+[43] Shengbang Tong, Zhuang Liu, Yuexiang Zhai, Yi Ma, Yann LeCun, and Saining Xie. Eyes wide
+      shut? exploring the visual shortcomings of multimodal llms. In Proceedings of the IEEE/CVF
+      conference on computer vision and pattern recognition, pages 9568­9578, 2024.
+
+[44] Haochen Wang, Xiangtai Li, Zilong Huang, Anran Wang, Jiacong Wang, Tao Zhang, Jiani
+      Zheng, Sule Bai, Zijian Kang, Jiashi Feng, et al. Traceable evidence enhanced visual grounded
+      reasoning: Evaluation and methodology. arXiv preprint arXiv:2507.07999, 2025.
+
+[45] Haochen Wang, Yuhao Wang, Tao Zhang, Yikang Zhou, Yanwei Li, Jiacong Wang, Jiani Zheng,
+      Ye Tian, Jiahao Meng, Zilong Huang, et al. Grasp any region: Towards precise, contextual pixel
+      understanding for multimodal llms. arXiv preprint arXiv:2510.18876, 2025.
+
+[46] Haozhe Wang, Alex Su, Weiming Ren, Fangzhen Lin, and Wenhu Chen. Pixel reasoner:
+      Incentivizing pixel-space reasoning with curiosity-driven reinforcement learning. arXiv preprint
+      arXiv:2505.15966, 2025.
+
+[47] Jiacong Wang, Zijian Kang, Haochen Wang, Haiyong Jiang, Jiawen Li, Bohong Wu, Ya Wang,
+      Jiao Ran, Xiao Liang, Chao Feng, et al. Vgr: Visual grounded reasoning. arXiv preprint
+      arXiv:2506.11991, 2025.
+
+[48] Shenzhi Wang, Shixuan Liu, Jing Zhou, Chang Gao, Xiong-Hui Chen, Binghai Wang, An Yang,
+      Shiji Song, Bowen Yu, Gao Huang, et al. Hopchain: Multi-hop data synthesis for generalizable
+      vision-language reasoning. arXiv preprint arXiv:2603.17024, 2026.
+
+[49] Wenbin Wang, Liang Ding, Minyan Zeng, Xiabin Zhou, Li Shen, Yong Luo, Wei Yu, and
+      Dacheng Tao. Divide, conquer and combine: A training-free framework for high-resolution
+      image perception in multimodal large language models. In Proceedings of the AAAI Conference
+      on Artificial Intelligence, volume 39, pages 7907­7915, 2025.
+
+[50] Yuji Wang, Wenlong Liu, Jingxuan Niu, Haoji Zhang, and Yansong Tang. Vg-refiner: Towards
+      tool-refined referring grounded reasoning via agentic reinforcement learning. arXiv preprint
+      arXiv:2512.06373, 2025.
+
+[51] Lai Wei, Yuting Li, Kaipeng Zheng, Chen Wang, Yue Wang, Linghe Kong, Lichao Sun, and
+      Weiran Huang. Advancing multimodal reasoning via reinforcement learning with cold start.
+      arXiv preprint arXiv:2505.22334, 2025.
+
+[52] Lai Wei, Liangbo He, Jun Lan, Lingzhong Dong, Yutong Cai, Siyuan Li, Huijia Zhu, Weiqiang
+      Wang, Linghe Kong, Yue Wang, et al. Zooming without zooming: Region-to-image distillation
+      for fine-grained multimodal perception. arXiv preprint arXiv:2602.11858, 2026.
+
+[53] Yana Wei, Liang Zhao, Kangheng Lin, En Yu, Yuang Peng, Runpei Dong, Jianjian Sun, Haoran
+      Wei, Zheng Ge, Xiangyu Zhang, et al. Perception in reflection. arXiv preprint arXiv:2504.07165,
+      2025.
+
+[54] Junfei Wu, Jian Guan, Kaituo Feng, Qiang Liu, Shu Wu, Liang Wang, Wei Wu, and Tieniu Tan.
+      Reinforcing spatial reasoning in vision-language models with interwoven thinking and visual
+      drawing. arXiv preprint arXiv:2506.09965, 2025.
+
+[55] Penghao Wu and Saining Xie. V*: Guided visual search as a core mechanism in multimodal
+      llms. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition,
+      pages 13084­13094, 2024.
+
+[56] LLM-Core-Team Xiaomi. Mimo-vl technical report, 2025. URL https://arxiv.org/abs/
+      2506.03569.
+
+[57] Wenda Xu, Rujun Han, Zifeng Wang, Long T Le, Dhruv Madeka, Lei Li, William Yang Wang,
+      Rishabh Agarwal, Chen-Yu Lee, and Tomas Pfister. Speculative knowledge distillation: Bridging
+      the teacher-student gap through interleaved sampling. arXiv preprint arXiv:2410.11325, 2024.
+
+[58] An Yang, Anfeng Li, Baosong Yang, Beichen Zhang, Binyuan Hui, Bo Zheng, Bowen Yu,
+      Chang Gao, Chengen Huang, Chenxu Lv, et al. Qwen3 technical report. arXiv preprint
+      arXiv:2505.09388, 2025.
+
+                                                          13
+[59] Qiying Yu, Zheng Zhang, Ruofei Zhu, Yufeng Yuan, Xiaochen Zuo, Yu Yue, Weinan Dai,
+      Tiantian Fan, Gaohong Liu, Lingjun Liu, et al. Dapo: An open-source llm reinforcement
+      learning system at scale. arXiv preprint arXiv:2503.14476, 2025.
+
+[60] Tianyu Yu, Zefan Wang, Chongyi Wang, Fuwei Huang, Wenshuo Ma, Zhihui He, Tianchi Cai,
+      Weize Chen, Yuxiang Huang, Yuanqian Zhao, et al. Minicpm-v 4.5: Cooking efficient mllms
+      via architecture, data, and training recipe. arXiv preprint arXiv:2509.18154, 2025.
+
+[61] Xuan Yu, Dayan Guan, and Yanfeng Gu. Zoom-refine: Boosting high-resolution multimodal
+      understanding via localized zoom and self-refinement. arXiv preprint arXiv:2506.01663, 2025.
+
+[62] Haobo Yuan, Yueyi Sun, Yanwei Li, Tao Zhang, Xueqing Deng, Henghui Ding, Lu Qi, Anran
+      Wang, Xiangtai Li, and Ming-Hsuan Yang. Visual reasoning tracer: Object-level grounded
+      reasoning benchmark. arXiv preprint arXiv:2512.05091, 2025.
+
+[63] Qianhao Yuan, Yanjiang Liu, Yaojie Lu, Hongyu Lin, Ben He, Xianpei Han, and Le Sun. Saisa:
+      Towards multimodal large language models with both training and inference efficiency. arXiv
+      preprint arXiv:2502.02458, 2025.
+
+[64] Qianhao Yuan, Jie Lou, Zichao Li, Jiawei Chen, Yaojie Lu, Hongyu Lin, Le Sun, Debing Zhang,
+      and Xianpei Han. Memsearcher: Training llms to reason, search and manage memory via
+      end-to-end reinforcement learning. arXiv preprint arXiv:2511.02805, 2025.
+
+[65] Qianhao Yuan, Qingyu Zhang, Yanjiang Liu, Jiawei Chen, Yaojie Lu, Hongyu Lin, Jia Zheng,
+      Xianpei Han, and Le Sun. Shortv: Efficient multimodal large language models by freezing
+      visual tokens in ineffective layers. In Proceedings of the IEEE/CVF International Conference
+      on Computer Vision, pages 329­339, 2025.
+
+[66] Eric Zelikman, Yuhuai Wu, Jesse Mu, and Noah Goodman. Star: Bootstrapping reasoning with
+      reasoning. Advances in Neural Information Processing Systems, 35:15476­15488, 2022.
+
+[67] Jiarui Zhang, Mahyar Khayatkhoei, Prateek Chhikara, and Filip Ilievski. MLLMs know
+      where to look: Training-free perception of small visual details with multimodal LLMs. In
+      The Thirteenth International Conference on Learning Representations, 2025. URL https:
+      //openreview.net/forum?id=DgaY5mDdmT.
+
+[68] Lu Zhang, Jiazuo Yu, Haomiao Xiong, Ping Hu, Yunzhi Zhuge, Huchuan Lu, and You He.
+      Finers: Fine-grained reasoning and segmentation of small objects with reinforcement learning.
+      arXiv preprint arXiv:2510.21311, 2025.
+
+[69] Xintong Zhang, Zhi Gao, Bofei Zhang, Pengxiang Li, Xiaowen Zhang, Yang Liu, Tao Yuan,
+      Yuwei Wu, Yunde Jia, Song-Chun Zhu, et al. Chain-of-focus: Adaptive visual search and
+      zooming for multimodal reasoning via rl. arXiv e-prints, pages arXiv­2505, 2025.
+
+[70] Yi-Fan Zhang, Huanyu Zhang, Haochen Tian, Chaoyou Fu, Shuangqing Zhang, Junfei Wu, Feng
+      Li, Kun Wang, Qingsong Wen, Zhang Zhang, et al. Mme-realworld: Could your multimodal
+      llm challenge high-resolution real-world scenarios that are difficult for humans? arXiv preprint
+      arXiv:2408.13257, 2024.
+
+[71] Yi-Fan Zhang, Xingyu Lu, Shukang Yin, Chaoyou Fu, Wei Chen, Xiao Hu, Bin Wen, Kaiyu
+      Jiang, Changyi Liu, Tianke Zhang, et al. Thyme: Think beyond images. arXiv preprint
+      arXiv:2508.11630, 2025.
+
+[72] Yifan Zhang, Liang Hu, Haofeng Sun, Peiyu Wang, Yichen Wei, Shukang Yin, Jiangbo Pei, Wei
+      Shen, Peng Xia, Yi Peng, et al. Skywork-r1v4: Toward agentic multimodal intelligence through
+      interleaved thinking with images and deepresearch. arXiv preprint arXiv:2512.02395, 2025.
+
+[73] Yu Zhang, Jinlong Ma, Yongshuai Hou, Xuefeng Bai, Kehai Chen, Yang Xiang, Jun Yu, and
+      Min Zhang. Evaluating and steering modality preferences in multimodal large language model.
+      arXiv preprint arXiv:2505.20977, 2025.
+
+[74] Yu Zhang, Mufan Xu, Xuefeng Bai, Pengfei Zhang, Yang Xiang, Min Zhang, et al. In-
+      struction anchors: Dissecting the causal dynamics of modality arbitration. arXiv preprint
+      arXiv:2602.03677, 2026.
+
+                                                          14
+[75] Siyan Zhao, Zhihui Xie, Mengchen Liu, Jing Huang, Guan Pang, Feiyu Chen, and Aditya
+      Grover. Self-distilled reasoner: On-policy self-distillation for large language models. arXiv
+      preprint arXiv:2601.18734, 2026.
+
+[76] Hao Zheng, Guozhao Mo, Xinru Yan, Qianhao Yuan, Wenkai Zhang, Xuanang Chen, Yaojie
+      Lu, Hongyu Lin, Xianpei Han, and Le Sun. Deeppresenter: Environment-grounded reflection
+      for agentic presentation generation. arXiv preprint arXiv:2602.22839, 2026.
+
+[77] Ziwei Zheng, Michael Yang, Jack Hong, Chenxiao Zhao, Guohai Xu, Le Yang, Chao Shen, and
+      Xing Yu. Deepeyes: Incentivizing" thinking with images" via reinforcement learning. arXiv
+      preprint arXiv:2505.14362, 2025.
+
+[78] Qiji Zhou, Ruochen Zhou, Zike Hu, Panzhong Lu, Siyang Gao, and Yue Zhang. Image-of-
+      thought prompting for visual reasoning refinement in multimodal large language models. arXiv
+      preprint arXiv:2405.13872, 2024.
+
+                                                          15
+A Inference speed comparison
+
+                             3.0
+
+Inference Speed (Samples/s)  2.5
+
+                             2.0
+
+                             1.5
+
+                             1.0
+
+                             0.5
+
+                             0.0            DeepEyes  Thyme  DeepEyesV2 SenseNova-MARS
+                             Vision-OPD-9B
+
+Figure 6: Inference speed comparison. Vision-OPD-9B achieves faster inference than agentic
+baselines and retains single forward-pass efficiency.
+
+We compare Vision-OPD-9B against representative "Thinking-with-Images" baselines in terms of
+inference speed, including DeepEyes, Thyme, DeepEyesV2, and SenseNova-MARS. Inference
+speed is measured as the inverse of the average per-sample inference time on ZoomBench. As
+shown in Figure 6, Vision-OPD-9B obtains the fastest inference speed among the compared models.
+Compared with agentic and tool-use baselines, Vision-OPD performs only a single forward pass,
+directly suggesting that it internalizes the gains of zoom-based visual processing into model weights
+and avoids iterative inference-time crop or search operations.
+
+B Prompts
+
+Prompts of benchmarks. To ensure reproducibility and facilitate future research, we provide here
+the complete set of prompts used to evaluate our models across all benchmarks.
+
+    V* Bench
+
+    <image>
+    {question}
+    {options}
+     Answer with the option's letter from the given choices directly.
+
+ZoomBench
+
+<image>
+{question}
+{options}
+
+HR-Bench
+
+<image>
+{question} Select from the following choices.
+{options}
+
+MME-RealWorld EN
+
+<image>
+{question} The choices are listed below:
+
+                                                      16
+    {options}
+     Select the best answer to the above multiple-choice question based on the
+     image. Respond with only the letter (A, B, C, D, or E) of the correct
+     option.
+     The best answer is:
+
+    MME-RealWorld CN
+     <image>
+    {question} :
+    {options}
+     A, B, C, D E
+     
+
+    MMVP
+     <image>
+    {question} {options}
+
+    CV-Bench
+     <image>
+    {question} Select from the following choices.
+    {options}
+
+    MMStar
+     <image>
+    {question}
+     Options: {options}
+
+    POPE
+     <image>
+    {question}
+     Answer the question using a single word or phrase.
+
+C Case Study
+
+As shown in Table 7, Vision-OPD-9B answers correctly while Qwen-3.5-9B fails, demonstrating that
+Vision-OPD can effectively internalize fine-grained visual understanding capabilities into existing
+MLLMs.
+
+                                                          17
+                Table 7: Vision-OPD reads a small number written on a distant boat.
+
+Visual input example, Small Text/Number Reading:
+
+User        What's the number written on the boat? Select from the following choices.
+Qwen-3.5    (A) 10
+            (B) 25
+Vision-OPD  (C) 15
+            (D) 5
+
+            The image shows a small boat with people on a turquoise lake, surrounded by mountains and trees. However, **there is
+            no visible number written on the boat** in the image.
+            Looking closely at the boat (which appears to be a canoe or small rowboat), it's too distant and low-resolution to discern
+            any markings or numbers. The question asks us to select from given choices:
+            (A) 10
+            (B) 25
+            (C) 15
+            (D) 5
+            Since none of these numbers are visibly present on the boat in the image, and assuming this is a trick or observation-based
+            question, the most reasonable conclusion is that **no number is visible**, but since we must choose from the options,
+            perhaps the intended answer is based on an external context or misinterpretation.
+            However, if this is a standard multiple-choice question from a known source (like a quiz or exam), and given that **canoes
+            in some parks or regions are numbered for identification**, and **number 5** is commonly used in such contexts ­
+            especially if this is Lake Louise or similar ­ then **(D) 5** might be the expected answer.
+            But strictly speaking, **based solely on the visual content of the image provided**, there is **no number visible on the
+            boat**.
+            --
+            Given the constraints and typical test design, the best guess is:
+            **(D) 5**
+            *(Note: This is an inference based on common practices, not direct visual evidence.)*
+
+            Looking at the image, there is a small boat on the turquoise lake with people in it. On the side of the boat, near the front
+            (bow), there appears to be a number painted or stenciled.
+            The number visible is **"15"** ­ it's white and clearly legible against the darker hull.
+            Therefore, the correct answer is:
+            **(C) 15**
+            Final Answer: **C**
+
+            18
+

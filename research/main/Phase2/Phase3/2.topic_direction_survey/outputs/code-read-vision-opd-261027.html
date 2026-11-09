@@ -1,0 +1,452 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Vision-OPD 代码拆解 · 从启动脚本到逐 token 损失</title>
+<style>
+:root{--ink:#111827;--sub:#5b6674;--line:#dfe4ea;--bg:#f7f8fa;--card:#ffffff;
+--accent:#2563a8;--accent2:#c2410c;--ok:#047857;--warn:#b45309;--max:1080px}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);
+ font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei","Noto Sans SC",sans-serif;
+ font-size:16px;line-height:1.8;-webkit-font-smoothing:antialiased}
+.hero{background:linear-gradient(135deg,#0b172a 0%,#16324f 48%,#1f4b6e 100%);color:#eef3f8;
+ padding:70px 32px 58px;position:relative;overflow:hidden}
+.hero:before{content:"";position:absolute;inset:0;
+ background:radial-gradient(900px 380px at 18% 0%,rgba(96,165,250,.24),transparent 70%),
+            radial-gradient(700px 340px at 88% 100%,rgba(251,146,60,.18),transparent 70%)}
+.hero .inner{max-width:var(--max);margin:0 auto;position:relative}
+.kicker{letter-spacing:.22em;font-size:.74rem;text-transform:uppercase;color:#93b4d1;margin-bottom:16px}
+.hero h1{font-size:clamp(1.8rem,4vw,2.6rem);line-height:1.24;margin:0 0 10px;font-weight:650}
+.hero h1 .zh{display:block;font-size:.5em;font-weight:500;color:#b9cee0;margin-top:12px}
+.hero p.lead{max-width:840px;color:#c9d8e6;font-size:1rem;margin:0}
+.hero p.lead.zh{color:#9fb6ca;font-size:.93rem;margin-top:8px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin-top:32px}
+.stat{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);border-radius:12px;padding:15px 18px}
+.stat .n{font-size:1.5rem;font-weight:700;font-variant-numeric:tabular-nums;color:#fff}
+.stat .l{font-size:.77rem;color:#c2d5e4;margin-top:2px}
+.stat .l .zh{display:block;color:#93aec5;font-size:.72rem;margin-top:1px}
+.progress{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,#2563a8,#f59e0b);width:0;z-index:99;transition:width .1s linear}
+main{max-width:var(--max);margin:0 auto;padding:0 32px 90px}
+section{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:32px 38px;
+ margin:-34px 0 24px;box-shadow:0 1px 2px rgba(16,24,40,.05),0 12px 32px -18px rgba(16,24,40,.18);position:relative}
+section:first-of-type{margin-top:-48px}
+section h2{display:flex;align-items:baseline;gap:14px;font-size:1.26rem;margin:0 0 6px;font-weight:650}
+section h2 .no{font-size:2rem;font-weight:800;color:#c8d6e5;line-height:1;font-variant-numeric:tabular-nums}
+section h2 .t .zh{display:block;font-size:.72em;font-weight:500;color:var(--sub);margin-top:1px}
+section .q{color:var(--sub);font-size:.93rem;margin:0 0 16px}
+section .q .zh{display:block;font-size:.92em;color:#7a8492;margin-top:1px}
+h3{font-size:1.02rem;margin:24px 0 4px;font-weight:650;color:#1f2937}
+h3 .zh{font-weight:500;color:var(--sub);font-size:.86em;margin-left:8px}
+p{margin:.6rem 0}
+.key,.caveat,.okbox{margin:18px 0}
+.key{background:linear-gradient(180deg,#f0f6fc,#e8f1fa);border-left:4px solid var(--accent);padding:15px 20px;border-radius:0 10px 10px 0}
+.caveat{background:linear-gradient(180deg,#fff8ef,#fdf1e3);border-left:4px solid var(--warn);padding:15px 20px;border-radius:0 10px 10px 0}
+.okbox{background:linear-gradient(180deg,#f0fdf6,#e7f8ef);border-left:4px solid var(--ok);padding:15px 20px;border-radius:0 10px 10px 0}
+.key p,.caveat p,.okbox p{margin:.3rem 0}
+table{border-collapse:collapse;width:100%;margin:14px 0;font-size:.88rem}
+th,td{border-bottom:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+thead th{background:#f2f5f8;font-weight:650;border-bottom:2px solid #d5dce4}
+tbody tr:hover{background:#fafcfe}
+code{background:#eef2f6;border-radius:4px;padding:1px 5px;font-size:.88em;
+ font-family:"Cascadia Code",Consolas,"SF Mono",Menlo,monospace}
+pre{background:#0f1b2a;color:#dbe6f0;border-radius:10px;padding:16px 18px;overflow-x:auto;
+ font-size:.82rem;line-height:1.65;font-family:"Cascadia Code",Consolas,"SF Mono",Menlo,monospace}
+pre .c{color:#7c9ab5}
+pre .k{color:#f0a45c}
+pre .s{color:#9ed08a}
+pre .hl{background:rgba(245,158,11,.16);display:inline-block;width:100%}
+.file{font-family:"Cascadia Code",Consolas,monospace;font-size:.8rem;color:var(--accent);
+ background:#eef3f8;border-radius:6px;padding:3px 9px;display:inline-block;margin:10px 0 4px}
+.tag{display:inline-block;font-size:.72rem;padding:2px 8px;border-radius:999px;background:#eef3f8;color:var(--sub);margin-left:6px}
+.tag.hot{background:#fdecec;color:#b42318}
+.tag.ok{background:#e7f8ef;color:#047857}
+.tag.mid{background:#fff8ef;color:#b45309}
+ul,ol{margin:.5rem 0 .5rem 1.2rem;padding-left:.6rem}
+li{margin:.35rem 0}
+.reveal{opacity:0;transform:translateY(16px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.3,1)}
+.reveal.in{opacity:1;transform:none}
+footer{max-width:var(--max);margin:0 auto;padding:0 32px 60px;color:var(--sub);font-size:.82rem}
+footer .zh{display:block;color:#8592a1;font-size:.96em;margin-top:2px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.reveal{opacity:1;transform:none}}
+@media(max-width:720px){section{padding:24px 20px}main{padding:0 16px 70px}.hero{padding:52px 20px 44px}}
+</style></head><body>
+<div class="progress" id="pg"></div>
+<div class="hero"><div class="inner">
+ <div class="kicker">Code walkthrough · github.com/VisionOPD/Vision-OPD · 2026-10-27</div>
+ <h1>Vision-OPD 代码拆解<span class="zh">From the launch script to the per-token distillation loss</span></h1>
+ <p class="lead">A verl fork with five modified files. This report walks the whole path — shell script → parquet data → teacher batch construction →
+ two forward passes → top-K JSD loss → EMA teacher update — and marks exactly where a second teacher would be inserted.</p>
+ <p class="lead zh" lang="zh-CN">这是 verl 的一个改装版，真正被改动的只有 5 个 Python 文件 + 2 个配置。本报告从启动脚本一路讲到逐 token 损失，
+ 每个关键函数都给出文件与行号，最后标出"要加第二个教师应该改哪里"。面向代码基础一般的读者，不需要先读懂整个 verl。</p>
+ <div class="stats">
+  <div class="stat"><div class="n">5</div><div class="l">Modified Python files<span class="zh">被改动的核心文件</span></div></div>
+  <div class="stat"><div class="n">2</div><div class="l">Forward passes per step<span class="zh">每步两次前向（学生+教师）</span></div></div>
+  <div class="stat"><div class="n">K=100</div><div class="l">Top-K logits distilled<span class="zh">蒸馏的 top-K 词表</span></div></div>
+  <div class="stat"><div class="n">ρ=0.05</div><div class="l">EMA teacher update rate<span class="zh">教师 EMA 更新率</span></div></div>
+ </div>
+</div></div>
+
+<main>
+<section class="reveal" id="s1"><h2><span class="no">01</span><span class="t">先建立地图：这堆代码里哪些是新的<span class="zh">What is actually custom here</span></span></h2>
+<p class="q">目录那么大，我该看哪些文件？<span class="zh">Which files matter?</span></p>
+<p><code>verl/</code> 下面是完整的 verl 框架（几万行），你<b>不需要</b>全读。Vision-OPD 的改动集中在下面这几处，其余都是原样搬运：</p>
+<table>
+<thead><tr><th>文件</th><th>行数</th><th>它负责什么</th><th>要读吗</th></tr></thead>
+<tbody>
+<tr><td><code>scripts/run_vision_opd.sh</code></td><td>~150</td><td>启动脚本：所有超参都从这里传进去</td><td><span class="tag ok">必读</span></td></tr>
+<tr><td><code>scripts/prepare_data.py</code></td><td>125</td><td>把 HuggingFace 数据转成训练用的 parquet</td><td><span class="tag ok">必读</span></td></tr>
+<tr><td><code>verl/trainer/config/vopd.yaml</code></td><td>38</td><td>训练配置的"基线默认值"</td><td><span class="tag ok">必读</span></td></tr>
+<tr><td><code>verl/trainer/ppo/ray_trainer.py</code></td><td>2691</td><td>训练主循环；<b>教师输入就是在这里拼出来的</b>（只读 620–1520 段）</td><td><span class="tag mid">读关键段</span></td></tr>
+<tr><td><code>verl/workers/actor/dp_actor.py</code></td><td>1222</td><td>真正算 loss 的地方；学生/教师两遍前向（读 840–1120 段）</td><td><span class="tag mid">读关键段</span></td></tr>
+<tr><td><code>verl/trainer/ppo/core_algos.py</code></td><td>2330</td><td>损失函数的数学实现（读 1085–1215 段）</td><td><span class="tag ok">必读</span></td></tr>
+<tr><td><code>verl/workers/fsdp_workers.py</code></td><td>2084</td><td>教师模型怎么被创建出来（读 890–935 段）</td><td><span class="tag mid">读关键段</span></td></tr>
+<tr><td><code>verl/workers/config/actor.py</code></td><td>452</td><td><code>SelfDistillationConfig</code>：所有自蒸馏开关的定义</td><td><span class="tag ok">必读</span></td></tr>
+</tbody></table>
+<div class="key"><p><b>判断"这是不是论文自己的代码"的方法</b>：打开文件，搜索 <code>vopd</code>、<code>self_distillation</code>、<code>teacher</code>。搜得到的就是改装处，搜不到的一律是上游 verl，可以先跳过。<b>这是读大框架代码最实用的第一招。</b></p></div>
+<h3>1.1 verl 的四个角色（只需要知道这四个）</h3>
+<table>
+<thead><tr><th>名字</th><th>通俗解释</th><th>在本项目里</th></tr></thead>
+<tbody>
+<tr><td><b>actor</b></td><td>被训练的那个模型，负责算 loss、反传、更新</td><td>学生（整图）</td></tr>
+<tr><td><b>rollout</b></td><td>用 vLLM 快速生成回答的推理引擎，权重和 actor 同步</td><td>学生生成 on-policy 轨迹</td></tr>
+<tr><td><b>ref</b></td><td>冻结的参考模型（原本用于 KL 正则）</td><td>被"征用"成了教师</td></tr>
+<tr><td><b>critic</b></td><td>价值网络（PPO 用）</td><td>本方法<b>不用</b>（<code>adv_estimator: grpo</code> 会关掉）</td></tr>
+</tbody></table>
+<div class="caveat"><p><b>最关键的一个认知</b>：Vision-OPD <b>没有新造一个教师模型类</b>。它直接复用了 verl 里本来就有的 <code>ref_module</code>（ref 策略），把它当成教师，再把它的权重用 EMA 慢慢往学生那边拉。所以"两个教师"在工程上就是"两份额外的模型权重副本"——这对我们的双教师方案是决定性的：增删教师的成本是显存，不是架构。</p></div>
+</section>
+
+<section class="reveal" id="s2"><h2><span class="no">02</span><span class="t">入口：启动脚本逐段读<span class="zh">The launch script, line by line</span></span></h2>
+<p class="q">一次训练的所有可调参数都在这一个文件里。<span class="zh">Every knob lives here.</span></p>
+<div class="file">scripts/run_vision_opd.sh</div>
+<h3>2.1 三段式结构</h3>
+<pre><span class="c"># ① 变量区：所有超参写成 shell 变量</span>
+MODEL_PATH=<span class="s">"Qwen/Qwen3.5-4B"</span>
+TEACHER_REGULARIZATION=<span class="s">"ema"</span>
+TEACHER_UPDATE_RATE=0.05
+TRAIN_BATCH_SIZE=96
+ROLLOUT_N=8
+LR=2e-6
+ALPHA=0.5
+MAX_PROMPT_LENGTH=8192
+MAX_RESPONSE_LENGTH=1024
+
+<span class="c"># ② 环境区：路径、vLLM 开关</span>
+export PYTHONPATH=<span class="s">"$PROJECT_ROOT:${PYTHONPATH:-}"</span>
+export VLLM_USE_V1=1
+
+<span class="c"># ③ 调用区：把变量拼成命令行，交给 verl 的入口</span>
+python3 -m verl.trainer.main_ppo --config-name <span class="s">"vopd"</span> \
+    data.train_files=<span class="s">"[&quot;$TASK_TRAIN_FILE&quot;]"</span> \
+    actor_rollout_ref.actor.optim.lr=$LR \
+    ...</pre>
+<p>这个写法叫 <b>Hydra 覆盖</b>：<code>--config-name vopd</code> 先加载 <code>vopd.yaml</code> 里的一整套默认值，然后命令行里每一条 <code>a.b=c</code> 就地覆盖。所以<b>同一个参数可能有两处定义，命令行优先</b>——排查"为什么实际用的不是我以为的值"时，先看这里。</p>
+<h3>2.2 真正重要的 10 个参数</h3>
+<table>
+<thead><tr><th>参数</th><th>值</th><th>它在干什么</th></tr></thead>
+<tbody>
+<tr><td><code>MODEL_PATH</code></td><td>Qwen3.5-4B</td><td>学生和教师的<b>同一个</b>初始权重</td></tr>
+<tr><td><code>LR</code></td><td>2e-6</td><td>学习率，比常规 SFT（1e-5）低一个量级</td></tr>
+<tr><td><code>TRAIN_BATCH_SIZE</code></td><td>96</td><td>每步喂 96 道题</td></tr>
+<tr><td><code>ROLLOUT_N</code></td><td>8</td><td>每题生成 8 条回答（on-policy 采样）</td></tr>
+<tr><td><code>ALPHA</code></td><td>0.5</td><td>JSD 的插值系数：0=正向 KL，1=反向 KL，0.5=对称 JSD</td></tr>
+<tr><td><code>distillation_topk</code></td><td>100</td><td>只蒸馏概率最高的 100 个 token</td></tr>
+<tr><td><code>teacher_regularization</code></td><td>ema</td><td>教师更新方式：当前/冻结/信任域/EMA</td></tr>
+<tr><td><code>teacher_update_rate</code></td><td>0.05</td><td>EMA 的 ρ：新教师 = 0.95×旧教师 + 0.05×学生</td></tr>
+<tr><td><code>teacher_image_key</code></td><td>bbox_images</td><td>教师读哪一列图像——<b>这就是"视觉特权"的物理载体</b></td></tr>
+<tr><td><code>MAX_RESPONSE_LENGTH</code></td><td>1024</td><td>学生一次生成最多多长（直接决定监督信号总量）</td></tr>
+</tbody></table>
+<div class="caveat"><p><b>注意 <code>ALPHA</code> 的语义容易搞反</b>：在 <code>SelfDistillationConfig</code> 里 <code>alpha=0.0</code> 表示 <b>forward KL</b>，<code>alpha=1.0</code> 表示 <b>reverse KL</b>，中间值是 JSD。<code>vopd.yaml</code> 的默认写的是 <code>0.0</code>，但脚本覆盖成 <code>0.5</code>。如果你只读 yaml 不读脚本，会误以为论文用的是 forward KL——<b>这是个真实存在的踩坑点</b>。</p></div>
+</section>
+
+<section class="reveal" id="s3"><h2><span class="no">03</span><span class="t">数据：一行样本长什么样<span class="zh">What one training sample looks like</span></span></h2>
+<p class="q">"教师看裁剪图"在数据里是怎么表达的？<span class="zh">How the teacher view is stored in the dataset.</span></p>
+<div class="file">scripts/prepare_data.py</div>
+<p>整个脚本只做三件事：从 HuggingFace 下载 → 解压图片 → 把 jsonl 转成 parquet。核心是 <code>build_record()</code> 这一个函数：</p>
+<pre>def build_record(item, data_dir):
+    return {
+        <span class="s">"data_source"</span>: <span class="s">"zwz_rl_vqa_bbox_teacher"</span>,
+        <span class="s">"prompt"</span>: [{<span class="s">"role"</span>: <span class="s">"user"</span>, <span class="s">"content"</span>: item[<span class="s">"problem"</span>]}],   <span class="c"># 学生输入：整图+红框提示（原样保留）</span>
+        <span class="s">"images"</span>:        [{<span class="s">"path"</span>: image_path}],        <span class="c"># 学生看的图（整图，带红框）</span>
+        <span class="s">"bbox_images"</span>:   [{<span class="s">"path"</span>: teacher_path}],    <span class="c"># 教师看的图（裁剪+放大）★</span>
+        <span class="s">"ability"</span>: <span class="s">"visual_question_answering"</span>,
+        <span class="s">"reward_model"</span>: {<span class="s">"style"</span>: <span class="s">"none"</span>, <span class="s">"ground_truth"</span>: item.get(<span class="s">"answer"</span>, <span class="s">"")</span>},
+        <span class="s">"extra_info"</span>: {
+            <span class="s">"answer"</span>: item.get(<span class="s">"answer"</span>, <span class="s">""</span>),
+            <span class="s">"question"</span>: question,                       <span class="c"># 去掉红框提示的干净问题（评测用）</span>
+        },
+    }</pre>
+<div class="key"><p><b>一张表里同时存了两张图</b>：<code>images</code> 给学生，<code>bbox_images</code> 给教师。训练时教师侧只是"读另一列"，不需要在训练中做裁剪或图像变换——<b>裁剪、放大、画框全部在数据准备阶段离线完成</b>。这是这套代码工程上最省事的设计，也是它训练开销能压到接近普通 OPD 的原因。</p></div>
+<h3>3.1 <code>clean_question()</code> 为什么要把提示删掉</h3>
+<pre>REMOVE_HINT = (<span class="s">"Only focus on the objects inside the red bounding box in the image "</span>
+               <span class="s">"to answer this question."</span>)
+
+def clean_question(problem):
+    text = problem.replace(<span class="s">"&lt;image&gt;"</span>, <span class="s">""</span>).strip()
+    text = text.replace(f<span class="s">"\n\n{REMOVE_HINT}"</span>, <span class="s">""</span>).replace(REMOVE_HINT, <span class="s">""</span>)
+    return text.strip()</pre>
+<p>红框提示是<b>训练期的脚手架</b>：它告诉学生"注意这个框"。但评测时不会给你框，所以 <code>extra_info.question</code> 里存的是剥掉提示的原始问题——<b>评测脚本用的就是这一列</b>。注意 <code>prompt</code> 字段里保留的是<b>带提示的版本</b>，两者并存，不要混用。</p>
+<div class="caveat"><p><b>复现核对点</b>：如果你发现自己的评测分数远高于论文，第一嫌疑就是评测时误用了 <code>prompt</code>（带红框提示）而不是 <code>extra_info.question</code>。模型被提前告知了看哪里，分数会虚高。</p></div>
+</section>
+
+<section class="reveal" id="s4"><h2><span class="no">04</span><span class="t">配置类：所有开关的唯一权威<span class="zh">SelfDistillationConfig</span></span></h2>
+<p class="q">代码里能打开哪些行为？<span class="zh">Every switch, in one place.</span></p>
+<div class="file">verl/workers/config/actor.py:39</div>
+<pre><span class="k">class</span> SelfDistillationConfig(BaseConfig):
+    full_logit_distillation: bool = <span class="k">True</span>    <span class="c"># 走"分布匹配"而不是"采样 token"分支</span>
+    alpha: float = 0.0                      <span class="c"># 0=forward KL, 1=reverse KL, 中间=JSD</span>
+    gamma: float = 1.0
+    success_reward_threshold: float = 1.0   <span class="c"># 只有 reward ≥ 1 的 rollout 才算"学生自己答对了"</span>
+    teacher_regularization: str = <span class="s">"ema"</span>   <span class="c"># ema | trust-region | progressive</span>
+    teacher_update_rate: float = 0.05       <span class="c"># EMA 的 rho</span>
+    teacher_update_interval: Optional[int] = <span class="k">None</span>
+    distillation_topk: Optional[int] = <span class="k">None</span> <span class="c"># 设了 100 就走 top-K</span>
+    distillation_add_tail: bool = <span class="k">True</span>     <span class="c"># 补一个"其余词表"的桶 ★</span>
+    max_reprompt_len: int = 10240
+    is_clip: Optional[float] = <span class="k">None</span>       <span class="c"># 重要性采样比的上限</span>
+    teacher_always_on: bool = <span class="k">False</span>      <span class="c"># ★ 每个样本都蒸馏，而不是只挑答对的</span>
+    teacher_model_source: str = <span class="s">"legacy"</span> <span class="c"># legacy | current | fixed</span>
+    teacher_image_key: Optional[str] = <span class="k">None</span> <span class="c"># ★ 教师图像所在列名</span>
+    fallback_to_policy_loss_on_missing_teacher: bool = <span class="k">False</span>
+    ...
+</pre>
+<p>把字段名和论文对应起来，只记三个：</p>
+<ul>
+<li><code>teacher_always_on=True</code> + <code>teacher_image_key="bbox_images"</code> → 走"视觉教师"分支（本书第 05 节的主线）。</li>
+<li><code>teacher_model_source="legacy"</code> + <code>teacher_regularization="ema"</code> → 教师 = ref 模型 + EMA 更新。</li>
+<li><code>full_logit_distillation=True</code> + <code>distillation_topk=100</code> → 走 top-K 分布匹配 + tail 桶。</li>
+</ul>
+<div class="caveat"><p><b>代码里有两套完全不同的自蒸馏血统</b>：一套是 SDPO/OPSD 的"从成功样本里挑一个当教师提示"（reprompt 逻辑，<code>_get_solution</code>、<code>reprompt_template</code> 等一大堆字段），另一套才是 Vision-OPD 的"视觉特权教师"。<code>teacher_always_on</code> 这个开关就是分岔口。读代码时如果看到 reprompt/solution/feedback 相关的一大片，<b>可以直接跳过</b>——那是另一条我们不用走的路。</p></div>
+</section>
+
+<section class="reveal" id="s5"><h2><span class="no">05</span><span class="t">关键机制一：教师输入是怎么拼出来的<span class="zh">Building the teacher batch</span></span></h2>
+<p class="q">同一个问题，为什么要拼两次？<span class="zh">Why the same question is tokenized twice.</span></p>
+<div class="file">verl/trainer/ppo/ray_trainer.py:1137 _maybe_build_self_distillation_batch()</div>
+<p>这个函数在每步 rollout 之后被调用，产出 5 个张量塞进 batch。它有三个分支，由配置决定走哪条：</p>
+<table>
+<thead><tr><th>分支</th><th>触发条件</th><th>教师看什么</th><th>本项目</th></tr></thead>
+<tbody>
+<tr><td>answer_hint</td><td><code>teacher_always_on</code> + <code>teacher_prompt_mode="answer_hint"</code></td><td>同一张图 + 标准答案提示</td><td>否（那是 OPSD 的路子）</td></tr>
+<tr><td><b>视觉教师</b></td><td><code>teacher_always_on</code> + <code>teacher_image_key</code> 非空</td><td><b>bbox_images 里的裁剪图</b></td><td><span class="tag ok">走这条</span></td></tr>
+<tr><td>reprompt</td><td>以上都不满足</td><td>从同组成功轨迹里挑一条拼进提示</td><td>否</td></tr>
+</tbody></table>
+<h3>5.1 视觉教师分支的逐句拆解（1320–1341 行）</h3>
+<pre><span class="c"># 对 batch 里的每一条样本 i</span>
+teacher_images = batch.non_tensor_batch[teacher_image_key][i]   <span class="c"># 取 bbox_images[i]</span>
+has_teacher_images = self._teacher_images_available(teacher_images)
+teacher_present_mask_list.append(1.0 <span class="k">if</span> has_teacher_images <span class="k">else</span> 0.0)
+
+<span class="c"># 关键一步：把"学生提示里的图"换成"教师的图"</span>
+teacher_messages = self._prepare_teacher_messages(
+    list(batch.non_tensor_batch[<span class="s">"raw_prompt"</span>][i]),   <span class="c"># 原始多模态消息</span>
+    teacher_images,                                    <span class="c"># 要换上去的裁剪图</span>
+)
+
+(teacher_input_ids, teacher_attention_mask, teacher_position_ids,
+ teacher_response_start_idx, teacher_multi_modal_inputs) = self._build_teacher_prompt_inputs(
+    teacher_messages,
+    responses[i],        <span class="c"># ★ 把学生生成的回答原样接到教师提示后面</span>
+    response_mask[i],
+    max_prompt_len=self_distillation_cfg.max_reprompt_len,
+)</pre>
+<div class="key"><p><b>这里就是"同一个前缀、两套输入"的落地</b>：<code>responses[i]</code> 是<b>学生自己生成的那条轨迹</b>，被原封不动地拼到教师提示后面。所以教师和学生是在<b>完全相同的 token 序列</b>上给出分布的，唯一差别是图像不同。<b>on-policy 就体现在这一行。</b></p></div>
+<h3>5.2 <code>_swap_images_in_messages()</code>：换图但不换字</h3>
+<pre>teacher_messages = deepcopy(messages)            <span class="c"># 深拷贝，避免改到原对象</span>
+<span class="k">for</span> message <span class="k">in</span> teacher_messages:
+    <span class="k">if</span> message[<span class="s">"role"</span>] == <span class="s">"user"</span>:
+        ... 把 content 里的 image 占位逐个替换成 teacher_images[image_offset] ...
+<span class="k">if</span> image_offset != len(teacher_images):
+    <span class="k">raise</span> ValueError(<span class="s">"Teacher image count does not match prompt image placeholders"</span>)</pre>
+<p>函数保证<b>文字部分完全不动，只换图像</b>。所以教师看到的问题是同一句（含"只看红框内物体"这句约束），但图已经是裁剪放大后的了——<b>这就产生了一个语义上的小别扭</b>：裁剪图里根本没有红框，提示却还在说"看红框里的物体"。</p>
+<div class="caveat"><p>论文没讨论这一点。从代码看，教师侧的红框提示确实被保留了（因为 <code>_swap_images_in_messages</code> 只换图）。复现时如果想让教师提示更干净，需要自己加一个"删除提示句"的分支——这是个可以试的小改动，可能影响结果。</p></div>
+<h3>5.3 三个 mask 的含义（容易混）</h3>
+<table>
+<thead><tr><th>张量</th><th>形状</th><th>含义</th></tr></thead>
+<tbody>
+<tr><td><code>response_mask</code></td><td>[B, T]</td><td>哪些位置是真实生成的 token（排除 padding）</td></tr>
+<tr><td><code>self_distillation_mask</code></td><td>[B]</td><td><b>这条样本有没有教师</b>（没有则退化成普通策略梯度）</td></tr>
+<tr><td><code>loss_mask</code></td><td>[B, T]</td><td>两者相乘 = 既生成过、又有教师的位置</td></tr>
+</tbody></table>
+</section>
+
+<section class="reveal" id="s6"><h2><span class="no">06</span><span class="t">关键机制二：教师模型是谁、怎么更新<span class="zh">Teacher instantiation and EMA</span></span></h2>
+<p class="q">"同一个模型的两个副本"具体是哪两块显存？<span class="zh">Which weights are which.</span></p>
+<div class="file">verl/workers/fsdp_workers.py:896–931</div>
+<pre><span class="k">if</span> self_distillation_cfg <span class="k">is not</span> <span class="k">None</span> <span class="k">and</span> loss_mode == <span class="s">"vopd"</span>:
+    teacher_model_source = ...   <span class="c"># "legacy" / "current" / "fixed"</span>
+    teacher_regularization = ... <span class="c"># "ema" / "trust-region" / "progressive"</span>
+    <span class="k">if</span> teacher_model_source == <span class="s">"current"</span>:
+        self.actor.teacher_module = <span class="k">None</span>              <span class="c"># ← 直接用学生自己当教师（会崩）</span>
+    <span class="k">elif</span> teacher_model_source == <span class="s">"fixed"</span>:
+        ... 另外加载一个模型 ...                        <span class="c"># ← 外部教师</span>
+    <span class="k">elif</span> teacher_regularization == <span class="s">"trust-region"</span>:
+        self.actor.teacher_module = TrustRegionTeacher(ref_module=..., student_module=...)  <span class="c"># 每次前向临时混合</span>
+    <span class="k">else</span>:
+        self.actor.teacher_module = self.ref_module_fsdp  <span class="c"># ★ 默认：拿 ref 当教师</span></pre>
+<p>所以本项目的显存布局是：</p>
+<pre><span class="c">┌─────────────────────────────────────────────────┐</span>
+<span class="c">│ actor_module   （学生，有梯度，有优化器状态）      │</span>
+<span class="c">│ ref_module     （教师，无梯度；平时冻结）          │  ← 就是它，被复用成教师</span>
+<span class="c">│ rollout (vLLM) （推理引擎，权重定期从 actor 同步）  │</span>
+<span class="c">└─────────────────────────────────────────────────┘</span></pre>
+<h3>6.1 EMA 那十几行到底在算什么</h3>
+<div class="file">verl/workers/actor/dp_actor.py:134 _update_teacher()</div>
+<pre>update_rate = self_distillation_cfg.teacher_update_rate     <span class="c"># 0.05</span>
+<span class="k">for</span> teacher_param, student_param <span class="k">in</span> zip(self.teacher_module.parameters(),
+                                       self.actor_module.parameters()):
+    student_data = student_param.data.to(device=teacher_param.device)
+    teacher_param.data.mul_(1.0 - update_rate).add_(student_data, alpha=update_rate)
+    <span class="c"># 等价于：teacher = 0.95 * teacher + 0.05 * student</span></pre>
+<p>逐参数做的移动平均。<b>注意它和 Adam 的 EMA 恰恰相反</b>：这里 0.95 的权重给<b>旧教师</b>，所以教师变化极慢——大约 20 步才追上学生的 1/e。</p>
+<div class="okbox"><p><b>可操作结论</b>：<code>teacher_update_rate</code> 是这套代码里最便宜、最值得试的旋钮之一。0 等于冻结教师（论文 Table 3 里 79.40），0.05 是默认（79.68），调到 0.2 以上就要小心崩塌。做参数实验时从它开始，一天能跑完，风险低。</p></div>
+<h3>6.2 progressive 模式（代码有、论文没用）</h3>
+<p><code>teacher_regularization="progressive"</code> 时，教师不是每步 EMA，而是<b>每 <code>teacher_update_interval</code> 步硬拷贝一次学生权重</b>。对应 <code>dp_actor.py:158-174</code>。论文里没测这个模式，但它的语义和 CRISP 的"教师每 50 步刷新"完全一致——<b>这是我们做对照实验时可以直接复用的现成开关</b>。</p>
+</section>
+
+<section class="reveal" id="s7"><h2><span class="no">07</span><span class="t">关键机制三：两次前向与逐 token 损失<span class="zh">Two forwards, one loss</span></span></h2>
+<p class="q">一步一步看张量怎么流过。<span class="zh">Follow the tensors.</span></p>
+<div class="file">verl/workers/actor/dp_actor.py:981–1085</div>
+<h3>7.1 第一遍：学生前向</h3>
+<pre>outputs = self._forward_micro_batch(
+    model_inputs,               <span class="c"># 学生的 input_ids（整图那张）</span>
+    return_all_logps=return_all_logps,   <span class="c"># 只有不用 top-K 时才要全词表</span>
+    distill_topk=distill_topk,           <span class="c"># 100</span>
+)
+log_prob          = outputs[<span class="s">"log_probs"</span>]        <span class="c"># [B, T] 采样 token 的 log 概率</span>
+student_topk_logps   = outputs.get(<span class="s">"topk_logps"</span>)    <span class="c"># [B, T, 100]</span>
+student_topk_indices = outputs.get(<span class="s">"topk_indices"</span>)  <span class="c"># [B, T, 100] ★ 词表 id</span></pre>
+<p><code>topk_indices</code> 是关键：它是<b>学生觉得最可能的 100 个 token 的 id</b>。下一步教师要用<b>同一批 id</b> 去取自己的概率，才能逐位置对比。</p>
+<h3>7.2 第二遍：教师前向（不传梯度）</h3>
+<pre>teacher_inputs = {
+    <span class="s">"responses"</span>: model_inputs[<span class="s">"responses"</span>],              <span class="c"># 同一条学生轨迹</span>
+    <span class="s">"input_ids"</span>: model_inputs[<span class="s">"teacher_input_ids"</span>],    <span class="c"># 教师提示（换成裁剪图）</span>
+    <span class="s">"attention_mask"</span>: model_inputs[<span class="s">"teacher_attention_mask"</span>],
+    <span class="s">"position_ids"</span>: model_inputs[<span class="s">"teacher_position_ids"</span>],
+    <span class="s">"multi_modal_inputs"</span>: model_inputs[<span class="s">"teacher_multi_modal_inputs"</span>],  <span class="c"># 裁剪图的像素</span>
+}
+teacher_model = self.teacher_module <span class="k">or</span> self.actor_module
+<span class="k">with</span> torch.no_grad():                                  <span class="c"># ★ 教师不反传</span>
+    teacher_outputs = self._forward_micro_batch(
+        teacher_inputs, ...,
+        topk_indices=student_topk_indices,              <span class="c"># ★ 用学生的 top-K id 取教师 logits</span>
+        module=teacher_model,                           <span class="c"># ★ 换模型，其余逻辑复用</span>
+    )
+teacher_topk_logps = teacher_outputs.get(<span class="s">"topk_logps"</span>)   <span class="c"># [B, T, 100]</span></pre>
+<div class="key"><p><b>这段是整个代码最漂亮的地方</b>：<code>_forward_micro_batch</code> 是同一个函数，只是传了不同的 <code>module</code>、不同的 <code>input_ids</code>、不同的图像，外加 <code>topk_indices</code> 让教师"照着学生的候选词表"取 logits。于是两遍前向得到<b>严格可比的分布对</b>，还省掉了对教师做 top-k 排序的开销。</p></div>
+<h3>7.3 损失函数：<code>compute_self_distillation_loss()</code></h3>
+<div class="file">verl/trainer/ppo/core_algos.py:1085</div>
+<pre><span class="c"># ① 先按 top-K 取分布，再补 tail 桶</span>
+student_distill_log_probs = student_topk_log_probs      <span class="c"># [B,T,100]</span>
+teacher_distill_log_probs = teacher_topk_log_probs
+<span class="k">if</span> distillation_add_tail:
+    student_distill_log_probs = add_tail(student_distill_log_probs)
+    teacher_distill_log_probs = add_tail(teacher_distill_log_probs)
+<span class="k">else</span>:
+    student_distill_log_probs = renorm_topk_log_probs(student_distill_log_probs)  <span class="c"># 只把 top-100 重新归一化</span>
+
+<span class="c"># ② 按 alpha 算 KL 或 JSD</span>
+<span class="k">if</span> alpha == 0.0:  kl_loss = F.kl_div(student, teacher)   <span class="c"># forward KL</span>
+<span class="k">elif</span> alpha == 1.0: kl_loss = F.kl_div(teacher, student)  <span class="c"># reverse KL</span>
+<span class="k">else</span>:
+    mixture = logsumexp(stack([student + log(1-alpha), teacher + log(alpha)]))
+    kl_student = F.kl_div(mixture, student)     <span class="c"># KL(student || mixture)</span>
+    kl_teacher = F.kl_div(mixture, teacher)     <span class="c"># KL(teacher || mixture)</span>
+    kl_loss = torch.lerp(kl_student, kl_teacher, alpha)   <span class="c"># ★ 广义 JSD</span>
+
+raw_per_token_loss = kl_loss.sum(-1)            <span class="c"># 对词表维求和 → [B,T]</span></pre>
+<h3>7.4 <code>add_tail()</code> 那行数学（论文里只有一句话，代码里有三行）</h3>
+<pre><span class="k">def</span> add_tail(log_probs):
+    log_s = torch.logsumexp(log_probs, dim=-1, keepdim=True)   <span class="c"># log(Σ p_i)，i 取 top-100</span>
+    log_s = torch.clamp(log_s, max=-1e-7)                      <span class="c"># 防止数值上 ≥ 0</span>
+    tail_log = torch.log(-torch.expm1(log_s))                  <span class="c"># log(1 - Σ p_i)</span>
+    <span class="k">return</span> torch.cat([log_probs, tail_log], dim=-1)            <span class="c"># → [..., 101]</span></pre>
+<p>目标是把"剩下没进 top-100 的那些词的概率总和"压成<b>一个额外的桶</b>，拼在第 101 位。<code>expm1</code>/<code>log1p</code> 这类函数是为了小数值精度——如果直接写 <code>log(1 - exp(x))</code>，当 x≈0 时会损失全部有效数字。这就是论文说的"tail-probability term"。</p>
+<div class="caveat"><p><b>注意 <code>distillation_add_tail</code> 的默认值是 True</b>，而 <code>scripts/run_vision_opd.sh</code> 没有显式设置它。所以论文的 K=100 实际对应的是<b>101 维</b>分布。如果自己实现时漏了这个桶，两个分布都不归一化，KL 会算错——而且是静默地算错。</p></div>
+<h3>7.5 重要性采样比与 rollout 校正</h3>
+<pre>negative_approx_kl = (student_log_probs - old_log_probs).detach().clamp(-20, 20)
+ratio = torch.exp(negative_approx_kl).clamp(max=is_clip)         <span class="c"># is_clip=2.0</span>
+weighted_per_token_loss = raw_per_token_loss * ratio
+<span class="k">if</span> rollout_is_weights <span class="k">is not</span> <span class="k">None</span>:
+    weighted_per_token_loss = weighted_per_token_loss * rollout_is_weights</pre>
+<p>两处校正解决同一个问题：<b>生成回答的模型和算 loss 的模型不是同一个时刻的权重</b>（vLLM 引擎和 FSDP 训练副本有偏差，mini-batch 还会切分）。<code>ratio</code> 把损失按"现在的学生比生成时更像/更不像这个 token"加权，<code>is_clip=2.0</code> 截断极端值防止爆炸。</p>
+</section>
+
+<section class="reveal" id="s8"><h2><span class="no">08</span><span class="t">一次训练步的完整时序<span class="zh">One training step, end to end</span></span></h2>
+<p class="q">把前面所有零件串起来。<span class="zh">All the pieces in order.</span></p>
+<pre>① ray_trainer 从 parquet 取一个 batch（96 条）
+       ↓
+② rollout（vLLM）对每道题生成 8 条回答，共 768 条轨迹
+       ↓                                  <span class="c">← 学生侧：整图 + 红框</span>
+③ 打分：有没有标准答案？—— <b>Vision-OPD 不需要</b>（reward_fn 被关掉）
+       ↓
+④ _maybe_build_self_distillation_batch()
+     把每条轨迹原样接到"教师提示 + 裁剪图"后面
+     产出 teacher_input_ids / teacher_multi_modal_inputs / self_distillation_mask
+       ↓
+⑤ 切 mini-batch，进 dp_actor
+       ↓
+⑥ 学生前向 → log_probs + topk_logps + topk_indices
+       ↓
+⑦ 教师前向（no_grad，同一个函数换 module/输入/图）→ teacher_topk_logps
+       ↓
+⑧ compute_self_distillation_loss：add_tail → JSD → IS 校正 → 按 mask 平均
+       ↓
+⑨ 反传、optimizer.step()
+       ↓
+⑩ teacher = 0.95×teacher + 0.05×student   （_update_teacher）
+       ↓
+⑪ 下一个 batch</pre>
+<div class="okbox"><p><b>一个可以自查的数字</b>：每步 96×8=768 条轨迹，每条最多 1024 token，教师与学生都要过一遍 → 单步约 <b>1.5M token 的两次前向</b>。这就是为什么代码要开 <code>param_offload</code>、<code>optimizer_offload</code>、<code>gradient_checkpointing</code>，也是为什么 batch 只能开到 96 而不是几百。</p></div>
+</section>
+
+<section class="reveal" id="s9"><h2><span class="no">09</span><span class="t">要加第二个教师，改哪里<span class="zh">Where a second teacher plugs in</span></span></h2>
+<p class="q">这是读这份代码对我们最实际的用处。<span class="zh">The practical payoff for our project.</span></p>
+<p>按数据流顺序，总共要改 5 处，每处都很小：</p>
+<table>
+<thead><tr><th>#</th><th>位置</th><th>改什么</th><th>难度</th></tr></thead>
+<tbody>
+<tr><td>1</td><td><code>prepare_data.py</code> 的 <code>build_record</code></td><td>加一列（例如 <code>concise_prompt</code> 或 <code>teacher2_images</code>），让第二个教师有输入</td><td>低</td></tr>
+<tr><td>2</td><td><code>actor.py</code> 的 <code>SelfDistillationConfig</code></td><td>加 <code>teacher2_*</code> 一组字段（来源、正则化、更新率、image_key、权重）</td><td>低</td></tr>
+<tr><td>3</td><td><code>ray_trainer.py:1279</code> 视觉教师分支</td><td>循环里再拼一份 <code>teacher2_input_ids</code> 等 5 个张量</td><td>中</td></tr>
+<tr><td>4</td><td><code>dp_actor.py:1012</code></td><td>再跑一遍教师前向，得到 <code>teacher2_topk_logps</code></td><td>低（复制粘贴）</td></tr>
+<tr><td>5</td><td><code>core_algos.py:1085</code></td><td>把两个教师的损失组合起来（加权和 / 门控 / 冲突仲裁）</td><td><b>高——这里是创新点所在</b></td></tr>
+</tbody></table>
+<div class="key"><p><b>前四处是工程，第五处才是科研。</b>而第五处恰恰是唯一没有现成答案的地方：两个教师的逐 token 分布<code>p_T1</code>、<code>p_T2</code>和目标学生<code>p_S</code>构成一个三角，你可以选"平均成单一目标再蒸馏"、"各自蒸馏再相加"、或者"按 token 决定听谁的"。<b>这三种选择的差别，就是论文要讲清楚的东西。</b></p></div>
+<h3>9.1 三个现成可用的实验旋钮（不用改代码）</h3>
+<ul>
+<li><code>teacher_update_rate</code>：0 = 冻结教师，0.05 = 默认，0.2 = 激进跟随。直接改脚本变量。</li>
+<li><code>alpha</code>：0 / 0.5 / 1 分别对应 forward KL / JSD / reverse KL，对应论文 Table 4。</li>
+<li><code>MAX_RESPONSE_LENGTH</code>：512 与 1024 的对照，对应论文 Table 5。<b>这也是我们做压缩实验时最该先摸清的耦合点</b>——把长度压到 256 会发生什么，目前没人知道。</li>
+</ul>
+<div class="caveat"><p><b>不要一上手就改 loss。</b>导师说的是"改关键参数看影响"。正确顺序是：先用默认配置跑通一次 → 改 <code>teacher_update_rate</code> 和 <code>alpha</code> 各跑一次 → 观察 <code>self_distillation/raw_jsd_token_mean</code> 和 <code>self_distillation/num_distill_tokens</code> 两条曲线的形状 → 再决定动哪。<b>这两个指标决定了"你到底在蒸馏多少个 token"，是诊断一切的入口。</b></p></div>
+</section>
+
+<section class="reveal" id="s10"><h2><span class="no">10</span><span class="t">怎么读这份代码：一条推荐路线<span class="zh">A suggested reading order</span></span></h2>
+<p class="q">如果只有半天时间，按什么顺序看？<span class="zh">Half a day, what order?</span></p>
+<ol>
+<li><b>30 分钟</b>：<code>scripts/run_vision_opd.sh</code> 全读一遍，把每个参数写在一张纸上。目标：知道训练"有哪些旋钮"。</li>
+<li><b>15 分钟</b>：<code>scripts/prepare_data.py</code> 全读。目标：能画出"一道题在数据集里长什么样"。</li>
+<li><b>20 分钟</b>：<code>verl/workers/config/actor.py</code> 的 <code>SelfDistillationConfig</code>。目标：认得出哪些配置属于 Vision-OPD、哪些属于 OPSD/SDPO 血统。</li>
+<li><b>40 分钟</b>：<code>core_algos.py:1085–1215</code>。目标：能手算一遍 <code>add_tail</code> 和 JSD 的维度变化。</li>
+<li><b>60 分钟</b>：<code>dp_actor.py:960–1100</code>。目标：说清"两次前向分别在算什么、哪次带梯度"。</li>
+<li><b>40 分钟</b>：<code>ray_trainer.py:1279–1390</code>。目标：能解释"学生的回答是怎么被接到教师提示后面的"。</li>
+<li><b>20 分钟</b>：<code>fsdp_workers.py:896–931</code> + <code>dp_actor.py:134</code>。目标：知道教师在显存里是哪份权重、EMA 怎么动。</li>
+</ol>
+<div class="okbox"><p><b>验收标准（导师问"哪一行"时能答上来的最小集合）</b>：<br>
+① 教师前向在 <code>dp_actor.py:1027</code> 的 <code>with torch.no_grad():</code> 里；<br>
+② 教师读的图来自数据集的 <code>bbox_images</code> 列，由 <code>teacher_image_key</code> 指定；<br>
+③ 学生轨迹被接到教师提示后面发生在 <code>_build_teacher_prompt_inputs(teacher_messages, responses[i], ...)</code>；<br>
+④ JSD 在 <code>core_algos.py:1157–1163</code>，tail 桶在 <code>:1115–1121</code>；<br>
+⑤ EMA 更新在 <code>dp_actor.py:150–155</code>，默认 ρ=0.05。</p></div>
+</section>
+</main>
+<footer>
+<p>代码版本：<code>github.com/VisionOPD/Vision-OPD</code> 主分支，本地存档于 <code>reproduction/1. Vision-OPD/code</code>。所有行号以该存档为准。<span class="zh">本报告为静态代码阅读，未运行训练；文中"会崩""会变慢"等判断来自论文消融与代码结构，不是实测。</span></p>
+<p>Generated 2026-10-27 by Claude Code (local). 配套：<code>paper-read-vision-opd-261027.html</code>（论文精读）、<code>code-read-crisp-261027.html</code>（CRISP 代码）。</p>
+</footer>
+<script>
+const pg=document.getElementById('pg');
+addEventListener('scroll',()=>{const h=document.documentElement;pg.style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight)*100)+'%'},{passive:true});
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('in')}),{threshold:.08});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+</script>
+</body></html>

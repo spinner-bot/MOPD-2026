@@ -1,0 +1,202 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>双教师选题先验核查报告 · Prior-art check for the dual-teacher OPSD idea</title>
+<style>
+:root{--ink:#111827;--sub:#5b6674;--line:#dfe4ea;--bg:#f7f8fa;--card:#ffffff;
+--accent:#2563a8;--accent2:#c2410c;--ok:#047857;--warn:#b45309;--max:1080px}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);
+ font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei","Noto Sans SC",sans-serif;
+ font-size:16px;line-height:1.8;-webkit-font-smoothing:antialiased}
+.hero{background:linear-gradient(135deg,#0b172a 0%,#16324f 48%,#1f4b6e 100%);color:#eef3f8;
+ padding:72px 32px 60px;position:relative;overflow:hidden}
+.hero:before{content:"";position:absolute;inset:0;
+ background:radial-gradient(900px 380px at 18% 0%,rgba(96,165,250,.24),transparent 70%),
+            radial-gradient(700px 340px at 88% 100%,rgba(251,146,60,.18),transparent 70%)}
+.hero .inner{max-width:var(--max);margin:0 auto;position:relative}
+.kicker{letter-spacing:.22em;font-size:.74rem;text-transform:uppercase;color:#93b4d1;margin-bottom:18px}
+.hero h1{font-size:clamp(1.9rem,4vw,2.8rem);line-height:1.22;margin:0 0 10px;font-weight:650;letter-spacing:-.01em}
+.hero h1 .zh{display:block;font-size:.52em;font-weight:500;color:#b9cee0;letter-spacing:.02em;margin-top:12px}
+.hero p.lead{max-width:820px;color:#c9d8e6;font-size:1.02rem;margin:0}
+.hero p.lead.zh{color:#9fb6ca;font-size:.94rem;margin-top:8px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-top:34px}
+.stat{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);border-radius:12px;padding:16px 18px}
+.stat .n{font-size:1.7rem;font-weight:700;font-variant-numeric:tabular-nums;color:#fff}
+.stat .l{font-size:.78rem;color:#c2d5e4;margin-top:2px}
+.stat .l .zh{display:block;color:#93aec5;font-size:.72rem;margin-top:1px}
+.progress{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,#2563a8,#f59e0b);width:0;z-index:99;transition:width .1s linear}
+main{max-width:var(--max);margin:0 auto;padding:0 32px 90px}
+section{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:32px 38px;
+ margin:-34px 0 24px;box-shadow:0 1px 2px rgba(16,24,40,.05),0 12px 32px -18px rgba(16,24,40,.18);position:relative}
+section:first-of-type{margin-top:-50px}
+section h2{display:flex;align-items:baseline;gap:14px;font-size:1.28rem;margin:0 0 6px;font-weight:650}
+section h2 .no{font-size:2rem;font-weight:800;color:#c8d6e5;line-height:1;font-variant-numeric:tabular-nums}
+section h2 .t .zh{display:block;font-size:.72em;font-weight:500;color:var(--sub);margin-top:1px}
+section .q{color:var(--sub);font-size:.93rem;margin:0 0 16px}
+section .q .zh{display:block;font-size:.92em;color:#7a8492;margin-top:1px}
+h3{font-size:1.02rem;margin:24px 0 4px;font-weight:650;color:#1f2937}
+h3 .zh{font-weight:500;color:var(--sub);font-size:.86em;margin-left:8px}
+p{margin:.6rem 0}
+.key,.caveat,.okbox{margin:18px 0}
+.key{background:linear-gradient(180deg,#f0f6fc,#e8f1fa);border-left:4px solid var(--accent);padding:15px 20px;border-radius:0 10px 10px 0}
+.caveat{background:linear-gradient(180deg,#fff8ef,#fdf1e3);border-left:4px solid var(--warn);padding:15px 20px;border-radius:0 10px 10px 0}
+.okbox{background:linear-gradient(180deg,#f0fdf6,#e7f8ef);border-left:4px solid var(--ok);padding:15px 20px;border-radius:0 10px 10px 0}
+.key p,.caveat p,.okbox p{margin:.3rem 0}
+table{border-collapse:collapse;width:100%;margin:14px 0;font-size:.9rem;font-variant-numeric:tabular-nums}
+th,td{border-bottom:1px solid var(--line);padding:9px 11px;text-align:left;vertical-align:top}
+thead th{background:#f2f5f8;font-weight:650;border-bottom:2px solid #d5dce4}
+td .zh{display:block;font-weight:400;font-size:.9em;color:var(--sub);margin-top:2px;line-height:1.5}
+tbody tr:hover{background:#fafcfe}
+table.tight{max-width:820px}
+code{background:#eef2f6;border-radius:4px;padding:1px 5px;font-size:.88em}
+.tag{display:inline-block;font-size:.72rem;padding:2px 8px;border-radius:999px;background:#eef3f8;color:var(--sub);margin-left:8px;vertical-align:middle}
+.tag.hot{background:#fdecec;color:#b42318}
+.tag.ok{background:#e7f8ef;color:#047857}
+.tag.mid{background:#fff8ef;color:#b45309}
+ul,ol{margin:.5rem 0 .5rem 1.2rem;padding-left:.6rem}
+li{margin:.35rem 0}
+.reveal{opacity:0;transform:translateY(16px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.3,1)}
+.reveal.in{opacity:1;transform:none}
+footer{max-width:var(--max);margin:0 auto;padding:0 32px 60px;color:var(--sub);font-size:.82rem}
+footer .zh{display:block;color:#8592a1;font-size:.96em;margin-top:2px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.reveal{opacity:1;transform:none}}
+@media(max-width:720px){section{padding:24px 20px}main{padding:0 16px 70px}.hero{padding:52px 20px 46px}}
+</style></head><body>
+<div class="hero"><div class="inner">
+ <div class="kicker">MOPD-2026 · Phase 3 · 选题先验核查 · 2026-10-27</div>
+ <h1>双教师选题先验核查<span class="zh">A prior-art check on “one student, two teachers” for multimodal OPSD</span></h1>
+ <p class="lead">The mentor's “one student, two teachers” idea was checked against arXiv, proceedings and code releases.
+ The architecture itself is already occupied by an EMNLP 2026 paper; the remaining gap is narrow and must be claimed on the arbitration signal, not on the number of teachers.</p>
+ <p class="lead zh" lang="zh-CN">对导师提出的“一个学生、两个教师”设想做了逐条核验。架构层面已被 EMNLP 2026 的 H-OPD 占位；
+ 剩下的缝隙很窄，创新只能落在“仲裁信号”上，不能落在“教师数量”上。</p>
+ <div class="stats">
+  <div class="stat"><div class="n"><span data-count="18">0</span></div><div class="l">Papers compared<span class="zh">逐项对照的论文</span></div></div>
+  <div class="stat"><div class="n"><span data-count="4">0</span></div><div class="l">Occupied positions<span class="zh">已被占据的位置</span></div></div>
+  <div class="stat"><div class="n"><span data-count="1">0</span></div><div class="l">Remaining gap<span class="zh">仍可主张的窄缝</span></div></div>
+  <div class="stat"><div class="n"><span data-count="4">0</span></div><div class="l">Decision-experiment arms<span class="zh">决策实验组数</span></div></div>
+ </div>
+</div></div>
+
+<main>
+<section class="reveal" id="s1"><h2><span class="no">01</span><span class="t">结论摘要<span class="zh">Summary</span></span></h2>
+<p class="q">这个设想，谁做过、做到什么程度、我们还能主张什么？<span class="zh">Who has done it, how far did they go, and what is left to claim?</span></p>
+<div class="key">
+<p><b>1. “一个学生、两个教师、token 级仲裁”已被正式发表工作占位。</b>最直接的是 <b>H-OPD</b>（EMNLP 2026，arXiv 2607.02592）：VL 教师（原图）+ 纯文本教师（问题 + 图像描述），在同一学生 prefix 上按预测熵做 token 级置信度仲裁。</p>
+<p><b>2. 另外三个相关位置也已有先行工作：</b>多教师信号冲突（Counteraction-Aware MOPD、DOPD、From Gradients to Capabilities）；OPSD 输出压缩（CRISP、COPD、BIRD、MPD 等）；视觉特权 OPSD（OPD-V、Vision-OPD、SCOPD 等）。</p>
+<p><b>3. “视觉特权教师 + 简洁教师 + 输出压缩”这一具体组合未检索到直接对应工作。</b>但它属于已有组件的交叉，审稿人可能判定为“H-OPD + CRISP”；novelty 必须落在<b>新的仲裁机制</b>或<b>新的受控证据</b>上。</p>
+<p><b>4. 建议在投入代码前执行一项低成本对照实验</b>，验证“同一教师叠加两种特权是否产生冲突”。该实验是当前选题成立的前提；若冲突不成立，应尽早终止。</p>
+</div>
+</section>
+
+<section class="reveal" id="s2"><h2><span class="no">02</span><span class="t">核查方法<span class="zh">Method</span></span></h2>
+<p class="q">怎么查的，证据到什么程度？<span class="zh">Sources, verification and limits.</span></p>
+<ul>
+<li><b>来源：</b>arXiv API/abs、ACL Anthology、OpenReview、CVF、官方代码库；2026 年 10 月 21–22 日检索，10 月 27 日对 CRISP 原文复核。</li>
+<li><b>范围：</b>多教师 OPD（H-OPD、MT-SDPO、VG-OPD、MAD-OPD、PROMPTSD、Neighborhood OPSD、D³-MOPD、ThinkOPD）；双教师/双特权（H-OPD、DualOPSD、DOPD）；压缩交叉（COPD/COPSD、CRISP、BIRD、MPD、Masked SD）；视觉特权 OPSD（OPD-V、Vision-OPD、Visual-OPSD、SCOPD、LT-OPD）。纳入 18 篇主表。</li>
+<li><b>核验：</b>逐篇核对 arXiv 编号、标题、日期与 comment 中的录用状态；H-OPD 与 CRISP 已读全文，两者数字来自原文表格。</li>
+<li><b>限制：</b>除 H-OPD（EMNLP 2026）外，多数为 2026 年预印本，录用状态可能变化；该领域更新极快，最终报告前需再做一次增量检索。</li>
+</ul>
+<div class="caveat"><p><b>术语纠正：</b>会上口述的“260304333”实为 <b>CRISP，arXiv 2603.05433</b>；“OSPD/OPID/VOB/微信 OPD”分别对应 OPSD/OPD/OPD-V/Vision-OPD。</p></div>
+</section>
+
+<section class="reveal" id="s3"><h2><span class="no">03</span><span class="t">四个已被占据的位置<span class="zh">Four occupied positions</span></span></h2>
+<p class="q">哪些“看起来新”的部件，其实已经有人做了？<span class="zh">Which components are no longer novel on their own?</span></p>
+<table>
+<thead><tr><th>位置</th><th>代表工作</th><th>状态</th><th>对本选题的影响</th></tr></thead>
+<tbody>
+<tr><td>一个学生 + 两个教师 + token 级仲裁</td><td><b>H-OPD</b>（2607.02592）</td><td><span class="tag hot">已录用</span> EMNLP 2026</td><td>架构不可作为创新点</td></tr>
+<tr><td>多教师信号冲突</td><td>Counteraction-Aware MOPD（2605.27115）、DOPD（2606.30626）、From Gradients to Capabilities（2610.02179）</td><td>预印本</td><td>“冲突”已有研究，不能作为全新发现</td></tr>
+<tr><td>OPSD 输出压缩</td><td><b>CRISP</b>（2603.05433）、<b>COPD/COPSD</b>（2607.19046）、BIRD（2607.15736）、MPD（2605.08776）、Masked SD（2607.22629）</td><td>预印本为主</td><td>压缩本身已被占位，且已有强结果</td></tr>
+<tr><td>视觉特权 OPSD</td><td><b>OPD-V</b>（2608.05131）、Vision-OPD（2605.18740）、Visual-OPSD、SCOPD、LT-OPD</td><td>预印本为主</td><td>视觉条件已有多个工作</td></tr>
+</tbody></table>
+<p>对照矩阵见工作2 <code>outputs/prior-art-matrix.md</code>（18 篇逐项列出教师、学生可见信息、仲裁方式、目标、模态与规模、录用状态）。</p>
+</section>
+
+<section class="reveal" id="s4"><h2><span class="no">04</span><span class="t">最直接的撞车：H-OPD<span class="zh">The closest collision: H-OPD</span></span></h2>
+<p class="q">为什么说架构已被占位？<span class="zh">Why the architecture is already taken.</span></p>
+<p><b>H-OPD</b>（Confidence Aware Heterogeneous Multi-Teacher Multimodal On-policy Distillation，EMNLP 2026）的设定：</p>
+<ul>
+<li><b>学生：</b>只看原图 + 问题。</li>
+<li><b>视觉教师：</b>VL 模型，看原图 + 问题。</li>
+<li><b>文本教师：</b>同一模型的文本侧，看“问题 + 图像描述”（图像描述由视觉信息转换而来）。</li>
+<li><b>仲裁：</b>两个教师在同一 student-generated prefix 上打分；以预测熵的负值为置信度，按 token 计算权重 <code>λ_t</code>，在统一 top-k 候选集上做 KL。</li>
+<li><b>目标：</b>多模态推理提升，11 个基准；<b>不做输出长度压缩</b>。</li>
+</ul>
+<div class="key"><p><b>与本设想的差异：</b>H-OPD 的文本教师承担“图像描述”角色，不是“简洁”角色；目标是推理提升，不是压缩。差异真实存在，但“两个教师 + token 级仲裁”这个结构不再新。</p></div>
+<div class="caveat"><p><b>汇报口径：</b>不要说“和我们完全一样”，也不要把它当作可以忽略的先行工作。准确说法是“架构同构、目标与教师分工不同”。</p></div>
+</section>
+
+<section class="reveal" id="s5"><h2><span class="no">05</span><span class="t">另外四篇必须知道的工作<span class="zh">Four more papers that shape the story</span></span></h2>
+<p class="q">如果只读五篇，读哪五篇？<span class="zh">The minimum reading list.</span></p>
+<table>
+<thead><tr><th>工作</th><th>核心做法</th><th>与本选题的关系</th></tr></thead>
+<tbody>
+<tr><td><b>CRISP</b><br>2603.05433</td><td>同一权重 + 简洁指令作教师，学生 rollout 上做 per-token reverse KL，教师每 50 步刷新；无需标准答案。</td><td>“简洁教师”这一半的完整实现，也是故事第一幕的现成基线。Qwen3-14B 上 MATH-500 长度 −56%、准确率 93.0→96.3；AIME 2024 −37.5%、掉 1.2 分。</td></tr>
+<tr><td><b>OPD-V</b><br>2608.05131</td><td>正教师（Zoom-In 图）+ 负教师（Mask 图），用两者对数概率差定义 Modality-Balance 信任域，只在该域内用 JSD 蒸馏正教师。</td><td>“视觉特权教师”的最新形态，也是我们唯一复现过的基座；Qwen3.5-4B 平均 64.30→80.01。它用<b>两个教师</b>，但两个教师是同一特权的正负对照，不是“视觉 + 简洁”。</td></tr>
+<tr><td><b>DOPD</b><br>2606.30626</td><td>特权教师 + 特权学生，按 advantage gap 做 token 级路由，研究“特权幻觉”。</td><td>“两种信息条件会冲突/不可迁移”的相邻证据；支持“冲突”值得验，但不等于已有结论。</td></tr>
+<tr><td><b>COPD/COPSD</b><br>2607.19046</td><td>同一模型在轻/重思考提示下的 log-prob 差作 token advantage，直接进策略更新；Qwen3.5-4B→2B 上压缩到 0.78K tokens 且准确率略升。</td><td>最危险的压缩撞车对象：已在 VLM 上做 OPSD 内压缩，但无双教师、无视觉特权教师。</td></tr>
+<tr><td><b>Counteraction-Aware MOPD</b><br>2605.27115</td><td>多领域教师，解耦冲突梯度（recovery vs. preservation）。</td><td>“多教师冲突”不是我们首次提出；需要明确我们的冲突是“同一教师的两种特权”，不是领域间冲突。</td></tr>
+</tbody></table>
+</section>
+
+<section class="reveal" id="s6"><h2><span class="no">06</span><span class="t">仍可主张的缝隙<span class="zh">The remaining gap</span></span></h2>
+<p class="q">如果继续做，卖点应该是什么？<span class="zh">What can still be claimed?</span></p>
+<p><b>直接检索未发现：</b>“视觉特权教师 + 简洁特权教师 + token 级压缩仲裁”这一具体组合。但它是四个已有组件的交叉，单靠组合不足以支撑一篇 A 会论文。</p>
+<div class="okbox">
+<p><b>建议主张（A）：视觉证据门控的压缩仲裁。</b></p>
+<p>两个教师：视觉教师（Zoom-In/Mask 特权）+ 简洁教师（be concise 特权）。仲裁信号<b>不是教师置信度</b>，而是“该 token 是否依赖视觉证据”：视觉信息增益高的 token（物体属性、空间关系、OCR 结果）不压缩；视觉信息增益低的 token（重复描述、自验证、套话）交给简洁教师压缩。</p>
+<p><b>与 H-OPD 的差异：</b>H-OPD 按预测熵仲裁“谁更可信”；本方案按视觉证据仲裁“哪里该短、哪里不能短”。<b>与 CRISP/COPD 的差异：</b>它们没有视觉条件；本方案显式保护视觉 grounding。</p>
+</div>
+<p><b>可检验假设：</b>单教师同时加两种特权，会在“视觉 token 该保留 vs. 简洁教师想删”上冲突；双教师 + 视觉门控能同时降低 token 并保持 grounding。</p>
+<div class="caveat"><p><b>为什么必须先验冲突：</b>如果单教师叠加两种特权并不冲突，双教师就只是把一件事拆成两件做，故事不成立，审稿人也会问“为什么要两个教师”。</p></div>
+</section>
+
+<section class="reveal" id="s7"><h2><span class="no">07</span><span class="t">建议的决策实验<span class="zh">Proposed decision experiment</span></span></h2>
+<p class="q">写代码之前，用最小代价验证故事前提。<span class="zh">Test the premise before building the architecture.</span></p>
+<table>
+<thead><tr><th>组别</th><th>教师配置</th><th>验证什么</th></tr></thead>
+<tbody>
+<tr><td>G0</td><td>标准 OPD-V / Vision-OPD 基线</td><td>复现与评测口径</td></tr>
+<tr><td>G1</td><td>单教师 + 简洁指令（CRISP 式）</td><td>压缩是否掉点；文本侧基线</td></tr>
+<tr><td>G2</td><td>单教师 + 视觉特权 + 简洁指令</td><td><b>两种特权是否冲突</b>（长度、准确率、grounding）</td></tr>
+<tr><td>G3</td><td>双教师（视觉 + 简洁），token 级仲裁</td><td>分工是否优于叠加</td></tr>
+</tbody></table>
+<p><b>观测指标：</b>输出 token 长度、准确率、视觉 grounding（CHAIR / POPE 至少一项）。<b>规模：</b>小样本、1–2 天机时，不做全量。</p>
+<div class="key"><p><b>判定标准：</b>若 G2 相对 G1/G3 出现明显退化（长度或 grounding），且 G3 优于 G2，则“双教师必要性”成立，进入方案 A；若 G2 与 G3 无显著差异，则双教师故事不成立，应终止该方向。</p></div>
+</section>
+
+<section class="reveal" id="s8"><h2><span class="no">08</span><span class="t">待决策事项<span class="zh">Decisions requested</span></span></h2>
+<p class="q">需要导师拍板的三件事。<span class="zh">Three decisions needed before implementation.</span></p>
+<ol>
+<li><b>选题判断：</b>“视觉证据门控的压缩仲裁”是否足以支撑 ICML 2027 / ECCV 投稿；还是先退一步，把“冲突的受控诊断”作为主贡献。</li>
+<li><b>实验授权：</b>是否批准 G0–G3 决策实验，作为进入代码实现前的门槛。</li>
+<li><b>算力：</b>GPU 配额归属哪个账号/项目、何时恢复；Leonardo 的 Step 证书当前已过期，需要重新签发。</li>
+</ol>
+<div class="caveat"><p><b>当前状态：</b>未实现双教师代码，未启动训练。工作1（压缩文献调研）已终止并留存材料；工作2第 1 步（先验核查）完成；原 CVPR 2027 倒排计划作废，按“做慢一点”的节奏推进。</p></div>
+</section>
+</main>
+<footer>
+<p>Prior-art check · 2026-10-27 · supports progress report 2241<span class="zh">双教师选题先验核查 · 2026-10-27 · 对应进展报告 2241</span></p>
+<p>Evidence level: H-OPD is an EMNLP 2026 paper; most other entries are 2026 preprints and are labelled as such.<span class="zh">证据等级：H-OPD 为 EMNLP 2026 正式录用；其余多为 2026 年预印本，已在表中标注。</span></p>
+</footer>
+<div class="progress" id="bar"></div>
+<script>
+const bar=document.getElementById('bar');
+const onScroll=()=>{const h=document.documentElement;
+ const p=(h.scrollTop)/(h.scrollHeight-h.clientHeight)*100; bar.style.width=p+'%';};
+addEventListener('scroll',onScroll,{passive:true}); onScroll();
+const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},
+ {threshold:0, rootMargin:"0px 0px -8% 0px"});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+addEventListener('load',()=>setTimeout(()=>{
+ document.querySelectorAll('.reveal:not(.in)').forEach(el=>{
+  const r=el.getBoundingClientRect(); if(r.top<innerHeight*1.2) el.classList.add('in');});},600));
+document.querySelectorAll('[data-count]').forEach(el=>{
+ const target=parseFloat(el.dataset.count), dec=(el.dataset.dec||'0')|0, dur=1100;
+ const t0=performance.now();
+ const step=t=>{const k=Math.min(1,(t-t0)/dur); const e=1-Math.pow(1-k,3);
+  el.textContent=(target*e).toFixed(dec); if(k<1)requestAnimationFrame(step);};
+ requestAnimationFrame(step);
+});
+</script></body></html>

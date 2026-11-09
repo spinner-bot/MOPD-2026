@@ -1,0 +1,362 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Vision-OPD 精读报告 · Learning to See Fine Details via On-Policy Self-Distillation</title>
+<style>
+:root{--ink:#111827;--sub:#5b6674;--line:#dfe4ea;--bg:#f7f8fa;--card:#ffffff;
+--accent:#2563a8;--accent2:#c2410c;--ok:#047857;--warn:#b45309;--max:1080px}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);
+ font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei","Noto Sans SC",sans-serif;
+ font-size:16px;line-height:1.8;-webkit-font-smoothing:antialiased}
+.hero{background:linear-gradient(135deg,#0b172a 0%,#16324f 48%,#1f4b6e 100%);color:#eef3f8;
+ padding:70px 32px 58px;position:relative;overflow:hidden}
+.hero:before{content:"";position:absolute;inset:0;
+ background:radial-gradient(900px 380px at 18% 0%,rgba(96,165,250,.24),transparent 70%),
+            radial-gradient(700px 340px at 88% 100%,rgba(251,146,60,.18),transparent 70%)}
+.hero .inner{max-width:var(--max);margin:0 auto;position:relative}
+.kicker{letter-spacing:.22em;font-size:.74rem;text-transform:uppercase;color:#93b4d1;margin-bottom:16px}
+.hero h1{font-size:clamp(1.8rem,4vw,2.6rem);line-height:1.24;margin:0 0 10px;font-weight:650}
+.hero h1 .zh{display:block;font-size:.5em;font-weight:500;color:#b9cee0;margin-top:12px}
+.hero p.lead{max-width:840px;color:#c9d8e6;font-size:1rem;margin:0}
+.hero p.lead.zh{color:#9fb6ca;font-size:.93rem;margin-top:8px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin-top:32px}
+.stat{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);border-radius:12px;padding:15px 18px}
+.stat .n{font-size:1.6rem;font-weight:700;font-variant-numeric:tabular-nums;color:#fff}
+.stat .l{font-size:.77rem;color:#c2d5e4;margin-top:2px}
+.stat .l .zh{display:block;color:#93aec5;font-size:.72rem;margin-top:1px}
+.progress{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,#2563a8,#f59e0b);width:0;z-index:99;transition:width .1s linear}
+main{max-width:var(--max);margin:0 auto;padding:0 32px 90px}
+section{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:32px 38px;
+ margin:-34px 0 24px;box-shadow:0 1px 2px rgba(16,24,40,.05),0 12px 32px -18px rgba(16,24,40,.18);position:relative}
+section:first-of-type{margin-top:-48px}
+section h2{display:flex;align-items:baseline;gap:14px;font-size:1.26rem;margin:0 0 6px;font-weight:650}
+section h2 .no{font-size:2rem;font-weight:800;color:#c8d6e5;line-height:1;font-variant-numeric:tabular-nums}
+section h2 .t .zh{display:block;font-size:.72em;font-weight:500;color:var(--sub);margin-top:1px}
+section .q{color:var(--sub);font-size:.93rem;margin:0 0 16px}
+section .q .zh{display:block;font-size:.92em;color:#7a8492;margin-top:1px}
+h3{font-size:1.02rem;margin:24px 0 4px;font-weight:650;color:#1f2937}
+h3 .zh{font-weight:500;color:var(--sub);font-size:.86em;margin-left:8px}
+p{margin:.6rem 0}
+.key,.caveat,.okbox{margin:18px 0}
+.key{background:linear-gradient(180deg,#f0f6fc,#e8f1fa);border-left:4px solid var(--accent);padding:15px 20px;border-radius:0 10px 10px 0}
+.caveat{background:linear-gradient(180deg,#fff8ef,#fdf1e3);border-left:4px solid var(--warn);padding:15px 20px;border-radius:0 10px 10px 0}
+.okbox{background:linear-gradient(180deg,#f0fdf6,#e7f8ef);border-left:4px solid var(--ok);padding:15px 20px;border-radius:0 10px 10px 0}
+.key p,.caveat p,.okbox p{margin:.3rem 0}
+table{border-collapse:collapse;width:100%;margin:14px 0;font-size:.88rem;font-variant-numeric:tabular-nums}
+th,td{border-bottom:1px solid var(--line);padding:8px 10px;text-align:right;vertical-align:top}
+th:first-child,td:first-child{text-align:left}
+thead th{background:#f2f5f8;font-weight:650;border-bottom:2px solid #d5dce4}
+td .zh{display:block;font-weight:400;font-size:.9em;color:var(--sub);margin-top:2px;line-height:1.5}
+tbody tr:hover{background:#fafcfe}
+table.content th,table.content td{text-align:left}
+table.content td{line-height:1.65}
+table.tight{max-width:820px}
+code{background:#eef2f6;border-radius:4px;padding:1px 5px;font-size:.88em}
+pre{background:#0f1b2a;color:#dbe6f0;border-radius:10px;padding:16px 18px;overflow-x:auto;font-size:.82rem;line-height:1.6}
+pre .c{color:#7c9ab5}
+.eq{background:#f6f8fb;border:1px solid #e3e9f0;border-radius:10px;padding:14px 18px;margin:14px 0;
+ font-family:"Cambria Math","Latin Modern Math",Georgia,serif;font-size:1.02rem;text-align:center;overflow-x:auto}
+.eq .small{display:block;font-family:-apple-system,"Microsoft YaHei",sans-serif;font-size:.8rem;color:var(--sub);margin-top:6px}
+.tag{display:inline-block;font-size:.72rem;padding:2px 8px;border-radius:999px;background:#eef3f8;color:var(--sub);margin-left:6px}
+.tag.hot{background:#fdecec;color:#b42318}
+.tag.ok{background:#e7f8ef;color:#047857}
+.tag.mid{background:#fff8ef;color:#b45309}
+ul,ol{margin:.5rem 0 .5rem 1.2rem;padding-left:.6rem}
+li{margin:.35rem 0}
+.reveal{opacity:0;transform:translateY(16px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.3,1)}
+.reveal.in{opacity:1;transform:none}
+footer{max-width:var(--max);margin:0 auto;padding:0 32px 60px;color:var(--sub);font-size:.82rem}
+footer .zh{display:block;color:#8592a1;font-size:.96em;margin-top:2px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.reveal{opacity:1;transform:none}}
+@media(max-width:720px){section{padding:24px 20px}main{padding:0 16px 70px}.hero{padding:52px 20px 44px}}
+</style></head><body>
+<div class="progress" id="pg"></div>
+<div class="hero"><div class="inner">
+ <div class="kicker">Paper reading · arXiv 2605.18740v4 · 2026-10-27</div>
+ <h1>Vision-OPD：用区域→全局的自蒸馏，让模型学会看细节<span class="zh">Learning to See Fine Details for Multimodal LLMs via On-Policy Self-Distillation</span></h1>
+ <p class="lead">The same MLLM plays two roles: a teacher that sees an evidence-centered crop, and a student that sees the full image.
+ Per-token JSD on the student's own rollouts transfers the teacher's privileged regional view into the full-image policy — no external teacher,
+ no labels, no verifier, no inference-time zooming.</p>
+ <p class="lead zh" lang="zh-CN">同一个多模态模型分饰两角：教师看"证据区域的裁剪放大图"，学生看"整张原图 + 红框提示"；在学生自己生成的轨迹上做逐 token JSD，
+ 把"教师看得清"的行为写回整图推理。不需要外部教师、标准答案、验证器，也不在推理时裁剪放大。本报告覆盖数据构造、训练目标、逐项超参、主表与全部消融。</p>
+ <div class="stats">
+  <div class="stat"><div class="n">+18~22<span>pt</span></div><div class="l">Regional–global accuracy gap<span class="zh">区域输入与整图输入的准确率差</span></div></div>
+  <div class="stat"><div class="n">6.2K</div><div class="l">Synthetic training samples<span class="zh">合成训练样本数</span></div></div>
+  <div class="stat"><div class="n">JSD β=0.5</div><div class="l">Divergence objective<span class="zh">散度目标</span></div></div>
+  <div class="stat"><div class="n">79.68</div><div class="l">6-benchmark average, 9B<span class="zh">六基准平均分（9B）</span></div></div>
+ </div>
+</div></div>
+
+<main>
+<section class="reveal" id="s1"><h2><span class="no">01</span><span class="t">一句话与定位<span class="zh">One-sentence summary and positioning</span></span></h2>
+<p class="q">它到底做了什么？<span class="zh">What does it actually do?</span></p>
+<div class="key"><p><b>同一个 MLLM 实例化出两个"条件策略"：教师看证据区域的裁剪放大图 <code>x′</code>，学生看整图 <code>x</code>（图上画了红框）；学生先生成 on-policy 轨迹，再让学生和教师在<b>同一条前缀</b>上给出 next-token 分布，逐 token 最小化 JSD；梯度只流向学生；教师权重用 EMA 慢速跟随。</b></p></div>
+<p>三个关键点，把它和普通蒸馏区分开：</p>
+<ul>
+<li><b>教师不是另一个模型</b>，而是"同一个权重 + 特权视觉输入"。所以它没有 teacher–student 的能力差距，只有<b>视角差距</b>。</li>
+<li><b>特权信息是视觉的</b>（裁剪放大），不是答案、不是奖励。</li>
+<li><b>训练前缀由学生自己产生</b>（on-policy），避免了 SFT 在教师轨迹上训练带来的分布偏移。</li>
+</ul>
+<p>它的地位：这是<b>本项目 Phase3 主线的地基</b>。导师说"在视觉 OPD 基础上，输出太多，想压掉"，指的正是这篇。后续的 OPD-V（2608.05131）是在它之上换了一套"正/负教师 + 模态平衡"的构造，但训练骨架（条件教师 + on-policy rollout + top-K logits 蒸馏 + EMA）完全沿用。</p>
+</section>
+
+<section class="reveal" id="s2"><h2><span class="no">02</span><span class="t">动机：区域→全局的感知差距<span class="zh">The regional-to-global perception gap</span></span></h2>
+<p class="q">为什么"看裁剪图"能当监督信号？<span class="zh">Why does a crop constitute a valid teaching signal?</span></p>
+<p>现象的测量方式很朴素：把同一个问题问两遍——一遍给整图，一遍只给证据区域（crop）。在 ZoomBench 上，<b>区域输入的准确率系统性地高出整图输入 18–22 个百分点</b>，而且这个差距在 GLM-4.6V、GPT-5.4、Gemini-3.1-Pro 这些大模型上同样存在。</p>
+<div class="key"><p><b>结论不是"模型看不清楚"，而是"模型在整图中找不到该看的地方"。</b>参数规模不能自动弥合这个差距——所以它是可控的训练信号，而不是能力上限。</p></div>
+<p>论文给的定性例子（Figure 2）：问"耳罩是什么颜色"，Qwen3.5-9B 看整图答 black，看裁剪图答 green（正确）。证据本身是可识别的，只是被全局上下文淹没了。</p>
+<p>这件事为什么重要：它把"Thinking-with-Images"（推理时反复裁剪、放大、再调模型）的效果，转化成了一个<b>可知识蒸馏的视角差</b>。推理时的工具调用被搬到了训练时，推理只剩一次前向。</p>
+</section>
+
+<section class="reveal" id="s3"><h2><span class="no">03</span><span class="t">数据构造：三元组 <code>(x, x′, q)</code><span class="zh">Dataset synthesis</span></span></h2>
+<p class="q">6.2K 条数据是怎么来的，每一步做什么？<span class="zh">How the 6.2K triplets are produced.</span></p>
+<ol>
+<li><b>找小区块</b>：对原始图像 <code>I</code> 做目标检测 + 分割，得到一批候选框；只保留面积比小于阈值 <code>τ</code> 的<b>小区域</b> <code>R</code>——这些才是"藏在大图里的细节"。</li>
+<li><b>生成问题</b>：用 <b>Qwen3.5-397B</b> 作为出题器，针对每个保留区域 <code>R</code> 生成一个"只看 R 就能回答"的细粒度问题 <code>q</code>。</li>
+<li><b>把问题锚回整图</b>：把 <code>R</code> 的<b>边界框以红色画在整图 <code>I</code> 上</b>，得到 <code>x</code>；并在 <code>q</code> 后面追加空间约束，例如"Only focus on the objects inside the red bounding box in the image to answer this question."——否则问题在整图上无从指代。</li>
+<li><b>造教师视角</b>：把 <code>I</code> 裁到 <code>R</code> 并把裁剪图<b>放大 2×</b>，得到 <code>x′</code>。</li>
+<li><b>顺手造标签（只给对比方法用）</b>：同样用 Qwen3.5-397B，以 <code>R</code> 为图像输入多次采样答案，<b>只有多数答案一致度 &gt; 0.75</b> 的题才保留，作为 SFT / GRPO / DAPO / OPSD 的 ground-truth。Vision-OPD 自己不用这个标签。</li>
+</ol>
+<p>最终 <b>6.2K</b> 条三元组。注意两个容易被忽略的细节：</p>
+<div class="caveat"><p><b>教师（裁剪图）和学生（整图+红框）看到的不是"同一张图的两种分辨率"，而是两套不同的提示</b>：教师的问题没有红框约束句（因为裁剪图里只有那一个区域）。因此教师-学生之间的差异 = 视角差异 + 少量提示差异，论文没有单独消融这一项。</p></div>
+<div class="caveat"><p><b>红框是为了消歧，不是为了给教师看。</b>它的作用是让"整图条件下"的问题有唯一指代物，从而保证区域-全局对比测量的是"注意力"而不是"问题歧义"。</p></div>
+</section>
+
+<section class="reveal" id="s4"><h2><span class="no">04</span><span class="t">训练方法：目标函数、top-K 与 EMA<span class="zh">Method: objective, top-K, EMA</span></span></h2>
+<p class="q">损失怎么算，梯度走哪里？<span class="zh">How the loss is computed and where gradients flow.</span></p>
+<h3>4.1 两个条件策略<span class="zh">Two conditional policies from one model</span></h3>
+<ul>
+<li><b>学生</b>：<code>p_S(·|x, q)</code> —— 整图 + 红框 + 带空间约束的问题。</li>
+<li><b>教师</b>：<code>p_T(·|x′, q)</code> —— 裁剪放大 2× 的证据图 + 原问题。</li>
+<li>两者<b>初始权重相同</b>，但教师<b>不反传</b>（stop-gradient），并用 <b>EMA</b> 慢速跟随学生：<code>θ_T ← 0.05·θ_S + 0.95·θ_T</code>。</li>
+</ul>
+<h3>4.2 逐 token 散度<span class="zh">Per-token divergence over the student rollout</span></h3>
+<p>学生先按自己的策略生成完整回答 <code>y ~ p_S(·|x,q)</code>；然后把这条 <b>学生自己写的轨迹</b>同时喂给教师和学生，在每个位置 <code>n</code> 比较两者的 next-token 分布：</p>
+<div class="eq">
+D(p_T‖p_S)(y) = (1/|y|) Σ<sub>n=1</sub><sup>|y|</sup> D<sub>JSD</sub>( p_T(·|x′, q, y&lt;n) ‖ p_S(·|x, q, y&lt;n) )
+<span class="small">式 (3)：只在学生实际生成的位置上算；教师只提供目标分布，不接收梯度。</span>
+</div>
+<div class="eq">
+L(θ) = E<sub>(x,x′,q)~D</sub> E<sub>y~p_S(·|x,q)</sub> [ D(p_T‖p_S)(y) ]
+<span class="small">式 (4)：外层对数据采样，内层对学生自己的 rollout 采样。</span>
+</div>
+<p>JSD 的插值权重 <code>β</code>：<code>JSD(p_T‖p_S) = β·KL(p_T‖m) + (1−β)·KL(p_S‖m)</code>，其中 <code>m = β·p_T + (1−β)·p_S</code>。论文用 <b>β = 0.5</b>（对称）。</p>
+<h3>4.3 top-K 近似：为什么不是全词表<span class="zh">Top-K logits with a tail term</span></h3>
+<p>全词表（15 万+）做 logits 蒸馏显存扛不住。做法是：<b>只取学生 logits 的 top-K=100</b>，以及教师在<b>同一批 token id</b> 上的 logits，配一个 <b>tail-probability 项</b>补上剩余概率质量，从而得到仍然"归一化合法"的逐 token 散度。</p>
+<div class="key"><p><b>论文的量化依据</b>：在本任务中，top-100 之外的 token 覆盖的概率质量 &lt; <code>1e-13</code>——所以截断几乎无损。这个数字值得记住，因为它是"为什么 K=100 够用"的唯一实证。</p></div>
+<h3>4.4 为什么梯度只过学生<span class="zh">Why stop-gradient on the teacher</span></h3>
+<ul>
+<li>如果把教师也算进梯度，最小化 JSD 的最优解是"两边一起塌到某个常数分布"——这就是自蒸馏崩塌。</li>
+<li>第 08 节的消融证明了这点：<b>不冻结、不用 EMA，直接拿当前策略当教师，训练完全崩溃</b>（六基准平均 0.59）。</li>
+</ul>
+<h3>4.5 算法全流程（对应论文 Algorithm 1）</h3>
+<pre><span class="c"># 每个训练步</span>
+for batch B in dataset:                      <span class="c"># 采样三元组</span>
+    for (x, x_crop, q) in B:
+        y = student.generate(x, q)           <span class="c"># on-policy rollout，最多 1024 token</span>
+        for n in 1..len(y):
+            p_T = teacher.logits(x_crop, q, y[:n])   <span class="c"># 特权视角，no grad</span>
+            p_S = student.logits(x, q, y[:n])        <span class="c"># 只在 top-100 ∪ 教师对应位算</span>
+            d_n = JSD_beta(p_T, p_S)                 <span class="c"># beta = 0.5</span>
+        loss = mean(d_n)
+    update(student)                          <span class="c"># 梯度只流向 student</span>
+    teacher.ema_update(student, rho=0.05)    <span class="c"># 教师慢速跟随</span></pre>
+</section>
+
+<section class="reveal" id="s5"><h2><span class="no">05</span><span class="t">完整训练配置<span class="zh">Full training configuration</span></span></h2>
+<p class="q">复现需要哪些数？哪些论文写了、哪些只在代码里？<span class="zh">What the paper states vs. what only the code contains.</span></p>
+<table class="content tight">
+<thead><tr><th>项目</th><th>取值</th><th>来源</th></tr></thead>
+<tbody>
+<tr><td>基座模型</td><td>Qwen3.5-4B / Qwen3.5-9B</td><td>论文 §4.1</td></tr>
+<tr><td>训练数据</td><td>6.2K 合成三元组</td><td>论文 §3.2</td></tr>
+<tr><td>散度</td><td>JSD，β = 0.5</td><td>论文 §4.1</td></tr>
+<tr><td>蒸馏粒度</td><td>top-K logits，K = 100，含 tail 项</td><td>论文 §4.1</td></tr>
+<tr><td>教师更新</td><td>EMA，ρ = 0.05</td><td>论文 §4.1、Table 3</td></tr>
+<tr><td>最大生成长度</td><td>1024 token</td><td>论文 §4.1、Table 5</td></tr>
+<tr><td>训练轮数</td><td>1 epoch</td><td>论文 §4.1</td></tr>
+<tr><td>推理模式</td><td>non-thinking；评测时单次前向</td><td>论文 §4.1</td></tr>
+<tr><td>训练框架</td><td>verl（改装版）</td><td>官方代码</td></tr>
+<tr><td>学习率</td><td>2e-6，warmup 10 步</td><td class="hot">代码 <code>run_vision_opd.sh</code></td></tr>
+<tr><td>batch</td><td>prompt 96 × rollout n=8 = 768 样本/步</td><td class="hot">代码</td></tr>
+<tr><td>长度上限</td><td>prompt 8192 + response 1024</td><td class="hot">代码</td></tr>
+<tr><td>PPO mini-batch</td><td>96；clip_ratio 0.2 / 0.3</td><td class="hot">代码</td></tr>
+<tr><td>GPU</td><td>8×H200（单节点）</td><td class="hot">代码 + 本地复现记录</td></tr>
+</tbody></table>
+<div class="caveat"><p><b>论文正文没有报告学习率、batch、优化器与 GPU 型号</b>，上表后半段来自官方 <code>scripts/run_vision_opd.sh</code> 的默认值。复现时若结果对不上，第一个该怀疑的就是这一段。</p></div>
+<p>代码里还有两个论文没强调、但会影响行为的开关：</p>
+<ul>
+<li><code>teacher_image_key=bbox_images</code> —— 决定教师读哪一路图像（数据里预存了裁剪图字段）。</li>
+<li><code>dont_reprompt_on_self_success=True</code> —— 学生自己采样就答对时不再触发"补充教师信号"的路径。这是 verl 里 OPSD 家族遗留下来的逻辑分支，Vision-OPD 保留但关闭了它的主要用途。</li>
+</ul>
+</section>
+
+<section class="reveal" id="s6"><h2><span class="no">06</span><span class="t">主结果：6 个细粒度基准<span class="zh">Main results on six fine-grained benchmarks</span></span></h2>
+<p class="q">提升有多大，超过谁？<span class="zh">How large is the gain, and whom does it beat?</span></p>
+<table>
+<thead><tr><th>模型</th><th>参数</th><th>V*</th><th>ZoomBench</th><th>HR 4K</th><th>HR 8K</th><th>MME-RW EN</th><th>MME-RW CN</th><th>平均</th></tr></thead>
+<tbody>
+<tr><td>Qwen3.5 基线</td><td>4B</td><td>84.29</td><td>47.69</td><td>84.38</td><td>80.13</td><td>63.86</td><td>63.70</td><td>70.68</td></tr>
+<tr><td><b>Vision-OPD</b> <span class="tag ok">本文</span></td><td>4B</td><td>92.15</td><td>59.76</td><td>84.50</td><td>80.38</td><td>74.88</td><td>70.76</td><td><b>77.07</b></td></tr>
+<tr><td>Qwen3.5 基线</td><td>9B</td><td>82.72</td><td>52.07</td><td>85.75</td><td>80.63</td><td>71.40</td><td>67.67</td><td>73.37</td></tr>
+<tr><td><b>Vision-OPD</b> <span class="tag ok">本文</span></td><td>9B</td><td>94.76</td><td>65.80</td><td>88.13</td><td>85.50</td><td>73.40</td><td>70.46</td><td><b>79.68</b></td></tr>
+<tr><td>Qwen3.5</td><td>397B</td><td>87.96</td><td>57.16</td><td>89.38</td><td>85.50</td><td>74.82</td><td>69.82</td><td>77.44</td></tr>
+<tr><td>Qwen3-VL-Instruct</td><td>235B</td><td>91.10</td><td>56.09</td><td>86.13</td><td>80.38</td><td>71.74</td><td>69.04</td><td>75.75</td></tr>
+<tr><td>Kimi-K2.6</td><td>1T</td><td>88.48</td><td>53.14</td><td>81.88</td><td>78.00</td><td>69.22</td><td>66.13</td><td>72.81</td></tr>
+<tr><td>GLM-4.6V</td><td>106B</td><td>86.91</td><td>50.06</td><td>82.13</td><td>78.88</td><td>65.57</td><td>65.62</td><td>71.53</td></tr>
+<tr><td>GPT-5.4</td><td>—</td><td>76.96</td><td>52.66</td><td>84.00</td><td>77.88</td><td>74.20</td><td>70.93</td><td>72.77</td></tr>
+<tr><td>Gemini-3.1-Pro</td><td>—</td><td>87.96</td><td>61.18</td><td>89.63</td><td>86.88</td><td>76.53</td><td>73.31</td><td>79.25</td></tr>
+<tr><td>Gemini-3.5-Flash</td><td>—</td><td>89.01</td><td>61.42</td><td>89.12</td><td>86.62</td><td>75.31</td><td>73.97</td><td>79.24</td></tr>
+<tr><td>DeepEyes <span class="tag">agentic</span></td><td>7B</td><td>85.86</td><td>46.51</td><td>75.13</td><td>72.63</td><td>64.10</td><td>64.09</td><td>68.05</td></tr>
+<tr><td>Thyme <span class="tag">agentic</span></td><td>7B</td><td>82.20</td><td>45.09</td><td>77.00</td><td>72.00</td><td>64.80</td><td>64.59</td><td>67.61</td></tr>
+<tr><td>DeepEyesV2 <span class="tag">agentic</span></td><td>7B</td><td>81.68</td><td>44.97</td><td>77.88</td><td>73.75</td><td>64.90</td><td>65.07</td><td>68.04</td></tr>
+<tr><td>SenseNova-MARS <span class="tag">agentic</span></td><td>8B</td><td>92.15</td><td>47.81</td><td>83.13</td><td>78.38</td><td>67.90</td><td>68.90</td><td>73.05</td></tr>
+</tbody></table>
+<ul>
+<li>4B 从 70.68 → <b>77.07</b>（+6.39），9B 从 73.37 → <b>79.68</b>（+6.31），<b>两个尺度的增益几乎一样</b>——说明这不是靠"参数多所以学得会"。</li>
+<li>9B 平均分超过 Qwen3.5-397B（77.44）、GPT-5.4（72.77）、Gemini-3.1-Pro（79.25 差 0.43）。</li>
+<li>对比 agentic 方法：Vision-OPD 是<b>单次前向</b>，却全面超过需要多轮裁剪的 DeepEyes / Thyme / DeepEyesV2 / SenseNova-MARS。</li>
+<li>增益最大的是 <b>ZoomBench</b>（4B +12.07、9B +13.73）和 <b>V* Bench</b>——恰好是最需要"找到小目标"的两个基准，和动机吻合。</li>
+</ul>
+</section>
+
+<section class="reveal" id="s7"><h2><span class="no">07</span><span class="t">对比 SFT / GRPO / DAPO / OPSD：不遗忘<span class="zh">Versus other training strategies</span></span></h2>
+<p class="q">同样是 6.2K 数据，为什么非要用自蒸馏？<span class="zh">Same data, same backbones — what distinguishes self-distillation?</span></p>
+<table>
+<thead><tr><th rowspan="2">方法</th><th colspan="4">细粒度任务</th><th colspan="4">保留任务（训练分布外）</th></tr>
+<tr><th>V*</th><th>Zoom</th><th>HR4K</th><th>HR8K</th><th>MMVP</th><th>CV-Bench</th><th>MMStar</th><th>POPE</th></tr></thead>
+<tbody>
+<tr><td colspan="9" style="text-align:left;background:#f8fafc"><b>Qwen3.5-4B</b></td></tr>
+<tr><td>Vanilla</td><td>84.29</td><td>47.69</td><td>84.38</td><td>80.13</td><td>76.67</td><td>87.13</td><td>78.53</td><td>88.28</td></tr>
+<tr><td>SFT on Self-Teacher</td><td>78.01</td><td>54.67</td><td>79.75</td><td>76.38</td><td>78.33</td><td>85.70</td><td><b>68.40</b></td><td>87.48</td></tr>
+<tr><td>GRPO</td><td>83.77</td><td>55.38</td><td>82.63</td><td>78.25</td><td>79.33</td><td>87.24</td><td>70.60</td><td>86.37</td></tr>
+<tr><td>DAPO</td><td>84.82</td><td>55.74</td><td>84.00</td><td>78.00</td><td>79.33</td><td>86.95</td><td>72.27</td><td>86.62</td></tr>
+<tr><td>OPSD</td><td>85.34</td><td>53.85</td><td>82.25</td><td>79.38</td><td>78.68</td><td>87.27</td><td>75.07</td><td>88.83</td></tr>
+<tr><td><b>Vision-OPD</b></td><td><b>92.15</b></td><td><b>59.76</b></td><td><b>84.50</b></td><td><b>80.38</b></td><td>79.67</td><td>87.27</td><td>79.60</td><td>89.14</td></tr>
+<tr><td colspan="9" style="text-align:left;background:#f8fafc"><b>Qwen3.5-9B</b></td></tr>
+<tr><td>Vanilla</td><td>82.72</td><td>52.07</td><td>85.75</td><td>80.63</td><td>83.33</td><td>88.29</td><td>83.07</td><td>88.88</td></tr>
+<tr><td>SFT on Self-Teacher</td><td>82.20</td><td>58.46</td><td>83.50</td><td>80.25</td><td>80.67</td><td>87.97</td><td><b>73.33</b></td><td>87.47</td></tr>
+<tr><td>GRPO</td><td>85.34</td><td>57.51</td><td>86.88</td><td>83.25</td><td>81.67</td><td>87.78</td><td>73.40</td><td>87.78</td></tr>
+<tr><td>DAPO</td><td>88.48</td><td>55.62</td><td>86.25</td><td>84.13</td><td>79.33</td><td>87.30</td><td>75.67</td><td>87.54</td></tr>
+<tr><td>OPSD</td><td>89.53</td><td>57.51</td><td>84.00</td><td>81.25</td><td>80.67</td><td>87.45</td><td>79.13</td><td>87.48</td></tr>
+<tr><td><b>Vision-OPD</b></td><td><b>94.76</b></td><td><b>65.80</b></td><td><b>88.13</b></td><td><b>85.50</b></td><td>83.67</td><td>88.40</td><td>83.20</td><td>89.13</td></tr>
+</tbody></table>
+<div class="key"><p><b>这张表里最重要的不是 Vision-OPD 的分数，而是"遗忘"这一列。</b>SFT on Self-Teacher 把 MMStar 从 83.07 打到 73.33（−9.74），GRPO/DAPO 也普遍掉 5–10 分；只有 Vision-OPD 在保留任务上持平或略升。原因是它的监督信号是<b>逐 token 分布匹配</b>，不是把模型往"某类答案"上推，所以不会覆盖原能力。</p></div>
+<div class="caveat"><p><b>要小心的一点</b>：OPSD（用标准答案做特权信息）在 V* 上已经很接近 Vision-OPD（9B：89.53 vs 94.76），差距主要来自 ZoomBench（57.51 vs 65.80）。也就是说，"视觉特权"相对"答案特权"的优势集中在<b>需要定位细节</b>的任务上，不是全面碾压。这是我们论证"视觉 + 简洁两个特权需要仲裁"时的关键论据之一。</p></div>
+</section>
+
+<section class="reveal" id="s8"><h2><span class="no">08</span><span class="t">消融：教师正则化、散度、长度、蒸馏粒度<span class="zh">Every ablation in the paper</span></span></h2>
+<p class="q">哪些设计是"必须的"，哪些是"调出来的"？<span class="zh">Which choices are load-bearing?</span></p>
+<h3>8.1 教师正则化（Qwen3.5-9B，Table 3）<span class="zh">Teacher regularization</span></h3>
+<table class="tight">
+<thead><tr><th>教师策略</th><th>V*</th><th>Zoom</th><th>HR4K</th><th>HR8K</th><th>MME-EN</th><th>MME-CN</th><th>平均</th></tr></thead>
+<tbody>
+<tr><td>当前策略（无正则）</td><td>0.00</td><td>0.00</td><td>0.00</td><td>0.00</td><td>3.51</td><td>0.05</td><td class="hot">0.59</td></tr>
+<tr><td>初始策略（冻结）</td><td>93.72</td><td>63.91</td><td>88.00</td><td>86.75</td><td>73.35</td><td>70.68</td><td>79.40</td></tr>
+<tr><td>信任域正则（ρ=0.05）</td><td>93.19</td><td>63.79</td><td>88.25</td><td>86.25</td><td>72.96</td><td>70.86</td><td>79.22</td></tr>
+<tr><td><b>EMA 正则（ρ=0.05）</b></td><td><b>94.76</b></td><td><b>65.80</b></td><td>88.13</td><td>85.50</td><td>73.40</td><td>70.46</td><td><b>79.68</b></td></tr>
+</tbody></table>
+<p>三点值得记：</p>
+<ul>
+<li><b>无正则直接崩</b>（0.59）——自蒸馏不是"自然而然稳定"的。</li>
+<li><b>冻结教师就已经很强</b>（79.40）——说明大部分信号来自"特权视角"本身，而不需要教师一直在进步。</li>
+<li>EMA 只比冻结高 0.28。换句话说，<b>这个方法的鲁棒性远大于它对外宣称的精细度</b>；复现时先用冻结教师跑通是合理策略。</li>
+</ul>
+<h3>8.2 散度选择（Table 4）<span class="zh">Forward KL vs reverse KL vs JSD</span></h3>
+<table class="tight">
+<thead><tr><th>散度</th><th>V*</th><th>Zoom</th><th>HR4K</th><th>HR8K</th><th>MME-EN</th><th>MME-CN</th><th>平均</th></tr></thead>
+<tbody>
+<tr><td>Forward KL</td><td>93.19</td><td>64.02</td><td>87.88</td><td>84.13</td><td>72.83</td><td>70.17</td><td>78.70</td></tr>
+<tr><td>Reverse KL</td><td>90.05</td><td>62.72</td><td>87.88</td><td>86.00</td><td>74.60</td><td>69.92</td><td>78.53</td></tr>
+<tr><td><b>JSD (β=0.5)</b></td><td><b>94.76</b></td><td><b>65.80</b></td><td>88.13</td><td>85.50</td><td>73.40</td><td>70.46</td><td><b>79.68</b></td></tr>
+</tbody></table>
+<p>JSD 最好，但差距只有约 1 分。<b>与 CRISP 形成直接对照</b>：CRISP 用 reverse KL（因为它的教师是"更简洁的同一模型"，需要 mode-seeking），Vision-OPD 用对称 JSD（因为它的教师和学生是"同能力、不同视角"，不需要 mode-seeking）。<b>同一家族、不同散度，理由来自教师性质</b>——这是我们双教师设计里必须回答的问题。</p>
+<h3>8.3 生成长度（Table 5）<span class="zh">Rollout length</span></h3>
+<table class="tight">
+<thead><tr><th>最大生成长度</th><th>V*</th><th>Zoom</th><th>HR4K</th><th>HR8K</th><th>MME-EN</th><th>MME-CN</th><th>平均</th></tr></thead>
+<tbody>
+<tr><td>512</td><td>91.62</td><td>64.38</td><td>88.00</td><td>86.13</td><td>72.15</td><td>69.44</td><td>78.62</td></tr>
+<tr><td><b>1024</b></td><td><b>94.76</b></td><td><b>65.80</b></td><td>88.13</td><td>85.50</td><td>73.40</td><td>70.46</td><td><b>79.68</b></td></tr>
+</tbody></table>
+<div class="key"><p><b>这一条对我们的项目是双刃剑。</b>监督量随生成长度线性增加，所以 1024 比 512 好 +1.06。但如果我们的目标是把输出压到 200 token 左右，<b>"生成长度"这个旋钮就同时是"监督量"和"目标产物"</b>——压缩得越狠，可用于蒸馏的 token 越少，可能自我削弱。这是本方向最需要实验回答的机制问题。</p></div>
+<h3>8.4 蒸馏粒度：top-K logits vs 采样 token（Table 6）<span class="zh">Top-K vs sampled-token objective</span></h3>
+<table class="tight">
+<thead><tr><th>目标</th><th>V*</th><th>Zoom</th><th>HR4K</th><th>HR8K</th><th>MME-EN</th><th>MME-CN</th><th>平均</th></tr></thead>
+<tbody>
+<tr><td>Sampled-token（策略梯度式）</td><td>93.72</td><td>61.54</td><td>86.38</td><td>85.38</td><td>76.02</td><td>68.65</td><td>78.62</td></tr>
+<tr><td><b>Top-K logits（K=100）</b></td><td><b>94.76</b></td><td><b>65.80</b></td><td><b>88.13</b></td><td><b>85.50</b></td><td>73.40</td><td><b>70.46</b></td><td><b>79.68</b></td></tr>
+</tbody></table>
+<p>采样 token 目标只在实际采样到的那一个 token 上使用教师/学生 log-prob 比作为标量 advantage——和 GRPO 把标量优势乘到采样 token 上同构，只是优势由教师 log-prob 塑形。top-K 分布匹配更好，因为它对<b>那些没被采样、但概率很高的 token</b> 也给了梯度。</p>
+<h3>8.5 区域-全局差距随训练收窄（Figure 5）<span class="zh">Gap closes during training</span></h3>
+<p>用同一套"整图 vs 裁剪图"的对比，在训练过程中追踪差距：Vision-OPD-4B/9B 的差距稳步下降，训练结束时<b>小于 GPT-5.4 和 Qwen3.5-397B 的差距</b>。这是全篇最直接的一条机制证据——它说明方法确实在改变"注意力分配"，而不只是记忆了训练集答案。</p>
+</section>
+
+<section class="reveal" id="s9"><h2><span class="no">09</span><span class="t">评测协议、速度与定性例子<span class="zh">Evaluation protocol, speed, qualitative case</span></span></h2>
+<p class="q">分数是怎么测出来的？<span class="zh">How were the numbers produced?</span></p>
+<h3>9.1 基准与输入格式</h3>
+<table class="content tight">
+<thead><tr><th>基准</th><th>测什么</th></tr></thead>
+<tbody>
+<tr><td>V* Bench</td><td>复杂场景中定位并识别极小目标</td></tr>
+<tr><td>ZoomBench</td><td>答案依赖不同缩放层级细节</td></tr>
+<tr><td>HR-Bench 4K / 8K</td><td>高分辨率感知（两种分辨率）</td></tr>
+<tr><td>MME-RealWorld EN / CN</td><td>真实场景高分辨率照片</td></tr>
+<tr><td>MMVP / CV-Bench / MMStar / POPE <span class="tag mid">holdout</span></td><td>训练分布之外的通用多模态能力（是否遗忘）</td></tr>
+</tbody></table>
+<p>评测统一用 <b>non-thinking 模式、单次前向、只给整图</b>——<b>不</b>提供裁剪图、红框、放大图等任何特权输入。所有基线的 prompt 原文见论文附录 B（V* / ZoomBench / HR-Bench / MME-RW / MMVP / CV-Bench / MMStar / POPE 各一套）。</p>
+<div class="caveat"><p><b>这一点容易被误读</b>：训练时的问题带红框约束句，评测时的问题<b>不带</b>。也就是说，模型必须在没有"提示你该看哪"的情况下，把训练中学到的注意力迁移到原始问题上。这是该方法能否落地的前提，也是它比"训练时写死提示"更根本的地方。</p></div>
+<h3>9.2 推理速度（附录 A）</h3>
+<p>在 ZoomBench 上测吞吐：Vision-OPD-9B 是<b>所有对比模型中最快的</b>——它只做一次前向，而 DeepEyes / Thyme / DeepEyesV2 / SenseNova-MARS 需要多轮"裁剪→再调模型"。</p>
+<h3>9.3 定性例子（附录 C）</h3>
+<p>远处小船上的数字：Qwen3.5-9B 写了 200 多词论证"船上没有数字"，最后猜 (D) 5；Vision-OPD-9B 直接指出船头有白色数字 <b>15</b>，选 (C)。<b>这个对比展示的不是知识，而是"看不看得到"</b> ——正是全篇的核心。</p>
+</section>
+
+<section class="reveal" id="s10"><h2><span class="no">10</span><span class="t">和本项目的关系：这块地基能承重多少<span class="zh">What this paper gives us — and what it does not</span></span></h2>
+<p class="q">读完之后，我们的选题还剩什么？<span class="zh">What remains for our own topic after reading it?</span></p>
+<h3>10.1 它已经给了我们什么</h3>
+<ul>
+<li><b>框架</b>：verl 改装版，训练脚本、数据格式、评估脚本全部开源（<code>github.com/VisionOPD/Vision-OPD</code>），本地已完整存档。</li>
+<li><b>一条已验证的"特权信息 = 视觉变换"路径</b>：我们想做"视觉特权 + 简洁特权"双教师，可以直接在这套代码上加第二个教师，而不是从零搭。</li>
+<li><b>关键的稳定性知识</b>：教师必须冻结或 EMA，否则崩溃；散度选择取决于教师性质（JSD vs reverse KL）。</li>
+<li><b>评测口径</b>：6 个细粒度 + 4 个 holdout，我们可以直接沿用，做"压缩后是否遗忘"的对照。</li>
+</ul>
+<h3>10.2 它没有解决的问题（我们的空隙）</h3>
+<div class="key"><p><b>它不压缩输出。</b>Vision-OPD 换了教师的视角，但学生的生成长度、推理风格完全没变——论文里 1024 token 的 rollout 上限只是训练预算，不是压缩目标。导师说的"输出太多"，在这篇里没有任何对应手段。</p></div>
+<ul>
+<li><b>单特权</b>：只有"视觉视角"一种特权信息。我们想加"简洁"，就变成两个特权源共同作用于同一个学生的逐 token 分布。</li>
+<li><b>冲突未被检验</b>：视觉教师想让模型"多说细看"，简洁教师想让模型"少说快答"。两者的逐 token 目标在什么位置冲突、冲突有多大，这篇不涉及。</li>
+<li><b>生成长度与监督量的耦合</b>（见 8.3）：压缩会让可用的蒸馏 token 变少，这是自蒸馏 + 压缩的固有张力。</li>
+</ul>
+<h3>10.3 5 分钟口头稿</h3>
+<div class="okbox">
+<p><b>① 问题</b>：多模态模型在细粒度任务上，看裁剪图比看整图准 18–22 分。差距不是"看不清"，是"找不到"。</p>
+<p><b>② 方法</b>：同一个模型分两角——教师看裁剪放大图，学生看整图加红框。学生先生成，教师在同一前缀上给出 next-token 分布，逐 token 做 JSD。梯度只给学生，教师 EMA 慢跟。</p>
+<p><b>③ 关键配置</b>：JSD β=0.5，top-100 logits，生成长度 1024，EMA ρ=0.05，1 epoch，6.2K 合成数据，Qwen3.5-4B/9B。</p>
+<p><b>④ 结果</b>：4B 70.68→77.07，9B 73.37→79.68，超过 397B 开源和 GPT-5.4；相较 SFT/GRPO/DAPO 不掉 holdout 分（SFT 掉 MMStar 近 10 分）。</p>
+<p><b>⑤ 对我们的意义</b>：这是双教师方案的代码地基。它证明了"视觉特权 → 逐 token 蒸馏"可行且稳定；但没有处理输出长度，也没检验两个特权是否会打架——这正是我们要补的。</p>
+</div>
+<h3>10.4 可能被追问的 6 个问题</h3>
+<table class="content">
+<thead><tr><th>问题</th><th>回答要点</th></tr></thead>
+<tbody>
+<tr><td>为什么不直接 SFT 在裁剪图答案上？</td><td>分布偏移：训练在前缀来自教师，推理前缀来自学生；Table 2 里 SFT 掉 MMStar 9.74 分。</td></tr>
+<tr><td>教师不更新行不行？</td><td>行。冻结教师平均 79.40，EMA 79.68，只差 0.28。</td></tr>
+<tr><td>为什么用 JSD 不用 reverse KL？</td><td>教师与学生能力相同、只差视角，不需要 mode-seeking；JSD 比正/反 KL 各高约 1 分。</td></tr>
+<tr><td>6.2K 数据够吗？会不会只是记住训练集？</td><td>holdout（MMVP/CV-Bench/MMStar/POPE）不掉分，且区域-全局差距随训练收窄，说明是能力迁移。</td></tr>
+<tr><td>评测时还画红框吗？</td><td>不画。只给原图与原问题，单次前向。</td></tr>
+<tr><td>这套代码我们能直接改吗？</td><td>能。verl 改装版已存档在 <code>reproduction/1. Vision-OPD/code</code>，两个教师的接入点在 actor 的 self_distillation 配置与 logits 计算处。</td></tr>
+</tbody></table>
+</section>
+</main>
+<footer>
+<p>数据来源：arXiv 2605.18740v4 全文（Tables 1–6、Figures 3/5/6、Algorithm 1、附录 A–C）；训练超参中论文未报告的部分取自官方代码 <code>scripts/run_vision_opd.sh</code>，已在第 05 节标注。<span class="zh">本报告未做独立复现，所有数字均为原文报告值。</span></p>
+<p>Generated 2026-10-27 by Claude Code (local). 关联：<code>paper-read-crisp-261027.html</code>、<code>prior-art-check-261027.html</code>、工作2 第 2 步。</p>
+</footer>
+<script>
+const pg=document.getElementById('pg');
+addEventListener('scroll',()=>{const h=document.documentElement;pg.style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight)*100)+'%'},{passive:true});
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('in')}),{threshold:.08});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+</script>
+</body></html>
